@@ -10,8 +10,10 @@ import { SmallChartCard } from '@/components/SmallChartCard';
 import { SmallCircleCard } from '@/components/SmallCircleCard';
 import { SmallProgressBarCard } from '@/components/SmallProgressBarCard';
 import Avatar from '@/components/Avatar';
+import { useT } from '@/contexts/LocalizationContext';
 
 export default function HomeScreen() {
+  const t = useT();
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -28,7 +30,12 @@ export default function HomeScreen() {
       />
       <ThemedScroller className="flex-1 bg-background !px-0">
         <View className="bg-secondary px-6">
-          <Section title="Welcome back!" titleSize="4xl" subtitle={today} className="mb-8 mt-8" />
+          <Section
+            title={t('home.welcomeBack')}
+            titleSize="4xl"
+            subtitle={today}
+            className="mb-8 mt-8"
+          />
           <MembershipOverview />
         </View>
         <View className="bg-background p-5">
@@ -40,25 +47,26 @@ export default function HomeScreen() {
 }
 
 const ActivityStats = () => {
+  const t = useT();
   return (
     <>
       <View className="mb-6 w-full flex-row items-center justify-between gap-4">
         <View className="flex-1">
           <SmallChartCard
-            title="Classes"
+            title={t('home.classes')}
             value="12"
-            unit="this month"
-            subtitle="Last 7 days"
+            unit={t('home.thisMonth')}
+            subtitle={t('home.lastSevenDays')}
             data={[2, 3, 1, 4, 2, 3, 4]}
             lineColor="#00A6F4"
           />
         </View>
         <View className="flex-1">
           <SmallChartCard
-            title="Check-ins"
+            title={t('home.checkins')}
             value="18"
-            unit="this month"
-            subtitle="This week"
+            unit={t('home.thisMonth')}
+            subtitle={t('home.thisWeek')}
             data={[3, 2, 4, 3, 5, 4, 6]}
             lineColor="#10b981"
           />
@@ -67,21 +75,21 @@ const ActivityStats = () => {
       <View className="mb-6 w-full flex-row items-center justify-between gap-4">
         <View className="flex-1">
           <SmallCircleCard
-            title="Goal Progress"
-            subtitle="Monthly"
+            title={t('home.goalProgress')}
+            subtitle={t('home.monthly')}
             percentage={75}
             value="15/20"
-            unit="classes"
+            unit={t('home.classes').toLowerCase()}
           />
         </View>
         <View className="flex-1">
           <SmallProgressBarCard
-            title="Weekly Activity"
-            subtitle="Past 3 weeks"
+            title={t('home.weeklyActivity')}
+            subtitle={t('home.pastThreeWeeks')}
             data={[{ percentage: 85 }, { percentage: 70 }, { percentage: 95 }]}
             barColor="#06b6d4"
             value="95%"
-            unit="on track"
+            unit={t('home.onTrack')}
           />
         </View>
       </View>
@@ -91,6 +99,7 @@ const ActivityStats = () => {
 
 const MembershipOverview = () => {
   const colors = useThemeColors();
+  const t = useT();
 
   return (
     <View className="dark:bg-dark-secondary mb-6 rounded-xl bg-secondary pt-14">
@@ -98,28 +107,28 @@ const MembershipOverview = () => {
         <View className="relative h-32 w-32 items-center justify-center rounded-full bg-background">
           <View className="items-center">
             <ThemedText className="text-3xl font-bold">Premium</ThemedText>
-            <ThemedText className="text-sm opacity-50">Active Member</ThemedText>
+            <ThemedText className="text-sm opacity-50">{t('home.activeMember')}</ThemedText>
           </View>
         </View>
       </View>
 
       <View className="items-center justify-center">
-        <ThemedText className="text-lg font-bold">Membership Status</ThemedText>
+        <ThemedText className="text-lg font-bold">{t('home.membershipStatus')}</ThemedText>
       </View>
 
       <View className="mt-4 flex-row justify-between rounded-2xl border-t border-border px-6 pt-4">
         <View className="items-center">
           <ThemedText className="text-light-subtext dark:text-dark-subtext text-sm">
-            Classes Left
+            {t('home.classesLeft')}
           </ThemedText>
           <View className="flex-row items-center">
             <Icon name="Calendar" size={14} className="mr-2" />
-            <ThemedText className="text-lg font-bold">Unlimited</ThemedText>
+            <ThemedText className="text-lg font-bold">{t('home.unlimited')}</ThemedText>
           </View>
         </View>
         <View className="items-center">
           <ThemedText className="text-light-subtext dark:text-dark-subtext text-sm">
-            Next Billing
+            {t('home.nextBilling')}
           </ThemedText>
           <View className="flex-row items-center">
             <Icon name="CreditCard" size={14} className="mr-2" />
@@ -128,7 +137,7 @@ const MembershipOverview = () => {
         </View>
         <View className="items-center">
           <ThemedText className="text-light-subtext dark:text-dark-subtext text-sm">
-            Member Since
+            {t('home.memberSince')}
           </ThemedText>
           <View className="flex-row items-center">
             <Icon name="Award" size={14} className="mr-2" />

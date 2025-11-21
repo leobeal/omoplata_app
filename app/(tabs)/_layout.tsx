@@ -5,10 +5,12 @@ import { View } from 'react-native';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CheckInButton from '@/components/CheckInButton';
+import { useT } from '@/contexts/LocalizationContext';
 
 export default function TabsLayout() {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
+  const t = useT();
 
   return (
     <Tabs>
@@ -24,7 +26,7 @@ export default function TabsLayout() {
         {/* Dashboard Tab */}
         <TabTrigger name="index" href="/" asChild>
           <TabButton labelAnimated={true} icon="Home">
-            Dashboard
+            {t('nav.dashboard')}
           </TabButton>
         </TabTrigger>
 
@@ -36,7 +38,7 @@ export default function TabsLayout() {
         {/* Settings Tab */}
         <TabTrigger name="settings" href="/settings" asChild>
           <TabButton labelAnimated={true} icon="Settings">
-            Settings
+            {t('nav.settings')}
           </TabButton>
         </TabTrigger>
       </TabList>

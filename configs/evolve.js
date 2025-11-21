@@ -25,4 +25,7 @@ module.exports = {
     background: '#ffffff',
     text: '#333333',
   },
+
+  // Localization
+  language: 'de', // de, en, pt-BR
 };
