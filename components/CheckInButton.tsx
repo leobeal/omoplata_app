@@ -5,9 +5,7 @@ import { router } from 'expo-router';
 
 const CheckInButton = () => {
   const handlePress = () => {
-    // TODO: Implement check-in functionality
-    console.log('Check-in pressed');
-    // router.push('/screens/checkin');
+    router.push('/screens/checkin');
   };
 
   return (

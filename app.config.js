@@ -24,7 +24,16 @@ module.exports = {
       typedRoutes: true,
     },
     platforms: ['ios', 'android'],
-    plugins: ['expo-router', 'expo-font'],
+    plugins: [
+      'expo-router',
+      'expo-font',
+      [
+        'expo-camera',
+        {
+          cameraPermission: 'Allow $(PRODUCT_NAME) to access your camera for check-in',
+        },
+      ],
+    ],
     orientation: 'portrait',
     icon: config.icon,
     userInterfaceStyle: 'automatic',
