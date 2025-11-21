@@ -3,6 +3,7 @@ export default {
   nav: {
     dashboard: 'Painel',
     checkin: 'Check-in',
+    membership: 'Assinatura',
     billing: 'Faturamento',
     settings: 'Configurações',
   },
@@ -145,6 +146,43 @@ export default {
     passwordRequired: 'Senha é obrigatória',
     passwordTooShort: 'A senha deve ter pelo menos 6 caracteres',
     loginFailed: 'Falha no login. Por favor, verifique suas credenciais.',
+  },
+
+  // Tela de Assinatura
+  membership: {
+    title: 'Minha Assinatura',
+    currentPlan: 'Plano Atual',
+    memberId: 'ID do Membro',
+    contractId: 'ID do Contrato',
+    contractDetails: 'Detalhes do Contrato',
+    startDate: 'Data de Início',
+    endDate: 'Data de Término',
+    renewalDate: 'Data de Renovação',
+    autoRenewal: 'Renovação Automática',
+    enabled: 'Ativado',
+    disabled: 'Desativado',
+    pricing: 'Preços',
+    annualFee: 'Taxa Anual',
+    monthlyEquivalent: 'Equivalente Mensal',
+    billedAnnually: 'Faturado anualmente',
+    billedMonthly: 'Faturado mensalmente',
+    planFeatures: 'Recursos do Plano',
+    limit: 'Limite',
+    paymentMethod: 'Forma de Pagamento',
+    accountHolder: 'Titular da Conta',
+    policies: 'Políticas de Assinatura',
+    cancellationPolicy: 'Política de Cancelamento',
+    freezePolicy: 'Política de Congelamento',
+    transferPolicy: 'Política de Transferência',
+    downloadContract: 'Baixar Contrato PDF',
+    noMembership: 'Nenhuma assinatura encontrada',
+    supportMessage: 'Para dúvidas sobre sua assinatura, entre em contato com support@omoplata.com',
+
+    // Status
+    active: 'Ativo',
+    suspended: 'Suspenso',
+    expired: 'Expirado',
+    cancelled: 'Cancelado',
   },
 
   // Data/Hora

@@ -8,8 +8,10 @@ import { Button } from '@/components/Button';
 import Section from '@/components/Section';
 import { getMembership, downloadContract, Membership as MembershipType } from '@/api/membership';
 import { useThemeColors } from '@/contexts/ThemeColors';
+import { useT } from '@/contexts/LocalizationContext';
 
 export default function MembershipScreen() {
+  const t = useT();
   const colors = useThemeColors();
   const [membership, setMembership] = useState<MembershipType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -74,7 +76,7 @@ export default function MembershipScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-background">
-        <Header title="My Membership" />
+        <Header title={t('membership.title')} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" />
         </View>
@@ -85,10 +87,10 @@ export default function MembershipScreen() {
   if (!membership) {
     return (
       <View className="flex-1 bg-background">
-        <Header title="My Membership" />
+        <Header title={t('membership.title')} />
         <View className="flex-1 items-center justify-center px-6">
           <Icon name="UserX" size={64} className="mb-4 opacity-30" />
-          <ThemedText className="text-center text-lg">No membership found</ThemedText>
+          <ThemedText className="text-center text-lg">{t('membership.noMembership')}</ThemedText>
         </View>
       </View>
     );
@@ -96,13 +98,13 @@ export default function MembershipScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title="My Membership" />
+      <Header title={t('membership.title')} />
       <ThemedScroller className="px-6 pt-4">
         {/* Current Plan Card */}
         <View className="mb-6 rounded-2xl bg-secondary p-6">
           <View className="mb-4 flex-row items-start justify-between">
             <View className="flex-1">
-              <ThemedText className="mb-1 text-sm opacity-50">Current Plan</ThemedText>
+              <ThemedText className="mb-1 text-sm opacity-50">{t('membership.currentPlan')}</ThemedText>
               <ThemedText className="text-3xl font-bold">{membership.contract.type}</ThemedText>
               <View className="mt-2 flex-row items-center">
                 <View
@@ -111,7 +113,7 @@ export default function MembershipScreen() {
                   <ThemedText
                     className="text-xs font-semibold capitalize"
                     style={{ color: getStatusColor(membership.contract.status) }}>
-                    {membership.contract.status}
+                    {t(`membership.${membership.contract.status}`)}
                   </ThemedText>
                 </View>
               </View>
@@ -123,35 +125,35 @@ export default function MembershipScreen() {
 
           <View className="border-t border-border pt-4">
             <View className="mb-3 flex-row justify-between">
-              <ThemedText className="opacity-50">Member ID</ThemedText>
+              <ThemedText className="opacity-50">{t('membership.memberId')}</ThemedText>
               <ThemedText className="font-semibold">{membership.memberId}</ThemedText>
             </View>
             <View className="flex-row justify-between">
-              <ThemedText className="opacity-50">Contract ID</ThemedText>
+              <ThemedText className="opacity-50">{t('membership.contractId')}</ThemedText>
               <ThemedText className="font-semibold">{membership.contract.id}</ThemedText>
             </View>
           </View>
         </View>
 
         {/* Contract Details */}
-        <Section title="Contract Details" className="mb-4" />
+        <Section title={t('membership.contractDetails')} className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary">
           <View className="flex-row items-center justify-between border-b border-border p-5">
-            <ThemedText className="opacity-70">Start Date</ThemedText>
+            <ThemedText className="opacity-70">{t('membership.startDate')}</ThemedText>
             <ThemedText className="font-semibold">{formatDate(membership.contract.startDate)}</ThemedText>
           </View>
           <View className="flex-row items-center justify-between border-b border-border p-5">
-            <ThemedText className="opacity-70">End Date</ThemedText>
+            <ThemedText className="opacity-70">{t('membership.endDate')}</ThemedText>
             <ThemedText className="font-semibold">{formatDate(membership.contract.endDate)}</ThemedText>
           </View>
           <View className="flex-row items-center justify-between border-b border-border p-5">
-            <ThemedText className="opacity-70">Renewal Date</ThemedText>
+            <ThemedText className="opacity-70">{t('membership.renewalDate')}</ThemedText>
             <ThemedText className="font-semibold">
               {formatDate(membership.contract.renewalDate)}
             </ThemedText>
           </View>
           <View className="flex-row items-center justify-between p-5">
-            <ThemedText className="opacity-70">Auto-Renewal</ThemedText>
+            <ThemedText className="opacity-70">{t('membership.autoRenewal')}</ThemedText>
             <View className="flex-row items-center">
               <Icon
                 name={membership.contract.autoRenewal ? 'Check' : 'X'}
@@ -164,24 +166,24 @@ export default function MembershipScreen() {
                 style={{
                   color: membership.contract.autoRenewal ? '#10B981' : '#EF4444',
                 }}>
-                {membership.contract.autoRenewal ? 'Enabled' : 'Disabled'}
+                {membership.contract.autoRenewal ? t('membership.enabled') : t('membership.disabled')}
               </ThemedText>
             </View>
           </View>
         </View>
 
         {/* Pricing */}
-        <Section title="Pricing" className="mb-4" />
+        <Section title={t('membership.pricing')} className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">
           <View className="mb-4 flex-row items-center justify-between">
             <View>
-              <ThemedText className="text-sm opacity-50">Annual Fee</ThemedText>
+              <ThemedText className="text-sm opacity-50">{t('membership.annualFee')}</ThemedText>
               <ThemedText className="text-3xl font-bold">
                 {formatAmount(membership.contract.price.amount)}
               </ThemedText>
             </View>
             <View className="items-end">
-              <ThemedText className="text-sm opacity-50">Monthly Equivalent</ThemedText>
+              <ThemedText className="text-sm opacity-50">{t('membership.monthlyEquivalent')}</ThemedText>
               <ThemedText className="text-lg font-semibold">
                 {formatAmount(membership.contract.price.monthlyEquivalent)}/mo
               </ThemedText>
@@ -189,13 +191,13 @@ export default function MembershipScreen() {
           </View>
           <View className="border-t border-border pt-4">
             <ThemedText className="text-sm opacity-70">
-              Billed {membership.contract.price.billingCycle}
+              {membership.contract.price.billingCycle === 'annual' ? t('membership.billedAnnually') : t('membership.billedMonthly')}
             </ThemedText>
           </View>
         </View>
 
         {/* Features */}
-        <Section title="Plan Features" className="mb-4" />
+        <Section title={t('membership.planFeatures')} className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary">
           {membership.features.map((feature, index) => (
             <View
@@ -213,7 +215,7 @@ export default function MembershipScreen() {
                   <ThemedText className="mt-1 text-sm opacity-70">{feature.description}</ThemedText>
                   {feature.limit && (
                     <ThemedText className="mt-1 text-xs font-medium opacity-50">
-                      Limit: {feature.limit}
+                      {t('membership.limit')}: {feature.limit}
                     </ThemedText>
                   )}
                 </View>
@@ -223,7 +225,7 @@ export default function MembershipScreen() {
         </View>
 
         {/* Payment Method */}
-        <Section title="Payment Method" className="mb-4" />
+        <Section title={t('membership.paymentMethod')} className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">
           <View className="flex-row items-center">
             <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-background">
@@ -240,13 +242,13 @@ export default function MembershipScreen() {
         </View>
 
         {/* Policies */}
-        <Section title="Membership Policies" className="mb-4" />
+        <Section title={t('membership.policies')} className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">
           <View className="mb-4">
             <View className="mb-2 flex-row items-start">
               <Icon name="XCircle" size={16} className="mr-2 mt-1 opacity-50" />
               <View className="flex-1">
-                <ThemedText className="font-semibold">Cancellation Policy</ThemedText>
+                <ThemedText className="font-semibold">{t('membership.cancellationPolicy')}</ThemedText>
                 <ThemedText className="mt-1 text-sm opacity-70">
                   {membership.contract.cancellationPolicy}
                 </ThemedText>
@@ -257,7 +259,7 @@ export default function MembershipScreen() {
             <View className="mb-2 flex-row items-start">
               <Icon name="Pause" size={16} className="mr-2 mt-1 opacity-50" />
               <View className="flex-1">
-                <ThemedText className="font-semibold">Freeze Policy</ThemedText>
+                <ThemedText className="font-semibold">{t('membership.freezePolicy')}</ThemedText>
                 <ThemedText className="mt-1 text-sm opacity-70">
                   {membership.contract.freezePolicy}
                 </ThemedText>
@@ -268,7 +270,7 @@ export default function MembershipScreen() {
             <View className="flex-row items-start">
               <Icon name="UserX" size={16} className="mr-2 mt-1 opacity-50" />
               <View className="flex-1">
-                <ThemedText className="font-semibold">Transfer Policy</ThemedText>
+                <ThemedText className="font-semibold">{t('membership.transferPolicy')}</ThemedText>
                 <ThemedText className="mt-1 text-sm opacity-70">
                   {membership.contract.transferPolicy}
                 </ThemedText>
@@ -280,7 +282,7 @@ export default function MembershipScreen() {
         {/* Download Contract */}
         <View className="mb-8">
           <Button
-            title="Download Contract PDF"
+            title={t('membership.downloadContract')}
             icon="Download"
             variant="outline"
             onPress={handleDownloadContract}
@@ -291,7 +293,7 @@ export default function MembershipScreen() {
         {/* Support */}
         <View className="mb-8">
           <ThemedText className="text-center text-xs opacity-50">
-            For questions about your membership, please contact support@omoplata.com
+            {t('membership.supportMessage')}
           </ThemedText>
         </View>
       </ThemedScroller>

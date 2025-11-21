@@ -3,6 +3,7 @@ export default {
   nav: {
     dashboard: 'Dashboard',
     checkin: 'Check-in',
+    membership: 'Mitgliedschaft',
     billing: 'Abrechnung',
     settings: 'Einstellungen',
   },
@@ -145,6 +146,43 @@ export default {
     passwordRequired: 'Passwort ist erforderlich',
     passwordTooShort: 'Passwort muss mindestens 6 Zeichen lang sein',
     loginFailed: 'Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.',
+  },
+
+  // Mitgliedschaftsseite
+  membership: {
+    title: 'Meine Mitgliedschaft',
+    currentPlan: 'Aktueller Plan',
+    memberId: 'Mitglieds-ID',
+    contractId: 'Vertrags-ID',
+    contractDetails: 'Vertragsdetails',
+    startDate: 'Startdatum',
+    endDate: 'Enddatum',
+    renewalDate: 'Verlängerungsdatum',
+    autoRenewal: 'Automatische Verlängerung',
+    enabled: 'Aktiviert',
+    disabled: 'Deaktiviert',
+    pricing: 'Preise',
+    annualFee: 'Jahresgebühr',
+    monthlyEquivalent: 'Monatlich entspricht',
+    billedAnnually: 'Jährlich abgerechnet',
+    billedMonthly: 'Monatlich abgerechnet',
+    planFeatures: 'Plan-Funktionen',
+    limit: 'Limit',
+    paymentMethod: 'Zahlungsmethode',
+    accountHolder: 'Kontoinhaber',
+    policies: 'Mitgliedschaftsrichtlinien',
+    cancellationPolicy: 'Kündigungsrichtlinie',
+    freezePolicy: 'Einfrieren-Richtlinie',
+    transferPolicy: 'Übertragungsrichtlinie',
+    downloadContract: 'Vertrag PDF herunterladen',
+    noMembership: 'Keine Mitgliedschaft gefunden',
+    supportMessage: 'Bei Fragen zu Ihrer Mitgliedschaft wenden Sie sich bitte an support@omoplata.com',
+
+    // Status
+    active: 'Aktiv',
+    suspended: 'Ausgesetzt',
+    expired: 'Abgelaufen',
+    cancelled: 'Gekündigt',
   },
 
   // Datum/Zeit

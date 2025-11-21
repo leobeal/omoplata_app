@@ -3,6 +3,7 @@ export default {
   nav: {
     dashboard: 'Dashboard',
     checkin: 'Check-in',
+    membership: 'Membership',
     billing: 'Billing',
     settings: 'Settings',
   },
@@ -145,6 +146,43 @@ export default {
     passwordRequired: 'Password is required',
     passwordTooShort: 'Password must be at least 6 characters',
     loginFailed: 'Login failed. Please check your credentials.',
+  },
+
+  // Membership Screen
+  membership: {
+    title: 'My Membership',
+    currentPlan: 'Current Plan',
+    memberId: 'Member ID',
+    contractId: 'Contract ID',
+    contractDetails: 'Contract Details',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    renewalDate: 'Renewal Date',
+    autoRenewal: 'Auto-Renewal',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    pricing: 'Pricing',
+    annualFee: 'Annual Fee',
+    monthlyEquivalent: 'Monthly Equivalent',
+    billedAnnually: 'Billed annually',
+    billedMonthly: 'Billed monthly',
+    planFeatures: 'Plan Features',
+    limit: 'Limit',
+    paymentMethod: 'Payment Method',
+    accountHolder: 'Account Holder',
+    policies: 'Membership Policies',
+    cancellationPolicy: 'Cancellation Policy',
+    freezePolicy: 'Freeze Policy',
+    transferPolicy: 'Transfer Policy',
+    downloadContract: 'Download Contract PDF',
+    noMembership: 'No membership found',
+    supportMessage: 'For questions about your membership, please contact support@omoplata.com',
+
+    // Status
+    active: 'Active',
+    suspended: 'Suspended',
+    expired: 'Expired',
+    cancelled: 'Cancelled',
   },
 
   // Date/Time
