@@ -2,23 +2,50 @@ import { useThemeColors } from '@/contexts/ThemeColors';
 import { TabButton } from '@/components/TabButton';
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
 import { View } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CheckInButton from '@/components/CheckInButton';
 import { useT } from '@/contexts/LocalizationContext';
 import Constants from 'expo-constants';
 import { defaultNavigation, NavigationConfig } from '@/configs/navigation';
+import { getNavigationConfig } from '@/api/app-config';
 
 export default function TabsLayout() {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const t = useT();
 
-  // Get navigation config from tenant or use default
+  const [apiConfig, setApiConfig] = useState<NavigationConfig | null>(null);
+
+  // Fetch navigation config from API on mount
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const config = await getNavigationConfig();
+        if (config) {
+          console.log('Loaded navigation config from API');
+          setApiConfig(config);
+        }
+      } catch (error) {
+        console.error('Failed to load navigation config from API:', error);
+        // Will fall back to local config
+      }
+    };
+
+    loadConfig();
+  }, []);
+
+  // Get navigation config with priority:
+  // 1. API config (if loaded)
+  // 2. Tenant config from app.config.js
+  // 3. Default config
   const navConfig: NavigationConfig = useMemo(() => {
+    if (apiConfig) {
+      return apiConfig;
+    }
     const tenantNav = Constants.expoConfig?.extra?.navigation as NavigationConfig | undefined;
     return tenantNav || defaultNavigation;
-  }, []);
+  }, [apiConfig]);
 
   const tabs = navConfig.tabs || [];
   const showCheckInButton = navConfig.showCheckInButton ?? true;
