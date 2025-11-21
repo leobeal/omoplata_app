@@ -9,10 +9,12 @@ import Section from '@/components/Section';
 import { getMembership, downloadContract, Membership as MembershipType } from '@/api/membership';
 import { useThemeColors } from '@/contexts/ThemeColors';
 import { useT } from '@/contexts/LocalizationContext';
+import { useMembershipSettings } from '@/contexts/AppConfigContext';
 
 export default function MembershipScreen() {
   const t = useT();
   const colors = useThemeColors();
+  const membershipSettings = useMembershipSettings();
   const [membership, setMembership] = useState<MembershipType | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
@@ -244,29 +246,47 @@ export default function MembershipScreen() {
         {/* Policies */}
         <Section title={t('membership.policies')} className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">
-          <View className="mb-4">
-            <View className="mb-2 flex-row items-start">
-              <Icon name="XCircle" size={16} className="mr-2 mt-1 opacity-50" />
-              <View className="flex-1">
-                <ThemedText className="font-semibold">{t('membership.cancellationPolicy')}</ThemedText>
-                <ThemedText className="mt-1 text-sm opacity-70">
-                  {membership.contract.cancellationPolicy}
-                </ThemedText>
+          {membershipSettings.allowCancellation && (
+            <View className="mb-4">
+              <View className="mb-2 flex-row items-start">
+                <Icon name="XCircle" size={16} className="mr-2 mt-1 opacity-50" />
+                <View className="flex-1">
+                  <ThemedText className="font-semibold">{t('membership.cancellationPolicy')}</ThemedText>
+                  <ThemedText className="mt-1 text-sm opacity-70">
+                    {membership.contract.cancellationPolicy}
+                    {membershipSettings.cancellationNoticeDays && (
+                      <ThemedText className="text-sm font-semibold">
+                        {' '}
+                        ({membershipSettings.cancellationNoticeDays} days notice required)
+                      </ThemedText>
+                    )}
+                  </ThemedText>
+                </View>
               </View>
             </View>
-          </View>
-          <View className="mb-4 border-t border-border pt-4">
-            <View className="mb-2 flex-row items-start">
-              <Icon name="Pause" size={16} className="mr-2 mt-1 opacity-50" />
-              <View className="flex-1">
-                <ThemedText className="font-semibold">{t('membership.freezePolicy')}</ThemedText>
-                <ThemedText className="mt-1 text-sm opacity-70">
-                  {membership.contract.freezePolicy}
-                </ThemedText>
+          )}
+          {membershipSettings.allowFreeze && (
+            <View
+              className={`mb-4 ${membershipSettings.allowCancellation ? 'border-t border-border pt-4' : ''}`}>
+              <View className="mb-2 flex-row items-start">
+                <Icon name="Pause" size={16} className="mr-2 mt-1 opacity-50" />
+                <View className="flex-1">
+                  <ThemedText className="font-semibold">{t('membership.freezePolicy')}</ThemedText>
+                  <ThemedText className="mt-1 text-sm opacity-70">
+                    {membership.contract.freezePolicy}
+                    {membershipSettings.maxFreezeDaysPerYear && (
+                      <ThemedText className="text-sm font-semibold">
+                        {' '}
+                        (Up to {membershipSettings.maxFreezeDaysPerYear} days per year)
+                      </ThemedText>
+                    )}
+                  </ThemedText>
+                </View>
               </View>
             </View>
-          </View>
-          <View className="border-t border-border pt-4">
+          )}
+          <View
+            className={`${membershipSettings.allowFreeze || membershipSettings.allowCancellation ? 'border-t border-border pt-4' : ''}`}>
             <View className="flex-row items-start">
               <Icon name="UserX" size={16} className="mr-2 mt-1 opacity-50" />
               <View className="flex-1">
@@ -280,15 +300,17 @@ export default function MembershipScreen() {
         </View>
 
         {/* Download Contract */}
-        <View className="mb-8">
-          <Button
-            title={t('membership.downloadContract')}
-            icon="Download"
-            variant="outline"
-            onPress={handleDownloadContract}
-            disabled={downloadingPdf}
-          />
-        </View>
+        {membershipSettings.showContractDownload && (
+          <View className="mb-8">
+            <Button
+              title={t('membership.downloadContract')}
+              icon="Download"
+              variant="outline"
+              onPress={handleDownloadContract}
+              disabled={downloadingPdf}
+            />
+          </View>
+        )}
 
         {/* Support */}
         <View className="mb-8">

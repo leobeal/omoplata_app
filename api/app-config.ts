@@ -1,25 +1,85 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationConfig } from '@/configs/navigation';
 
-const CACHE_KEY = 'app_navigation_config';
+const CACHE_KEY = 'app_config';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+export interface MembershipSettings {
+  allowCancellation: boolean;
+  allowPause: boolean;
+  allowFreeze: boolean;
+  allowPlanChange: boolean;
+  allowGuestPasses: boolean;
+  showContractDownload: boolean;
+  cancellationNoticeDays?: number; // e.g., 30 days notice required
+  maxFreezeDaysPerYear?: number; // e.g., 90 days
+}
+
+export interface BillingSettings {
+  allowPaymentMethodChange: boolean;
+  allowAutoPay: boolean;
+  showInvoiceHistory: boolean;
+  allowOneTimePayments: boolean;
+}
+
+export interface FeatureFlags {
+  checkInEnabled: boolean;
+  qrCheckInEnabled: boolean;
+  notificationsEnabled: boolean;
+  classBookingEnabled: boolean;
+  socialSharingEnabled: boolean;
+  referralProgramEnabled: boolean;
+}
 
 export interface AppConfig {
   navigation: NavigationConfig;
+  membership: MembershipSettings;
+  billing: BillingSettings;
+  features: FeatureFlags;
   version: string;
   lastUpdated: string;
 }
 
 /**
- * Fetch navigation configuration from the API
+ * Default configuration fallback
+ */
+export const defaultConfig: Partial<AppConfig> = {
+  membership: {
+    allowCancellation: true,
+    allowPause: true,
+    allowFreeze: true,
+    allowPlanChange: true,
+    allowGuestPasses: true,
+    showContractDownload: true,
+    cancellationNoticeDays: 30,
+    maxFreezeDaysPerYear: 90,
+  },
+  billing: {
+    allowPaymentMethodChange: true,
+    allowAutoPay: true,
+    showInvoiceHistory: true,
+    allowOneTimePayments: true,
+  },
+  features: {
+    checkInEnabled: true,
+    qrCheckInEnabled: true,
+    notificationsEnabled: true,
+    classBookingEnabled: true,
+    socialSharingEnabled: false,
+    referralProgramEnabled: false,
+  },
+};
+
+/**
+ * Fetch app configuration from the API
  * In production, this would call your backend API
  */
-export const fetchNavigationConfig = async (): Promise<AppConfig> => {
+export const fetchAppConfig = async (): Promise<AppConfig> => {
   // Simulate API call delay
   await new Promise((resolve) => setTimeout(resolve, 300));
 
   // In production, replace this with actual API call:
-  // const response = await fetch(`${API_BASE_URL}/config/navigation`);
+  // const response = await fetch(`${API_BASE_URL}/config/app`);
   // const data = await response.json();
   // return data;
 
@@ -67,7 +127,37 @@ export const cacheConfig = async (config: AppConfig): Promise<void> => {
 };
 
 /**
- * Get navigation config with caching
+ * Get full app config with caching
+ * 1. Try to get from cache
+ * 2. If no cache or expired, fetch from API
+ * 3. Cache the new config
+ * 4. Return the config
+ */
+export const getAppConfig = async (): Promise<AppConfig | null> => {
+  try {
+    // Try cache first
+    const cached = await getCachedConfig();
+    if (cached) {
+      console.log('Using cached app config');
+      return cached;
+    }
+
+    // Fetch from API
+    console.log('Fetching app config from API');
+    const config = await fetchAppConfig();
+
+    // Cache it
+    await cacheConfig(config);
+
+    return config;
+  } catch (error) {
+    console.error('Error getting app config:', error);
+    return null;
+  }
+};
+
+/**
+ * Get navigation config with caching (backward compatibility)
  * 1. Try to get from cache
  * 2. If no cache or expired, fetch from API
  * 3. Cache the new config
@@ -75,24 +165,50 @@ export const cacheConfig = async (config: AppConfig): Promise<void> => {
  */
 export const getNavigationConfig = async (): Promise<NavigationConfig | null> => {
   try {
-    // Try cache first
-    const cached = await getCachedConfig();
-    if (cached) {
-      console.log('Using cached navigation config');
-      return cached.navigation;
-    }
-
-    // Fetch from API
-    console.log('Fetching navigation config from API');
-    const config = await fetchNavigationConfig();
-
-    // Cache it
-    await cacheConfig(config);
-
-    return config.navigation;
+    const config = await getAppConfig();
+    return config?.navigation || null;
   } catch (error) {
     console.error('Error getting navigation config:', error);
     return null;
+  }
+};
+
+/**
+ * Get membership settings from config
+ */
+export const getMembershipSettings = async (): Promise<MembershipSettings> => {
+  try {
+    const config = await getAppConfig();
+    return config?.membership || defaultConfig.membership!;
+  } catch (error) {
+    console.error('Error getting membership settings:', error);
+    return defaultConfig.membership!;
+  }
+};
+
+/**
+ * Get billing settings from config
+ */
+export const getBillingSettings = async (): Promise<BillingSettings> => {
+  try {
+    const config = await getAppConfig();
+    return config?.billing || defaultConfig.billing!;
+  } catch (error) {
+    console.error('Error getting billing settings:', error);
+    return defaultConfig.billing!;
+  }
+};
+
+/**
+ * Get feature flags from config
+ */
+export const getFeatureFlags = async (): Promise<FeatureFlags> => {
+  try {
+    const config = await getAppConfig();
+    return config?.features || defaultConfig.features!;
+  } catch (error) {
+    console.error('Error getting feature flags:', error);
+    return defaultConfig.features!;
   }
 };
 
@@ -111,7 +227,7 @@ export const clearConfigCache = async (): Promise<void> => {
 /**
  * Force refresh config from API
  */
-export const refreshNavigationConfig = async (): Promise<NavigationConfig | null> => {
+export const refreshAppConfig = async (): Promise<AppConfig | null> => {
   await clearConfigCache();
-  return getNavigationConfig();
+  return getAppConfig();
 };

@@ -29,5 +29,29 @@
       }
     ],
     "showCheckInButton": true
+  },
+  "membership": {
+    "allowCancellation": true,
+    "allowPause": true,
+    "allowFreeze": true,
+    "allowPlanChange": true,
+    "allowGuestPasses": true,
+    "showContractDownload": true,
+    "cancellationNoticeDays": 30,
+    "maxFreezeDaysPerYear": 90
+  },
+  "billing": {
+    "allowPaymentMethodChange": true,
+    "allowAutoPay": true,
+    "showInvoiceHistory": true,
+    "allowOneTimePayments": true
+  },
+  "features": {
+    "checkInEnabled": true,
+    "qrCheckInEnabled": true,
+    "notificationsEnabled": true,
+    "classBookingEnabled": true,
+    "socialSharingEnabled": false,
+    "referralProgramEnabled": false
   }
 }
