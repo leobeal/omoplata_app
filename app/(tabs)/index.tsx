@@ -1,5 +1,5 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import ThemedText from '@/components/ThemedText';
 import ThemedScroller from '@/components/ThemedScroller';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -11,15 +11,59 @@ import { SmallCircleCard } from '@/components/SmallCircleCard';
 import { SmallProgressBarCard } from '@/components/SmallProgressBarCard';
 import Avatar from '@/components/Avatar';
 import { useT } from '@/contexts/LocalizationContext';
+import ClassCard from '@/components/ClassCard';
+import { getUpcomingClasses, confirmAttendance, denyAttendance, Class } from '@/api/classes';
 
 export default function HomeScreen() {
   const t = useT();
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [loadingClasses, setLoadingClasses] = useState(true);
+
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+
+  useEffect(() => {
+    loadClasses();
+  }, []);
+
+  const loadClasses = async () => {
+    try {
+      const data = await getUpcomingClasses();
+      setClasses(data);
+    } catch (error) {
+      console.error('Error loading classes:', error);
+    } finally {
+      setLoadingClasses(false);
+    }
+  };
+
+  const handleConfirm = async (classId: string) => {
+    try {
+      await confirmAttendance(classId);
+      // Update local state
+      setClasses((prev) =>
+        prev.map((cls) => (cls.id === classId ? { ...cls, status: 'confirmed' as const } : cls))
+      );
+    } catch (error) {
+      console.error('Error confirming attendance:', error);
+    }
+  };
+
+  const handleDeny = async (classId: string) => {
+    try {
+      await denyAttendance(classId);
+      // Update local state
+      setClasses((prev) =>
+        prev.map((cls) => (cls.id === classId ? { ...cls, status: 'denied' as const } : cls))
+      );
+    } catch (error) {
+      console.error('Error denying attendance:', error);
+    }
+  };
 
   return (
     <>
@@ -40,6 +84,30 @@ export default function HomeScreen() {
         </View>
         <View className="bg-background p-5">
           <ActivityStats />
+        </View>
+        <View className="bg-background px-5 pb-5">
+          <Section title="Upcoming Classes" className="mb-4" />
+          {loadingClasses ? (
+            <View className="items-center justify-center py-8">
+              <ActivityIndicator size="large" />
+            </View>
+          ) : classes.length > 0 ? (
+            classes.slice(0, 3).map((classItem) => (
+              <ClassCard
+                key={classItem.id}
+                classData={classItem}
+                onConfirm={handleConfirm}
+                onDeny={handleDeny}
+              />
+            ))
+          ) : (
+            <View className="items-center justify-center rounded-2xl bg-secondary py-12">
+              <Icon name="Calendar" size={48} className="mb-4 opacity-30" />
+              <ThemedText className="text-center opacity-70">
+                No upcoming classes scheduled
+              </ThemedText>
+            </View>
+          )}
         </View>
       </ThemedScroller>
     </>
