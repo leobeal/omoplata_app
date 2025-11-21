@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 export default function SettingsScreen() {
   return (
     <>
-      <Header showBackButton title="Settings" />
+      <Header title="Settings" />
       <ThemedScroller className="px-6 pt-4">
         <View className="mb-4 w-full flex-row rounded-2xl bg-secondary pb-10 pt-10">
           <View className="w-1/2 flex-col items-center">
