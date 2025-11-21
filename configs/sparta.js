@@ -40,11 +40,17 @@ module.exports = {
         href: '/',
       },
       {
+        name: 'membership',
+        icon: 'Award',
+        label: 'nav.membership',
+        href: '/membership',
+      },
+      {
         name: 'billing',
         icon: 'Receipt',
         label: 'nav.billing',
         href: '/billing',
-      },
+        },
       {
         name: 'settings',
         icon: 'Settings',

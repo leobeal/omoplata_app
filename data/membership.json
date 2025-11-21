@@ -1,0 +1,93 @@
+{
+  "memberId": "MEM-2023-001234",
+  "memberName": "John Doe",
+  "email": "johndoe@example.com",
+  "phone": "+1 (555) 123-4567",
+  "address": {
+    "street": "123 Fitness Street",
+    "city": "New York",
+    "state": "NY",
+    "zipCode": "10001",
+    "country": "USA"
+  },
+  "contract": {
+    "id": "CTR-2023-001234",
+    "type": "Premium Annual",
+    "status": "active",
+    "startDate": "2023-01-15",
+    "endDate": "2025-01-14",
+    "renewalDate": "2025-01-15",
+    "autoRenewal": true,
+    "price": {
+      "amount": 959.88,
+      "currency": "USD",
+      "billingCycle": "annual",
+      "monthlyEquivalent": 79.99
+    },
+    "cancellationPolicy": "30 days notice required",
+    "freezePolicy": "Can freeze membership up to 2 times per year (max 30 days each)",
+    "transferPolicy": "Non-transferable"
+  },
+  "features": [
+    {
+      "name": "Unlimited Gym Access",
+      "description": "24/7 access to all gym facilities",
+      "included": true
+    },
+    {
+      "name": "Unlimited Group Classes",
+      "description": "Access to all group fitness classes including BJJ, Muay Thai, and more",
+      "included": true
+    },
+    {
+      "name": "Personal Training Sessions",
+      "description": "One complimentary personal training session per month",
+      "included": true,
+      "limit": "1 per month"
+    },
+    {
+      "name": "Premium Locker",
+      "description": "Reserved premium locker in locker room",
+      "included": true
+    },
+    {
+      "name": "Guest Passes",
+      "description": "Bring friends to train with you",
+      "included": true,
+      "limit": "5 per month"
+    },
+    {
+      "name": "Nutrition Consultation",
+      "description": "Quarterly nutrition and meal planning consultation",
+      "included": true,
+      "limit": "Quarterly"
+    },
+    {
+      "name": "Priority Class Booking",
+      "description": "Early access to book popular classes",
+      "included": true
+    },
+    {
+      "name": "Free Merchandise",
+      "description": "Annual gym merchandise (t-shirt, water bottle, etc.)",
+      "included": true,
+      "limit": "Annual"
+    }
+  ],
+  "paymentMethod": {
+    "type": "SEPA Direct Debit",
+    "iban": "DE89 3704 0044 0532 •••• 00",
+    "accountHolder": "John Doe"
+  },
+  "emergencyContact": {
+    "name": "Jane Doe",
+    "relationship": "Spouse",
+    "phone": "+1 (555) 987-6543"
+  },
+  "medicalInfo": {
+    "bloodType": "O+",
+    "allergies": "None",
+    "conditions": "None",
+    "lastCheckup": "2024-06-15"
+  }
+}
