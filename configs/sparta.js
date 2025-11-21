@@ -28,4 +28,24 @@ module.exports = {
 
   // Localization
   language: 'de', // de, en, pt-BR
+
+  // Bottom navigation tabs
+  // If not specified, uses default navigation from configs/navigation.ts
+  navigation: {
+    tabs: [
+      {
+        name: 'index',
+        icon: 'Home',
+        label: 'nav.dashboard',
+        href: '/',
+      },
+      {
+        name: 'settings',
+        icon: 'Settings',
+        label: 'nav.settings',
+        href: '/settings',
+      },
+    ],
+    showCheckInButton: true,
+  },
 };

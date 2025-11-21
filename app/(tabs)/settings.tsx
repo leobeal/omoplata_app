@@ -93,7 +93,7 @@ const UpgradePrompt = () => {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 2 }}
       style={{ borderRadius: 10 }}>
-      <Link asChild href="/screens/memberships">
+      <Link asChild href="/screens/plans">
         <Pressable className="flex flex-row items-center justify-between p-6">
           <View>
             <ThemedText className="text-xl font-bold text-white">Upgrade Membership</ThemedText>
@@ -101,7 +101,7 @@ const UpgradePrompt = () => {
           </View>
           <Button
             variant="outline"
-            href="/screens/memberships"
+            href="/screens/plans"
             rounded="xl"
             title="View Plans"
             textClassName="text-white"

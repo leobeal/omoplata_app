@@ -1,93 +1,171 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Pressable } from 'react-native';
 import Header from '@/components/Header';
 import ThemedScroller from '@/components/ThemedScroller';
-import { useThemeColors } from '@/contexts/ThemeColors';
-import { Button } from '@/components/Button';
-import Icon from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
+import Icon from '@/components/Icon';
+import { Button } from '@/components/Button';
+import Section from '@/components/Section';
+import ListLink from '@/components/ListLink';
+import { useT } from '@/contexts/LocalizationContext';
+import { LinearGradient } from 'expo-linear-gradient';
 
-export default function MembershipsScreen() {
-  const [selectedPlan, setSelectedPlan] = useState('Monthly');
+export default function MembershipScreen() {
+  const t = useT();
 
   return (
     <View className="flex-1 bg-background">
-      <Header showBackButton title="Membership Plans" />
+      <Header showBackButton title={t('settings.membership')} />
       <ThemedScroller>
-        <View className="mb-10 w-3/4">
-          <ThemedText className="text-5xl font-semibold">Choose your plan</ThemedText>
-          <ThemedText className="mt-2 text-lg font-light">
-            Flexible membership options for your fitness journey
-          </ThemedText>
+        {/* Current Plan Card */}
+        <View className="mb-6 rounded-2xl bg-secondary p-6">
+          <View className="mb-4 flex-row items-center justify-between">
+            <View>
+              <ThemedText className="text-sm opacity-50">{t('settings.currentPlan')}</ThemedText>
+              <ThemedText className="text-3xl font-bold">Premium</ThemedText>
+            </View>
+            <View className="h-16 w-16 items-center justify-center rounded-full bg-highlight">
+              <Icon name="Award" size={32} color="white" />
+            </View>
+          </View>
+
+          <View className="mb-4 border-t border-border pt-4">
+            <View className="mb-3 flex-row items-center justify-between">
+              <ThemedText className="opacity-70">{t('memberships.unlimitedGymAccess')}</ThemedText>
+              <Icon name="Check" size={20} color="#10B981" />
+            </View>
+            <View className="mb-3 flex-row items-center justify-between">
+              <ThemedText className="opacity-70">
+                {t('memberships.unlimitedGroupClasses')}
+              </ThemedText>
+              <Icon name="Check" size={20} color="#10B981" />
+            </View>
+            <View className="mb-3 flex-row items-center justify-between">
+              <ThemedText className="opacity-70">
+                {t('memberships.personalTrainingSession')}
+              </ThemedText>
+              <Icon name="Check" size={20} color="#10B981" />
+            </View>
+            <View className="flex-row items-center justify-between">
+              <ThemedText className="opacity-70">{t('memberships.premiumLocker')}</ThemedText>
+              <Icon name="Check" size={20} color="#10B981" />
+            </View>
+          </View>
         </View>
 
-        <MembershipCard
-          icon="User"
-          title="Basic"
-          description="Perfect for getting started"
-          price="$29.99"
-          features={[
-            'Access to gym floor',
-            '10 group classes per month',
-            'Basic equipment',
-            'Locker access',
-          ]}
-          active={selectedPlan === 'Basic'}
-          onPress={() => setSelectedPlan('Basic')}
-        />
+        {/* Billing Information */}
+        <Section title="Billing Information" className="mb-4" />
+        <View className="mb-6 rounded-2xl bg-secondary">
+          <View className="flex-row items-center justify-between border-b border-border p-5">
+            <View className="flex-row items-center">
+              <Icon name="CreditCard" size={20} className="mr-3" />
+              <View>
+                <ThemedText className="font-semibold">Payment Method</ThemedText>
+                <ThemedText className="text-sm opacity-50">•••• 4242</ThemedText>
+              </View>
+            </View>
+            <Icon name="ChevronRight" size={20} className="opacity-30" />
+          </View>
 
-        <MembershipCard
-          icon="Star"
-          title="Monthly Premium"
-          description="Most popular for dedicated members"
-          price="$79.99"
-          discount="20%"
-          features={[
-            'Unlimited gym access',
-            'Unlimited group classes',
-            'Personal training session',
-            'Premium locker',
-            'Guest passes (2/month)',
-          ]}
-          active={selectedPlan === 'Monthly'}
-          onPress={() => setSelectedPlan('Monthly')}
-        />
+          <View className="flex-row items-center justify-between border-b border-border p-5">
+            <View className="flex-row items-center">
+              <Icon name="Calendar" size={20} className="mr-3" />
+              <View>
+                <ThemedText className="font-semibold">{t('home.nextBilling')}</ThemedText>
+                <ThemedText className="text-sm opacity-50">December 25, 2024</ThemedText>
+              </View>
+            </View>
+            <ThemedText className="text-lg font-bold">$79.99</ThemedText>
+          </View>
 
-        <MembershipCard
-          icon="Award"
-          title="Annual Premium"
-          description="Best value for committed athletes"
-          price="$799.99"
-          discount="50%"
-          features={[
-            'All Premium features',
-            '4 personal training sessions',
-            'Nutrition consultation',
-            'Free merchandise',
-            'Priority class booking',
-            'Guest passes (5/month)',
-          ]}
-          active={selectedPlan === 'Annual'}
-          onPress={() => setSelectedPlan('Annual')}
-        />
+          <View className="flex-row items-center justify-between p-5">
+            <View className="flex-row items-center">
+              <Icon name="RotateCcw" size={20} className="mr-3" />
+              <View>
+                <ThemedText className="font-semibold">Auto-Renew</ThemedText>
+                <ThemedText className="text-sm opacity-50">Enabled</ThemedText>
+              </View>
+            </View>
+            <View className="h-6 w-6 items-center justify-center rounded-full bg-green-500">
+              <Icon name="Check" size={16} color="white" />
+            </View>
+          </View>
+        </View>
 
-        <View className="mb-4 mt-8">
-          <Button
-            className="!bg-highlight"
-            textClassName="!text-white"
-            size="large"
-            rounded="full"
-            title={`Select ${selectedPlan} Plan`}
-            onPress={() => {
-              // TODO: Implement membership selection
-              console.log(`Selected: ${selectedPlan}`);
-            }}
+        {/* Usage This Month */}
+        <Section title="Usage This Month" className="mb-4" />
+        <View className="mb-6 rounded-2xl bg-secondary">
+          <View className="flex-row items-center justify-between border-b border-border p-5">
+            <View className="flex-row items-center">
+              <Icon name="Dumbbell" size={20} className="mr-3" />
+              <ThemedText className="font-semibold">{t('home.classes')}</ThemedText>
+            </View>
+            <ThemedText className="text-lg font-bold">24</ThemedText>
+          </View>
+
+          <View className="flex-row items-center justify-between border-b border-border p-5">
+            <View className="flex-row items-center">
+              <Icon name="QrCode" size={20} className="mr-3" />
+              <ThemedText className="font-semibold">{t('home.checkins')}</ThemedText>
+            </View>
+            <ThemedText className="text-lg font-bold">18</ThemedText>
+          </View>
+
+          <View className="flex-row items-center justify-between p-5">
+            <View className="flex-row items-center">
+              <Icon name="Users" size={20} className="mr-3" />
+              <ThemedText className="font-semibold">Guest Passes Used</ThemedText>
+            </View>
+            <ThemedText className="text-lg font-bold">2 / 5</ThemedText>
+          </View>
+        </View>
+
+        {/* Upgrade Options */}
+        <UpgradeBanner />
+
+        {/* Actions */}
+        <Section title="Manage Membership" className="mb-4 mt-6" />
+        <View className="mb-6 rounded-2xl bg-secondary">
+          <ListLink
+            className="px-5"
+            hasBorder
+            title="View All Plans"
+            description="Compare and switch plans"
+            icon="List"
+            href="/screens/plans"
+            showChevron
+          />
+          <ListLink
+            className="px-5"
+            hasBorder
+            title="Payment History"
+            description="View past invoices"
+            icon="Receipt"
+            href="/screens/payment-history"
+            showChevron
+          />
+          <ListLink
+            className="px-5"
+            hasBorder
+            title="Pause Membership"
+            description="Temporarily pause your plan"
+            icon="Pause"
+            href="/screens/pause-membership"
+            showChevron
+          />
+          <ListLink
+            className="px-5"
+            title="Cancel Membership"
+            description="We're sorry to see you go"
+            icon="XCircle"
+            href="/screens/cancel-membership"
+            showChevron
           />
         </View>
 
         <View className="mb-8">
           <ThemedText className="text-center text-sm opacity-50">
-            All plans include access to our state-of-the-art facilities
+            {t('home.memberSince')} 2023
           </ThemedText>
         </View>
       </ThemedScroller>
@@ -95,65 +173,31 @@ export default function MembershipsScreen() {
   );
 }
 
-interface MembershipCardProps {
-  icon: string;
-  title: string;
-  description: string;
-  price: string;
-  discount?: string;
-  features: string[];
-  active: boolean;
-  onPress: () => void;
-}
-
-const MembershipCard = (props: MembershipCardProps) => {
-  const colors = useThemeColors();
+const UpgradeBanner = () => {
+  const t = useT();
 
   return (
-    <Pressable
-      onPress={props.onPress}
-      className={`relative mb-4 flex-col rounded-xl border border-border bg-secondary ${
-        props.active ? 'border-2 border-highlight' : ''
-      }`}>
-      {props.discount && (
-        <ThemedText className="absolute right-2 top-2 z-10 ml-2 rounded-full bg-highlight px-2 py-1 text-xs font-semibold text-white">
-          {props.discount} off
-        </ThemedText>
-      )}
-
-      <View className="flex-row items-center border-b border-border p-6">
-        <View className="pr-6">
-          <Icon
-            name={props.icon as any}
-            size={24}
-            color={props.active ? 'white' : colors.text}
-            className={`h-16 w-16 rounded-full ${props.active ? 'bg-highlight' : 'bg-background'}`}
-          />
-        </View>
+    <LinearGradient
+      colors={['#6366F1', '#8B5CF6']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{ borderRadius: 16, marginBottom: 24 }}>
+      <Pressable className="flex-row items-center justify-between p-6">
         <View className="flex-1">
-          <ThemedText className="text-2xl font-semibold">{props.title}</ThemedText>
-          <ThemedText className="text-sm font-light">{props.description}</ThemedText>
-          <View className="mt-2 flex-row items-center">
-            <ThemedText className="text-lg font-bold">{props.price}</ThemedText>
-            <ThemedText className="ml-2 text-sm opacity-50">/month</ThemedText>
-          </View>
+          <ThemedText className="text-xl font-bold text-white">Upgrade to Annual</ThemedText>
+          <ThemedText className="mt-1 text-sm text-white opacity-90">
+            Save 50% with annual billing
+          </ThemedText>
         </View>
-      </View>
-
-      <View className="p-6">
-        <ThemedText className="mb-3 text-sm font-semibold opacity-70">WHAT'S INCLUDED</ThemedText>
-        {props.features.map((feature, index) => (
-          <View key={index} className="mb-2 flex-row items-center">
-            <Icon
-              name="Check"
-              size={16}
-              color={props.active ? colors.highlight : colors.text}
-              className="mr-2"
-            />
-            <ThemedText className="text-sm">{feature}</ThemedText>
-          </View>
-        ))}
-      </View>
-    </Pressable>
+        <Button
+          variant="outline"
+          href="/screens/plans"
+          rounded="xl"
+          title="View Plans"
+          textClassName="text-white"
+          className="border-white"
+        />
+      </Pressable>
+    </LinearGradient>
   );
 };
