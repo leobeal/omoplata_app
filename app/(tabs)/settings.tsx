@@ -8,11 +8,15 @@ import React from 'react';
 import { Button } from '@/components/Button';
 import { Link } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import ThemeToggle from '@/components/ThemeToggle';
+import { useT } from '@/contexts/LocalizationContext';
 
 export default function SettingsScreen() {
+  const t = useT();
+
   return (
     <>
-      <Header title="Settings" />
+      <Header title={t('settings.title')} rightComponents={[<ThemeToggle />]} />
       <ThemedScroller className="px-6 pt-4">
         <View className="mb-4 w-full flex-row rounded-2xl bg-secondary pb-10 pt-10">
           <View className="w-1/2 flex-col items-center">
@@ -29,11 +33,13 @@ export default function SettingsScreen() {
           <View className="w-1/2 flex-col items-start border-l border-border pl-10">
             <View className="flex-1 flex-col justify-center">
               <ThemedText className="text-xl font-bold">Premium</ThemedText>
-              <ThemedText className="font-xs opacity-50">Current plan</ThemedText>
+              <ThemedText className="font-xs opacity-50">{t('settings.currentPlan')}</ThemedText>
             </View>
             <View className="flex-1 flex-col justify-center">
               <ThemedText className="text-xl font-bold">24</ThemedText>
-              <ThemedText className="font-xs opacity-50">Classes this month</ThemedText>
+              <ThemedText className="font-xs opacity-50">
+                {t('settings.classesThisMonth')}
+              </ThemedText>
             </View>
           </View>
         </View>
@@ -44,39 +50,39 @@ export default function SettingsScreen() {
           <ListLink
             className="px-5"
             hasBorder
-            title="Edit Profile"
-            description="Update your personal information"
+            title={t('settings.editProfile')}
+            description={t('settings.updatePersonalInfo')}
             icon="User"
             href="/screens/edit-profile"
           />
           <ListLink
             className="px-5"
             hasBorder
-            title="Membership"
-            description="Manage your subscription"
+            title={t('settings.membership')}
+            description={t('settings.manageSubscription')}
             icon="CreditCard"
             href="/screens/memberships"
           />
           <ListLink
             className="px-5"
             hasBorder
-            title="Notifications"
-            description="Class reminders & updates"
+            title={t('settings.notifications')}
+            description={t('settings.classRemindersAndUpdates')}
             icon="Bell"
             href="/screens/notifications"
           />
           <ListLink
             className="px-5"
             hasBorder
-            title="Help & Support"
-            description="Get help with your account"
+            title={t('settings.helpAndSupport')}
+            description={t('settings.getHelp')}
             icon="HelpCircle"
             href="/screens/help"
           />
           <ListLink
             className="px-5"
-            title="Logout"
-            description="Sign out of your account"
+            title={t('settings.logout')}
+            description={t('settings.signOut')}
             icon="LogOut"
             href="/screens/login"
           />
@@ -87,6 +93,8 @@ export default function SettingsScreen() {
 }
 
 const UpgradePrompt = () => {
+  const t = useT();
+
   return (
     <LinearGradient
       colors={['#4CAF50', '#2E7D32']}
@@ -96,14 +104,18 @@ const UpgradePrompt = () => {
       <Link asChild href="/screens/plans">
         <Pressable className="flex flex-row items-center justify-between p-6">
           <View>
-            <ThemedText className="text-xl font-bold text-white">Upgrade Membership</ThemedText>
-            <ThemedText className="text-sm text-white">Unlock unlimited classes</ThemedText>
+            <ThemedText className="text-xl font-bold text-white">
+              {t('settings.upgradeMembership')}
+            </ThemedText>
+            <ThemedText className="text-sm text-white">
+              {t('settings.unlockUnlimitedClasses')}
+            </ThemedText>
           </View>
           <Button
             variant="outline"
             href="/screens/plans"
             rounded="xl"
-            title="View Plans"
+            title={t('common.viewPlans')}
             textClassName="text-white"
             className="border-white"
           />
