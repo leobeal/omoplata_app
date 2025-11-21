@@ -3,6 +3,8 @@ import { TabTriggerSlotProps } from 'expo-router/ui';
 import { forwardRef, useEffect, useState } from 'react';
 import { Text, Pressable, View, Animated } from 'react-native';
 import Icon, { IconName } from '@/components/Icon';
+import { useScrollToTop } from '@/contexts/ScrollToTopContext';
+import { usePathname } from 'expo-router';
 
 export type TabButtonProps = TabTriggerSlotProps & {
   icon?: IconName;
@@ -12,6 +14,8 @@ export type TabButtonProps = TabTriggerSlotProps & {
 export const TabButton = forwardRef<View, TabButtonProps>(
   ({ icon, children, isFocused, onPress, labelAnimated = true, ...props }, ref) => {
     const colors = useThemeColors();
+    const { scrollToTop } = useScrollToTop();
+    const pathname = usePathname();
 
     const [labelOpacity] = useState(new Animated.Value(isFocused ? 1 : 0));
     const [labelMarginBottom] = useState(new Animated.Value(isFocused ? 0 : 10));
@@ -31,12 +35,21 @@ export const TabButton = forwardRef<View, TabButtonProps>(
       ]).start();
     }, [isFocused]);
 
+    const handlePress = (e: any) => {
+      if (isFocused) {
+        // Tab is already active, scroll to top
+        scrollToTop(pathname);
+      }
+      // Always call the original onPress to handle navigation
+      onPress?.(e);
+    };
+
     return (
       <Pressable
         className={`w-1/5 overflow-hidden ${isFocused ? '' : ''}`}
         ref={ref}
         {...props}
-        onPress={onPress}>
+        onPress={handlePress}>
         <View className="relative w-full flex-col items-center justify-center pb-0 pt-4">
           {icon && (
             <View className="relative">
