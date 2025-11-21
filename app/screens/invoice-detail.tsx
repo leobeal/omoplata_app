@@ -140,10 +140,16 @@ export default function InvoiceDetailScreen() {
               <ThemedText className="opacity-50">Due Date</ThemedText>
               <ThemedText className="font-semibold">{formatDate(invoice.dueDate)}</ThemedText>
             </View>
-            <View className="flex-row justify-between">
+            <View className="mb-3 flex-row justify-between">
               <ThemedText className="opacity-50">Payment Method</ThemedText>
               <ThemedText className="font-semibold">{invoice.paymentMethod}</ThemedText>
             </View>
+            {invoice.paymentDetails && (
+              <View className="flex-row justify-between">
+                <ThemedText className="opacity-50">Account</ThemedText>
+                <ThemedText className="font-semibold">{invoice.paymentDetails}</ThemedText>
+              </View>
+            )}
           </View>
         </View>
 
@@ -207,7 +213,7 @@ export default function InvoiceDetailScreen() {
 
         {invoice.status === 'pending' && (
           <View className="mb-8">
-            <Button title="Pay Now" icon="CreditCard" onPress={() => {}} />
+            <Button title="Pay Now" icon="Building" onPress={() => {}} />
           </View>
         )}
 

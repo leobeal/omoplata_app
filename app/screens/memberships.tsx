@@ -58,10 +58,10 @@ export default function MembershipScreen() {
         <View className="mb-6 rounded-2xl bg-secondary">
           <View className="flex-row items-center justify-between border-b border-border p-5">
             <View className="flex-row items-center">
-              <Icon name="CreditCard" size={20} className="mr-3" />
+              <Icon name="Building" size={20} className="mr-3" />
               <View>
                 <ThemedText className="font-semibold">Payment Method</ThemedText>
-                <ThemedText className="text-sm opacity-50">•••• 4242</ThemedText>
+                <ThemedText className="text-sm opacity-50">SEPA Direct Debit</ThemedText>
               </View>
             </View>
             <Icon name="ChevronRight" size={20} className="opacity-30" />

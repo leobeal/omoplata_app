@@ -1,11 +1,33 @@
 [
   {
+    "id": "INV-2024-007",
+    "date": "2024-12-01",
+    "dueDate": "2024-12-25",
+    "status": "pending",
+    "amount": 79.99,
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
+    "lineItems": [
+      {
+        "id": "1",
+        "description": "Premium Monthly Membership",
+        "quantity": 1,
+        "unitPrice": 79.99,
+        "total": 79.99
+      }
+    ],
+    "subtotal": 79.99,
+    "tax": 0,
+    "total": 79.99
+  },
+  {
     "id": "INV-2024-001",
     "date": "2024-11-01",
     "dueDate": "2024-11-15",
     "status": "paid",
     "amount": 79.99,
-    "paymentMethod": "Visa •••• 4242",
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
     "lineItems": [
       {
         "id": "1",
@@ -25,7 +47,8 @@
     "dueDate": "2024-10-15",
     "status": "paid",
     "amount": 79.99,
-    "paymentMethod": "Visa •••• 4242",
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
     "lineItems": [
       {
         "id": "1",
@@ -45,7 +68,8 @@
     "dueDate": "2024-09-15",
     "status": "paid",
     "amount": 79.99,
-    "paymentMethod": "Visa •••• 4242",
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
     "lineItems": [
       {
         "id": "1",
@@ -65,7 +89,8 @@
     "dueDate": "2024-08-15",
     "status": "paid",
     "amount": 129.99,
-    "paymentMethod": "Visa •••• 4242",
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
     "lineItems": [
       {
         "id": "1",
@@ -99,7 +124,8 @@
     "dueDate": "2024-07-15",
     "status": "paid",
     "amount": 79.99,
-    "paymentMethod": "Visa •••• 4242",
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
     "lineItems": [
       {
         "id": "1",
@@ -119,7 +145,8 @@
     "dueDate": "2024-06-15",
     "status": "paid",
     "amount": 94.99,
-    "paymentMethod": "Visa •••• 4242",
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
     "lineItems": [
       {
         "id": "1",

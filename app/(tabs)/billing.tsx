@@ -5,7 +5,7 @@ import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
 import { useT } from '@/contexts/LocalizationContext';
-import { getInvoices, Invoice } from '@/api/invoices';
+import { getInvoices, getNextInvoice, Invoice } from '@/api/invoices';
 import { router } from 'expo-router';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
@@ -13,6 +13,7 @@ export default function BillingScreen() {
   const t = useT();
   const colors = useThemeColors();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [nextInvoice, setNextInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,8 +22,9 @@ export default function BillingScreen() {
 
   const loadInvoices = async () => {
     try {
-      const data = await getInvoices();
-      setInvoices(data);
+      const [invoicesData, nextInvoiceData] = await Promise.all([getInvoices(), getNextInvoice()]);
+      setInvoices(invoicesData);
+      setNextInvoice(nextInvoiceData);
     } catch (error) {
       console.error('Error loading invoices:', error);
     } finally {
@@ -80,33 +82,35 @@ export default function BillingScreen() {
     <View className="flex-1 bg-background">
       <Header title="Billing" />
       <ThemedScroller className="px-6 pt-4">
-        {/* Summary Card */}
-        <View className="mb-6 rounded-2xl bg-secondary p-6">
-          <View className="mb-4 flex-row items-center justify-between">
-            <View>
-              <ThemedText className="text-sm opacity-50">Total Paid This Year</ThemedText>
-              <ThemedText className="text-3xl font-bold">
-                {formatAmount(invoices.reduce((sum, inv) => sum + (inv.status === 'paid' ? inv.amount : 0), 0))}
-              </ThemedText>
+        {/* Next Invoice Card */}
+        {nextInvoice && (
+          <Pressable
+            className="mb-6 rounded-2xl bg-secondary p-6"
+            onPress={() => router.push(`/screens/invoice-detail?id=${nextInvoice.id}`)}>
+            <View className="mb-4 flex-row items-center justify-between">
+              <View className="flex-1">
+                <ThemedText className="text-sm opacity-50">Next Invoice</ThemedText>
+                <ThemedText className="text-3xl font-bold">{formatAmount(nextInvoice.amount)}</ThemedText>
+                <ThemedText className="mt-1 text-sm opacity-70">
+                  Due {formatDate(nextInvoice.dueDate)}
+                </ThemedText>
+              </View>
+              <View className="h-16 w-16 items-center justify-center rounded-full bg-highlight">
+                <Icon name="Receipt" size={32} color="white" />
+              </View>
             </View>
-            <View className="h-16 w-16 items-center justify-center rounded-full bg-highlight">
-              <Icon name="DollarSign" size={32} color="white" />
-            </View>
-          </View>
 
-          <View className="flex-row border-t border-border pt-4">
-            <View className="flex-1">
-              <ThemedText className="text-2xl font-bold">{invoices.length}</ThemedText>
-              <ThemedText className="text-xs opacity-50">Total Invoices</ThemedText>
+            <View className="flex-row items-center border-t border-border pt-4">
+              <View className="flex-1">
+                <ThemedText className="text-sm opacity-70">{nextInvoice.id}</ThemedText>
+              </View>
+              <View className="flex-row items-center">
+                <ThemedText className="mr-2 text-sm font-semibold text-highlight">View Details</ThemedText>
+                <Icon name="ChevronRight" size={16} color={colors.highlight} />
+              </View>
             </View>
-            <View className="flex-1">
-              <ThemedText className="text-2xl font-bold">
-                {invoices.filter((inv) => inv.status === 'paid').length}
-              </ThemedText>
-              <ThemedText className="text-xs opacity-50">Paid</ThemedText>
-            </View>
-          </View>
-        </View>
+          </Pressable>
+        )}
 
         {/* Invoices List */}
         <View className="mb-4">
@@ -158,11 +162,11 @@ export default function BillingScreen() {
         <View className="mb-8 rounded-2xl bg-secondary p-5">
           <View className="flex-row items-center">
             <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-background">
-              <Icon name="CreditCard" size={20} />
+              <Icon name="Building" size={20} />
             </View>
             <View className="flex-1">
-              <ThemedText className="font-semibold">Visa ending in 4242</ThemedText>
-              <ThemedText className="text-sm opacity-50">Expires 12/2025</ThemedText>
+              <ThemedText className="font-semibold">SEPA Direct Debit</ThemedText>
+              <ThemedText className="text-sm opacity-50">DE89 3704 0044 0532 •••• 00</ThemedText>
             </View>
             <Pressable onPress={() => router.push('/screens/payment-methods')}>
               <ThemedText className="font-semibold text-highlight">Edit</ThemedText>
