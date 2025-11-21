@@ -3,6 +3,7 @@ export default {
   nav: {
     dashboard: 'Painel',
     checkin: 'Check-in',
+    billing: 'Faturamento',
     settings: 'Configurações',
   },
 

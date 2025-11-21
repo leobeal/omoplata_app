@@ -25,6 +25,12 @@ export const defaultNavigation: NavigationConfig = {
       href: '/',
     },
     {
+      name: 'billing',
+      icon: 'Receipt',
+      label: 'nav.billing',
+      href: '/billing',
+    },
+    {
       name: 'settings',
       icon: 'Settings',
       label: 'nav.settings',
