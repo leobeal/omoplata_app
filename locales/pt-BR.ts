@@ -185,6 +185,23 @@ export default {
     cancelled: 'Cancelado',
   },
 
+  // Tela de Faturamento
+  billing: {
+    title: 'Faturamento',
+    nextInvoice: 'Próxima Fatura',
+    due: 'Vencimento',
+    viewDetails: 'Ver Detalhes',
+    recentInvoices: 'Faturas Recentes',
+    paymentMethod: 'Forma de Pagamento',
+    sepaDirectDebit: 'Débito Direto SEPA',
+    edit: 'Editar',
+
+    // Status da fatura
+    paid: 'Pago',
+    pending: 'Pendente',
+    overdue: 'Vencido',
+  },
+
   // Data/Hora
   date: {
     monday: 'Segunda-feira',

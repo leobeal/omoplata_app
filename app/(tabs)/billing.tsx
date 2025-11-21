@@ -57,11 +57,11 @@ export default function BillingScreen() {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'paid':
-        return 'Paid';
+        return t('billing.paid');
       case 'pending':
-        return 'Pending';
+        return t('billing.pending');
       case 'overdue':
-        return 'Overdue';
+        return t('billing.overdue');
       default:
         return status;
     }
@@ -70,7 +70,7 @@ export default function BillingScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-background">
-        <Header title="Billing" />
+        <Header title={t('billing.title')} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" />
         </View>
@@ -80,7 +80,7 @@ export default function BillingScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title="Billing" />
+      <Header title={t('billing.title')} />
       <ThemedScroller className="px-6 pt-4">
         {/* Next Invoice Card */}
         {nextInvoice && (
@@ -89,10 +89,10 @@ export default function BillingScreen() {
             onPress={() => router.push(`/screens/invoice-detail?id=${nextInvoice.id}`)}>
             <View className="mb-4 flex-row items-center justify-between">
               <View className="flex-1">
-                <ThemedText className="text-sm opacity-50">Next Invoice</ThemedText>
+                <ThemedText className="text-sm opacity-50">{t('billing.nextInvoice')}</ThemedText>
                 <ThemedText className="text-3xl font-bold">{formatAmount(nextInvoice.amount)}</ThemedText>
                 <ThemedText className="mt-1 text-sm opacity-70">
-                  Due {formatDate(nextInvoice.dueDate)}
+                  {t('billing.due')} {formatDate(nextInvoice.dueDate)}
                 </ThemedText>
               </View>
               <View className="h-16 w-16 items-center justify-center rounded-full bg-highlight">
@@ -105,7 +105,7 @@ export default function BillingScreen() {
                 <ThemedText className="text-sm opacity-70">{nextInvoice.id}</ThemedText>
               </View>
               <View className="flex-row items-center">
-                <ThemedText className="mr-2 text-sm font-semibold text-highlight">View Details</ThemedText>
+                <ThemedText className="mr-2 text-sm font-semibold text-highlight">{t('billing.viewDetails')}</ThemedText>
                 <Icon name="ChevronRight" size={16} color={colors.highlight} />
               </View>
             </View>
@@ -114,7 +114,7 @@ export default function BillingScreen() {
 
         {/* Invoices List */}
         <View className="mb-4">
-          <ThemedText className="mb-3 text-lg font-bold">Recent Invoices</ThemedText>
+          <ThemedText className="mb-3 text-lg font-bold">{t('billing.recentInvoices')}</ThemedText>
         </View>
 
         <View className="mb-8 rounded-2xl bg-secondary">
@@ -156,7 +156,7 @@ export default function BillingScreen() {
 
         {/* Payment Method */}
         <View className="mb-4">
-          <ThemedText className="mb-3 text-lg font-bold">Payment Method</ThemedText>
+          <ThemedText className="mb-3 text-lg font-bold">{t('billing.paymentMethod')}</ThemedText>
         </View>
 
         <View className="mb-8 rounded-2xl bg-secondary p-5">
@@ -165,11 +165,11 @@ export default function BillingScreen() {
               <Icon name="Building" size={20} />
             </View>
             <View className="flex-1">
-              <ThemedText className="font-semibold">SEPA Direct Debit</ThemedText>
+              <ThemedText className="font-semibold">{t('billing.sepaDirectDebit')}</ThemedText>
               <ThemedText className="text-sm opacity-50">DE89 3704 0044 0532 •••• 00</ThemedText>
             </View>
             <Pressable onPress={() => router.push('/screens/payment-methods')}>
-              <ThemedText className="font-semibold text-highlight">Edit</ThemedText>
+              <ThemedText className="font-semibold text-highlight">{t('billing.edit')}</ThemedText>
             </Pressable>
           </View>
         </View>

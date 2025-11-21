@@ -185,6 +185,23 @@ export default {
     cancelled: 'Gekündigt',
   },
 
+  // Abrechnungsseite
+  billing: {
+    title: 'Abrechnung',
+    nextInvoice: 'Nächste Rechnung',
+    due: 'Fällig',
+    viewDetails: 'Details anzeigen',
+    recentInvoices: 'Letzte Rechnungen',
+    paymentMethod: 'Zahlungsmethode',
+    sepaDirectDebit: 'SEPA-Lastschrift',
+    edit: 'Bearbeiten',
+
+    // Rechnungsstatus
+    paid: 'Bezahlt',
+    pending: 'Ausstehend',
+    overdue: 'Überfällig',
+  },
+
   // Datum/Zeit
   date: {
     monday: 'Montag',

@@ -185,6 +185,23 @@ export default {
     cancelled: 'Cancelled',
   },
 
+  // Billing Screen
+  billing: {
+    title: 'Billing',
+    nextInvoice: 'Next Invoice',
+    due: 'Due',
+    viewDetails: 'View Details',
+    recentInvoices: 'Recent Invoices',
+    paymentMethod: 'Payment Method',
+    sepaDirectDebit: 'SEPA Direct Debit',
+    edit: 'Edit',
+
+    // Invoice status
+    paid: 'Paid',
+    pending: 'Pending',
+    overdue: 'Overdue',
+  },
+
   // Date/Time
   date: {
     monday: 'Monday',
