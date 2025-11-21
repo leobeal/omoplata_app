@@ -1,109 +1,202 @@
 # Omoplata App - Claude Development Guide
 
+## ⚠️ IMPORTANT: Building New Features
+
+**ALWAYS check the `__old` folder first when creating new components or pages!**
+
+The `__old` folder contains a wealth of existing components, screens, and code patterns from previous implementations:
+- **Components**: 50+ reusable components (`__old/components/`)
+- **Screens**: Complete screen implementations (`__old/app/screens/`)
+- **Patterns**: Navigation, state management, theming examples
+
+**Before building anything new:**
+1. Search `__old` folder for similar functionality
+2. Reuse existing patterns and components when possible
+3. Adapt code to match current project structure
+4. This saves time and ensures consistency
+
 ## Project Overview
 
-Omoplata is a multi-tenant fitness club management mobile application built with React Native and Expo. The app supports multiple gym/fitness club brands with configurable theming, localization, and navigation.
+Omoplata is a multi-tenant fitness club management mobile application built with React Native and Expo. The app supports multiple gym/fitness club brands with API-driven configuration, theming, and localization.
 
 ## Tech Stack
 
-- **Framework**: React Native with Expo (SDK 52)
+- **Framework**: React Native with Expo (SDK 54)
 - **Language**: TypeScript
 - **Navigation**: Expo Router (file-based routing)
 - **Styling**: NativeWind (Tailwind CSS for React Native)
-- **State Management**: React hooks (useState, useEffect, useContext)
+- **State Management**: React Context + hooks
+- **Storage**: AsyncStorage for caching
 - **Icons**: lucide-react-native
 - **Internationalization**: i18n-js
 - **Testing**: Jest + React Native Testing Library
+
+## Quick Reference - Common Tasks
+
+| Task | Command/Action |
+|------|----------------|
+| **Start dev server** | `npx expo start` |
+| **Run tests** | `npm test` |
+| **Switch tenant** | `TENANT=evolve npx expo start` |
+| **Clear cache** | `npx expo start -c` |
+| **Find component pattern** | Check `__old/components/` first |
+| **Add translation** | Update all files in `locales/` |
 
 ## Project Structure
 
 ```
 omoplata_app/
-├── api/                    # API modules with mock data
-│   ├── classes.ts         # Class schedule and attendance
-│   ├── invoices.ts        # Billing and invoices
-│   ├── membership.ts      # Membership contracts
-│   └── profile.ts         # User profile management
-├── app/                    # Expo Router pages
-│   ├── (tabs)/            # Bottom tab navigation screens
-│   │   ├── index.tsx      # Dashboard
-│   │   ├── billing.tsx    # Billing/Invoices
+├── __old/                 # ⚠️ REFERENCE FOLDER - Check here first!
+│   ├── components/        # 50+ existing components to reuse
+│   └── app/              # Previous screen implementations
+├── api/                   # API modules with mock data
+│   ├── app-config.ts     # App configuration with caching
+│   ├── classes.ts        # Class schedule and attendance
+│   ├── invoices.ts       # Billing and invoices
+│   ├── membership.ts     # Membership contracts
+│   └── profile.ts        # User profile management
+├── app/                   # Expo Router pages
+│   ├── (tabs)/           # Bottom tab navigation screens
+│   │   ├── _layout.tsx   # Tab layout with API-driven config
+│   │   ├── index.tsx     # Dashboard
+│   │   ├── billing.tsx   # Billing/Invoices
 │   │   ├── membership.tsx # Membership details
-│   │   └── settings.tsx   # Settings
-│   ├── screens/           # Secondary screens
+│   │   └── settings.tsx  # Settings
+│   ├── screens/          # Secondary screens
 │   │   ├── edit-profile.tsx
 │   │   ├── invoice-detail.tsx
-│   │   ├── memberships.tsx (plan details)
-│   │   └── plans.tsx (plan comparison)
-│   └── _layout.tsx
-├── components/            # Reusable UI components
-│   ├── ClassCard.tsx     # Class attendance card
+│   │   ├── memberships.tsx
+│   │   └── plans.tsx
+│   └── _layout.tsx       # Root layout with providers
+├── components/           # Reusable UI components
+│   ├── ClassCard.tsx
 │   ├── Header.tsx
-│   ├── Icon.tsx
-│   ├── ThemeToggle.tsx
+│   ├── Button.tsx
+│   ├── ThemedText.tsx
+│   ├── ThemedScroller.tsx
 │   └── ...
-├── configs/               # Tenant configurations
+├── configs/              # Tenant configurations
 │   ├── navigation.ts     # Default navigation config
 │   ├── evolve.js         # Evolve gym config
 │   └── sparta.js         # Sparta gym config
-├── contexts/              # React contexts
-│   ├── ThemeContext.tsx
-│   ├── ThemeColors.tsx
-│   └── LocalizationContext.tsx
-├── data/                  # Mock JSON data
+├── contexts/             # React contexts
+│   ├── AppConfigContext.tsx      # App configuration
+│   ├── LocalizationContext.tsx   # i18n
+│   ├── ScrollToTopContext.tsx    # Scroll management
+│   ├── ThemeContext.tsx          # Theme state
+│   └── ThemeColors.tsx           # Theme colors
+├── data/                 # Mock JSON data
+│   ├── app-config.json   # App configuration
 │   ├── classes.json
 │   ├── invoices.json
 │   ├── membership.json
 │   └── profile.json
-├── locales/              # Translation files
-│   ├── en.ts            # English
-│   ├── pt-BR.ts         # Portuguese (Brazil)
-│   ├── de.ts            # German
+├── locales/             # Translation files
+│   ├── en.ts           # English
+│   ├── pt-BR.ts        # Portuguese (Brazil)
+│   ├── de.ts           # German
 │   └── index.ts
+├── __tests__/          # Test files
+│   ├── api/
+│   ├── components/
+│   └── screens/
 └── utils/
+
+## Reusing Code from __old Folder
+
+The `__old` folder contains extensive previous implementations. **Always check here first!**
+
+### How to Use __old Folder:
+
+1. **Search for similar functionality**:
+   ```bash
+   # Find components
+   ls __old/components/
+
+   # Search for patterns
+   grep -r "pattern-name" __old/
+   ```
+
+2. **Common components available**:
+   - Forms: Input, validation, multi-step wizards
+   - Cards: Various card layouts, charts, sliders
+   - Navigation: Tabs, drawers, headers
+   - UI: Modals, toasts, skeletons, calendars
+   - Animations: AnimatedView with various effects
+
+3. **Adapt to current structure**:
+   - Update imports to match current paths
+   - Use current theme/context patterns
+   - Ensure TypeScript types are correct
+   - Add tests for adapted components
+
+## API-Driven Configuration
+
+The app uses **API-driven configuration** with 24-hour caching for flexibility:
+
+### Configuration Structure (`data/app-config.json`):
+
+```json
+{
+  "navigation": { ... },      // Tab navigation
+  "membership": { ... },      // Membership features
+  "billing": { ... },         // Billing features
+  "features": { ... }         // Feature flags
+}
+```
+
+### Using Configuration:
+
+```typescript
+// Access via hooks
+import { useMembershipSettings, useBillingSettings, useFeatureFlags } from '@/contexts/AppConfigContext';
+
+const membershipSettings = useMembershipSettings();
+if (membershipSettings.allowCancellation) {
+  // Show cancellation option
+}
+```
+
+### How It Works:
+
+1. App fetches config from API on startup
+2. Config cached for 24 hours in AsyncStorage
+3. Subsequent launches use cache (fast)
+4. Falls back to defaults if API fails
 
 ## Multi-Tenancy System
 
 ### Tenant Configuration
 
-Each tenant (gym/fitness club) has its own configuration file in `configs/`:
+Each tenant has configuration in `configs/{tenant}.js`:
 
 ```javascript
 module.exports = {
-  // App identity
   name: 'Evolve',
   slug: 'evolve',
   bundleIdentifier: 'com.anonymous.evolve',
-
-  // Theme colors
   theme: {
     primary: '#4CAF50',
     secondary: '#8BC34A',
-    background: '#ffffff',
-    text: '#333333',
   },
-
-  // Localization
   language: 'de', // de, en, pt-BR
 
-  // Bottom navigation tabs
-  navigation: {
-    tabs: [
-      { name: 'index', icon: 'Home', label: 'nav.dashboard', href: '/' },
-      { name: 'membership', icon: 'Award', label: 'nav.membership', href: '/membership' },
-      { name: 'settings', icon: 'Settings', label: 'nav.settings', href: '/settings' },
-    ],
-    showCheckInButton: true,
-  },
+  // Optional: Override navigation
+  // (Otherwise fetched from API)
+  navigation: { ... }
 };
 ```
 
-### Switching Tenants
+### Configuration Priority:
 
-To switch between tenants:
+1. **API config** (from `api/app-config.ts`)
+2. **Tenant config** (from `configs/{tenant}.js`)
+3. **Default config** (fallback)
+
+### Switching Tenants:
+
 ```bash
 TENANT=evolve npx expo start
-# or
 TENANT=sparta npx expo start
 ```
 
@@ -394,17 +487,36 @@ Use Claude-generated branches: `claude/<task-description>-<session-id>`
 
 ## Adding New Features
 
-### Checklist for New Features
+### Quick Checklist:
 
-1. ✅ Create dummy data in `data/*.json`
-2. ✅ Create API module in `api/*.ts`
-3. ✅ Create page/component
-4. ✅ Add translations to ALL language files
-5. ✅ Update navigation if needed
-6. ✅ Add to both tenant configs
-7. ✅ Test with different tenants
-8. ✅ Write tests
-9. ✅ Commit and push
+1. **Search `__old` folder** for similar components/patterns
+2. **Create/adapt component** - Reuse existing code when possible
+3. **Add dummy data** in `data/*.json` if needed
+4. **Create API module** in `api/*.ts` if needed
+5. **Add translations** to ALL language files (`locales/en.ts`, `locales/pt-BR.ts`, `locales/de.ts`)
+6. **Update config** if changing navigation or features
+7. **Write tests** in `__tests__/`
+8. **Test functionality** - Try with different tenants
+9. **Commit and push** to feature branch
+
+### Example Workflow:
+
+```bash
+# 1. Search for existing pattern
+ls __old/components/ | grep -i "modal"
+
+# 2. Build feature (reusing pattern)
+# 3. Add translations
+# Edit locales/en.ts, locales/pt-BR.ts, locales/de.ts
+
+# 4. Test
+npm test
+
+# 5. Commit
+git add .
+git commit -m "Add new modal feature"
+git push -u origin <branch-name>
+```
 
 ## Troubleshooting
 

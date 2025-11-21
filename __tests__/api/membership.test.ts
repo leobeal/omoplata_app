@@ -10,16 +10,17 @@ describe('Membership API', () => {
       const membership = await getMembership();
 
       expect(membership).toBeDefined();
-      expect(membership.memberId).toBe('MEM-2024-001');
-      expect(membership.userId).toBe('user-001');
+      expect(membership.memberId).toBe('MEM-2023-001234');
+      expect(membership.memberName).toBe('John Doe');
+      expect(membership.email).toBe('johndoe@example.com');
     });
 
     it('should have valid contract details', async () => {
       const membership = await getMembership();
 
       expect(membership.contract).toBeDefined();
-      expect(membership.contract.id).toBe('CNT-2024-001');
-      expect(membership.contract.type).toBe('Annual Premium');
+      expect(membership.contract.id).toBe('CTR-2023-001234');
+      expect(membership.contract.type).toBe('Premium Annual');
       expect(membership.contract.status).toBe('active');
       expect(membership.contract.startDate).toBeDefined();
       expect(membership.contract.endDate).toBeDefined();
@@ -29,10 +30,10 @@ describe('Membership API', () => {
       const membership = await getMembership();
 
       expect(membership.contract.price).toBeDefined();
-      expect(membership.contract.price.amount).toBe(1200);
+      expect(membership.contract.price.amount).toBe(959.88);
       expect(membership.contract.price.currency).toBe('USD');
       expect(membership.contract.price.billingCycle).toBe('annual');
-      expect(membership.contract.price.monthlyEquivalent).toBe(100);
+      expect(membership.contract.price.monthlyEquivalent).toBe(79.99);
     });
 
     it('should include plan features', async () => {
@@ -77,27 +78,27 @@ describe('Membership API', () => {
 
   describe('downloadContract', () => {
     it('should return contract PDF URL', async () => {
-      const contractId = 'CNT-2024-001';
+      const contractId = 'CTR-2023-001234';
       const pdfUrl = await downloadContract(contractId);
 
       expect(pdfUrl).toBeDefined();
       expect(typeof pdfUrl).toBe('string');
       expect(pdfUrl).toContain(contractId);
-      expect(pdfUrl).toContain('.pdf');
+      expect(pdfUrl).toContain('/download');
     });
 
     it('should simulate API delay for download', async () => {
       const startTime = Date.now();
-      await downloadContract('CNT-2024-001');
+      await downloadContract('CTR-2023-001234');
       const endTime = Date.now();
 
       const delay = endTime - startTime;
-      expect(delay).toBeGreaterThanOrEqual(500);
+      expect(delay).toBeGreaterThanOrEqual(1000);
     });
 
     it('should generate unique URLs for different contracts', async () => {
-      const url1 = await downloadContract('CNT-2024-001');
-      const url2 = await downloadContract('CNT-2024-002');
+      const url1 = await downloadContract('CTR-2023-001234');
+      const url2 = await downloadContract('CTR-2023-005678');
 
       expect(url1).not.toBe(url2);
     });

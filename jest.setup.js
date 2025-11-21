@@ -28,6 +28,7 @@ jest.mock('expo-router', () => ({
     replace: jest.fn(),
     back: jest.fn(),
   })),
+  usePathname: jest.fn(() => '/'),
   Stack: {
     Screen: () => null,
   },
@@ -73,6 +74,17 @@ jest.mock('lucide-react-native', () => {
 // Mock expo-status-bar
 jest.mock('expo-status-bar', () => ({
   StatusBar: () => null,
+}));
+
+// Mock DevMenu to prevent TurboModule errors
+jest.mock('react-native/Libraries/Utilities/DevMenu', () => ({}), { virtual: true });
+
+// Mock AsyncStorage
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  setItem: jest.fn(() => Promise.resolve()),
+  getItem: jest.fn(() => Promise.resolve(null)),
+  removeItem: jest.fn(() => Promise.resolve()),
+  clear: jest.fn(() => Promise.resolve()),
 }));
 
 // Silence the warning about act()

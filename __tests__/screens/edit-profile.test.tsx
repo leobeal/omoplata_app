@@ -13,6 +13,14 @@ jest.mock('@/contexts/ThemeColors', () => ({
   }),
 }));
 
+jest.mock('@/contexts/ScrollToTopContext', () => ({
+  useScrollToTop: () => ({
+    scrollToTop: jest.fn(),
+    registerScrollHandler: jest.fn(),
+    unregisterScrollHandler: jest.fn(),
+  }),
+}));
+
 // Mock the profile API
 const mockProfile = {
   id: 'user-001',
@@ -61,15 +69,9 @@ jest.mock('@/api/profile', () => ({
 }));
 
 // Mock Alert
-jest.mock('react-native', () => {
-  const RN = jest.requireActual('react-native');
-  return {
-    ...RN,
-    Alert: {
-      alert: jest.fn(),
-    },
-  };
-});
+jest.mock('react-native/Libraries/Alert/Alert', () => ({
+  alert: jest.fn(),
+}));
 
 describe('EditProfileScreen', () => {
   beforeEach(() => {
@@ -191,7 +193,7 @@ describe('EditProfileScreen', () => {
 
   describe('Form Validation', () => {
     it('shows error when first name is empty', async () => {
-      const Alert = require('react-native').Alert;
+      const Alert = require('react-native/Libraries/Alert/Alert');
       const { getByDisplayValue, getByText } = render(<EditProfileScreen />);
 
       await waitFor(() => {
@@ -211,7 +213,7 @@ describe('EditProfileScreen', () => {
     });
 
     it('shows error when last name is empty', async () => {
-      const Alert = require('react-native').Alert;
+      const Alert = require('react-native/Libraries/Alert/Alert');
       const { getByDisplayValue, getByText } = render(<EditProfileScreen />);
 
       await waitFor(() => {
@@ -275,7 +277,7 @@ describe('EditProfileScreen', () => {
     });
 
     it('shows success alert and navigates back', async () => {
-      const Alert = require('react-native').Alert;
+      const Alert = require('react-native/Libraries/Alert/Alert');
       const { getByText } = render(<EditProfileScreen />);
 
       await waitFor(() => {
@@ -336,7 +338,7 @@ describe('EditProfileScreen', () => {
     });
 
     it('handles save errors gracefully', async () => {
-      const Alert = require('react-native').Alert;
+      const Alert = require('react-native/Libraries/Alert/Alert');
       mockUpdateProfile.mockRejectedValueOnce(new Error('Network error'));
 
       const { getByText } = render(<EditProfileScreen />);

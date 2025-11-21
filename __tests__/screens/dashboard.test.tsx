@@ -37,6 +37,14 @@ jest.mock('@/contexts/LocalizationContext', () => ({
   },
 }));
 
+jest.mock('@/contexts/ScrollToTopContext', () => ({
+  useScrollToTop: () => ({
+    scrollToTop: jest.fn(),
+    registerScrollHandler: jest.fn(),
+    unregisterScrollHandler: jest.fn(),
+  }),
+}));
+
 // Mock the classes API
 const mockClasses = [
   {

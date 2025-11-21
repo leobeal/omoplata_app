@@ -39,66 +39,98 @@ jest.mock('@/contexts/LocalizationContext', () => ({
   },
 }));
 
-// Mock the API
-const mockMembership = {
-  memberId: 'MEM-2024-001',
-  userId: 'user-001',
-  contract: {
-    id: 'CNT-2024-001',
-    type: 'Annual Premium',
-    status: 'active',
-    startDate: '2024-01-01',
-    endDate: '2024-12-31',
-    renewalDate: '2024-12-31',
-    autoRenewal: true,
-    price: {
-      amount: 1200,
-      currency: 'USD',
-      billingCycle: 'annual',
-      monthlyEquivalent: 100,
-    },
-    cancellationPolicy: 'Cancel anytime with 30 days notice',
-    freezePolicy: 'Freeze membership for up to 3 months per year',
-    transferPolicy: 'Non-transferable',
-  },
-  features: [
-    {
-      name: 'Unlimited Classes',
-      description: 'Access to all classes',
-      included: true,
-      limit: null,
-    },
-    {
-      name: 'Guest Passes',
-      description: 'Bring friends',
-      included: true,
-      limit: '5 per month',
-    },
-  ],
-  paymentMethod: {
-    type: 'SEPA Direct Debit',
-    iban: 'DE89 3704 0044 0532 •••• 00',
-    accountHolder: 'John Doe',
-  },
-};
+jest.mock('@/contexts/ScrollToTopContext', () => ({
+  useScrollToTop: () => ({
+    scrollToTop: jest.fn(),
+    registerScrollHandler: jest.fn(),
+    unregisterScrollHandler: jest.fn(),
+  }),
+}));
 
-const mockDownloadContract = jest.fn().mockResolvedValue('/contracts/CNT-2024-001.pdf');
+jest.mock('@/contexts/AppConfigContext', () => ({
+  useMembershipSettings: () => ({
+    allowCancellation: true,
+    allowPause: true,
+    allowFreeze: true,
+    allowPlanChange: true,
+    allowGuestPasses: true,
+    showContractDownload: true,
+    cancellationNoticeDays: 30,
+    maxFreezeDaysPerYear: 90,
+  }),
+}));
 
+// Mock the API - inline the mock data to ensure proper hoisting
 jest.mock('@/api/membership', () => ({
-  getMembership: jest.fn().mockResolvedValue(mockMembership),
-  downloadContract: () => mockDownloadContract(),
+  getMembership: jest.fn(() =>
+    Promise.resolve({
+      memberId: 'MEM-2024-001',
+      memberName: 'John Doe',
+      email: 'johndoe@example.com',
+      phone: '+1 (555) 123-4567',
+      address: {
+        street: '123 Fitness Street',
+        city: 'New York',
+        state: 'NY',
+        zipCode: '10001',
+        country: 'USA',
+      },
+      contract: {
+        id: 'CNT-2024-001',
+        type: 'Annual Premium',
+        status: 'active',
+        startDate: '2024-01-01',
+        endDate: '2024-12-31',
+        renewalDate: '2024-12-31',
+        autoRenewal: true,
+        price: {
+          amount: 1200,
+          currency: 'USD',
+          billingCycle: 'annual',
+          monthlyEquivalent: 100,
+        },
+        cancellationPolicy: 'Cancel anytime with 30 days notice',
+        freezePolicy: 'Freeze membership for up to 3 months per year',
+        transferPolicy: 'Non-transferable',
+      },
+      features: [
+        {
+          name: 'Unlimited Classes',
+          description: 'Access to all classes',
+          included: true,
+        },
+        {
+          name: 'Guest Passes',
+          description: 'Bring friends',
+          included: true,
+          limit: '5 per month',
+        },
+      ],
+      paymentMethod: {
+        type: 'SEPA Direct Debit',
+        iban: 'DE89 3704 0044 0532 •••• 00',
+        accountHolder: 'John Doe',
+      },
+      emergencyContact: {
+        name: 'Jane Doe',
+        relationship: 'Spouse',
+        phone: '+1 (555) 987-6543',
+      },
+      medicalInfo: {
+        bloodType: 'O+',
+        allergies: 'None',
+        conditions: 'None',
+        lastCheckup: '2024-06-15',
+      },
+    })
+  ),
+  downloadContract: jest.fn(() => Promise.resolve('/contracts/CNT-2024-001.pdf')),
 }));
 
 // Mock Alert
-jest.mock('react-native', () => {
-  const RN = jest.requireActual('react-native');
-  return {
-    ...RN,
-    Alert: {
-      alert: jest.fn(),
-    },
-  };
-});
+jest.mock('react-native/Libraries/Alert/Alert', () => ({
+  alert: jest.fn(),
+}));
 
 describe('MembershipScreen', () => {
   beforeEach(() => {
@@ -204,7 +236,8 @@ describe('MembershipScreen', () => {
 
   describe('Download Contract', () => {
     it('calls downloadContract when button is pressed', async () => {
-      const Alert = require('react-native').Alert;
+      const Alert = require('react-native/Libraries/Alert/Alert');
+      const { downloadContract } = require('@/api/membership');
       const { getByText } = render(<MembershipScreen />);
 
       await waitFor(() => {
@@ -215,10 +248,10 @@ describe('MembershipScreen', () => {
       fireEvent.press(downloadButton);
 
       await waitFor(() => {
-        expect(mockDownloadContract).toHaveBeenCalled();
+        expect(downloadContract).toHaveBeenCalled();
         expect(Alert.alert).toHaveBeenCalledWith(
           'Contract PDF',
-          expect.stringContaining('/contracts/CNT-2024-001.pdf'),
+          expect.stringContaining('/contracts/CNT-2024-001'),
           expect.any(Array)
         );
       });
