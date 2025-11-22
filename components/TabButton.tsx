@@ -37,10 +37,12 @@ export const TabButton = forwardRef<View, TabButtonProps>(
 
     const handlePress = (e: any) => {
       if (isFocused) {
-        // Tab is already active, scroll to top
+        // Tab is already active, scroll to top and prevent navigation
         scrollToTop(pathname);
+        // Don't call onPress to avoid JUMP_TO action error
+        return;
       }
-      // Always call the original onPress to handle navigation
+      // Tab is not active, proceed with navigation
       onPress?.(e);
     };
 
