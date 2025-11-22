@@ -3,7 +3,7 @@ module.exports = {
   name: 'Sparta',
   slug: 'sparta',
   bundleIdentifier: 'com.anonymous.sparta',
-  owner: 'thomino',
+  owner: 'omoplata',
   easProjectId: '', // Add your EAS project ID
 
   // Branding - icons

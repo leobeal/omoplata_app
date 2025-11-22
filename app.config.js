@@ -47,6 +47,7 @@ module.exports = {
       bundleIdentifier: config.bundleIdentifier,
     },
     android: {
+      package: config.bundleIdentifier,
       adaptiveIcon: config.adaptiveIcon,
       softwareKeyboardLayoutMode: 'pan',
       predictiveBackGestureEnabled: false,
