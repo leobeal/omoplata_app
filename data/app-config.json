@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-21T00:00:00.000Z",
+  "navigation": {
+    "tabs": ["index", "membership", "billing", "settings"],
+    "showCheckInButton": true
+  },
+  "membership": {
+    "allowPause": true,
+    "allowFreeze": true,
+    "allowPlanChange": true,
+    "allowGuestPasses": true,
+    "showContractDownload": true,
+    "cancellationNoticeDays": 30,
+    "maxFreezeDaysPerYear": 90
+  },
+  "billing": {
+    "allowPaymentMethodChange": true,
+    "allowAutoPay": true,
+    "showInvoiceHistory": true,
+    "allowOneTimePayments": true
+  },
+  "features": {
+    "checkInEnabled": true,
+    "qrCheckInEnabled": true,
+    "notificationsEnabled": true,
+    "classBookingEnabled": true,
+    "socialSharingEnabled": false,
+    "referralProgramEnabled": false,
+    "membershipCancellationEnabled": true
+  }
+}

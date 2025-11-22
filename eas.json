@@ -1,0 +1,42 @@
+{
+  "cli": {
+    "version": ">= 10.0.2"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "ios-simulator": {
+      "ios": {
+        "simulator": true,
+        "env": {
+          "TENANT": "evolve"
+        }
+      }
+    },
+    "production": {
+      "env": {
+        "APP_ENV": "production"
+      }
+    },
+    "evolve": {
+      "env": {
+        "TENANT": "evolve"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "your-apple-id@example.com",
+        "ascAppId": "1234567890",
+        "appleTeamId": "ABCDE12345"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./path/to/api-key.json",
+        "track": "internal"
+      }
+    }
+  }
+}

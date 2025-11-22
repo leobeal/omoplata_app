@@ -1,0 +1,170 @@
+[
+  {
+    "id": "INV-2024-007",
+    "date": "2024-12-01",
+    "dueDate": "2024-12-25",
+    "status": "pending",
+    "amount": 79.99,
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
+    "lineItems": [
+      {
+        "id": "1",
+        "description": "Premium Monthly Membership",
+        "quantity": 1,
+        "unitPrice": 79.99,
+        "total": 79.99
+      }
+    ],
+    "subtotal": 79.99,
+    "tax": 0,
+    "total": 79.99
+  },
+  {
+    "id": "INV-2024-001",
+    "date": "2024-11-01",
+    "dueDate": "2024-11-15",
+    "status": "paid",
+    "amount": 79.99,
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
+    "lineItems": [
+      {
+        "id": "1",
+        "description": "Premium Monthly Membership",
+        "quantity": 1,
+        "unitPrice": 79.99,
+        "total": 79.99
+      }
+    ],
+    "subtotal": 79.99,
+    "tax": 0,
+    "total": 79.99
+  },
+  {
+    "id": "INV-2024-002",
+    "date": "2024-10-01",
+    "dueDate": "2024-10-15",
+    "status": "paid",
+    "amount": 79.99,
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
+    "lineItems": [
+      {
+        "id": "1",
+        "description": "Premium Monthly Membership",
+        "quantity": 1,
+        "unitPrice": 79.99,
+        "total": 79.99
+      }
+    ],
+    "subtotal": 79.99,
+    "tax": 0,
+    "total": 79.99
+  },
+  {
+    "id": "INV-2024-003",
+    "date": "2024-09-01",
+    "dueDate": "2024-09-15",
+    "status": "paid",
+    "amount": 79.99,
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
+    "lineItems": [
+      {
+        "id": "1",
+        "description": "Premium Monthly Membership",
+        "quantity": 1,
+        "unitPrice": 79.99,
+        "total": 79.99
+      }
+    ],
+    "subtotal": 79.99,
+    "tax": 0,
+    "total": 79.99
+  },
+  {
+    "id": "INV-2024-004",
+    "date": "2024-08-01",
+    "dueDate": "2024-08-15",
+    "status": "paid",
+    "amount": 129.99,
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
+    "lineItems": [
+      {
+        "id": "1",
+        "description": "Premium Monthly Membership",
+        "quantity": 1,
+        "unitPrice": 79.99,
+        "total": 79.99
+      },
+      {
+        "id": "2",
+        "description": "Personal Training Session (3 sessions)",
+        "quantity": 3,
+        "unitPrice": 15.00,
+        "total": 45.00
+      },
+      {
+        "id": "3",
+        "description": "Locker Rental",
+        "quantity": 1,
+        "unitPrice": 5.00,
+        "total": 5.00
+      }
+    ],
+    "subtotal": 129.99,
+    "tax": 0,
+    "total": 129.99
+  },
+  {
+    "id": "INV-2024-005",
+    "date": "2024-07-01",
+    "dueDate": "2024-07-15",
+    "status": "paid",
+    "amount": 79.99,
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
+    "lineItems": [
+      {
+        "id": "1",
+        "description": "Premium Monthly Membership",
+        "quantity": 1,
+        "unitPrice": 79.99,
+        "total": 79.99
+      }
+    ],
+    "subtotal": 79.99,
+    "tax": 0,
+    "total": 79.99
+  },
+  {
+    "id": "INV-2024-006",
+    "date": "2024-06-01",
+    "dueDate": "2024-06-15",
+    "status": "paid",
+    "amount": 94.99,
+    "paymentMethod": "SEPA Direct Debit",
+    "paymentDetails": "DE89 3704 0044 0532 •••• 00",
+    "lineItems": [
+      {
+        "id": "1",
+        "description": "Premium Monthly Membership",
+        "quantity": 1,
+        "unitPrice": 79.99,
+        "total": 79.99
+      },
+      {
+        "id": "2",
+        "description": "Guest Pass",
+        "quantity": 3,
+        "unitPrice": 5.00,
+        "total": 15.00
+      }
+    ],
+    "subtotal": 94.99,
+    "tax": 0,
+    "total": 94.99
+  }
+]

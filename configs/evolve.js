@@ -3,8 +3,8 @@ module.exports = {
   name: 'Evolve',
   slug: 'evolve',
   bundleIdentifier: 'com.anonymous.evolve',
-  owner: 'thomino',
-  easProjectId: '87766ac6-7feb-4131-a0c6-e7f0e78f2071',
+  owner: 'omoplata',
+  easProjectId: 'ce7caf25-ffcd-4916-a58b-c8b29682d3cd',
 
   // Branding - icons
   icon: './assets/evolve/icon.png',
@@ -25,4 +25,7 @@ module.exports = {
     background: '#ffffff',
     text: '#333333',
   },
+
+  // Localization
+  language: 'de', // de, en, pt-BR
 };

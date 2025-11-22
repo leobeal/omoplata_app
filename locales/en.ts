@@ -1,0 +1,228 @@
+export default {
+  // Navigation
+  nav: {
+    dashboard: 'Dashboard',
+    checkin: 'Check-in',
+    membership: 'Membership',
+    billing: 'Billing',
+    settings: 'Settings',
+  },
+
+  // Common
+  common: {
+    close: 'Close',
+    back: 'Back',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    save: 'Save',
+    delete: 'Delete',
+    edit: 'Edit',
+    loading: 'Loading...',
+    error: 'Error',
+    success: 'Success',
+    retry: 'Retry',
+    viewPlans: 'View Plans',
+    logout: 'Logout',
+  },
+
+  // Home/Dashboard Screen
+  home: {
+    welcomeBack: 'Welcome back!',
+    goodMorning: 'Good morning!',
+    goodAfternoon: 'Good afternoon!',
+    goodEvening: 'Good evening!',
+    membershipStatus: 'Membership Status',
+    activeMember: 'Active Member',
+    classesLeft: 'Classes Left',
+    unlimited: 'Unlimited',
+    nextBilling: 'Next Billing',
+    memberSince: 'Member Since',
+    classes: 'Classes',
+    checkins: 'Check-ins',
+    thisMonth: 'this month',
+    thisWeek: 'this week',
+    lastSevenDays: 'Last 7 days',
+    goalProgress: 'Goal Progress',
+    monthly: 'Monthly',
+    weeklyActivity: 'Weekly Activity',
+    pastThreeWeeks: 'Past 3 weeks',
+    onTrack: 'on track',
+  },
+
+  // Settings Screen
+  settings: {
+    title: 'Settings',
+    profile: 'Profile',
+    currentPlan: 'Current plan',
+    classesThisMonth: 'Classes this month',
+    upgradeMembership: 'Upgrade Membership',
+    unlockUnlimitedClasses: 'Unlock unlimited classes',
+    editProfile: 'Edit Profile',
+    updatePersonalInfo: 'Update your personal information',
+    membership: 'Membership',
+    manageSubscription: 'Manage your subscription',
+    notifications: 'Notifications',
+    classRemindersAndUpdates: 'Class reminders & updates',
+    helpAndSupport: 'Help & Support',
+    getHelp: 'Get help with your account',
+    logout: 'Logout',
+    signOut: 'Sign out of your account',
+  },
+
+  // Memberships Screen
+  memberships: {
+    title: 'Membership Plans',
+    chooseYourPlan: 'Choose your plan',
+    flexibleOptions: 'Flexible membership options for your fitness journey',
+    allPlansInclude: 'All plans include access to our state-of-the-art facilities',
+    selectPlan: 'Select {{plan}} Plan',
+    whatsIncluded: "WHAT'S INCLUDED",
+    perMonth: '/month',
+    off: 'off',
+
+    // Plan names
+    basic: 'Basic',
+    monthlyPremium: 'Monthly Premium',
+    annualPremium: 'Annual Premium',
+
+    // Plan descriptions
+    basicDescription: 'Perfect for getting started',
+    monthlyDescription: 'Most popular for dedicated members',
+    annualDescription: 'Best value for committed athletes',
+
+    // Features
+    gymFloorAccess: 'Access to gym floor',
+    groupClasses: '{{count}} group classes per month',
+    unlimitedGymAccess: 'Unlimited gym access',
+    unlimitedGroupClasses: 'Unlimited group classes',
+    basicEquipment: 'Basic equipment',
+    lockerAccess: 'Locker access',
+    premiumLocker: 'Premium locker',
+    personalTrainingSession: 'Personal training session',
+    personalTrainingSessions: '{{count}} personal training sessions',
+    guestPasses: 'Guest passes ({{count}}/month)',
+    allPremiumFeatures: 'All Premium features',
+    nutritionConsultation: 'Nutrition consultation',
+    freeMerchandise: 'Free merchandise',
+    priorityClassBooking: 'Priority class booking',
+  },
+
+  // Check-in Screen
+  checkin: {
+    title: 'Scan QR Code',
+    permissionRequired: 'Camera Permission Required',
+    grantPermission: 'Grant Permission',
+    permissionMessage: 'Please grant camera access to scan QR codes for check-in',
+    goBack: 'Go Back',
+    pointCameraAtQR: 'Point camera at QR code',
+    alignQRCode: 'Align the QR code within the frame',
+    checkingIn: 'Checking in...',
+    checkInSuccess: 'Check-in Success!',
+    welcomeBack: 'Welcome back, {{name}}!',
+    checkInNumber: 'Check-in #{{count}} this month',
+    keepUpStreak: 'Keep up the streak!',
+
+    // Errors
+    invalidQRCode: 'Invalid QR code',
+    alreadyCheckedIn: "You're already checked in",
+    membershipInactive: 'Your membership is inactive.\nPlease contact the front desk.',
+    checkInFailed: 'Check-in failed',
+    networkError: 'Network error. Please try again.',
+  },
+
+  // Login Screen
+  login: {
+    title: 'Login',
+    email: 'Email',
+    password: 'Password',
+    forgotPassword: 'Forgot password?',
+    login: 'Login',
+    noAccount: "Don't have an account?",
+    signUp: 'Sign up',
+
+    // Validation
+    emailRequired: 'Email is required',
+    invalidEmail: 'Please enter a valid email',
+    passwordRequired: 'Password is required',
+    passwordTooShort: 'Password must be at least 6 characters',
+    loginFailed: 'Login failed. Please check your credentials.',
+  },
+
+  // Membership Screen
+  membership: {
+    title: 'My Membership',
+    currentPlan: 'Current Plan',
+    memberId: 'Member ID',
+    contractId: 'Contract ID',
+    contractDetails: 'Contract Details',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    renewalDate: 'Renewal Date',
+    autoRenewal: 'Auto-Renewal',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    pricing: 'Pricing',
+    annualFee: 'Annual Fee',
+    monthlyEquivalent: 'Monthly Equivalent',
+    billedAnnually: 'Billed annually',
+    billedMonthly: 'Billed monthly',
+    planFeatures: 'Plan Features',
+    limit: 'Limit',
+    paymentMethod: 'Payment Method',
+    accountHolder: 'Account Holder',
+    policies: 'Membership Policies',
+    cancellationPolicy: 'Cancellation Policy',
+    freezePolicy: 'Freeze Policy',
+    transferPolicy: 'Transfer Policy',
+    downloadContract: 'Download Contract PDF',
+    noMembership: 'No membership found',
+    supportMessage: 'For questions about your membership, please contact support@omoplata.com',
+
+    // Status
+    active: 'Active',
+    suspended: 'Suspended',
+    expired: 'Expired',
+    cancelled: 'Cancelled',
+  },
+
+  // Billing Screen
+  billing: {
+    title: 'Billing',
+    nextInvoice: 'Next Invoice',
+    due: 'Due',
+    viewDetails: 'View Details',
+    recentInvoices: 'Recent Invoices',
+    paymentMethod: 'Payment Method',
+    sepaDirectDebit: 'SEPA Direct Debit',
+    edit: 'Edit',
+
+    // Invoice status
+    paid: 'Paid',
+    pending: 'Pending',
+    overdue: 'Overdue',
+  },
+
+  // Date/Time
+  date: {
+    monday: 'Monday',
+    tuesday: 'Tuesday',
+    wednesday: 'Wednesday',
+    thursday: 'Thursday',
+    friday: 'Friday',
+    saturday: 'Saturday',
+    sunday: 'Sunday',
+
+    january: 'January',
+    february: 'February',
+    march: 'March',
+    april: 'April',
+    may: 'May',
+    june: 'June',
+    july: 'July',
+    august: 'August',
+    september: 'September',
+    october: 'October',
+    november: 'November',
+    december: 'December',
+  },
+};

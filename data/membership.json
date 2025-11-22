@@ -1,0 +1,48 @@
+{
+  "memberId": "MEM-2023-001234",
+  "memberName": "John Doe",
+  "email": "johndoe@example.com",
+  "phone": "+1 (555) 123-4567",
+  "address": {
+    "street": "123 Fitness Street",
+    "city": "New York",
+    "state": "NY",
+    "zipCode": "10001",
+    "country": "USA"
+  },
+  "contract": {
+    "id": "CTR-2023-001234",
+    "type": "Premium Annual",
+    "status": "active",
+    "startDate": "2023-01-15",
+    "endDate": "2025-01-14",
+    "renewalDate": "2025-01-15",
+    "autoRenewal": true,
+    "price": {
+      "amount": 959.88,
+      "currency": "USD",
+      "billingCycle": "annual",
+      "monthlyEquivalent": 79.99
+    },
+    "cancellationPolicy": "30 days notice required",
+    "freezePolicy": "Can freeze membership up to 2 times per year (max 30 days each)",
+    "transferPolicy": "Non-transferable",
+    "nextCancellationDate": "2024-12-22"
+  },
+  "paymentMethod": {
+    "type": "SEPA Direct Debit",
+    "iban": "DE89 3704 0044 0532 •••• 00",
+    "accountHolder": "John Doe"
+  },
+  "emergencyContact": {
+    "name": "Jane Doe",
+    "relationship": "Spouse",
+    "phone": "+1 (555) 987-6543"
+  },
+  "medicalInfo": {
+    "bloodType": "O+",
+    "allergies": "None",
+    "conditions": "None",
+    "lastCheckup": "2024-06-15"
+  }
+}

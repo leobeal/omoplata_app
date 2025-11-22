@@ -3,7 +3,7 @@ module.exports = {
   name: 'Sparta',
   slug: 'sparta',
   bundleIdentifier: 'com.anonymous.sparta',
-  owner: 'thomino',
+  owner: 'omoplata',
   easProjectId: '', // Add your EAS project ID
 
   // Branding - icons
@@ -25,4 +25,7 @@ module.exports = {
     background: '#ffffff',
     text: '#333333',
   },
+
+  // Localization
+  language: 'de', // de, en, pt-BR
 };
