@@ -6,15 +6,15 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CheckInButton from '@/components/CheckInButton';
 import { useT } from '@/contexts/LocalizationContext';
-import { defaultNavigation, NavigationConfig } from '@/configs/navigation';
-import { getNavigationConfig } from '@/api/app-config';
+import { defaultNavigation, NavigationConfig as FullNavigationConfig } from '@/configs/navigation';
+import { getNavigationConfig, NavigationConfig as ApiNavigationConfig } from '@/api/app-config';
 
 export default function TabsLayout() {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const t = useT();
 
-  const [apiConfig, setApiConfig] = useState<NavigationConfig | null>(null);
+  const [apiConfig, setApiConfig] = useState<ApiNavigationConfig | null>(null);
 
   // Fetch navigation config from API on mount
   useEffect(() => {
@@ -35,10 +35,23 @@ export default function TabsLayout() {
   }, []);
 
   // Get navigation config with priority:
-  // 1. API config (if loaded)
-  // 2. Default config (fallback)
-  const navConfig: NavigationConfig = useMemo(() => {
-    return apiConfig || defaultNavigation;
+  // 1. API config specifies which tabs to show (if loaded)
+  // 2. All default tabs (fallback)
+  const navConfig: FullNavigationConfig = useMemo(() => {
+    if (!apiConfig) {
+      // No API config, use all default tabs
+      return defaultNavigation;
+    }
+
+    // Filter default tabs based on API response (which only contains tab names)
+    const filteredTabs = defaultNavigation.tabs.filter((tab) =>
+      apiConfig.tabs.includes(tab.name)
+    );
+
+    return {
+      tabs: filteredTabs,
+      showCheckInButton: apiConfig.showCheckInButton ?? true,
+    };
   }, [apiConfig]);
 
   const tabs = navConfig.tabs || [];

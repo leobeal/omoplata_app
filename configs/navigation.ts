@@ -13,12 +13,17 @@ export interface NavigationConfig {
 }
 
 /**
- * Default navigation configuration
- * Used as fallback when API config fails to load
+ * Full navigation configuration with all available tabs
  *
- * Priority order:
- * 1. API config (from data/app-config.json or backend API)
- * 2. Default config (this file)
+ * This defines ALL possible tabs with their icons, labels, and hrefs.
+ * The API only specifies WHICH tabs to show (by name), not their configuration.
+ *
+ * Example:
+ * - This file defines: { name: "index", icon: "Home", label: "nav.dashboard", href: "/" }
+ * - API returns: ["index", "membership", "settings"] (just the names)
+ * - App filters this config to show only the tabs specified by API
+ *
+ * If API fails or returns nothing, all tabs below are shown by default.
  */
 export const defaultNavigation: NavigationConfig = {
   tabs: [

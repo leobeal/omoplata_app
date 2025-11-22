@@ -2,32 +2,7 @@
   "version": "1.0.0",
   "lastUpdated": "2025-11-21T00:00:00.000Z",
   "navigation": {
-    "tabs": [
-      {
-        "name": "index",
-        "icon": "Home",
-        "label": "nav.dashboard",
-        "href": "/"
-      },
-      {
-        "name": "membership",
-        "icon": "Award",
-        "label": "nav.membership",
-        "href": "/membership"
-      },
-      {
-        "name": "billing",
-        "icon": "Receipt",
-        "label": "nav.billing",
-        "href": "/billing"
-      },
-      {
-        "name": "settings",
-        "icon": "Settings",
-        "label": "nav.settings",
-        "href": "/settings"
-      }
-    ],
+    "tabs": ["index", "membership", "billing", "settings"],
     "showCheckInButton": true
   },
   "membership": {

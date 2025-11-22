@@ -1,8 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationConfig } from '@/configs/navigation';
 
 const CACHE_KEY = 'app_config';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+/**
+ * Navigation configuration from API
+ * Only specifies which tabs to show, not their full configuration
+ */
+export interface NavigationConfig {
+  tabs: string[]; // Array of tab names to show (e.g., ["index", "membership", "billing", "settings"])
+  showCheckInButton?: boolean;
+}
 
 export interface MembershipSettings {
   allowCancellation: boolean;
