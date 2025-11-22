@@ -14,7 +14,11 @@ export interface NavigationConfig {
 
 /**
  * Default navigation configuration
- * Used if tenant doesn't specify custom navigation
+ * Used as fallback when API config fails to load
+ *
+ * Priority order:
+ * 1. API config (from data/app-config.json or backend API)
+ * 2. Default config (this file)
  */
 export const defaultNavigation: NavigationConfig = {
   tabs: [

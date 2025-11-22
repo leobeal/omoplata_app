@@ -6,7 +6,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CheckInButton from '@/components/CheckInButton';
 import { useT } from '@/contexts/LocalizationContext';
-import Constants from 'expo-constants';
 import { defaultNavigation, NavigationConfig } from '@/configs/navigation';
 import { getNavigationConfig } from '@/api/app-config';
 
@@ -37,14 +36,9 @@ export default function TabsLayout() {
 
   // Get navigation config with priority:
   // 1. API config (if loaded)
-  // 2. Tenant config from app.config.js
-  // 3. Default config
+  // 2. Default config (fallback)
   const navConfig: NavigationConfig = useMemo(() => {
-    if (apiConfig) {
-      return apiConfig;
-    }
-    const tenantNav = Constants.expoConfig?.extra?.navigation as NavigationConfig | undefined;
-    return tenantNav || defaultNavigation;
+    return apiConfig || defaultNavigation;
   }, [apiConfig]);
 
   const tabs = navConfig.tabs || [];
