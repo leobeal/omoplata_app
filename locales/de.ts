@@ -195,6 +195,7 @@ export default {
     paymentMethod: 'Zahlungsmethode',
     sepaDirectDebit: 'SEPA-Lastschrift',
     edit: 'Bearbeiten',
+    loadMore: 'Mehr laden',
 
     // Rechnungsstatus
     paid: 'Bezahlt',

@@ -42,6 +42,21 @@ export const getInvoiceById = async (id: string): Promise<Invoice | null> => {
 };
 
 /**
+ * Fetch invoices with pagination
+ */
+export const getInvoicesPaginated = async (limit: number = 10, offset: number = 0): Promise<{ invoices: Invoice[]; hasMore: boolean; total: number }> => {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const allInvoices = invoicesData as Invoice[];
+  const total = allInvoices.length;
+  const invoices = allInvoices.slice(offset, offset + limit);
+  const hasMore = offset + limit < total;
+
+  return { invoices, hasMore, total };
+};
+
+/**
  * Fetch the next upcoming invoice
  */
 export const getNextInvoice = async (): Promise<Invoice | null> => {

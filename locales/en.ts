@@ -195,6 +195,7 @@ export default {
     paymentMethod: 'Payment Method',
     sepaDirectDebit: 'SEPA Direct Debit',
     edit: 'Edit',
+    loadMore: 'Load More',
 
     // Invoice status
     paid: 'Paid',

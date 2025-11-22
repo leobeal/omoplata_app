@@ -195,6 +195,7 @@ export default {
     paymentMethod: 'Forma de Pagamento',
     sepaDirectDebit: 'Débito Direto SEPA',
     edit: 'Editar',
+    loadMore: 'Carregar Mais',
 
     // Status da fatura
     paid: 'Pago',
