@@ -68,23 +68,18 @@ function parseHTTPLink(url: string): QRValidationResult {
   try {
     const urlObj = new URL(url);
 
-    // Extract code from query parameters
+    // Extract optional parameters from query parameters
     const code = urlObj.searchParams.get('code');
     const locationId = urlObj.searchParams.get('location') || urlObj.searchParams.get('locationId');
-
-    if (!code) {
-      return {
-        valid: false,
-        error: 'Missing check-in code in URL',
-      };
-    }
+    const facilityId = urlObj.searchParams.get('facility_id') || urlObj.searchParams.get('facilityId');
 
     return {
       valid: true,
       data: {
         type: 'gym_checkin',
-        code,
+        code: code || undefined,
         locationId: locationId || undefined,
+        facility_id: facilityId || undefined,
       },
     };
   } catch {
@@ -107,36 +102,7 @@ export function validateQRData(data: QRCodeData): QRValidationResult {
     };
   }
 
-  // Check required fields
-  if (!data.code && !data.facility_id) {
-    return {
-      valid: false,
-      error: 'Missing check-in code or facility ID',
-    };
-  }
-
-  // Check timestamp (if present)
-  if (data.timestamp) {
-    const now = Date.now() / 1000;
-    const age = now - data.timestamp;
-
-    // Reject if older than 5 minutes
-    if (age > 300) {
-      return {
-        valid: false,
-        error: 'QR code has expired',
-      };
-    }
-
-    // Reject if timestamp is in future
-    if (age < -60) {
-      return {
-        valid: false,
-        error: 'Invalid QR code timestamp',
-      };
-    }
-  }
-
+  // All gym_checkin QR codes are valid
   return {
     valid: true,
     data,
@@ -168,13 +134,9 @@ export function formatCheckinRequest(data: QRCodeData): {
   const code = extractCheckinCode(data);
   const locationId = extractLocationId(data);
 
-  if (!code) {
-    throw new Error('No check-in code found in QR data');
-  }
-
   return {
     method: 'qr_code',
     locationId,
-    qrCode: code,
+    qrCode: code || '',
   };
 }
