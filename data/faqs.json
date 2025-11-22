@@ -1,0 +1,109 @@
+{
+  "categories": [
+    {
+      "id": "membership",
+      "title": "Membership & Billing",
+      "faqs": [
+        {
+          "question": "How do I cancel my membership?",
+          "answer": "You can cancel your membership through the app by going to Membership > Cancel Membership. Please note that a 30-day notice period is required, and cancellation will be effective on your next billing date."
+        },
+        {
+          "question": "Can I freeze my membership?",
+          "answer": "Yes, you can freeze your membership up to 2 times per year for a maximum of 30 days each time. Contact our support team or visit the gym to request a freeze."
+        },
+        {
+          "question": "How do I update my payment method?",
+          "answer": "Go to Billing in your account settings to update your payment method. We accept credit cards, debit cards, and SEPA direct debit."
+        },
+        {
+          "question": "What payment methods do you accept?",
+          "answer": "We accept credit cards (Visa, Mastercard, American Express), debit cards, and SEPA direct debit for European customers."
+        },
+        {
+          "question": "Can I get a refund if I cancel?",
+          "answer": "Refunds are only provided for the unused portion of your membership if you have a valid medical reason with documentation. Regular cancellations follow the 30-day notice period without refunds."
+        }
+      ]
+    },
+    {
+      "id": "facilities",
+      "title": "Facilities & Classes",
+      "faqs": [
+        {
+          "question": "What are your gym hours?",
+          "answer": "Our gym is open 24/7 for all members. Staff is available Monday-Friday 6am-10pm, Saturday-Sunday 8am-8pm."
+        },
+        {
+          "question": "How do I book a class?",
+          "answer": "You can book classes through the app by navigating to Classes and selecting the class you want to attend. Premium members get priority booking 7 days in advance."
+        },
+        {
+          "question": "Can I bring a guest?",
+          "answer": "Yes! Premium members receive 5 guest passes per month. Your guest must sign a waiver at the front desk before using the facilities."
+        },
+        {
+          "question": "Do you offer personal training?",
+          "answer": "Yes, we offer personal training sessions. Premium members receive one complimentary session per month. Additional sessions can be purchased separately."
+        },
+        {
+          "question": "What equipment do you have?",
+          "answer": "We have a full range of cardio equipment, free weights, resistance machines, functional training area, boxing bags, BJJ mats, and more. Check our website for a complete list."
+        }
+      ]
+    },
+    {
+      "id": "account",
+      "title": "Account & App",
+      "faqs": [
+        {
+          "question": "How do I reset my password?",
+          "answer": "On the login screen, tap 'Forgot Password' and enter your email address. You'll receive a password reset link within a few minutes."
+        },
+        {
+          "question": "How do I update my personal information?",
+          "answer": "Go to Settings > Edit Profile to update your name, email, phone number, and address."
+        },
+        {
+          "question": "Can I use the app for check-in?",
+          "answer": "Yes! Use the QR code check-in feature on the home screen. Simply scan the code at the entrance kiosk or show it to staff."
+        },
+        {
+          "question": "The app isn't working. What should I do?",
+          "answer": "Try these steps: 1) Make sure you have the latest version of the app, 2) Force quit and restart the app, 3) Check your internet connection, 4) If issues persist, contact support."
+        },
+        {
+          "question": "How do I enable notifications?",
+          "answer": "Go to Settings > Notifications to manage your notification preferences. You can customize reminders for classes, billing, and gym announcements."
+        }
+      ]
+    },
+    {
+      "id": "other",
+      "title": "Other Questions",
+      "faqs": [
+        {
+          "question": "What should I bring to the gym?",
+          "answer": "We recommend bringing a towel, water bottle, and appropriate workout attire. Lockers are available, and towel rental is included with Premium memberships."
+        },
+        {
+          "question": "Is there parking available?",
+          "answer": "Yes, we offer free parking for all members in our dedicated parking lot. Street parking is also available nearby."
+        },
+        {
+          "question": "Do you have showers and changing rooms?",
+          "answer": "Yes, we have full locker rooms with showers, changing areas, and amenities. Premium members have access to premium lockers."
+        },
+        {
+          "question": "How do I contact support?",
+          "answer": "You can contact us via email at support@omoplata.com, call us at (555) 123-4567, or speak with staff at the front desk during operating hours."
+        },
+        {
+          "question": "Can I transfer my membership to someone else?",
+          "answer": "Memberships are non-transferable according to our terms and conditions. However, you can freeze your membership if you need a temporary break."
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2025-11-21T00:00:00.000Z"
+}
