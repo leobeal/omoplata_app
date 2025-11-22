@@ -36,19 +36,6 @@ describe('Membership API', () => {
       expect(membership.contract.price.monthlyEquivalent).toBe(79.99);
     });
 
-    it('should include plan features', async () => {
-      const membership = await getMembership();
-
-      expect(membership.features).toBeDefined();
-      expect(Array.isArray(membership.features)).toBe(true);
-      expect(membership.features.length).toBeGreaterThan(0);
-
-      const feature = membership.features[0];
-      expect(feature.name).toBeDefined();
-      expect(feature.description).toBeDefined();
-      expect(feature.included).toBeDefined();
-    });
-
     it('should have payment method details', async () => {
       const membership = await getMembership();
 

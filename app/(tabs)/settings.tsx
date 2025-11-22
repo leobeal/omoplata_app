@@ -1,13 +1,10 @@
-import { View, Pressable } from 'react-native';
+import { View } from 'react-native';
 import Header from '@/components/Header';
 import ThemedText from '@/components/ThemedText';
 import Avatar from '@/components/Avatar';
 import ListLink from '@/components/ListLink';
 import ThemedScroller from '@/components/ThemedScroller';
 import React from 'react';
-import { Button } from '@/components/Button';
-import { Link } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useT } from '@/contexts/LocalizationContext';
 
@@ -44,8 +41,6 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <UpgradePrompt />
-
         <View className="mt-4 rounded-2xl bg-secondary">
           <ListLink
             className="px-5"
@@ -61,7 +56,7 @@ export default function SettingsScreen() {
             title={t('settings.membership')}
             description={t('settings.manageSubscription')}
             icon="CreditCard"
-            href="/screens/memberships"
+            href="/membership"
           />
           <ListLink
             className="px-5"
@@ -91,36 +86,3 @@ export default function SettingsScreen() {
     </>
   );
 }
-
-const UpgradePrompt = () => {
-  const t = useT();
-
-  return (
-    <LinearGradient
-      colors={['#4CAF50', '#2E7D32']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 2 }}
-      style={{ borderRadius: 10 }}>
-      <Link asChild href="/screens/plans">
-        <Pressable className="flex flex-row items-center justify-between p-6">
-          <View>
-            <ThemedText className="text-xl font-bold text-white">
-              {t('settings.upgradeMembership')}
-            </ThemedText>
-            <ThemedText className="text-sm text-white">
-              {t('settings.unlockUnlimitedClasses')}
-            </ThemedText>
-          </View>
-          <Button
-            variant="outline"
-            href="/screens/plans"
-            rounded="xl"
-            title={t('common.viewPlans')}
-            textClassName="text-white"
-            className="border-white"
-          />
-        </Pressable>
-      </Link>
-    </LinearGradient>
-  );
-};

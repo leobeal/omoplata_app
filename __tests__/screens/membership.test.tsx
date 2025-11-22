@@ -93,19 +93,6 @@ jest.mock('@/api/membership', () => ({
         freezePolicy: 'Freeze membership for up to 3 months per year',
         transferPolicy: 'Non-transferable',
       },
-      features: [
-        {
-          name: 'Unlimited Classes',
-          description: 'Access to all classes',
-          included: true,
-        },
-        {
-          name: 'Guest Passes',
-          description: 'Bring friends',
-          included: true,
-          limit: '5 per month',
-        },
-      ],
       paymentMethod: {
         type: 'SEPA Direct Debit',
         iban: 'DE89 3704 0044 0532 •••• 00',
@@ -184,16 +171,6 @@ describe('MembershipScreen', () => {
         expect(getByText('Pricing')).toBeTruthy();
         expect(getByText('$1200.00')).toBeTruthy();
         expect(getByText('$100.00/mo')).toBeTruthy();
-      });
-    });
-
-    it('displays plan features', async () => {
-      const { getByText } = render(<MembershipScreen />);
-
-      await waitFor(() => {
-        expect(getByText('Plan Features')).toBeTruthy();
-        expect(getByText('Unlimited Classes')).toBeTruthy();
-        expect(getByText('Guest Passes')).toBeTruthy();
       });
     });
 

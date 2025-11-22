@@ -29,13 +29,6 @@ export interface Contract {
   transferPolicy: string;
 }
 
-export interface Feature {
-  name: string;
-  description: string;
-  included: boolean;
-  limit?: string;
-}
-
 export interface PaymentMethod {
   type: string;
   iban: string;
@@ -62,7 +55,6 @@ export interface Membership {
   phone: string;
   address: Address;
   contract: Contract;
-  features: Feature[];
   paymentMethod: PaymentMethod;
   emergencyContact: EmergencyContact;
   medicalInfo: MedicalInfo;

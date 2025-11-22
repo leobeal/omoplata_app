@@ -198,34 +198,6 @@ export default function MembershipScreen() {
           </View>
         </View>
 
-        {/* Features */}
-        <Section title={t('membership.planFeatures')} className="mb-4" />
-        <View className="mb-6 rounded-2xl bg-secondary">
-          {membership.features.map((feature, index) => (
-            <View
-              key={index}
-              className={`p-5 ${index < membership.features.length - 1 ? 'border-b border-border' : ''}`}>
-              <View className="flex-row items-start">
-                <Icon
-                  name={feature.included ? 'Check' : 'X'}
-                  size={20}
-                  color={feature.included ? '#10B981' : '#EF4444'}
-                  className="mr-3 mt-0.5"
-                />
-                <View className="flex-1">
-                  <ThemedText className="font-semibold">{feature.name}</ThemedText>
-                  <ThemedText className="mt-1 text-sm opacity-70">{feature.description}</ThemedText>
-                  {feature.limit && (
-                    <ThemedText className="mt-1 text-xs font-medium opacity-50">
-                      {t('membership.limit')}: {feature.limit}
-                    </ThemedText>
-                  )}
-                </View>
-              </View>
-            </View>
-          ))}
-        </View>
-
         {/* Payment Method */}
         <Section title={t('membership.paymentMethod')} className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">

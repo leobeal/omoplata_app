@@ -28,52 +28,6 @@
     "freezePolicy": "Can freeze membership up to 2 times per year (max 30 days each)",
     "transferPolicy": "Non-transferable"
   },
-  "features": [
-    {
-      "name": "Unlimited Gym Access",
-      "description": "24/7 access to all gym facilities",
-      "included": true
-    },
-    {
-      "name": "Unlimited Group Classes",
-      "description": "Access to all group fitness classes including BJJ, Muay Thai, and more",
-      "included": true
-    },
-    {
-      "name": "Personal Training Sessions",
-      "description": "One complimentary personal training session per month",
-      "included": true,
-      "limit": "1 per month"
-    },
-    {
-      "name": "Premium Locker",
-      "description": "Reserved premium locker in locker room",
-      "included": true
-    },
-    {
-      "name": "Guest Passes",
-      "description": "Bring friends to train with you",
-      "included": true,
-      "limit": "5 per month"
-    },
-    {
-      "name": "Nutrition Consultation",
-      "description": "Quarterly nutrition and meal planning consultation",
-      "included": true,
-      "limit": "Quarterly"
-    },
-    {
-      "name": "Priority Class Booking",
-      "description": "Early access to book popular classes",
-      "included": true
-    },
-    {
-      "name": "Free Merchandise",
-      "description": "Annual gym merchandise (t-shirt, water bottle, etc.)",
-      "included": true,
-      "limit": "Annual"
-    }
-  ],
   "paymentMethod": {
     "type": "SEPA Direct Debit",
     "iban": "DE89 3704 0044 0532 •••• 00",
