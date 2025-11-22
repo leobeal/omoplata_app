@@ -26,7 +26,8 @@
     },
     "cancellationPolicy": "30 days notice required",
     "freezePolicy": "Can freeze membership up to 2 times per year (max 30 days each)",
-    "transferPolicy": "Non-transferable"
+    "transferPolicy": "Non-transferable",
+    "nextCancellationDate": "2024-12-22"
   },
   "paymentMethod": {
     "type": "SEPA Direct Debit",

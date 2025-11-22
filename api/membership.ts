@@ -27,6 +27,7 @@ export interface Contract {
   cancellationPolicy: string;
   freezePolicy: string;
   transferPolicy: string;
+  nextCancellationDate: string; // Earliest date when cancellation can be requested
 }
 
 export interface PaymentMethod {
@@ -77,4 +78,31 @@ export const downloadContract = async (contractId: string): Promise<string> => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   // In a real app, this would return a PDF URL or blob
   return `https://api.omoplata.com/contracts/${contractId}/download`;
+};
+
+/**
+ * Cancel membership (simulated)
+ * @param contractId - The contract ID to cancel
+ * @param cancellationDate - The effective cancellation date (must be >= nextCancellationDate)
+ * @param reason - Optional cancellation reason
+ */
+export const cancelMembership = async (
+  contractId: string,
+  cancellationDate: string,
+  reason?: string
+): Promise<{ success: boolean; message: string }> => {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // In a real app, this would call your backend API:
+  // const response = await fetch(`${API_BASE_URL}/contracts/${contractId}/cancel`, {
+  //   method: 'POST',
+  //   body: JSON.stringify({ cancellationDate, reason })
+  // });
+  // return response.json();
+
+  return {
+    success: true,
+    message: `Membership will be cancelled effective ${cancellationDate}`,
+  };
 };

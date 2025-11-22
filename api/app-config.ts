@@ -13,7 +13,6 @@ export interface NavigationConfig {
 }
 
 export interface MembershipSettings {
-  allowCancellation: boolean;
   allowPause: boolean;
   allowFreeze: boolean;
   allowPlanChange: boolean;
@@ -37,6 +36,7 @@ export interface FeatureFlags {
   classBookingEnabled: boolean;
   socialSharingEnabled: boolean;
   referralProgramEnabled: boolean;
+  membershipCancellationEnabled: boolean;
 }
 
 export interface AppConfig {
@@ -53,7 +53,6 @@ export interface AppConfig {
  */
 export const defaultConfig: Partial<AppConfig> = {
   membership: {
-    allowCancellation: true,
     allowPause: true,
     allowFreeze: true,
     allowPlanChange: true,
@@ -75,6 +74,7 @@ export const defaultConfig: Partial<AppConfig> = {
     classBookingEnabled: true,
     socialSharingEnabled: false,
     referralProgramEnabled: false,
+    membershipCancellationEnabled: true,
   },
 };
 

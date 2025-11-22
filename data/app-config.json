@@ -6,7 +6,6 @@
     "showCheckInButton": true
   },
   "membership": {
-    "allowCancellation": true,
     "allowPause": true,
     "allowFreeze": true,
     "allowPlanChange": true,
@@ -27,6 +26,7 @@
     "notificationsEnabled": true,
     "classBookingEnabled": true,
     "socialSharingEnabled": false,
-    "referralProgramEnabled": false
+    "referralProgramEnabled": false,
+    "membershipCancellationEnabled": true
   }
 }

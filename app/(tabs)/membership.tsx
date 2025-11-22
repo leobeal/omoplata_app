@@ -9,12 +9,15 @@ import Section from '@/components/Section';
 import { getMembership, downloadContract, Membership as MembershipType } from '@/api/membership';
 import { useThemeColors } from '@/contexts/ThemeColors';
 import { useT } from '@/contexts/LocalizationContext';
-import { useMembershipSettings } from '@/contexts/AppConfigContext';
+import { useMembershipSettings, useFeatureFlags } from '@/contexts/AppConfigContext';
+import { useRouter } from 'expo-router';
 
 export default function MembershipScreen() {
   const t = useT();
   const colors = useThemeColors();
+  const router = useRouter();
   const membershipSettings = useMembershipSettings();
+  const featureFlags = useFeatureFlags();
   const [membership, setMembership] = useState<MembershipType | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
@@ -154,6 +157,12 @@ export default function MembershipScreen() {
               {formatDate(membership.contract.renewalDate)}
             </ThemedText>
           </View>
+          <View className="flex-row items-center justify-between border-b border-border p-5">
+            <ThemedText className="opacity-70">{t('membership.nextCancellationDate')}</ThemedText>
+            <ThemedText className="font-semibold">
+              {formatDate(membership.contract.nextCancellationDate)}
+            </ThemedText>
+          </View>
           <View className="flex-row items-center justify-between p-5">
             <ThemedText className="opacity-70">{t('membership.autoRenewal')}</ThemedText>
             <View className="flex-row items-center">
@@ -218,28 +227,25 @@ export default function MembershipScreen() {
         {/* Policies */}
         <Section title={t('membership.policies')} className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">
-          {membershipSettings.allowCancellation && (
-            <View className="mb-4">
-              <View className="mb-2 flex-row items-start">
-                <Icon name="XCircle" size={16} className="mr-2 mt-1 opacity-50" />
-                <View className="flex-1">
-                  <ThemedText className="font-semibold">{t('membership.cancellationPolicy')}</ThemedText>
-                  <ThemedText className="mt-1 text-sm opacity-70">
-                    {membership.contract.cancellationPolicy}
-                    {membershipSettings.cancellationNoticeDays && (
-                      <ThemedText className="text-sm font-semibold">
-                        {' '}
-                        ({membershipSettings.cancellationNoticeDays} days notice required)
-                      </ThemedText>
-                    )}
-                  </ThemedText>
-                </View>
+          <View className="mb-4">
+            <View className="mb-2 flex-row items-start">
+              <Icon name="XCircle" size={16} className="mr-2 mt-1 opacity-50" />
+              <View className="flex-1">
+                <ThemedText className="font-semibold">{t('membership.cancellationPolicy')}</ThemedText>
+                <ThemedText className="mt-1 text-sm opacity-70">
+                  {membership.contract.cancellationPolicy}
+                  {membershipSettings.cancellationNoticeDays && (
+                    <ThemedText className="text-sm font-semibold">
+                      {' '}
+                      ({membershipSettings.cancellationNoticeDays} days notice required)
+                    </ThemedText>
+                  )}
+                </ThemedText>
               </View>
             </View>
-          )}
+          </View>
           {membershipSettings.allowFreeze && (
-            <View
-              className={`mb-4 ${membershipSettings.allowCancellation ? 'border-t border-border pt-4' : ''}`}>
+            <View className="mb-4 border-t border-border pt-4">
               <View className="mb-2 flex-row items-start">
                 <Icon name="Pause" size={16} className="mr-2 mt-1 opacity-50" />
                 <View className="flex-1">
@@ -257,8 +263,7 @@ export default function MembershipScreen() {
               </View>
             </View>
           )}
-          <View
-            className={`${membershipSettings.allowFreeze || membershipSettings.allowCancellation ? 'border-t border-border pt-4' : ''}`}>
+          <View className={`${membershipSettings.allowFreeze ? 'border-t border-border pt-4' : ''}`}>
             <View className="flex-row items-start">
               <Icon name="UserX" size={16} className="mr-2 mt-1 opacity-50" />
               <View className="flex-1">
@@ -273,13 +278,27 @@ export default function MembershipScreen() {
 
         {/* Download Contract */}
         {membershipSettings.showContractDownload && (
-          <View className="mb-8">
+          <View className="mb-6">
             <Button
               title={t('membership.downloadContract')}
               icon="Download"
               variant="outline"
               onPress={handleDownloadContract}
               disabled={downloadingPdf}
+            />
+          </View>
+        )}
+
+        {/* Cancel Membership */}
+        {featureFlags.membershipCancellationEnabled && (
+          <View className="mb-8">
+            <Button
+              title={t('membership.cancelMembership')}
+              icon="XCircle"
+              variant="outline"
+              onPress={() => router.push('/screens/cancel-membership')}
+              className="border-red-500"
+              textClassName="text-red-500"
             />
           </View>
         )}
