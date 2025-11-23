@@ -206,7 +206,7 @@ export default function CalendarScreen() {
         </View>
 
         {/* Horizontal Scrollable Days */}
-        <View className="border-b border-border bg-secondary pb-2">
+        <View className="border-b border-border bg-secondary pb-2 pt-2">
           <ScrollView
             ref={scrollViewRef}
             horizontal
@@ -252,18 +252,6 @@ export default function CalendarScreen() {
                       }}>
                       {day.dayNumber}
                     </ThemedText>
-
-                    {/* Month (show only on 1st of month or first item) */}
-                    {(day.dayNumber === 1 || index === 0) && (
-                      <ThemedText
-                        className="text-[9px] font-semibold"
-                        style={{
-                          color: isSelected ? '#FFFFFF' : colors.text,
-                          opacity: isSelected ? 0.8 : 0.4,
-                        }}>
-                        {day.monthName}
-                      </ThemedText>
-                    )}
                   </View>
                 </Pressable>
               );
