@@ -66,6 +66,7 @@ export async function apiRequest<T>(
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
+      console.error(`[API Error] ${method} ${url} - Status: ${response.status}`);
       return {
         data: null,
         error: data?.message || `Request failed with status ${response.status}`,
@@ -82,6 +83,7 @@ export async function apiRequest<T>(
     clearTimeout(timeoutId);
 
     if (error instanceof Error && error.name === 'AbortError') {
+      console.error(`[API Timeout] ${method} ${url} - Request timed out after ${timeout}ms`);
       return {
         data: null,
         error: 'Request timeout',
@@ -89,6 +91,7 @@ export async function apiRequest<T>(
       };
     }
 
+    console.error(`[API Error] ${method} ${url} - ${error instanceof Error ? error.message : 'Network error'}`);
     return {
       data: null,
       error: error instanceof Error ? error.message : 'Network error',
