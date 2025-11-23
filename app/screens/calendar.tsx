@@ -5,7 +5,6 @@ import { router } from 'expo-router';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
-import ErrorState from '@/components/ErrorState';
 import CalendarClassCard from '@/components/CalendarClassCard';
 import { getUpcomingClasses, Class } from '@/api/classes';
 import { useT } from '@/contexts/LocalizationContext';
@@ -179,35 +178,6 @@ export default function CalendarScreen() {
     setSelectedDate(todayString);
   };
 
-  // Show error state
-  if (error) {
-    return (
-      <SafeAreaView edges={['top']} className="flex-1 bg-secondary">
-        <View className="flex-1 bg-background">
-          {/* Header with back button */}
-          <View className="border-b border-border bg-secondary px-6 pb-3 pt-4">
-            <View className="flex-row items-center">
-              <Pressable
-                onPress={() => router.back()}
-                className="rounded-full p-2"
-                style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
-                <Icon name="ChevronLeft" size={20} color={colors.text} />
-              </Pressable>
-              <ThemedText className="ml-4 text-lg font-bold">{t('calendar.title') || 'Calendar'}</ThemedText>
-            </View>
-          </View>
-
-          <ErrorState
-            title={t('calendar.errorTitle') || 'Unable to load classes'}
-            message={error}
-            onRetry={() => loadClasses()}
-            retryButtonText={t('common.tryAgain') || 'Try Again'}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-secondary">
       <View className="flex-1 bg-background">
@@ -300,6 +270,31 @@ export default function CalendarScreen() {
           {loading ? (
             <View className="items-center justify-center py-12">
               <ActivityIndicator size="large" color={colors.highlight} />
+            </View>
+          ) : error ? (
+            <View className="items-center justify-center py-16">
+              <View
+                className="mb-4 h-16 w-16 items-center justify-center rounded-full"
+                style={{ backgroundColor: colors.error + '20' }}>
+                <Icon name="AlertCircle" size={32} color={colors.error} />
+              </View>
+              <ThemedText className="mb-2 text-center text-lg font-bold">
+                {t('calendar.errorTitle') || 'Unable to load classes'}
+              </ThemedText>
+              <ThemedText className="mb-6 text-center text-sm opacity-70 max-w-sm">
+                {error}
+              </ThemedText>
+              <Pressable
+                onPress={loadClasses}
+                className="rounded-full px-6 py-3"
+                style={{ backgroundColor: colors.highlight }}>
+                <View className="flex-row items-center">
+                  <Icon name="RefreshCw" size={16} color="#FFFFFF" />
+                  <ThemedText className="ml-2 font-semibold" style={{ color: '#FFFFFF' }}>
+                    {t('common.tryAgain') || 'Try Again'}
+                  </ThemedText>
+                </View>
+              </Pressable>
             </View>
           ) : selectedDateClasses.length > 0 ? (
             <>
