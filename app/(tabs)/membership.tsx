@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Alert, Pressable } from 'react-native';
+import { View, ActivityIndicator, Alert, Pressable, RefreshControl } from 'react-native';
 import Header from '@/components/Header';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
@@ -20,6 +20,7 @@ export default function MembershipScreen() {
   const featureFlags = useFeatureFlags();
   const [membership, setMembership] = useState<MembershipType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   useEffect(() => {
@@ -64,6 +65,15 @@ export default function MembershipScreen() {
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadMembership();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
@@ -104,7 +114,17 @@ export default function MembershipScreen() {
   return (
     <View className="flex-1 bg-background">
       <Header title={t('membership.title')} />
-      <ThemedScroller className="px-6 pt-4">
+      <ThemedScroller
+        className="px-6 pt-4"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.highlight}
+            colors={[colors.highlight]}
+          />
+        }
+      >
         {/* Current Plan Card */}
         <View className="mb-6 rounded-2xl bg-secondary p-6">
           <View className="mb-4 flex-row items-start justify-between">

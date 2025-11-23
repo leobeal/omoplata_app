@@ -1,4 +1,4 @@
-import { View, Pressable, Alert } from 'react-native';
+import { View, Pressable, Alert, RefreshControl } from 'react-native';
 import Header from '@/components/Header';
 import ThemedText from '@/components/ThemedText';
 import Avatar from '@/components/Avatar';
@@ -20,6 +20,7 @@ export default function SettingsScreen() {
   const { tenant, clearTenant: clearTenantContext, isTenantRequired } = useTenant();
   const { logout, user } = useAuth();
   const [isClearing, setIsClearing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const isDevelopment = Constants.expoConfig?.extra?.env === 'development' || __DEV__;
 
   // Get user display name
@@ -47,6 +48,16 @@ export default function SettingsScreen() {
         },
       ]
     );
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      // TODO: Reload user profile or app config if needed
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleClearTenant = async () => {
@@ -79,7 +90,17 @@ export default function SettingsScreen() {
   return (
     <>
       <Header title={t('settings.title')} rightComponents={[<ThemeToggle />]} />
-      <ThemedScroller className="px-6 pt-4">
+      <ThemedScroller
+        className="px-6 pt-4"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.highlight}
+            colors={[colors.highlight]}
+          />
+        }
+      >
         <View className="mb-4 w-full flex-row rounded-2xl bg-secondary pb-10 pt-10">
           <View className="w-1/2 flex-col items-center">
             <Avatar name={userName} size="xl" src={user?.avatar} />
