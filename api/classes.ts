@@ -3,6 +3,12 @@ import { ENDPOINTS } from './config';
 
 export type AttendanceStatus = 'pending' | 'confirmed' | 'denied';
 
+export interface ClassCapacity {
+  max: number;
+  is_full: boolean;
+  available_spots: number;
+}
+
 export interface Class {
   id: string;
   title: string;
@@ -13,7 +19,7 @@ export interface Class {
   endTime: string;
   duration: number;
   location: string;
-  capacity: number;
+  capacity: number | ClassCapacity;
   enrolled: number;
   status: AttendanceStatus;
   description: string;
