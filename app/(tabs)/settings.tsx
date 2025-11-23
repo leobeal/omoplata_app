@@ -96,8 +96,9 @@ export default function SettingsScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.highlight}
-            colors={[colors.highlight]}
+            tintColor={colors.text}
+            colors={[colors.highlight, colors.text]}
+            progressBackgroundColor={colors.secondary}
           />
         }
       >
