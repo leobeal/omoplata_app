@@ -69,15 +69,16 @@ export default function TabsLayout() {
       return;
     }
 
-    // Priority 1: Check authentication first
-    if (!isAuthenticated) {
-      router.replace('/screens/login');
+    // Priority 1: Check if tenant selection is needed first
+    // (User must select tenant before logging in for generic builds)
+    if (isTenantRequired && !tenant) {
+      router.replace('/screens/tenant-selection');
       return;
     }
 
-    // Priority 2: Check if tenant selection is needed
-    if (isTenantRequired && !tenant) {
-      router.replace('/screens/tenant-selection');
+    // Priority 2: Check authentication after tenant is selected
+    if (!isAuthenticated) {
+      router.replace('/screens/login');
       return;
     }
   }, [isAuthLoading, isAuthenticated, isTenantLoading, isTenantRequired, tenant]);
