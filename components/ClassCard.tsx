@@ -134,7 +134,9 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
         <View className="flex-row items-center">
           <Icon name="Users" size={16} className="mr-2 opacity-50" />
           <ThemedText className="text-sm opacity-70">
-            {classData.enrolled}/{typeof classData.capacity === 'number' ? classData.capacity : classData.capacity.max} enrolled
+            {classData.capacity.max !== null
+              ? `${classData.enrolled}/${classData.capacity.max} enrolled`
+              : `${classData.enrolled} enrolled`}
           </ThemedText>
         </View>
       </View>
