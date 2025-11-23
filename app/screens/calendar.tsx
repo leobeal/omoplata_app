@@ -11,6 +11,9 @@ import { useThemeColors } from '@/contexts/ThemeColors';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const DAY_ITEM_WIDTH = 56;
+const DAY_MARGIN = 4; // mx-1 = 4px on each side
+const DAY_TOTAL_WIDTH = DAY_ITEM_WIDTH + DAY_MARGIN * 2; // 56 + 8 = 64
+const SCROLL_PADDING = 8; // paddingHorizontal on ScrollView
 
 interface DayData {
   date: Date;
@@ -44,7 +47,10 @@ export default function CalendarScreen() {
     if (!loading && scrollViewRef.current) {
       const selectedIndex = days.findIndex((day) => day.dateString === selectedDate);
       if (selectedIndex !== -1) {
-        const scrollToX = Math.max(0, selectedIndex * DAY_ITEM_WIDTH - SCREEN_WIDTH / 2 + DAY_ITEM_WIDTH / 2);
+        // Calculate item center: padding + margin + (index * totalWidth) + (itemWidth / 2)
+        const itemCenter = SCROLL_PADDING + DAY_MARGIN + selectedIndex * DAY_TOTAL_WIDTH + DAY_ITEM_WIDTH / 2;
+        // Center on screen
+        const scrollToX = Math.max(0, itemCenter - SCREEN_WIDTH / 2);
         setTimeout(() => {
           scrollViewRef.current?.scrollTo({ x: scrollToX, animated: true });
         }, 100);
@@ -122,7 +128,9 @@ export default function CalendarScreen() {
   const handleScroll = (event: any) => {
     const scrollX = event.nativeEvent.contentOffset.x;
     const centerX = scrollX + SCREEN_WIDTH / 2;
-    const centerIndex = Math.round(centerX / DAY_ITEM_WIDTH);
+    // Calculate which item is at the center of the screen
+    // First item center is at: SCROLL_PADDING + DAY_MARGIN + DAY_ITEM_WIDTH / 2
+    const centerIndex = Math.round((centerX - SCROLL_PADDING - DAY_MARGIN - DAY_ITEM_WIDTH / 2) / DAY_TOTAL_WIDTH);
 
     if (days[centerIndex]) {
       const centerDate = days[centerIndex].date;
