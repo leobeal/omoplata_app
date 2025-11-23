@@ -158,6 +158,7 @@ export default {
     startDate: 'Data de Início',
     endDate: 'Data de Término',
     renewalDate: 'Data de Renovação',
+    nextCancellationDate: 'Próxima Data de Cancelamento',
     autoRenewal: 'Renovação Automática',
     enabled: 'Ativado',
     disabled: 'Desativado',
@@ -166,6 +167,7 @@ export default {
     monthlyEquivalent: 'Equivalente Mensal',
     billedAnnually: 'Faturado anualmente',
     billedMonthly: 'Faturado mensalmente',
+    perMonth: '/mês',
     planFeatures: 'Recursos do Plano',
     limit: 'Limite',
     paymentMethod: 'Forma de Pagamento',
@@ -175,8 +177,19 @@ export default {
     freezePolicy: 'Política de Congelamento',
     transferPolicy: 'Política de Transferência',
     downloadContract: 'Baixar Contrato PDF',
+    cancelMembership: 'Cancelar Assinatura',
     noMembership: 'Nenhuma assinatura encontrada',
     supportMessage: 'Para dúvidas sobre sua assinatura, entre em contato com support@omoplata.com',
+
+    // Download messages
+    contractPdfTitle: 'Contrato PDF',
+    contractDownloadMessage: 'O contrato seria baixado de: {{url}}',
+    downloadError: 'Falha ao baixar o contrato PDF',
+
+    // Policy details
+    daysNoticeRequired: '{{count}} dias de aviso necessários',
+    upTo: 'Até',
+    daysPerYear: '{{count}} dias por ano',
 
     // Status
     active: 'Ativo',
@@ -195,11 +208,27 @@ export default {
     paymentMethod: 'Forma de Pagamento',
     sepaDirectDebit: 'Débito Direto SEPA',
     edit: 'Editar',
+    loadMore: 'Carregar Mais',
 
     // Status da fatura
     paid: 'Pago',
     pending: 'Pendente',
     overdue: 'Vencido',
+  },
+
+  // Tela de Aulas
+  classes: {
+    title: 'Todas as Aulas',
+    filters: 'Filtros',
+    clearFilters: 'Limpar Tudo',
+    category: 'Categoria',
+    level: 'Nível',
+    instructor: 'Instrutor',
+    location: 'Localização',
+    showingResults: 'Mostrando {{count}} de {{total}} aulas',
+    loadMore: 'Carregar Mais Aulas',
+    noClassesFound: 'Nenhuma Aula Encontrada',
+    tryDifferentFilters: 'Tente ajustar seus filtros',
   },
 
   // Data/Hora

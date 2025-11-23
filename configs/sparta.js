@@ -4,7 +4,7 @@ module.exports = {
   slug: 'sparta',
   bundleIdentifier: 'com.anonymous.sparta',
   owner: 'omoplata',
-  easProjectId: '', // Add your EAS project ID
+  easProjectId: '3206a6b8-0efa-401c-8894-39502f4bf59c', // Add your EAS project ID
 
   // Branding - icons
   icon: './assets/sparta/icon.png',

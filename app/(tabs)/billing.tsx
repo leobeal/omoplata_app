@@ -5,7 +5,7 @@ import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
 import { useT } from '@/contexts/LocalizationContext';
-import { getInvoices, getNextInvoice, Invoice } from '@/api/invoices';
+import { getInvoicesPaginated, getNextInvoice, Invoice } from '@/api/invoices';
 import { router } from 'expo-router';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
@@ -15,6 +15,9 @@ export default function BillingScreen() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [nextInvoice, setNextInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
     loadInvoices();
@@ -22,13 +25,34 @@ export default function BillingScreen() {
 
   const loadInvoices = async () => {
     try {
-      const [invoicesData, nextInvoiceData] = await Promise.all([getInvoices(), getNextInvoice()]);
-      setInvoices(invoicesData);
+      const [invoicesData, nextInvoiceData] = await Promise.all([
+        getInvoicesPaginated(10, 0),
+        getNextInvoice(),
+      ]);
+      setInvoices(invoicesData.invoices);
+      setHasMore(invoicesData.hasMore);
+      setOffset(10);
       setNextInvoice(nextInvoiceData);
     } catch (error) {
       console.error('Error loading invoices:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMore = async () => {
+    if (loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+    try {
+      const invoicesData = await getInvoicesPaginated(10, offset);
+      setInvoices((prev) => [...prev, ...invoicesData.invoices]);
+      setHasMore(invoicesData.hasMore);
+      setOffset((prev) => prev + 10);
+    } catch (error) {
+      console.error('Error loading more invoices:', error);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -117,7 +141,7 @@ export default function BillingScreen() {
           <ThemedText className="mb-3 text-lg font-bold">{t('billing.recentInvoices')}</ThemedText>
         </View>
 
-        <View className="mb-8 rounded-2xl bg-secondary">
+        <View className="mb-4 rounded-2xl bg-secondary">
           {invoices.map((invoice, index) => (
             <Pressable
               key={invoice.id}
@@ -153,6 +177,25 @@ export default function BillingScreen() {
             </Pressable>
           ))}
         </View>
+
+        {/* Load More Button */}
+        {hasMore && (
+          <Pressable
+            className="mb-8 flex-row items-center justify-center rounded-2xl bg-secondary p-4"
+            onPress={loadMore}
+            disabled={loadingMore}>
+            {loadingMore ? (
+              <ActivityIndicator size="small" color={colors.highlight} />
+            ) : (
+              <>
+                <ThemedText className="mr-2 font-semibold text-highlight">
+                  {t('billing.loadMore')}
+                </ThemedText>
+                <Icon name="ChevronDown" size={20} color={colors.highlight} />
+              </>
+            )}
+          </Pressable>
+        )}
 
         {/* Payment Method */}
         <View className="mb-4">

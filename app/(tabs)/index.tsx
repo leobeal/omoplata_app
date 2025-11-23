@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Pressable } from 'react-native';
 import ThemedText from '@/components/ThemedText';
 import ThemedScroller from '@/components/ThemedScroller';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -13,9 +13,11 @@ import Avatar from '@/components/Avatar';
 import { useT } from '@/contexts/LocalizationContext';
 import ClassCard from '@/components/ClassCard';
 import { getUpcomingClasses, confirmAttendance, denyAttendance, Class } from '@/api/classes';
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
   const t = useT();
+  const colors = useThemeColors();
   const [classes, setClasses] = useState<Class[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(true);
 
@@ -86,7 +88,19 @@ export default function HomeScreen() {
           <ActivityStats />
         </View>
         <View className="bg-background px-5 pb-5">
-          <Section title="Upcoming Classes" className="mb-4" />
+          <View className="mb-4 flex-row items-center justify-between">
+            <Section title="Upcoming Classes" className="flex-1" />
+            {classes.length > 3 && (
+              <Pressable onPress={() => router.push('/screens/next-classes')}>
+                <View className="flex-row items-center">
+                  <ThemedText className="mr-1 text-sm font-semibold text-highlight">
+                    View All
+                  </ThemedText>
+                  <Icon name="ChevronRight" size={16} color={colors.highlight} />
+                </View>
+              </Pressable>
+            )}
+          </View>
           {loadingClasses ? (
             <View className="items-center justify-center py-8">
               <ActivityIndicator size="large" />

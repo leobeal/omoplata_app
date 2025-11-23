@@ -158,6 +158,7 @@ export default {
     startDate: 'Start Date',
     endDate: 'End Date',
     renewalDate: 'Renewal Date',
+    nextCancellationDate: 'Next Cancellation Date',
     autoRenewal: 'Auto-Renewal',
     enabled: 'Enabled',
     disabled: 'Disabled',
@@ -166,6 +167,7 @@ export default {
     monthlyEquivalent: 'Monthly Equivalent',
     billedAnnually: 'Billed annually',
     billedMonthly: 'Billed monthly',
+    perMonth: '/mo',
     planFeatures: 'Plan Features',
     limit: 'Limit',
     paymentMethod: 'Payment Method',
@@ -175,8 +177,19 @@ export default {
     freezePolicy: 'Freeze Policy',
     transferPolicy: 'Transfer Policy',
     downloadContract: 'Download Contract PDF',
+    cancelMembership: 'Cancel Membership',
     noMembership: 'No membership found',
     supportMessage: 'For questions about your membership, please contact support@omoplata.com',
+
+    // Download messages
+    contractPdfTitle: 'Contract PDF',
+    contractDownloadMessage: 'Contract would be downloaded from: {{url}}',
+    downloadError: 'Failed to download contract PDF',
+
+    // Policy details
+    daysNoticeRequired: '{{count}} days notice required',
+    upTo: 'Up to',
+    daysPerYear: '{{count}} days per year',
 
     // Status
     active: 'Active',
@@ -195,11 +208,27 @@ export default {
     paymentMethod: 'Payment Method',
     sepaDirectDebit: 'SEPA Direct Debit',
     edit: 'Edit',
+    loadMore: 'Load More',
 
     // Invoice status
     paid: 'Paid',
     pending: 'Pending',
     overdue: 'Overdue',
+  },
+
+  // Classes Screen
+  classes: {
+    title: 'All Classes',
+    filters: 'Filters',
+    clearFilters: 'Clear All',
+    category: 'Category',
+    level: 'Level',
+    instructor: 'Instructor',
+    location: 'Location',
+    showingResults: 'Showing {{count}} of {{total}} classes',
+    loadMore: 'Load More Classes',
+    noClassesFound: 'No Classes Found',
+    tryDifferentFilters: 'Try adjusting your filters',
   },
 
   // Date/Time

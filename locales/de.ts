@@ -158,6 +158,7 @@ export default {
     startDate: 'Startdatum',
     endDate: 'Enddatum',
     renewalDate: 'Verlängerungsdatum',
+    nextCancellationDate: 'Nächstes Kündigungsdatum',
     autoRenewal: 'Automatische Verlängerung',
     enabled: 'Aktiviert',
     disabled: 'Deaktiviert',
@@ -166,6 +167,7 @@ export default {
     monthlyEquivalent: 'Monatlich entspricht',
     billedAnnually: 'Jährlich abgerechnet',
     billedMonthly: 'Monatlich abgerechnet',
+    perMonth: '/Mo',
     planFeatures: 'Plan-Funktionen',
     limit: 'Limit',
     paymentMethod: 'Zahlungsmethode',
@@ -175,8 +177,19 @@ export default {
     freezePolicy: 'Einfrieren-Richtlinie',
     transferPolicy: 'Übertragungsrichtlinie',
     downloadContract: 'Vertrag PDF herunterladen',
+    cancelMembership: 'Mitgliedschaft kündigen',
     noMembership: 'Keine Mitgliedschaft gefunden',
     supportMessage: 'Bei Fragen zu Ihrer Mitgliedschaft wenden Sie sich bitte an support@omoplata.com',
+
+    // Download messages
+    contractPdfTitle: 'Vertrag PDF',
+    contractDownloadMessage: 'Der Vertrag würde heruntergeladen von: {{url}}',
+    downloadError: 'Fehler beim Herunterladen des Vertrags PDF',
+
+    // Policy details
+    daysNoticeRequired: '{{count}} Tage Kündigungsfrist erforderlich',
+    upTo: 'Bis zu',
+    daysPerYear: '{{count}} Tage pro Jahr',
 
     // Status
     active: 'Aktiv',
@@ -195,11 +208,27 @@ export default {
     paymentMethod: 'Zahlungsmethode',
     sepaDirectDebit: 'SEPA-Lastschrift',
     edit: 'Bearbeiten',
+    loadMore: 'Mehr laden',
 
     // Rechnungsstatus
     paid: 'Bezahlt',
     pending: 'Ausstehend',
     overdue: 'Überfällig',
+  },
+
+  // Kursseite
+  classes: {
+    title: 'Alle Kurse',
+    filters: 'Filter',
+    clearFilters: 'Alle löschen',
+    category: 'Kategorie',
+    level: 'Niveau',
+    instructor: 'Trainer',
+    location: 'Standort',
+    showingResults: '{{count}} von {{total}} Kursen anzeigen',
+    loadMore: 'Mehr Kurse laden',
+    noClassesFound: 'Keine Kurse gefunden',
+    tryDifferentFilters: 'Versuchen Sie, Ihre Filter anzupassen',
   },
 
   // Datum/Zeit

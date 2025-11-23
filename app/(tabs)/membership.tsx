@@ -53,12 +53,12 @@ export default function MembershipScreen() {
     try {
       const pdfUrl = await downloadContract(membership.contract.id);
       // In a real app, this would open the PDF or download it
-      Alert.alert('Contract PDF', `Contract would be downloaded from: ${pdfUrl}`, [
-        { text: 'OK', style: 'default' },
+      Alert.alert(t('membership.contractPdfTitle'), t('membership.contractDownloadMessage', { url: pdfUrl }), [
+        { text: t('common.confirm'), style: 'default' },
       ]);
     } catch (error) {
       console.error('Error downloading contract:', error);
-      Alert.alert('Error', 'Failed to download contract PDF');
+      Alert.alert(t('common.error'), t('membership.downloadError'));
     } finally {
       setDownloadingPdf(false);
     }
@@ -196,7 +196,7 @@ export default function MembershipScreen() {
             <View className="items-end">
               <ThemedText className="text-sm opacity-50">{t('membership.monthlyEquivalent')}</ThemedText>
               <ThemedText className="text-lg font-semibold">
-                {formatAmount(membership.contract.price.monthlyEquivalent)}/mo
+                {formatAmount(membership.contract.price.monthlyEquivalent)}{t('membership.perMonth')}
               </ThemedText>
             </View>
           </View>
@@ -237,7 +237,7 @@ export default function MembershipScreen() {
                   {membershipSettings.cancellationNoticeDays && (
                     <ThemedText className="text-sm font-semibold">
                       {' '}
-                      ({membershipSettings.cancellationNoticeDays} days notice required)
+                      ({t('membership.daysNoticeRequired', { count: membershipSettings.cancellationNoticeDays })})
                     </ThemedText>
                   )}
                 </ThemedText>
@@ -255,7 +255,7 @@ export default function MembershipScreen() {
                     {membershipSettings.maxFreezeDaysPerYear && (
                       <ThemedText className="text-sm font-semibold">
                         {' '}
-                        (Up to {membershipSettings.maxFreezeDaysPerYear} days per year)
+                        ({t('membership.upTo')} {t('membership.daysPerYear', { count: membershipSettings.maxFreezeDaysPerYear })})
                       </ThemedText>
                     )}
                   </ThemedText>
