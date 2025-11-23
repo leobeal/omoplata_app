@@ -6,18 +6,25 @@ import Constants from 'expo-constants';
 // Get tenant from app config
 const tenant = Constants.expoConfig?.extra?.tenant || 'evolve';
 
-// Base URLs per environment
-const API_URLS = {
-  development: 'http://localhost:3000/api',
-  staging: 'https://staging-api.omoplata.com/api',
-  production: 'https://api.omoplata.com/api',
-} as const;
-
 // Get current environment
-const ENV = (Constants.expoConfig?.extra?.env || 'development') as keyof typeof API_URLS;
+const ENV = (Constants.expoConfig?.extra?.env || 'development') as 'development' | 'staging' | 'production';
+
+// Base URLs per environment with tenant
+const getApiUrl = (env: typeof ENV, tenantName: string): string => {
+  switch (env) {
+    case 'development':
+      return `http://${tenantName}.sportsmanager.test/api`;
+    case 'staging':
+      return `https://${tenantName}.omoplata.eu/api`;
+    case 'production':
+      return `https://${tenantName}.omoplata.de/api`;
+    default:
+      return `http://${tenantName}.sportsmanager.test/api`;
+  }
+};
 
 export const API_CONFIG = {
-  baseUrl: API_URLS[ENV],
+  baseUrl: getApiUrl(ENV, tenant),
   timeout: 30000, // 30 seconds
   tenant,
   headers: {
