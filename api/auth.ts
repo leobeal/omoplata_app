@@ -24,19 +24,16 @@ export interface RegisterRequest {
   phone?: string;
 }
 
-// API Response format (snake_case as returned by backend)
+// API Response format (camelCase as returned by backend)
 export interface User {
-  id: number;
-  prefixed_id: string;
-  first_name: string;
-  last_name: string;
-  full_name: string;
+  id: string;
   email: string;
-  locale: string;
-  profile_picture?: string;
+  firstName: string;
+  lastName: string;
   phone?: string;
-  membership_id?: string;
-  created_at: string;
+  avatar?: string;
+  membershipId?: string;
+  createdAt: string;
 }
 
 export interface ForgotPasswordRequest {
