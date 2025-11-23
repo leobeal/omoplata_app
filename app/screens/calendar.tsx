@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { View, Pressable, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
@@ -177,11 +178,19 @@ export default function CalendarScreen() {
         {/* Month/Year Header */}
         <View className="border-b border-border bg-secondary px-6 py-3">
           <View className="flex-row items-center justify-between">
+            {/* Back Button */}
+            <Pressable
+              onPress={() => router.back()}
+              className="rounded-full p-2"
+              style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+              <Icon name="ChevronLeft" size={20} color={colors.text} />
+            </Pressable>
+
             {/* Month and Year */}
             <ThemedText className="text-lg font-bold">{visibleMonthYear}</ThemedText>
 
             {/* Today Button */}
-            {!isSelectedToday && (
+            {!isSelectedToday ? (
               <Pressable
                 onPress={goToToday}
                 className="rounded-full px-3 py-2"
@@ -190,6 +199,8 @@ export default function CalendarScreen() {
                   Today
                 </ThemedText>
               </Pressable>
+            ) : (
+              <View style={{ width: 60 }} />
             )}
           </View>
         </View>
