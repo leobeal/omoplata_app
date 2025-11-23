@@ -9,17 +9,17 @@ const tenant = Constants.expoConfig?.extra?.tenant || 'evolve';
 // Get current environment
 const ENV = (Constants.expoConfig?.extra?.env || 'development') as 'development' | 'staging' | 'production';
 
-// Base URLs per environment with tenant
-const getApiUrl = (env: typeof ENV, tenantName: string): string => {
+// Base URLs per environment with tenant slug
+const getApiUrl = (env: typeof ENV, tenant: string): string => {
   switch (env) {
     case 'development':
-      return `http://${tenantName}.sportsmanager.test/api`;
+      return `http://${tenant}.sportsmanager.test/api`;
     case 'staging':
-      return `https://${tenantName}.omoplata.eu/api`;
+      return `https://${tenant}.omoplata.eu/api`;
     case 'production':
-      return `https://${tenantName}.omoplata.de/api`;
+      return `https://${tenant}.omoplata.de/api`;
     default:
-      return `http://${tenantName}.sportsmanager.test/api`;
+      return `http://${tenant}.sportsmanager.test/api`;
   }
 };
 
