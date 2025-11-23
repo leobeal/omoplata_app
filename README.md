@@ -59,18 +59,40 @@ npm run android  # Android emulator
 | `npm run lint` | Check code quality |
 | `npm run format` | Auto-format code |
 
-## Multi-Tenant Support
+## Tenant Configuration
 
-The app supports multiple gym brands through environment configuration:
+The app is **single-tenant** from the user's perspective but supports two deployment modes:
 
-- **Evolve**: Green theme (#4CAF50)
-- **Sparta**: Red theme (#D32F2F)
+### 1. Club-Specific Build
+- Tenant hard-coded in `app.config.js` (e.g., `tenant: "evolve"`)
+- White-labeled app for a specific gym
+- Users skip tenant selection - it's pre-configured
+- Perfect for gym-branded apps
 
-Configure tenant in `app.config.js` or via environment variable:
-```bash
-TENANT=evolve npm start
-TENANT=sparta npm start
+### 2. Generic Build with One-Time Selection
+- Tenant NOT set in `app.config.js` (or set to `undefined`)
+- Users select their gym once on first launch
+- Selection is permanent until app reinstall
+- Perfect for SaaS model with single App Store listing
+
+**Important:** Once a tenant is selected (either way), the app is locked to that tenant. Users cannot switch gyms within the app.
+
+Configure in `app.config.js`:
+```javascript
+// Club-specific build
+extra: {
+  tenant: "evolve",  // Hard-coded tenant
+  env: "development"
+}
+
+// Generic build
+extra: {
+  // tenant: undefined,  // Users select at first launch
+  env: "development"
+}
 ```
+
+📖 **[Full Tenant Configuration Guide](./TENANT_CONFIGURATION.md)**
 
 ## Testing
 
@@ -119,11 +141,15 @@ omoplata_app/
 │   ├── _layout.tsx        # Root layout with theme provider
 │   ├── index.tsx          # Home/Dashboard
 │   └── screens/
-│       └── login.tsx      # Login screen
+│       ├── login.tsx               # Login screen
+│       └── tenant-selection.tsx    # Gym selection (generic builds)
 ├── api/                   # API client and services
-│   ├── config.ts         # Endpoints and configuration
+│   ├── config.ts         # API config with dynamic tenant support
 │   ├── client.ts         # HTTP client with auth
-│   └── auth.ts           # Authentication service
+│   ├── auth.ts           # Authentication service
+│   ├── classes.ts        # Classes API
+│   ├── checkin.ts        # Check-in API
+│   └── invoices.ts       # Invoices API
 ├── components/           # Reusable UI components
 │   ├── Button.tsx
 │   ├── Icon.tsx
@@ -132,18 +158,21 @@ omoplata_app/
 │   └── forms/
 │       └── Input.tsx
 ├── contexts/            # React contexts
-│   ├── ThemeContext.tsx  # Theme provider
-│   └── ThemeColors.tsx   # Theme colors hook
-├── backend_apis/        # Backend API documentation
-├── configs/             # Multi-tenant configurations
-│   ├── evolve.js       # Evolve brand
-│   └── sparta.js       # Sparta brand
+│   ├── ThemeContext.tsx   # Theme provider
+│   ├── ThemeColors.tsx    # Theme colors hook
+│   └── TenantContext.tsx  # Tenant state management
 ├── utils/              # Utility functions
-│   └── color-theme.ts  # Theme definitions
-└── __tests__/          # Test suite
-    ├── screens/
-    ├── navigation/
-    └── api/
+│   ├── color-theme.ts      # Theme definitions
+│   └── tenant-storage.ts   # Persistent tenant storage
+├── backend_apis/       # Backend API documentation
+├── configs/            # Multi-tenant configurations
+│   ├── evolve.js      # Evolve brand
+│   └── sparta.js      # Sparta brand
+├── __tests__/         # Test suite
+│   ├── screens/
+│   ├── navigation/
+│   └── api/
+└── TENANT_CONFIGURATION.md  # Tenant setup guide
 ```
 
 ## API Integration
