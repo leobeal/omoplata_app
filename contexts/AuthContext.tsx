@@ -70,18 +70,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const { token: authToken, refreshToken, user: userData } = response.data;
 
+      // Transform API response (snake_case) to internal format (camelCase)
+      const transformedUser: StoredUser = {
+        id: userData.prefixed_id,
+        email: userData.email,
+        firstName: userData.first_name,
+        lastName: userData.last_name,
+        phone: userData.phone,
+        avatar: userData.profile_picture,
+        membershipId: userData.membership_id,
+      };
+
       // Save auth token and user data
       const savePromises = [
         saveAuthToken(authToken),
-        saveUser({
-          id: userData.id,
-          email: userData.email,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          phone: userData.phone,
-          avatar: userData.avatar,
-          membershipId: userData.membershipId,
-        }),
+        saveUser(transformedUser),
       ];
 
       // Only save refresh token if it exists
@@ -93,15 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Update state
       setToken(authToken);
-      setUser({
-        id: userData.id,
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        phone: userData.phone,
-        avatar: userData.avatar,
-        membershipId: userData.membershipId,
-      });
+      setUser(transformedUser);
       setApiAuthToken(authToken);
 
       return { success: true };
