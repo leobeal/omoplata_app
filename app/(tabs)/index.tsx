@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Pressable } from 'react-native';
+import { View, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
 import ThemedText from '@/components/ThemedText';
 import ThemedScroller from '@/components/ThemedScroller';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -23,6 +23,7 @@ export default function HomeScreen() {
   const [classes, setClasses] = useState<Class[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(true);
   const [classesError, setClassesError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const userName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';
 
@@ -78,6 +79,16 @@ export default function HomeScreen() {
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadClasses();
+      // TODO: Reload other data like analytics, membership info, etc.
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <>
       <Header
@@ -85,7 +96,17 @@ export default function HomeScreen() {
         leftComponent={<Avatar name={userName} size="sm" link="/settings" src={user?.avatar} />}
         rightComponents={[<HeaderIcon icon="Bell" hasBadge href="/screens/notifications" />]}
       />
-      <ThemedScroller className="flex-1 bg-background !px-0">
+      <ThemedScroller
+        className="flex-1 bg-background !px-0"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.highlight}
+            colors={[colors.highlight]}
+          />
+        }
+      >
         <View className="bg-secondary px-6">
           <Section
             title={t('home.welcomeBack')}

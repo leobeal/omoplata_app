@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Pressable, ScrollView } from 'react-native';
+import { View, ActivityIndicator, Pressable, ScrollView, RefreshControl } from 'react-native';
 import Header from '@/components/Header';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
@@ -27,6 +27,7 @@ export default function NextClassesScreen() {
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -124,6 +125,15 @@ export default function NextClassesScreen() {
     setSelectedLevel(undefined);
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([loadFilterOptions(), loadClasses(true)]);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const hasActiveFilters = selectedCategory || selectedLevel;
 
   return (
@@ -190,7 +200,17 @@ export default function NextClassesScreen() {
       </View>
 
       {/* Classes list */}
-      <ThemedScroller className="flex-1 px-6 pt-4">
+      <ThemedScroller
+        className="flex-1 px-6 pt-4"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.highlight}
+            colors={[colors.highlight]}
+          />
+        }
+      >
         {loading ? (
           <View className="items-center justify-center py-12">
             <ActivityIndicator size="large" />
