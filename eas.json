@@ -11,7 +11,7 @@
       "ios": {
         "simulator": true,
         "env": {
-          "TENANT": "evolve"
+          "TENANT": "sparta"
         }
       }
     },

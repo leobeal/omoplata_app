@@ -1,5 +1,8 @@
 node_modules
 
+.android/
+.ios/
+
 # Expo build artifacts
 dist/
 .expo/
