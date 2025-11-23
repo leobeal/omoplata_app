@@ -99,8 +99,10 @@ export const ENDPOINTS = {
   CLASSES: {
     NEXT: '/classes/next',
     DETAILS: (id: string) => `/classes/${id}`,
-    BOOK: (id: string) => `/classes/${id}/book`,
-    CANCEL_BOOKING: (id: string) => `/classes/${id}/cancel`,
+  },
+  // Attendance Intentions
+  ATTENDANCE: {
+    CREATE_INTENTION: '/attendance-intentions',
   },
   // Check-in
   CHECKIN: {

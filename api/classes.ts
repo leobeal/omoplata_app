@@ -154,29 +154,36 @@ export const getClassesPaginated = async (
 };
 
 /**
+ * Set attendance intention for a class
+ */
+export const setAttendanceIntention = async (
+  occurrenceId: string,
+  decision: 'confirm' | 'decline',
+  notes?: string
+): Promise<void> => {
+  const response = await api.post(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
+    occurrence_id: parseInt(occurrenceId),
+    decision,
+    notes: notes || '',
+  });
+
+  if (response.error) {
+    throw new Error(response.error || 'Failed to set attendance intention');
+  }
+};
+
+/**
  * Confirm attendance for a class
  */
-export const confirmAttendance = async (classId: string): Promise<Class> => {
-  const response = await api.post<{ class: Class }>(ENDPOINTS.CLASSES.BOOK(classId));
-
-  if (response.error || !response.data) {
-    throw new Error(response.error || 'Failed to confirm attendance');
-  }
-
-  return response.data.class;
+export const confirmAttendance = async (classId: string, notes?: string): Promise<void> => {
+  await setAttendanceIntention(classId, 'confirm', notes);
 };
 
 /**
  * Deny attendance for a class
  */
-export const denyAttendance = async (classId: string): Promise<Class> => {
-  const response = await api.post<{ class: Class }>(ENDPOINTS.CLASSES.CANCEL_BOOKING(classId));
-
-  if (response.error || !response.data) {
-    throw new Error(response.error || 'Failed to deny attendance');
-  }
-
-  return response.data.class;
+export const denyAttendance = async (classId: string, notes?: string): Promise<void> => {
+  await setAttendanceIntention(classId, 'decline', notes);
 };
 
 /**

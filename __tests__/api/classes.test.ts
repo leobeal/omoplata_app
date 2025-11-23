@@ -290,22 +290,36 @@ describe('Classes API', () => {
   describe('confirmAttendance', () => {
     it('should confirm attendance for a class', async () => {
       const mockResponse = {
-        data: {
-          class: {
-            id: '1000032',
-            title: 'Test Class',
-            status: 'confirmed',
-          },
-        },
+        data: { success: true },
         error: null,
       };
 
       mockApi.post.mockResolvedValue(mockResponse);
 
-      const result = await confirmAttendance('1000032');
+      await confirmAttendance('1000032');
 
-      expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.CLASSES.BOOK('1000032'));
-      expect(result).toEqual(mockResponse.data.class);
+      expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
+        occurrence_id: 1000032,
+        decision: 'confirm',
+        notes: '',
+      });
+    });
+
+    it('should confirm attendance with notes', async () => {
+      const mockResponse = {
+        data: { success: true },
+        error: null,
+      };
+
+      mockApi.post.mockResolvedValue(mockResponse);
+
+      await confirmAttendance('1000032', 'See you there!');
+
+      expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
+        occurrence_id: 1000032,
+        decision: 'confirm',
+        notes: 'See you there!',
+      });
     });
 
     it('should throw error when confirmation fails', async () => {
@@ -321,22 +335,36 @@ describe('Classes API', () => {
   describe('denyAttendance', () => {
     it('should deny attendance for a class', async () => {
       const mockResponse = {
-        data: {
-          class: {
-            id: '1000032',
-            title: 'Test Class',
-            status: 'denied',
-          },
-        },
+        data: { success: true },
         error: null,
       };
 
       mockApi.post.mockResolvedValue(mockResponse);
 
-      const result = await denyAttendance('1000032');
+      await denyAttendance('1000032');
 
-      expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.CLASSES.CANCEL_BOOKING('1000032'));
-      expect(result).toEqual(mockResponse.data.class);
+      expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
+        occurrence_id: 1000032,
+        decision: 'decline',
+        notes: '',
+      });
+    });
+
+    it('should deny attendance with notes', async () => {
+      const mockResponse = {
+        data: { success: true },
+        error: null,
+      };
+
+      mockApi.post.mockResolvedValue(mockResponse);
+
+      await denyAttendance('1000032', 'Cannot make it');
+
+      expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
+        occurrence_id: 1000032,
+        decision: 'decline',
+        notes: 'Cannot make it',
+      });
     });
 
     it('should throw error when denial fails', async () => {
