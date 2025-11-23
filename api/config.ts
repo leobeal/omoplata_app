@@ -37,13 +37,13 @@ export const API_CONFIG = {
 export const ENDPOINTS = {
   // Auth
   AUTH: {
-    LOGIN: '/auth/login',
-    REGISTER: '/auth/register',
-    LOGOUT: '/auth/logout',
-    REFRESH: '/auth/refresh',
-    FORGOT_PASSWORD: '/auth/forgot-password',
-    RESET_PASSWORD: '/auth/reset-password',
-    VERIFY_EMAIL: '/auth/verify-email',
+    LOGIN: '/login',
+    REGISTER: '/register',
+    LOGOUT: '/logout',
+    REFRESH: '/refresh',
+    FORGOT_PASSWORD: '/forgot-password',
+    RESET_PASSWORD: '/reset-password',
+    VERIFY_EMAIL: '/verify-email',
   },
   // User
   USER: {
@@ -64,9 +64,8 @@ export const ENDPOINTS = {
   },
   // Classes
   CLASSES: {
-    LIST: '/classes',
+    NEXT: '/classes/next',
     DETAILS: (id: string) => `/classes/${id}`,
-    SCHEDULE: '/classes/schedule',
     BOOK: (id: string) => `/classes/${id}/book`,
     CANCEL_BOOKING: (id: string) => `/classes/${id}/cancel`,
   },
@@ -74,15 +73,12 @@ export const ENDPOINTS = {
   CHECKIN: {
     CREATE: '/checkin',
     HISTORY: '/checkin/history',
+    STATS: '/checkin/stats',
     QR_CODE: '/checkin/qr-code',
   },
-  // Payments
-  PAYMENTS: {
-    METHODS: '/payments/methods',
-    ADD_METHOD: '/payments/methods',
-    DELETE_METHOD: (id: string) => `/payments/methods/${id}`,
-    INVOICES: '/payments/invoices',
-    PAY_INVOICE: (id: string) => `/payments/invoices/${id}/pay`,
+  // Invoices
+  INVOICES: {
+    LIST: '/invoices',
   },
   // Notifications
   NOTIFICATIONS: {

@@ -148,7 +148,7 @@ export const checkinApi = {
    * Get check-in statistics
    */
   getStats: async (period?: 'week' | 'month' | 'year' | 'all') => {
-    const endpoint = period ? `${ENDPOINTS.CHECKIN.HISTORY}/stats?period=${period}` : `${ENDPOINTS.CHECKIN.HISTORY}/stats`;
+    const endpoint = period ? `${ENDPOINTS.CHECKIN.STATS}?period=${period}` : ENDPOINTS.CHECKIN.STATS;
     return api.get<CheckinStatsResponse>(endpoint);
   },
 

@@ -31,97 +31,37 @@ export interface ClassFilters {
 /**
  * Fetch upcoming classes
  */
-export const getUpcomingClasses = async (): Promise<Class[]> => {
-  const response = await api.get<{ classes: Class[] }>(ENDPOINTS.CLASSES.LIST);
+export const getUpcomingClasses = async (limit?: number): Promise<Class[]> => {
+  const params = limit ? `?limit=${limit}` : '';
+  const response = await api.get<{ success: boolean; data: Class[] }>(`${ENDPOINTS.CLASSES.NEXT}${params}`);
 
   if (response.error || !response.data) {
     throw new Error(response.error || 'Failed to fetch classes');
   }
 
-  return response.data.classes || [];
+  return response.data.data || [];
 };
 
 /**
- * Fetch classes with pagination and filtering
+ * Fetch classes with pagination
+ * Note: The API endpoint /classes/next doesn't support all filter options.
+ * Filtering should be done client-side if needed.
  */
 export const getClassesPaginated = async (
-  limit: number = 10,
-  offset: number = 0,
-  filters?: ClassFilters
-): Promise<{ classes: Class[]; hasMore: boolean; total: number }> => {
-  const params = new URLSearchParams({
-    limit: String(limit),
-    offset: String(offset),
-    ...(filters?.category && { category: filters.category }),
-    ...(filters?.level && { level: filters.level }),
-    ...(filters?.instructor && { instructor: filters.instructor }),
-    ...(filters?.location && { location: filters.location }),
-  });
-
-  const endpoint = `${ENDPOINTS.CLASSES.LIST}?${params.toString()}`;
-  const response = await api.get<{ classes: Class[]; total: number; hasMore: boolean }>(endpoint);
+  limit: number = 10
+): Promise<{ classes: Class[]; total: number }> => {
+  const response = await api.get<{ success: boolean; data: Class[]; meta: { total: number } }>(
+    `${ENDPOINTS.CLASSES.NEXT}?limit=${limit}`
+  );
 
   if (response.error || !response.data) {
     throw new Error(response.error || 'Failed to fetch classes');
   }
 
   return {
-    classes: response.data.classes || [],
-    total: response.data.total || 0,
-    hasMore: response.data.hasMore || false,
+    classes: response.data.data || [],
+    total: response.data.meta?.total || 0,
   };
-};
-
-/**
- * Get unique categories from classes
- */
-export const getClassCategories = async (): Promise<string[]> => {
-  const response = await api.get<{ categories: string[] }>(`${ENDPOINTS.CLASSES.LIST}/categories`);
-
-  if (response.error || !response.data) {
-    throw new Error(response.error || 'Failed to fetch categories');
-  }
-
-  return response.data.categories || [];
-};
-
-/**
- * Get unique levels from classes
- */
-export const getClassLevels = async (): Promise<string[]> => {
-  const response = await api.get<{ levels: string[] }>(`${ENDPOINTS.CLASSES.LIST}/levels`);
-
-  if (response.error || !response.data) {
-    throw new Error(response.error || 'Failed to fetch levels');
-  }
-
-  return response.data.levels || [];
-};
-
-/**
- * Get unique instructors from classes
- */
-export const getClassInstructors = async (): Promise<string[]> => {
-  const response = await api.get<{ instructors: string[] }>(`${ENDPOINTS.CLASSES.LIST}/instructors`);
-
-  if (response.error || !response.data) {
-    throw new Error(response.error || 'Failed to fetch instructors');
-  }
-
-  return response.data.instructors || [];
-};
-
-/**
- * Get unique locations from classes
- */
-export const getClassLocations = async (): Promise<string[]> => {
-  const response = await api.get<{ locations: string[] }>(`${ENDPOINTS.CLASSES.LIST}/locations`);
-
-  if (response.error || !response.data) {
-    throw new Error(response.error || 'Failed to fetch locations');
-  }
-
-  return response.data.locations || [];
 };
 
 /**
