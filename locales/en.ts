@@ -231,6 +231,13 @@ export default {
     tryDifferentFilters: 'Try adjusting your filters',
   },
 
+  // Calendar Screen
+  calendar: {
+    title: 'Class Calendar',
+    legend: 'Class Categories',
+    noClasses: 'No classes scheduled for this day',
+  },
+
   // Date/Time
   date: {
     monday: 'Monday',

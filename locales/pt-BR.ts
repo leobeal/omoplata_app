@@ -231,6 +231,13 @@ export default {
     tryDifferentFilters: 'Tente ajustar seus filtros',
   },
 
+  // Calendário
+  calendar: {
+    title: 'Calendário de Aulas',
+    legend: 'Categorias de Aulas',
+    noClasses: 'Nenhuma aula agendada para este dia',
+  },
+
   // Data/Hora
   date: {
     monday: 'Segunda-feira',
