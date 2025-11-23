@@ -1,29 +1,20 @@
 import React, { useState } from 'react';
-import { View, ScrollView, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
-import { Link, router } from 'expo-router';
+import { View, ScrollView, KeyboardAvoidingView, Platform, ImageBackground, Alert } from 'react-native';
+import { router } from 'expo-router';
 import Input from '@/components/forms/Input';
 import ThemedText from '@/components/ThemedText';
 import { Button } from '@/components/Button';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useThemeColors } from '@/contexts/ThemeColors';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import AnimatedView from '@/components/AnimatedView';
 import Icon from '@/components/Icon';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTenant } from '@/contexts/TenantContext';
 
-export default function LoginScreen() {
+export default function ForgotPasswordScreen() {
   const insets = useSafeAreaInsets();
-  const colors = useThemeColors();
-  const { login } = useAuth();
-  const { isTenantRequired } = useTenant();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [generalError, setGeneralError] = useState('');
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,45 +29,34 @@ export default function LoginScreen() {
     return true;
   };
 
-  const validatePassword = (password: string) => {
-    if (!password) {
-      setPasswordError('Password is required');
-      return false;
-    } else if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
-      return false;
-    }
-    setPasswordError('');
-    return true;
-  };
-
-  const handleBack = () => {
-    // If tenant selection is required (generic build), go to tenant selection
-    // Otherwise, go to tenant selection anyway as there's no other screen
-    router.push('/screens/tenant-selection');
-  };
-
-  const handleLogin = async () => {
+  const handleResetPassword = async () => {
     const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-    setGeneralError('');
 
-    if (isEmailValid && isPasswordValid) {
+    if (isEmailValid) {
       setIsLoading(true);
 
       try {
-        const result = await login(email, password);
+        // TODO: Replace with actual API call when password reset endpoint is available
+        // const response = await api.post('/auth/forgot-password', { email });
 
-        if (result.success) {
-          // Navigate to home screen after successful login
-          router.replace('/');
-        } else {
-          setGeneralError(result.error || 'Login failed. Please try again.');
-        }
-      } catch (error) {
-        setGeneralError('An unexpected error occurred. Please try again.');
-      } finally {
+        // Simulate API call for now
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
         setIsLoading(false);
+
+        // Show success message
+        Alert.alert(
+          'Password Reset Link Sent',
+          "We've sent a password reset link to your email address. Please check your inbox.",
+          [{ text: 'OK', onPress: () => router.back() }]
+        );
+      } catch (error) {
+        setIsLoading(false);
+        Alert.alert(
+          'Error',
+          'Failed to send password reset link. Please try again.',
+          [{ text: 'OK' }]
+        );
       }
     }
   };
@@ -99,19 +79,14 @@ export default function LoginScreen() {
             className="w-full flex-row items-center justify-between px-global"
             style={{ paddingTop: insets.top + 16 }}
           >
-            {/* Only show back button for generic builds where tenant selection is required */}
-            {isTenantRequired ? (
-              <Icon name="ArrowLeft" onPress={handleBack} size={24} color="white" />
-            ) : (
-              <View style={{ width: 24 }} />
-            )}
+            <Icon name="ArrowLeft" onPress={() => router.back()} size={24} color="white" />
             <View style={{ width: 24 }} />
           </View>
 
           {/* Spacer */}
           <View className="flex-1" />
 
-          {/* Login Form */}
+          {/* Reset Password Form */}
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
@@ -119,15 +94,11 @@ export default function LoginScreen() {
             <AnimatedView duration={500} delay={200} animation="slideInBottom" className="p-4">
               <View className="p-6 bg-background border border-border rounded-3xl">
                 <View className="items-center justify-center mb-6">
-                  <ThemedText className="text-3xl font-outfit-bold">Login</ThemedText>
-                  <ThemedText className="text-sm opacity-60">Sign in to your account</ThemedText>
+                  <ThemedText className="text-3xl font-outfit-bold">Reset Password</ThemedText>
+                  <ThemedText className="text-sm opacity-60 text-center">
+                    Enter your email address to recover password
+                  </ThemedText>
                 </View>
-
-                {generalError ? (
-                  <View className="bg-red-500/10 border border-red-500 rounded-lg p-3 mb-4">
-                    <ThemedText className="text-red-500 text-center">{generalError}</ThemedText>
-                  </View>
-                ) : null}
 
                 <Input
                   label="Email"
@@ -143,30 +114,13 @@ export default function LoginScreen() {
                   variant="inline"
                 />
 
-                <Input
-                  label="Password"
-                  value={password}
-                  onChangeText={(text) => {
-                    setPassword(text);
-                    if (passwordError) validatePassword(text);
-                  }}
-                  error={passwordError}
-                  isPassword={true}
-                  autoCapitalize="none"
-                  variant="inline"
-                />
-
                 <Button
-                  title="Login"
-                  onPress={handleLogin}
+                  title="Send Reset Link"
+                  onPress={handleResetPassword}
                   loading={isLoading}
                   size="large"
                   className="mb-4"
                 />
-
-                <Link className="underline text-center text-text text-sm mb-4" href="/screens/forgot-password">
-                  Forgot Password?
-                </Link>
               </View>
             </AnimatedView>
           </KeyboardAvoidingView>
