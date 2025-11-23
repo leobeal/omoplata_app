@@ -146,41 +146,25 @@ export default function CalendarScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
+    <SafeAreaView edges={['top']} className="flex-1 bg-secondary">
       <View className="flex-1 bg-background">
-        {/* Month/Year Header with Navigation */}
+        {/* Month/Year Header */}
         <View className="border-b border-border bg-secondary px-6 py-3">
           <View className="flex-row items-center justify-between">
-            {/* Previous Month Arrow */}
-            <Pressable
-              onPress={goToPreviousMonth}
-              className="rounded-full p-2"
-              style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
-              <Icon name="ChevronLeft" size={20} color={colors.text} />
-            </Pressable>
-
             {/* Month and Year */}
             <ThemedText className="text-lg font-bold">{currentMonthYear}</ThemedText>
 
-            {/* Next Month Arrow or Today Button */}
-            <View className="flex-row items-center gap-2">
-              {!isSelectedToday && (
-                <Pressable
-                  onPress={goToToday}
-                  className="rounded-full px-3 py-2"
-                  style={{ backgroundColor: colors.highlight }}>
-                  <ThemedText className="text-xs font-semibold" style={{ color: '#FFFFFF' }}>
-                    Today
-                  </ThemedText>
-                </Pressable>
-              )}
+            {/* Today Button */}
+            {!isSelectedToday && (
               <Pressable
-                onPress={goToNextMonth}
-                className="rounded-full p-2"
-                style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
-                <Icon name="ChevronRight" size={20} color={colors.text} />
+                onPress={goToToday}
+                className="rounded-full px-3 py-2"
+                style={{ backgroundColor: colors.highlight }}>
+                <ThemedText className="text-xs font-semibold" style={{ color: '#FFFFFF' }}>
+                  Today
+                </ThemedText>
               </Pressable>
-            </View>
+            )}
           </View>
         </View>
 
