@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, ScrollView, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import { Link, router } from 'expo-router';
 import Input from '@/components/forms/Input';
 import ThemedText from '@/components/ThemedText';
 import { Button } from '@/components/Button';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/contexts/ThemeColors';
+import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
 import AnimatedView from '@/components/AnimatedView';
 import Icon from '@/components/Icon';
 import { useAuth } from '@/contexts/AuthContext';
@@ -80,92 +82,96 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background">
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        bounces={true}
-        alwaysBounceVertical={true}
-        className="flex-1"
-      >
-        {/* Header */}
-        <View
-          className="w-full flex-row items-center justify-between px-global"
-          style={{ paddingTop: insets.top + 16 }}
+    <ImageBackground source={require('@/assets/_global/img/onboarding-1.jpg')} style={{ flex: 1 }}>
+      <LinearGradient colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.5)']} style={{ flex: 1 }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bounces={true}
+          alwaysBounceVertical={true}
+          className="flex-1"
         >
-          <Icon name="ArrowLeft" onPress={handleBack} size={24} color={colors.text} />
-          <Link href="/screens/signup" className="text-text border border-border px-3 rounded-xl py-2">
-            Sign Up
-          </Link>
-        </View>
+          <StatusBar style="light" />
 
-        {/* Spacer */}
-        <View className="flex-1" />
+          {/* Header */}
+          <View
+            className="w-full flex-row items-center justify-between px-global"
+            style={{ paddingTop: insets.top + 16 }}
+          >
+            <Icon name="ArrowLeft" onPress={handleBack} size={24} color="white" />
+            <Link href="/screens/signup" className="text-white border border-white/60 px-3 rounded-xl py-2">
+              Sign Up
+            </Link>
+          </View>
 
-        {/* Login Form */}
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-        >
-          <AnimatedView duration={500} delay={200} animation="slideInBottom" className="p-4">
-            <View className="p-6 bg-secondary border border-border rounded-3xl">
-              <View className="items-center justify-center mb-6">
-                <ThemedText className="text-3xl font-outfit-bold">Login</ThemedText>
-                <ThemedText className="text-sm opacity-60">Sign in to your account</ThemedText>
-              </View>
+          {/* Spacer */}
+          <View className="flex-1" />
 
-              {generalError ? (
-                <View className="bg-red-500/10 border border-red-500 rounded-lg p-3 mb-4">
-                  <ThemedText className="text-red-500 text-center">{generalError}</ThemedText>
+          {/* Login Form */}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+          >
+            <AnimatedView duration={500} delay={200} animation="slideInBottom" className="p-4">
+              <View className="p-6 bg-background border border-border rounded-3xl">
+                <View className="items-center justify-center mb-6">
+                  <ThemedText className="text-3xl font-outfit-bold">Login</ThemedText>
+                  <ThemedText className="text-sm opacity-60">Sign in to your account</ThemedText>
                 </View>
-              ) : null}
 
-              <Input
-                label="Email"
-                value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  if (emailError) validateEmail(text);
-                }}
-                error={emailError}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                variant="inline"
-              />
+                {generalError ? (
+                  <View className="bg-red-500/10 border border-red-500 rounded-lg p-3 mb-4">
+                    <ThemedText className="text-red-500 text-center">{generalError}</ThemedText>
+                  </View>
+                ) : null}
 
-              <Input
-                label="Password"
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  if (passwordError) validatePassword(text);
-                }}
-                error={passwordError}
-                isPassword={true}
-                autoCapitalize="none"
-                variant="inline"
-              />
+                <Input
+                  label="Email"
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (emailError) validateEmail(text);
+                  }}
+                  error={emailError}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  variant="inline"
+                />
 
-              <Button
-                title="Login"
-                onPress={handleLogin}
-                loading={isLoading}
-                size="large"
-                className="mb-4"
-              />
+                <Input
+                  label="Password"
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (passwordError) validatePassword(text);
+                  }}
+                  error={passwordError}
+                  isPassword={true}
+                  autoCapitalize="none"
+                  variant="inline"
+                />
 
-              <Link className="underline text-center text-text text-sm mb-4" href="/screens/forgot-password">
-                Forgot Password?
-              </Link>
-            </View>
-          </AnimatedView>
-        </KeyboardAvoidingView>
+                <Button
+                  title="Login"
+                  onPress={handleLogin}
+                  loading={isLoading}
+                  size="large"
+                  className="mb-4"
+                />
 
-        {/* Bottom Spacer for safe area */}
-        <View style={{ height: insets.bottom + 16 }} />
-      </ScrollView>
-    </View>
+                <Link className="underline text-center text-text text-sm mb-4" href="/screens/forgot-password">
+                  Forgot Password?
+                </Link>
+              </View>
+            </AnimatedView>
+          </KeyboardAvoidingView>
+
+          {/* Bottom Spacer for safe area */}
+          <View style={{ height: insets.bottom + 16 }} />
+        </ScrollView>
+      </LinearGradient>
+    </ImageBackground>
   );
 }
