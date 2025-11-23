@@ -113,14 +113,14 @@ export const checkinApi = {
    * Create a new check-in
    */
   checkin: async (request: CheckinRequest) => {
-    return api.post<CheckinResponse>('/checkin', request);
+    return api.post<CheckinResponse>(ENDPOINTS.CHECKIN.CREATE, request);
   },
 
   /**
    * Check out from gym
    */
   checkout: async (checkinId: string) => {
-    return api.post('/checkin/checkout', { checkinId });
+    return api.post(`${ENDPOINTS.CHECKIN.CREATE}/checkout`, { checkinId });
   },
 
   /**
@@ -139,7 +139,7 @@ export const checkinApi = {
         .map(([k, v]) => [k, String(v)])
     ).toString();
 
-    const endpoint = queryParams ? `/checkin/history?${queryParams}` : '/checkin/history';
+    const endpoint = queryParams ? `${ENDPOINTS.CHECKIN.HISTORY}?${queryParams}` : ENDPOINTS.CHECKIN.HISTORY;
 
     return api.get<CheckinHistoryResponse>(endpoint);
   },
@@ -148,7 +148,7 @@ export const checkinApi = {
    * Get check-in statistics
    */
   getStats: async (period?: 'week' | 'month' | 'year' | 'all') => {
-    const endpoint = period ? `/checkin/stats?period=${period}` : '/checkin/stats';
+    const endpoint = period ? `${ENDPOINTS.CHECKIN.HISTORY}/stats?period=${period}` : `${ENDPOINTS.CHECKIN.HISTORY}/stats`;
     return api.get<CheckinStatsResponse>(endpoint);
   },
 
@@ -156,13 +156,13 @@ export const checkinApi = {
    * Check if user is currently checked in
    */
   getActive: async () => {
-    return api.get<ActiveCheckinResponse>('/checkin/active');
+    return api.get<ActiveCheckinResponse>(`${ENDPOINTS.CHECKIN.CREATE}/active`);
   },
 
   /**
    * Generate QR code for member check-in
    */
   generateQRCode: async () => {
-    return api.get('/checkin/qr-code');
+    return api.get(ENDPOINTS.CHECKIN.QR_CODE);
   },
 };

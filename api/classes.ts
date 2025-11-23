@@ -1,4 +1,5 @@
-import classesData from '@/data/classes.json';
+import { api } from './client';
+import { ENDPOINTS } from './config';
 
 export type AttendanceStatus = 'pending' | 'confirmed' | 'denied';
 
@@ -31,25 +32,13 @@ export interface ClassFilters {
  * Fetch upcoming classes
  */
 export const getUpcomingClasses = async (): Promise<Class[]> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  const response = await api.get<{ classes: Class[] }>(ENDPOINTS.CLASSES.LIST);
 
-  // Filter classes that are today or in the future
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to fetch classes');
+  }
 
-  return (classesData as Class[])
-    .filter((cls) => {
-      const classDate = new Date(cls.date);
-      classDate.setHours(0, 0, 0, 0);
-      return classDate >= today;
-    })
-    .sort((a, b) => {
-      // Sort by date, then by start time
-      const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
-      if (dateCompare !== 0) return dateCompare;
-      return a.startTime.localeCompare(b.startTime);
-    });
+  return response.data.classes || [];
 };
 
 /**
@@ -60,123 +49,116 @@ export const getClassesPaginated = async (
   offset: number = 0,
   filters?: ClassFilters
 ): Promise<{ classes: Class[]; hasMore: boolean; total: number }> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Filter classes that are today or in the future
-  let filteredClasses = (classesData as Class[]).filter((cls) => {
-    const classDate = new Date(cls.date);
-    classDate.setHours(0, 0, 0, 0);
-    return classDate >= today;
+  const params = new URLSearchParams({
+    limit: String(limit),
+    offset: String(offset),
+    ...(filters?.category && { category: filters.category }),
+    ...(filters?.level && { level: filters.level }),
+    ...(filters?.instructor && { instructor: filters.instructor }),
+    ...(filters?.location && { location: filters.location }),
   });
 
-  // Apply filters
-  if (filters) {
-    if (filters.category) {
-      filteredClasses = filteredClasses.filter((cls) => cls.category === filters.category);
-    }
-    if (filters.level) {
-      filteredClasses = filteredClasses.filter((cls) => cls.level === filters.level);
-    }
-    if (filters.instructor) {
-      filteredClasses = filteredClasses.filter((cls) => cls.instructor === filters.instructor);
-    }
-    if (filters.location) {
-      filteredClasses = filteredClasses.filter((cls) => cls.location === filters.location);
-    }
+  const endpoint = `${ENDPOINTS.CLASSES.LIST}?${params.toString()}`;
+  const response = await api.get<{ classes: Class[]; total: number; hasMore: boolean }>(endpoint);
+
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to fetch classes');
   }
 
-  // Sort by date and time
-  filteredClasses.sort((a, b) => {
-    const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
-    if (dateCompare !== 0) return dateCompare;
-    return a.startTime.localeCompare(b.startTime);
-  });
-
-  const total = filteredClasses.length;
-  const classes = filteredClasses.slice(offset, offset + limit);
-  const hasMore = offset + limit < total;
-
-  return { classes, hasMore, total };
+  return {
+    classes: response.data.classes || [],
+    total: response.data.total || 0,
+    hasMore: response.data.hasMore || false,
+  };
 };
 
 /**
  * Get unique categories from classes
  */
 export const getClassCategories = async (): Promise<string[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  const categories = [...new Set((classesData as Class[]).map((cls) => cls.category).filter(Boolean))];
-  return categories as string[];
+  const response = await api.get<{ categories: string[] }>(`${ENDPOINTS.CLASSES.LIST}/categories`);
+
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to fetch categories');
+  }
+
+  return response.data.categories || [];
 };
 
 /**
  * Get unique levels from classes
  */
 export const getClassLevels = async (): Promise<string[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  const levels = [...new Set((classesData as Class[]).map((cls) => cls.level))];
-  return levels;
+  const response = await api.get<{ levels: string[] }>(`${ENDPOINTS.CLASSES.LIST}/levels`);
+
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to fetch levels');
+  }
+
+  return response.data.levels || [];
 };
 
 /**
  * Get unique instructors from classes
  */
 export const getClassInstructors = async (): Promise<string[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  const instructors = [...new Set((classesData as Class[]).map((cls) => cls.instructor))];
-  return instructors;
+  const response = await api.get<{ instructors: string[] }>(`${ENDPOINTS.CLASSES.LIST}/instructors`);
+
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to fetch instructors');
+  }
+
+  return response.data.instructors || [];
 };
 
 /**
  * Get unique locations from classes
  */
 export const getClassLocations = async (): Promise<string[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  const locations = [...new Set((classesData as Class[]).map((cls) => cls.location))];
-  return locations;
+  const response = await api.get<{ locations: string[] }>(`${ENDPOINTS.CLASSES.LIST}/locations`);
+
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to fetch locations');
+  }
+
+  return response.data.locations || [];
 };
 
 /**
  * Confirm attendance for a class
  */
 export const confirmAttendance = async (classId: string): Promise<Class> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  const response = await api.post<{ class: Class }>(ENDPOINTS.CLASSES.BOOK(classId));
 
-  const classItem = (classesData as Class[]).find((cls) => cls.id === classId);
-  if (!classItem) {
-    throw new Error('Class not found');
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to confirm attendance');
   }
 
-  // In a real app, this would update the backend
-  return { ...classItem, status: 'confirmed' };
+  return response.data.class;
 };
 
 /**
  * Deny attendance for a class
  */
 export const denyAttendance = async (classId: string): Promise<Class> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  const response = await api.post<{ class: Class }>(ENDPOINTS.CLASSES.CANCEL_BOOKING(classId));
 
-  const classItem = (classesData as Class[]).find((cls) => cls.id === classId);
-  if (!classItem) {
-    throw new Error('Class not found');
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to deny attendance');
   }
 
-  // In a real app, this would update the backend
-  return { ...classItem, status: 'denied' };
+  return response.data.class;
 };
 
 /**
  * Get a single class by ID
  */
 export const getClassById = async (id: string): Promise<Class | null> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  const classItem = (classesData as Class[]).find((cls) => cls.id === id);
-  return classItem ? (classItem as Class) : null;
+  const response = await api.get<{ class: Class }>(ENDPOINTS.CLASSES.DETAILS(id));
+
+  if (response.error || !response.data) {
+    return null;
+  }
+
+  return response.data.class;
 };
