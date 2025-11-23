@@ -9,6 +9,7 @@ import { useT } from '@/contexts/LocalizationContext';
 import { defaultNavigation, NavigationConfig as FullNavigationConfig } from '@/configs/navigation';
 import { getNavigationConfig, NavigationConfig as ApiNavigationConfig } from '@/api/app-config';
 import { useTenant } from '@/contexts/TenantContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
 
 export default function TabsLayout() {
@@ -16,6 +17,7 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const t = useT();
   const { tenant, isLoading: isTenantLoading, isTenantRequired } = useTenant();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
   const [apiConfig, setApiConfig] = useState<ApiNavigationConfig | null>(null);
 
@@ -60,16 +62,28 @@ export default function TabsLayout() {
   const tabs = navConfig.tabs || [];
   const showCheckInButton = navConfig.showCheckInButton ?? true;
 
-  // Check if tenant selection is needed
+  // Check authentication and tenant requirements
   useEffect(() => {
-    if (!isTenantLoading && isTenantRequired && !tenant) {
-      // Tenant is required but not selected, redirect to tenant selection
-      router.replace('/screens/tenant-selection');
+    // Wait for both auth and tenant to finish loading
+    if (isAuthLoading || isTenantLoading) {
+      return;
     }
-  }, [isTenantLoading, isTenantRequired, tenant]);
 
-  // Show loading while checking tenant
-  if (isTenantLoading) {
+    // Priority 1: Check authentication first
+    if (!isAuthenticated) {
+      router.replace('/screens/login');
+      return;
+    }
+
+    // Priority 2: Check if tenant selection is needed
+    if (isTenantRequired && !tenant) {
+      router.replace('/screens/tenant-selection');
+      return;
+    }
+  }, [isAuthLoading, isAuthenticated, isTenantLoading, isTenantRequired, tenant]);
+
+  // Show loading while checking auth and tenant
+  if (isAuthLoading || isTenantLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.bg }}>
         <ActivityIndicator size="large" color={colors.highlight} />

@@ -8,11 +8,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/contexts/ThemeColors';
 import AnimatedView from '@/components/AnimatedView';
 import Icon from '@/components/Icon';
-import { authApi } from '@/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -53,27 +54,20 @@ export default function LoginScreen() {
     if (isEmailValid && isPasswordValid) {
       setIsLoading(true);
 
-      // TODO: Replace with actual API call when backend is ready
-      // For now, simulate login with dummy data
-      setTimeout(() => {
-        setIsLoading(false);
-        // Navigate to home screen after successful login
-        router.replace('/');
-      }, 1500);
+      try {
+        const result = await login(email, password);
 
-      // Uncomment when API is ready:
-      // try {
-      //   const response = await authApi.login({ email, password });
-      //   if (response.error) {
-      //     setGeneralError(response.error);
-      //   } else {
-      //     router.replace('/');
-      //   }
-      // } catch (error) {
-      //   setGeneralError('An unexpected error occurred');
-      // } finally {
-      //   setIsLoading(false);
-      // }
+        if (result.success) {
+          // Navigate to home screen after successful login
+          router.replace('/');
+        } else {
+          setGeneralError(result.error || 'Login failed. Please try again.');
+        }
+      } catch (error) {
+        setGeneralError('An unexpected error occurred. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

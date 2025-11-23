@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useT } from '@/contexts/LocalizationContext';
 import { useTenant } from '@/contexts/TenantContext';
+import { useAuth } from '@/contexts/AuthContext';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import Icon from '@/components/Icon';
@@ -17,8 +18,32 @@ export default function SettingsScreen() {
   const t = useT();
   const colors = useThemeColors();
   const { tenant, clearTenant: clearTenantContext, isTenantRequired } = useTenant();
+  const { logout } = useAuth();
   const [isClearing, setIsClearing] = useState(false);
   const isDevelopment = Constants.expoConfig?.extra?.env === 'development' || __DEV__;
+
+  const handleLogout = async () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+              router.replace('/screens/login');
+            } catch (error) {
+              console.error('Failed to logout:', error);
+              Alert.alert('Error', 'Failed to logout. Please try again.');
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const handleClearTenant = async () => {
     Alert.alert(
@@ -115,7 +140,7 @@ export default function SettingsScreen() {
             title={t('settings.logout')}
             description={t('settings.signOut')}
             icon="LogOut"
-            href="/screens/login"
+            onPress={handleLogout}
           />
         </View>
 
