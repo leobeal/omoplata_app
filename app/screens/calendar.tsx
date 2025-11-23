@@ -31,6 +31,7 @@ export default function CalendarScreen() {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   });
+  const [visibleMonthYear, setVisibleMonthYear] = useState<string>('');
   const [allClasses, setAllClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -109,11 +110,28 @@ export default function CalendarScreen() {
 
   const selectedDayData = days.find((day) => day.dateString === selectedDate);
 
-  // Get current month/year from selected date
-  const currentMonthYear = useMemo(() => {
-    const date = new Date(selectedDate);
-    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  }, [selectedDate]);
+  // Initialize visible month/year on first load
+  useEffect(() => {
+    if (days.length > 0 && !visibleMonthYear) {
+      const today = new Date();
+      setVisibleMonthYear(today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
+    }
+  }, [days, visibleMonthYear]);
+
+  // Handle scroll to update visible month
+  const handleScroll = (event: any) => {
+    const scrollX = event.nativeEvent.contentOffset.x;
+    const centerX = scrollX + SCREEN_WIDTH / 2;
+    const centerIndex = Math.round(centerX / DAY_ITEM_WIDTH);
+
+    if (days[centerIndex]) {
+      const centerDate = days[centerIndex].date;
+      const monthYear = centerDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      if (monthYear !== visibleMonthYear) {
+        setVisibleMonthYear(monthYear);
+      }
+    }
+  };
 
   // Check if selected date is today
   const isSelectedToday = useMemo(() => {
@@ -152,7 +170,7 @@ export default function CalendarScreen() {
         <View className="border-b border-border bg-secondary px-6 py-3">
           <View className="flex-row items-center justify-between">
             {/* Month and Year */}
-            <ThemedText className="text-lg font-bold">{currentMonthYear}</ThemedText>
+            <ThemedText className="text-lg font-bold">{visibleMonthYear}</ThemedText>
 
             {/* Today Button */}
             {!isSelectedToday && (
@@ -174,6 +192,8 @@ export default function CalendarScreen() {
             ref={scrollViewRef}
             horizontal
             showsHorizontalScrollIndicator={false}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
             contentContainerStyle={{ paddingHorizontal: 8 }}>
             {days.map((day, index) => {
               const isSelected = day.dateString === selectedDate;
