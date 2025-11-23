@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
+import ErrorState from '@/components/ErrorState';
 import CalendarClassCard from '@/components/CalendarClassCard';
 import { getUpcomingClasses, Class } from '@/api/classes';
 import { useT } from '@/contexts/LocalizationContext';
@@ -38,6 +39,7 @@ export default function CalendarScreen() {
   const [visibleMonthYear, setVisibleMonthYear] = useState<string>('');
   const [allClasses, setAllClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadClasses();
@@ -62,10 +64,15 @@ export default function CalendarScreen() {
   const loadClasses = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await getUpcomingClasses();
       setAllClasses(data);
     } catch (error) {
       console.error('Error loading classes:', error);
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to load classes. Please check your connection and try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -171,6 +178,35 @@ export default function CalendarScreen() {
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     setSelectedDate(todayString);
   };
+
+  // Show error state
+  if (error) {
+    return (
+      <SafeAreaView edges={['top']} className="flex-1 bg-secondary">
+        <View className="flex-1 bg-background">
+          {/* Header with back button */}
+          <View className="border-b border-border bg-secondary px-6 pb-3 pt-4">
+            <View className="flex-row items-center">
+              <Pressable
+                onPress={() => router.back()}
+                className="rounded-full p-2"
+                style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+                <Icon name="ChevronLeft" size={20} color={colors.text} />
+              </Pressable>
+              <ThemedText className="ml-4 text-lg font-bold">{t('calendar.title') || 'Calendar'}</ThemedText>
+            </View>
+          </View>
+
+          <ErrorState
+            title={t('calendar.errorTitle') || 'Unable to load classes'}
+            message={error}
+            onRetry={() => loadClasses()}
+            retryButtonText={t('common.tryAgain') || 'Try Again'}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-secondary">
