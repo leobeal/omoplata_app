@@ -18,7 +18,7 @@ export default function BillingScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [offset, setOffset] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,12 +33,12 @@ export default function BillingScreen() {
       }
 
       const [invoicesData, nextInvoiceData] = await Promise.all([
-        getInvoicesPaginated(10, 0),
+        getInvoicesPaginated(10, 1),
         getNextInvoice(),
       ]);
       setInvoices(invoicesData.invoices);
       setHasMore(invoicesData.hasMore);
-      setOffset(10);
+      setCurrentPage(1);
       setNextInvoice(nextInvoiceData);
       setError(null);
     } catch (error) {
@@ -62,10 +62,11 @@ export default function BillingScreen() {
 
     setLoadingMore(true);
     try {
-      const invoicesData = await getInvoicesPaginated(10, offset);
+      const nextPage = currentPage + 1;
+      const invoicesData = await getInvoicesPaginated(10, nextPage);
       setInvoices((prev) => [...prev, ...invoicesData.invoices]);
       setHasMore(invoicesData.hasMore);
-      setOffset((prev) => prev + 10);
+      setCurrentPage(nextPage);
     } catch (error) {
       console.error('Error loading more invoices:', error);
     } finally {
