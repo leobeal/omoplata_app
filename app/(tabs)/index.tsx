@@ -91,7 +91,7 @@ export default function HomeScreen() {
           <View className="mb-4 flex-row items-center justify-between">
             <Section title="Upcoming Classes" className="flex-1" />
             <View className="flex-row items-center gap-4">
-              <Pressable onPress={() => router.push('/screens/calendar')}>
+              <Pressable onPress={() => router.push('/calendar')}>
                 <View className="flex-row items-center">
                   <Icon name="Calendar" size={20} color={colors.highlight} />
                   <ThemedText className="ml-1 text-sm font-semibold text-highlight">
