@@ -38,12 +38,13 @@ nvm use 20
 # Install dependencies
 npm install --legacy-peer-deps
 
-# Start the Expo development server with a clean cache
-npx expo start -c
+# Start the Expo development server (TENANT is required)
+TENANT=evolve npx expo start -c     # For Evolve gym
+TENANT=MAIN npx expo start -c       # For generic build with tenant selection
 
 # Or run on specific platform
-npm run ios      # iOS simulator
-npm run android  # Android emulator
+TENANT=evolve npm run ios      # iOS simulator
+TENANT=evolve npm run android  # Android emulator
 ```
 
 ## Available Scripts
@@ -61,46 +62,49 @@ npm run android  # Android emulator
 
 ## Tenant Configuration
 
-The app is **single-tenant** from the user's perspective but supports two deployment modes:
+The app is **single-tenant** from the user's perspective but supports two deployment modes via the `TENANT` environment variable:
 
 ### 1. Club-Specific Build
-- Tenant hard-coded in `app.config.js` (e.g., `tenant: "evolve"`)
+- Set `TENANT=evolve` (or any gym slug)
 - White-labeled app for a specific gym
 - Users skip tenant selection - it's pre-configured
 - Perfect for gym-branded apps
 
 ### 2. Generic Build with One-Time Selection
-- Tenant NOT set in `app.config.js` (or set to `undefined`)
+- Set `TENANT=MAIN`
 - Users select their gym once on first launch
 - Selection is permanent until app reinstall
 - Perfect for SaaS model with single App Store listing
 
 **Important:** Once a tenant is selected (either way), the app is locked to that tenant. Users cannot switch gyms within the app.
 
-### Testing Tenant Selection in Development
-
-To see the tenant selection screen:
+### Quick Start
 
 ```bash
-# 1. Comment out 'tenant' in app.config.js
-# 2. Clear cache and start
-npx expo start -c
-# 3. If you've previously selected a tenant, clear AsyncStorage via Expo dev menu
+# Club-specific build (Evolve gym)
+TENANT=evolve npm start
+
+# Generic build with tenant selection
+TENANT=MAIN npm start
+
+# If you've previously selected a tenant, clear AsyncStorage via Expo dev menu
 ```
 
-Configure in `app.config.js`:
-```javascript
-// Club-specific build
-extra: {
-  tenant: "evolve",  // Hard-coded tenant
-  env: "development"
-}
+### All Commands
 
-// Generic build
-extra: {
-  // tenant: undefined,  // Users select at first launch
-  env: "development"
-}
+```bash
+# Development
+TENANT=evolve npm start      # Evolve gym
+TENANT=sparta npm start      # Sparta gym
+TENANT=MAIN npm start        # Generic - users select gym
+
+# iOS
+TENANT=evolve npm run ios
+TENANT=MAIN npm run ios
+
+# Android
+TENANT=evolve npm run android
+TENANT=MAIN npm run android
 ```
 
 📖 **[Full Tenant Configuration Guide](./docs/TENANT_CONFIGURATION.md)**

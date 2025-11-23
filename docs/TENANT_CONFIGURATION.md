@@ -17,26 +17,18 @@ The Omoplata app is **always single-tenant from the user's perspective**. It sup
 
 Want to see the tenant selection screen in development?
 
-1. **Edit `app.config.js`** - Comment out or remove the `tenant` field:
-   ```javascript
-   extra: {
-     // tenant: "evolve",  // Comment this out
-     env: "development"
-   }
+1. **Set TENANT environment variable to MAIN**:
+   ```bash
+   TENANT=MAIN npm start
    ```
 
-2. **Clear cached tenant** (if you've run the app before):
+2. **Clear cached tenant** (if you've run a tenant-specific build before):
    ```bash
    # In Expo dev menu: Shake device → Debug → Clear AsyncStorage
    # Or reinstall the app
    ```
 
-3. **Start Expo**:
-   ```bash
-   npx expo start -c
-   ```
-
-4. **Open the app** - You should now see the tenant selection screen!
+3. **Open the app** - You should now see the tenant selection screen!
 
 📖 For detailed instructions, see [Testing Different Modes](#testing-different-modes)
 
@@ -48,27 +40,23 @@ Use this mode when building a white-labeled app for a specific gym.
 
 ### Configuration
 
-Edit `app.config.js` and set the `tenant` field in `extra`:
+Set the `TENANT` environment variable to your gym's slug:
 
-```javascript
-module.exports = {
-  expo: {
-    name: "Evolve BJJ",
-    slug: "evolve-bjj-app",
-    // ... other config
-    extra: {
-      tenant: "evolve",  // Set to your gym's slug
-      env: process.env.APP_ENV || "development",
-    },
-  },
-};
+```bash
+# For Evolve gym
+TENANT=evolve npm start
+
+# For production builds
+TENANT=evolve eas build --platform ios
 ```
+
+The `app.config.js` automatically loads the corresponding config file from `configs/{tenant}.js` (e.g., `configs/evolve.js`).
 
 ### Behavior
 
-- Tenant is hard-coded in the app build
-- App name and branding are specific to the gym
-- Users skip tenant selection - it's already configured
+- Tenant is configured via `TENANT` environment variable
+- App name and branding are specific to the gym (from config file)
+- Users skip tenant selection - it's pre-configured
 - API calls automatically use the configured tenant
 - More streamlined onboarding experience
 - Users never see tenant selection
@@ -88,21 +76,17 @@ Use this mode for a single app binary that can be used by multiple gyms.
 
 ### Configuration
 
-Edit `app.config.js` and **remove** or **leave empty** the `tenant` field:
+Set the `TENANT` environment variable to `MAIN`:
 
-```javascript
-module.exports = {
-  expo: {
-    name: "Omoplata",
-    slug: "omoplata-app",
-    // ... other config
-    extra: {
-      // tenant: undefined,  // Don't set this, or set to undefined
-      env: process.env.APP_ENV || "development",
-    },
-  },
-};
+```bash
+# For development
+TENANT=MAIN npm start
+
+# For production builds
+TENANT=MAIN eas build --platform ios
 ```
+
+The `app.config.js` automatically loads the generic config file `configs/main.js` which uses generic "Omoplata" branding.
 
 ### Behavior
 
@@ -226,43 +210,35 @@ In generic build mode, the selected tenant is stored permanently:
 
 ## How to Switch Modes
 
+Switching between modes is as simple as changing the `TENANT` environment variable!
+
 ### From Club-Specific to Generic
 
-1. Edit `app.config.js`
-2. Remove or comment out the `tenant` field in `extra`
-3. Update app name/branding to "Omoplata"
-4. Update app icon to generic Omoplata branding
-5. Rebuild the app
+Simply change the `TENANT` variable from a gym slug to `MAIN`:
 
 ```bash
-# Clear build cache
-rm -rf .expo node_modules
+# Was running club-specific:
+TENANT=evolve npm start
 
-# Reinstall dependencies
-npm install
-
-# Rebuild
-npm run ios  # or npm run android
+# Now run generic:
+TENANT=MAIN npm start
 ```
+
+**Note:** You may need to clear AsyncStorage to remove any cached tenant selection.
 
 ### From Generic to Club-Specific
 
-1. Edit `app.config.js`
-2. Add `tenant: "your-gym-slug"` to `extra`
-3. Update app name/branding to gym name
-4. Update app icon to gym branding
-5. Rebuild the app
+Change `TENANT` from `MAIN` to your gym slug:
 
 ```bash
-# Clear build cache
-rm -rf .expo node_modules
+# Was running generic:
+TENANT=MAIN npm start
 
-# Reinstall dependencies
-npm install
-
-# Rebuild
-npm run ios  # or npm run android
+# Now run club-specific:
+TENANT=evolve npm start
 ```
+
+No code changes, no rebuilds needed during development! Just change the environment variable.
 
 ---
 
@@ -373,52 +349,45 @@ app/screens/tenant-selection.tsx
 
 ### Test Club-Specific Mode
 
-```javascript
-// app.config.js
-extra: {
-  tenant: "evolve",
-  env: "development"
-}
+Set `TENANT` to a specific gym slug:
+
+```bash
+# Start development server
+TENANT=evolve npm start
+
+# Or run on device
+TENANT=evolve npm run ios
+TENANT=evolve npm run android
 ```
 
-1. Rebuild app
-2. Open app - should skip tenant selection
-3. Should go straight to login
-4. Check API calls - should use `evolve.sportsmanager.test`
-5. Tenant selection screen should never appear
+**Expected behavior:**
+1. Open app - should skip tenant selection
+2. Should go straight to login
+3. Check console - API calls should use `evolve.sportsmanager.test`
+4. Tenant selection screen should never appear
 
 ### Test Generic Mode
 
-To test the tenant selection screen in development:
+Set `TENANT` to `MAIN`:
 
-#### Step 1: Configure app.config.js
+```bash
+# Start development server
+TENANT=MAIN npm start
 
-```javascript
-// app.config.js
-module.exports = {
-  expo: {
-    // ... other config
-    extra: {
-      // tenant: undefined,  // Comment out or remove tenant field
-      env: "development"
-    },
-  },
-};
+# Or run on device
+TENANT=MAIN npm run ios
+TENANT=MAIN npm run android
 ```
 
-**Important:** Make sure the `tenant` field is either:
-- Commented out (as shown above)
-- Removed completely
-- Set to `undefined`
+#### Clear Previous Tenant Selection (if any)
 
-#### Step 2: Clear Previous Tenant Selection (if any)
-
-If you've previously selected a tenant, you need to clear it:
+If you've previously selected a tenant, you need to clear it before testing:
 
 **Option A: Clear AsyncStorage via Expo Dev Menu**
 1. Open app in Expo
 2. Shake device or press `Cmd+D` (iOS) / `Cmd+M` (Android)
 3. Tap "Debug" → Clear AsyncStorage
+4. Reload app
 
 **Option B: Programmatically clear (for testing)**
 ```typescript
@@ -431,20 +400,10 @@ await AsyncStorage.removeItem('@omoplata/tenant');
 **Option C: Reinstall the app**
 ```bash
 # Delete and reinstall
-npm run ios  # or npm run android
+TENANT=MAIN npm run ios  # or npm run android
 ```
 
-#### Step 3: Start Expo
-
-```bash
-# Clear cache and start
-npx expo start -c
-
-# Or just start
-npm start
-```
-
-#### Step 4: Test the Flow
+#### Expected Behavior
 
 1. Open app - should show tenant selection screen
 2. Enter "testgym" (or any gym identifier)
@@ -458,13 +417,21 @@ npm start
 **Issue: Tenant selection screen doesn't show**
 
 Possible causes:
-1. `tenant` is still set in `app.config.js` → Remove it
+1. `TENANT` is not set to `MAIN` → Check environment variable
 2. Previous tenant is cached → Clear AsyncStorage
-3. Need to rebuild app → Run `npx expo start -c`
+3. Need to restart → Stop and run `TENANT=MAIN npm start` again
 
 **Issue: Screen shows but API still uses old tenant**
 
 Solution: Clear AsyncStorage and restart app
+
+**Issue: Error "TENANT environment variable is required"**
+
+Solution: Always set `TENANT` when starting the app:
+```bash
+TENANT=MAIN npm start     # Generic build
+TENANT=evolve npm start   # Club-specific build
+```
 
 ---
 
@@ -507,46 +474,61 @@ Then reopen app
 ### Building for App Store (Generic)
 
 ```bash
-# Ensure tenant is NOT set in app.config.js
-eas build --platform ios --profile production
+# Generic build with tenant selection
+TENANT=MAIN eas build --platform ios --profile production
 ```
 
-Result: One app that works for all gyms
+Result: One app that works for all gyms. Users select their gym on first launch.
 
 ### Building for Specific Gym
 
 ```bash
-# Set tenant in app.config.js
-eas build --platform ios --profile production
+# Gym-specific build (Evolve example)
+TENANT=evolve eas build --platform ios --profile production
+
+# Another gym
+TENANT=sparta eas build --platform ios --profile production
 ```
 
-Result: Gym-branded app with tenant pre-configured
+Result: Gym-branded app with tenant pre-configured. No tenant selection screen.
 
 ### Managing Multiple Club Builds
 
-Create separate build profiles for different gyms:
+Create separate build profiles for different gyms in `eas.json`:
 
 ```json
-// eas.json
 {
   "build": {
     "production-generic": {
       "env": {
-        "APP_TENANT": ""
+        "TENANT": "MAIN"
       }
     },
     "production-evolve": {
       "env": {
-        "APP_TENANT": "evolve"
+        "TENANT": "evolve"
       }
     },
-    "production-gracie-barra": {
+    "production-sparta": {
       "env": {
-        "APP_TENANT": "gracie-barra"
+        "TENANT": "sparta"
       }
     }
   }
 }
+```
+
+Then build using the profile:
+
+```bash
+# Generic build
+eas build --platform ios --profile production-generic
+
+# Evolve build
+eas build --platform ios --profile production-evolve
+
+# Sparta build
+eas build --platform ios --profile production-sparta
 ```
 
 ---
