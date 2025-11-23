@@ -18,9 +18,13 @@ export default function SettingsScreen() {
   const t = useT();
   const colors = useThemeColors();
   const { tenant, clearTenant: clearTenantContext, isTenantRequired } = useTenant();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [isClearing, setIsClearing] = useState(false);
   const isDevelopment = Constants.expoConfig?.extra?.env === 'development' || __DEV__;
+
+  // Get user display name
+  const userName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';
+  const userEmail = user?.email || 'user@example.com';
 
   const handleLogout = async () => {
     Alert.alert(
@@ -78,12 +82,12 @@ export default function SettingsScreen() {
       <ThemedScroller className="px-6 pt-4">
         <View className="mb-4 w-full flex-row rounded-2xl bg-secondary pb-10 pt-10">
           <View className="w-1/2 flex-col items-center">
-            <Avatar name="John Doe" size="xl" />
+            <Avatar name={userName} size="xl" src={user?.avatar} />
             <View className="mt-4 flex-1 items-center">
-              <ThemedText className="text-2xl font-bold">John Doe</ThemedText>
+              <ThemedText className="text-2xl font-bold">{userName}</ThemedText>
               <View className="flex flex-row items-center">
                 <ThemedText className="text-light-subtext dark:text-dark-subtext text-sm">
-                  johndoe@example.com
+                  {userEmail}
                 </ThemedText>
               </View>
             </View>

@@ -14,13 +14,17 @@ import { useT } from '@/contexts/LocalizationContext';
 import ClassCard from '@/components/ClassCard';
 import { getUpcomingClasses, confirmAttendance, denyAttendance, Class } from '@/api/classes';
 import { router } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function HomeScreen() {
   const t = useT();
   const colors = useThemeColors();
+  const { user } = useAuth();
   const [classes, setClasses] = useState<Class[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(true);
   const [classesError, setClassesError] = useState<string | null>(null);
+
+  const userName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';
 
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -78,7 +82,7 @@ export default function HomeScreen() {
     <>
       <Header
         className="bg-secondary"
-        leftComponent={<Avatar name="John Doe" size="sm" link="/settings" />}
+        leftComponent={<Avatar name={userName} size="sm" link="/settings" src={user?.avatar} />}
         rightComponents={[<HeaderIcon icon="Bell" hasBadge href="/screens/notifications" />]}
       />
       <ThemedScroller className="flex-1 bg-background !px-0">

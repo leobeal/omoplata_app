@@ -9,10 +9,12 @@ import ErrorState from '@/components/ErrorState';
 import { Button } from '@/components/Button';
 import { getInvoiceById, Invoice } from '@/api/invoices';
 import { useThemeColors } from '@/contexts/ThemeColors';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function InvoiceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colors = useThemeColors();
+  const { user } = useAuth();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -222,10 +224,11 @@ export default function InvoiceDetailScreen() {
         </View>
 
         <View className="mb-6 rounded-2xl bg-secondary p-5">
-          <ThemedText className="font-semibold">John Doe</ThemedText>
-          <ThemedText className="mt-1 text-sm opacity-70">johndoe@example.com</ThemedText>
-          <ThemedText className="mt-1 text-sm opacity-70">123 Fitness Street</ThemedText>
-          <ThemedText className="text-sm opacity-70">New York, NY 10001</ThemedText>
+          <ThemedText className="font-semibold">
+            {user ? `${user.firstName} ${user.lastName}`.trim() : 'User'}
+          </ThemedText>
+          <ThemedText className="mt-1 text-sm opacity-70">{user?.email || 'user@example.com'}</ThemedText>
+          <ThemedText className="mt-1 text-sm opacity-70">Address on file</ThemedText>
         </View>
 
         {/* Actions */}
