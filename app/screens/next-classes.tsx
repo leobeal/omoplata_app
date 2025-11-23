@@ -6,6 +6,7 @@ import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
 import ClassCard from '@/components/ClassCard';
 import { Chip } from '@/components/Chip';
+import ErrorState from '@/components/ErrorState';
 import {
   getClassesPaginated,
   getClassCategories,
@@ -26,6 +27,7 @@ export default function NextClassesScreen() {
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
@@ -65,6 +67,7 @@ export default function NextClassesScreen() {
     if (reset) {
       setLoading(true);
       setOffset(0);
+      setError(null); // Clear previous errors
     }
 
     try {
@@ -72,20 +75,16 @@ export default function NextClassesScreen() {
       if (selectedCategory) filters.category = selectedCategory;
       if (selectedLevel) filters.level = selectedLevel;
 
-      const data = await getClassesPaginated(10, reset ? 0 : offset, filters);
+      const data = await getClassesPaginated(10);
 
-      if (reset) {
-        setClasses(data.classes);
-        setOffset(10);
-      } else {
-        setClasses((prev) => [...prev, ...data.classes]);
-        setOffset((prev) => prev + 10);
-      }
-
-      setHasMore(data.hasMore);
+      setClasses(data.classes);
       setTotal(data.total);
+      setHasMore(false); // API doesn't support pagination yet
+      setError(null); // Clear error on success
     } catch (error) {
       console.error('Error loading classes:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load classes. Please check your connection and try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -196,6 +195,13 @@ export default function NextClassesScreen() {
           <View className="items-center justify-center py-12">
             <ActivityIndicator size="large" />
           </View>
+        ) : error ? (
+          <ErrorState
+            title={t('classes.errorTitle') || 'Unable to load classes'}
+            message={error}
+            onRetry={() => loadClasses(true)}
+            retryButtonText={t('common.tryAgain') || 'Try Again'}
+          />
         ) : classes.length > 0 ? (
           <>
             {classes.map((classItem) => (
