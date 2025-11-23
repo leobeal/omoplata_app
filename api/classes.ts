@@ -27,7 +27,10 @@ interface ApiCapacity {
 
 interface ApiUserStatus {
   has_intention: boolean;
-  intention: string | null;
+  intention: {
+    status: 'yes' | 'no';
+    notes: string | null;
+  } | null;
   can_register: boolean;
 }
 
@@ -94,8 +97,8 @@ const transformApiClass = (apiClass: ApiClassSession): Class => {
 
   // Determine status based on user_status
   let status: AttendanceStatus = 'pending';
-  if (apiClass.user_status.has_intention) {
-    status = apiClass.user_status.intention === 'confirmed' ? 'confirmed' : 'denied';
+  if (apiClass.user_status.has_intention && apiClass.user_status.intention) {
+    status = apiClass.user_status.intention.status === 'yes' ? 'confirmed' : 'denied';
   }
 
   return {

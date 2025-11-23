@@ -49,7 +49,10 @@ describe('Classes API', () => {
               },
               user_status: {
                 has_intention: true,
-                intention: 'confirmed',
+                intention: {
+                  status: 'yes',
+                  notes: null,
+                },
                 can_register: true,
               },
             },
@@ -186,7 +189,10 @@ describe('Classes API', () => {
               capacity: { max: 10, is_full: false, available_spots: 5 },
               user_status: {
                 has_intention: true,
-                intention: 'denied',
+                intention: {
+                  status: 'no',
+                  notes: null,
+                },
                 can_register: false,
               },
             },
