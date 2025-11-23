@@ -77,6 +77,17 @@ The app is **single-tenant** from the user's perspective but supports two deploy
 
 **Important:** Once a tenant is selected (either way), the app is locked to that tenant. Users cannot switch gyms within the app.
 
+### Testing Tenant Selection in Development
+
+To see the tenant selection screen:
+
+```bash
+# 1. Comment out 'tenant' in app.config.js
+# 2. Clear cache and start
+npx expo start -c
+# 3. If you've previously selected a tenant, clear AsyncStorage via Expo dev menu
+```
+
 Configure in `app.config.js`:
 ```javascript
 // Club-specific build

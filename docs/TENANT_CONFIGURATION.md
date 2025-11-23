@@ -13,6 +13,35 @@ The Omoplata app is **always single-tenant from the user's perspective**. It sup
 
 ---
 
+## Quick Start: Testing Tenant Selection
+
+Want to see the tenant selection screen in development?
+
+1. **Edit `app.config.js`** - Comment out or remove the `tenant` field:
+   ```javascript
+   extra: {
+     // tenant: "evolve",  // Comment this out
+     env: "development"
+   }
+   ```
+
+2. **Clear cached tenant** (if you've run the app before):
+   ```bash
+   # In Expo dev menu: Shake device → Debug → Clear AsyncStorage
+   # Or reinstall the app
+   ```
+
+3. **Start Expo**:
+   ```bash
+   npx expo start -c
+   ```
+
+4. **Open the app** - You should now see the tenant selection screen!
+
+📖 For detailed instructions, see [Testing Different Modes](#testing-different-modes)
+
+---
+
 ## Mode 1: Club-Specific Build
 
 Use this mode when building a white-labeled app for a specific gym.
@@ -360,21 +389,82 @@ extra: {
 
 ### Test Generic Mode
 
+To test the tenant selection screen in development:
+
+#### Step 1: Configure app.config.js
+
 ```javascript
 // app.config.js
-extra: {
-  // tenant: undefined,
-  env: "development"
-}
+module.exports = {
+  expo: {
+    // ... other config
+    extra: {
+      // tenant: undefined,  // Comment out or remove tenant field
+      env: "development"
+    },
+  },
+};
 ```
 
-1. Rebuild app
-2. Open app - should show tenant selection screen
-3. Enter "testgym"
-4. Should redirect to login
-5. Check API calls - should use `testgym.sportsmanager.test`
-6. Close and reopen app - should NOT show tenant selection again
-7. Should remember "testgym" permanently
+**Important:** Make sure the `tenant` field is either:
+- Commented out (as shown above)
+- Removed completely
+- Set to `undefined`
+
+#### Step 2: Clear Previous Tenant Selection (if any)
+
+If you've previously selected a tenant, you need to clear it:
+
+**Option A: Clear AsyncStorage via Expo Dev Menu**
+1. Open app in Expo
+2. Shake device or press `Cmd+D` (iOS) / `Cmd+M` (Android)
+3. Tap "Debug" → Clear AsyncStorage
+
+**Option B: Programmatically clear (for testing)**
+```typescript
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Run once to clear tenant
+await AsyncStorage.removeItem('@omoplata/tenant');
+```
+
+**Option C: Reinstall the app**
+```bash
+# Delete and reinstall
+npm run ios  # or npm run android
+```
+
+#### Step 3: Start Expo
+
+```bash
+# Clear cache and start
+npx expo start -c
+
+# Or just start
+npm start
+```
+
+#### Step 4: Test the Flow
+
+1. Open app - should show tenant selection screen
+2. Enter "testgym" (or any gym identifier)
+3. Should redirect to login
+4. Check console - API calls should use `testgym.sportsmanager.test`
+5. Close and reopen app - should NOT show tenant selection again
+6. Should remember "testgym" permanently
+
+#### Troubleshooting
+
+**Issue: Tenant selection screen doesn't show**
+
+Possible causes:
+1. `tenant` is still set in `app.config.js` → Remove it
+2. Previous tenant is cached → Clear AsyncStorage
+3. Need to rebuild app → Run `npx expo start -c`
+
+**Issue: Screen shows but API still uses old tenant**
+
+Solution: Clear AsyncStorage and restart app
 
 ---
 
