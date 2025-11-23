@@ -104,7 +104,7 @@ export default function EditProfileScreen() {
   return (
     <View className="flex-1 bg-background">
       <Header showBackButton title="Edit Profile" />
-      <ScrollView className="flex-1 px-6 pt-4">
+      <ScrollView className="flex-1 px-6 pt-4" bounces={true} alwaysBounceVertical={true} showsVerticalScrollIndicator={false}>
         {/* Personal Information */}
         <Section title="Personal Information" className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">

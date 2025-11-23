@@ -85,7 +85,8 @@ export default function LoginScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        bounces={false}
+        bounces={true}
+        alwaysBounceVertical={true}
         className="flex-1"
       >
         {/* Header */}
