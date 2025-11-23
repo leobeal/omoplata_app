@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
+import ErrorState from '@/components/ErrorState';
 import { Button } from '@/components/Button';
 import { getInvoiceById, Invoice } from '@/api/invoices';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -14,6 +15,7 @@ export default function InvoiceDetailScreen() {
   const colors = useThemeColors();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadInvoice();
@@ -21,12 +23,17 @@ export default function InvoiceDetailScreen() {
 
   const loadInvoice = async () => {
     try {
+      setError(null);
       if (id) {
         const data = await getInvoiceById(id);
         setInvoice(data);
       }
     } catch (error) {
       console.error('Error loading invoice:', error);
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to load invoice. Please check your connection and try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -87,6 +94,23 @@ export default function InvoiceDetailScreen() {
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" />
         </View>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="flex-1 bg-background">
+        <Header showBackButton title="Invoice Details" />
+        <ErrorState
+          title="Unable to load invoice"
+          message={error}
+          onRetry={() => {
+            setLoading(true);
+            loadInvoice();
+          }}
+          retryButtonText="Try Again"
+        />
       </View>
     );
   }

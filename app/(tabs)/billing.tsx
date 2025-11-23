@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Pressable, ActivityIndicator } from 'react-native';
+import { View, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
 import Header from '@/components/Header';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
+import ErrorState from '@/components/ErrorState';
 import { useT } from '@/contexts/LocalizationContext';
 import { getInvoicesPaginated, getNextInvoice, Invoice } from '@/api/invoices';
 import { router } from 'expo-router';
@@ -15,16 +16,22 @@ export default function BillingScreen() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [nextInvoice, setNextInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadInvoices();
   }, []);
 
-  const loadInvoices = async () => {
+  const loadInvoices = async (isRefreshing: boolean = false) => {
     try {
+      if (isRefreshing) {
+        setRefreshing(true);
+      }
+
       const [invoicesData, nextInvoiceData] = await Promise.all([
         getInvoicesPaginated(10, 0),
         getNextInvoice(),
@@ -33,11 +40,21 @@ export default function BillingScreen() {
       setHasMore(invoicesData.hasMore);
       setOffset(10);
       setNextInvoice(nextInvoiceData);
+      setError(null);
     } catch (error) {
       console.error('Error loading invoices:', error);
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to load invoices. Please check your connection and try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = () => {
+    loadInvoices(true);
   };
 
   const loadMore = async () => {
@@ -102,10 +119,36 @@ export default function BillingScreen() {
     );
   }
 
+  if (error) {
+    return (
+      <View className="flex-1 bg-background">
+        <Header title={t('billing.title')} />
+        <ErrorState
+          title={t('billing.errorTitle') || 'Unable to load invoices'}
+          message={error}
+          onRetry={() => {
+            setLoading(true);
+            loadInvoices();
+          }}
+          retryButtonText={t('common.tryAgain') || 'Try Again'}
+        />
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1 bg-background">
       <Header title={t('billing.title')} />
-      <ThemedScroller className="px-6 pt-4">
+      <ThemedScroller
+        className="px-6 pt-4"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.highlight}
+            colors={[colors.highlight]}
+          />
+        }>
         {/* Next Invoice Card */}
         {nextInvoice && (
           <Pressable
