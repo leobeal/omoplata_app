@@ -92,7 +92,7 @@ extra: {
 }
 ```
 
-📖 **[Full Tenant Configuration Guide](./TENANT_CONFIGURATION.md)**
+📖 **[Full Tenant Configuration Guide](./docs/TENANT_CONFIGURATION.md)**
 
 ## Testing
 
@@ -172,7 +172,8 @@ omoplata_app/
 │   ├── screens/
 │   ├── navigation/
 │   └── api/
-└── TENANT_CONFIGURATION.md  # Tenant setup guide
+└── docs/              # Documentation
+    └── TENANT_CONFIGURATION.md  # Tenant setup guide
 ```
 
 ## API Integration
