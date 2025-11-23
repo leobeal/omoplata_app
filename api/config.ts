@@ -73,6 +73,11 @@ export const ENDPOINTS = {
     RESET_PASSWORD: '/reset-password',
     VERIFY_EMAIL: '/verify-email',
   },
+  // Users
+  USERS: {
+    ME: '/users/me',
+    UPDATE: '/users/:id',
+  },
   // User
   USER: {
     PROFILE: '/user/profile',

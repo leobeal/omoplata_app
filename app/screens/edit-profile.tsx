@@ -21,10 +21,8 @@ export default function EditProfileScreen() {
   const [street, setStreet] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
-  const [zipCode, setZipCode] = useState('');
-  const [emergencyName, setEmergencyName] = useState('');
-  const [emergencyRelationship, setEmergencyRelationship] = useState('');
-  const [emergencyPhone, setEmergencyPhone] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [country, setCountry] = useState('');
 
   useEffect(() => {
     loadProfile();
@@ -38,14 +36,16 @@ export default function EditProfileScreen() {
       // Populate form fields
       setFirstName(data.firstName);
       setLastName(data.lastName);
-      setPhone(data.phone);
-      setStreet(data.address.street);
-      setCity(data.address.city);
-      setState(data.address.state);
-      setZipCode(data.address.zipCode);
-      setEmergencyName(data.emergencyContact.name);
-      setEmergencyRelationship(data.emergencyContact.relationship);
-      setEmergencyPhone(data.emergencyContact.phone);
+      setPhone(data.phone || '');
+
+      // Handle address (could be null)
+      if (data.address) {
+        setStreet(data.address.street || '');
+        setCity(data.address.city || '');
+        setState(data.address.state || '');
+        setPostalCode(data.address.postalCode || '');
+        setCountry(data.address.country || '');
+      }
     } catch (error) {
       console.error('Error loading profile:', error);
       Alert.alert('Error', 'Failed to load profile');
@@ -60,24 +60,28 @@ export default function EditProfileScreen() {
       return;
     }
 
+    if (!profile) {
+      Alert.alert('Error', 'Profile data not available');
+      return;
+    }
+
     setSaving(true);
     try {
-      await updateProfile({
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        phone: phone.trim(),
+      const updatedProfile = await updateProfile(profile.id, {
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        phone: phone.trim() || undefined,
         address: {
           street: street.trim(),
           city: city.trim(),
           state: state.trim(),
-          zipCode: zipCode.trim(),
-        },
-        emergencyContact: {
-          name: emergencyName.trim(),
-          relationship: emergencyRelationship.trim(),
-          phone: emergencyPhone.trim(),
+          postal_code: postalCode.trim(),
+          country: country.trim(),
         },
       });
+
+      // Update local state with the response
+      setProfile(updatedProfile);
 
       Alert.alert('Success', 'Profile updated successfully', [
         { text: 'OK', onPress: () => router.back() },
@@ -201,60 +205,66 @@ export default function EditProfileScreen() {
               />
             </View>
             <View className="flex-1">
-              <ThemedText className="mb-2 text-sm font-semibold">ZIP Code</ThemedText>
+              <ThemedText className="mb-2 text-sm font-semibold">Postal Code</ThemedText>
               <TextInput
                 className="rounded-xl border border-border bg-background px-4 py-3"
                 style={{ color: colors.text }}
-                value={zipCode}
-                onChangeText={setZipCode}
-                placeholder="ZIP"
+                value={postalCode}
+                onChangeText={setPostalCode}
+                placeholder="Postal code"
                 placeholderTextColor={colors.subtext}
                 keyboardType="numeric"
               />
             </View>
           </View>
-        </View>
-
-        {/* Emergency Contact */}
-        <Section title="Emergency Contact" className="mb-4" />
-        <View className="mb-6 rounded-2xl bg-secondary p-5">
-          <View className="mb-4">
-            <ThemedText className="mb-2 text-sm font-semibold">Name</ThemedText>
-            <TextInput
-              className="rounded-xl border border-border bg-background px-4 py-3"
-              style={{ color: colors.text }}
-              value={emergencyName}
-              onChangeText={setEmergencyName}
-              placeholder="Enter contact name"
-              placeholderTextColor={colors.subtext}
-            />
-          </View>
-
-          <View className="mb-4">
-            <ThemedText className="mb-2 text-sm font-semibold">Relationship</ThemedText>
-            <TextInput
-              className="rounded-xl border border-border bg-background px-4 py-3"
-              style={{ color: colors.text }}
-              value={emergencyRelationship}
-              onChangeText={setEmergencyRelationship}
-              placeholder="e.g., Spouse, Parent, Friend"
-              placeholderTextColor={colors.subtext}
-            />
-          </View>
 
           <View>
-            <ThemedText className="mb-2 text-sm font-semibold">Phone</ThemedText>
+            <ThemedText className="mb-2 text-sm font-semibold">Country</ThemedText>
             <TextInput
               className="rounded-xl border border-border bg-background px-4 py-3"
               style={{ color: colors.text }}
-              value={emergencyPhone}
-              onChangeText={setEmergencyPhone}
-              placeholder="Enter phone number"
+              value={country}
+              onChangeText={setCountry}
+              placeholder="Enter country"
               placeholderTextColor={colors.subtext}
-              keyboardType="phone-pad"
             />
           </View>
         </View>
+
+        {/* Emergency Contact - Display only (read from responsibles) */}
+        {(profile?.primaryResponsible || (profile?.responsibles && profile.responsibles.length > 0)) && (
+          <>
+            <Section title="Emergency Contact" className="mb-4" />
+            <View className="mb-6 rounded-2xl bg-secondary p-5">
+              <ThemedText className="mb-3 text-xs opacity-50">
+                Emergency contacts are managed by your gym administrator.
+              </ThemedText>
+              {(() => {
+                const emergencyContact = profile.primaryResponsible || profile.responsibles[0];
+                return (
+                  <>
+                    <View className="mb-3">
+                      <ThemedText className="text-sm opacity-70">Name</ThemedText>
+                      <ThemedText className="font-semibold">
+                        {emergencyContact.firstName} {emergencyContact.lastName}
+                      </ThemedText>
+                    </View>
+                    <View className="mb-3">
+                      <ThemedText className="text-sm opacity-70">Email</ThemedText>
+                      <ThemedText className="font-semibold">{emergencyContact.email}</ThemedText>
+                    </View>
+                    <View>
+                      <ThemedText className="text-sm opacity-70">Relationship</ThemedText>
+                      <ThemedText className="font-semibold">
+                        {emergencyContact.relationship}
+                      </ThemedText>
+                    </View>
+                  </>
+                );
+              })()}
+            </View>
+          </>
+        )}
 
         {/* Save Button */}
         <View className="mb-8">
