@@ -278,29 +278,6 @@ export default function CalendarScreen() {
               </ThemedText>
             </View>
           )}
-
-          {/* Category Legend */}
-          <View className="mb-6 mt-8 rounded-2xl bg-secondary p-5">
-            <ThemedText className="mb-4 text-sm font-bold uppercase opacity-60">
-              {t('calendar.legend')}
-            </ThemedText>
-            <View className="flex-row flex-wrap gap-3">
-              {Object.entries({
-                'BJJ': '#9333EA',
-                'Muay Thai': '#DC2626',
-                'Boxing': '#2563EB',
-                'Wrestling': '#EA580C',
-                'MMA': '#16A34A',
-                'Self Defense': '#DB2777',
-                'Fitness': '#0891B2',
-              }).map(([category, color]) => (
-                <View key={category} className="flex-row items-center gap-2">
-                  <View className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
-                  <ThemedText className="text-sm">{category}</ThemedText>
-                </View>
-              ))}
-            </View>
-          </View>
         </ThemedScroller>
       </View>
     </SafeAreaView>
