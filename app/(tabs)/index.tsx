@@ -90,16 +90,26 @@ export default function HomeScreen() {
         <View className="bg-background px-5 pb-5">
           <View className="mb-4 flex-row items-center justify-between">
             <Section title="Upcoming Classes" className="flex-1" />
-            {classes.length > 3 && (
-              <Pressable onPress={() => router.push('/screens/next-classes')}>
+            <View className="flex-row items-center gap-4">
+              <Pressable onPress={() => router.push('/screens/calendar')}>
                 <View className="flex-row items-center">
-                  <ThemedText className="mr-1 text-sm font-semibold text-highlight">
-                    View All
+                  <Icon name="Calendar" size={20} color={colors.highlight} />
+                  <ThemedText className="ml-1 text-sm font-semibold text-highlight">
+                    Calendar
                   </ThemedText>
-                  <Icon name="ChevronRight" size={16} color={colors.highlight} />
                 </View>
               </Pressable>
-            )}
+              {classes.length > 3 && (
+                <Pressable onPress={() => router.push('/screens/next-classes')}>
+                  <View className="flex-row items-center">
+                    <ThemedText className="mr-1 text-sm font-semibold text-highlight">
+                      View All
+                    </ThemedText>
+                    <Icon name="ChevronRight" size={16} color={colors.highlight} />
+                  </View>
+                </Pressable>
+              )}
+            </View>
           </View>
           {loadingClasses ? (
             <View className="items-center justify-center py-8">

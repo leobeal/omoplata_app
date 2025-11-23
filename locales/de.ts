@@ -231,6 +231,13 @@ export default {
     tryDifferentFilters: 'Versuchen Sie, Ihre Filter anzupassen',
   },
 
+  // Kalender
+  calendar: {
+    title: 'Kurskalender',
+    legend: 'Kurskategorien',
+    noClasses: 'Keine Kurse für diesen Tag geplant',
+  },
+
   // Datum/Zeit
   date: {
     monday: 'Montag',
