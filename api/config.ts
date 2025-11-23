@@ -3,9 +3,6 @@
 
 import Constants from 'expo-constants';
 
-// Get tenant from app config
-const tenant = Constants.expoConfig?.extra?.tenant || 'evolve';
-
 // Get current environment
 const ENV = (Constants.expoConfig?.extra?.env || 'development') as 'development' | 'staging' | 'production';
 
@@ -23,13 +20,44 @@ const getApiUrl = (env: typeof ENV, tenant: string): string => {
   }
 };
 
+// Runtime tenant - can be updated via setTenant()
+let currentTenant = Constants.expoConfig?.extra?.tenant || 'evolve';
+
+/**
+ * Update the current tenant at runtime
+ * This is used when the app is in multi-tenant mode
+ */
+export const setTenant = (tenant: string) => {
+  currentTenant = tenant;
+};
+
+/**
+ * Get the current tenant slug
+ */
+export const getTenant = (): string => {
+  return currentTenant;
+};
+
+/**
+ * Get the current API base URL (dynamically calculated)
+ */
+export const getBaseUrl = (): string => {
+  return getApiUrl(ENV, currentTenant);
+};
+
 export const API_CONFIG = {
-  baseUrl: getApiUrl(ENV, tenant),
+  get baseUrl(): string {
+    return getBaseUrl();
+  },
   timeout: 30000, // 30 seconds
-  tenant,
-  headers: {
-    'Content-Type': 'application/json',
-    'X-Tenant': tenant,
+  get tenant(): string {
+    return getTenant();
+  },
+  get headers(): Record<string, string> {
+    return {
+      'Content-Type': 'application/json',
+      'X-Tenant': getTenant(),
+    };
   },
 };
 
