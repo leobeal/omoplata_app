@@ -9,11 +9,13 @@ import { useThemeColors } from '@/contexts/ThemeColors';
 import AnimatedView from '@/components/AnimatedView';
 import Icon from '@/components/Icon';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTenant } from '@/contexts/TenantContext';
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
   const { login } = useAuth();
+  const { isTenantRequired } = useTenant();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -44,6 +46,12 @@ export default function LoginScreen() {
     }
     setPasswordError('');
     return true;
+  };
+
+  const handleBack = () => {
+    // If tenant selection is required (generic build), go to tenant selection
+    // Otherwise, go to tenant selection anyway as there's no other screen
+    router.push('/screens/tenant-selection');
   };
 
   const handleLogin = async () => {
@@ -85,7 +93,7 @@ export default function LoginScreen() {
           className="w-full flex-row items-center justify-between px-global"
           style={{ paddingTop: insets.top + 16 }}
         >
-          <Icon name="ArrowLeft" onPress={() => router.back()} size={24} color={colors.text} />
+          <Icon name="ArrowLeft" onPress={handleBack} size={24} color={colors.text} />
           <Link href="/screens/signup" className="text-text border border-border px-3 rounded-xl py-2">
             Sign Up
           </Link>
