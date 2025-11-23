@@ -1,18 +1,22 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { View, Pressable, ScrollView, ActivityIndicator } from 'react-native';
-import Header from '@/components/Header';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { View, Pressable, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
-import ClassCard from '@/components/ClassCard';
-import { getUpcomingClasses, confirmAttendance, denyAttendance, Class } from '@/api/classes';
+import CalendarClassCard from '@/components/CalendarClassCard';
+import { getUpcomingClasses, Class } from '@/api/classes';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const DAY_ITEM_WIDTH = 70;
+
 interface DayData {
-  date: number;
+  date: Date;
   dateString: string;
-  isCurrentMonth: boolean;
+  dayName: string;
+  dayNumber: number;
+  monthName: string;
   isToday: boolean;
   classes: Class[];
 }
@@ -20,15 +24,32 @@ interface DayData {
 export default function CalendarScreen() {
   const t = useT();
   const colors = useThemeColors();
+  const scrollViewRef = useRef<ScrollView>(null);
 
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  });
   const [allClasses, setAllClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadClasses();
   }, []);
+
+  // Scroll to today on mount
+  useEffect(() => {
+    if (!loading && scrollViewRef.current) {
+      const todayIndex = days.findIndex((day) => day.isToday);
+      if (todayIndex !== -1) {
+        // Center today's date
+        const scrollToX = Math.max(0, todayIndex * DAY_ITEM_WIDTH - SCREEN_WIDTH / 2 + DAY_ITEM_WIDTH / 2);
+        setTimeout(() => {
+          scrollViewRef.current?.scrollTo({ x: scrollToX, animated: true });
+        }, 100);
+      }
+    }
+  }, [loading]);
 
   const loadClasses = async () => {
     try {
@@ -39,28 +60,6 @@ export default function CalendarScreen() {
       console.error('Error loading classes:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleConfirm = async (classId: string) => {
-    try {
-      await confirmAttendance(classId);
-      setAllClasses((prev) =>
-        prev.map((cls) => (cls.id === classId ? { ...cls, status: 'confirmed' as const } : cls))
-      );
-    } catch (error) {
-      console.error('Error confirming attendance:', error);
-    }
-  };
-
-  const handleDeny = async (classId: string) => {
-    try {
-      await denyAttendance(classId);
-      setAllClasses((prev) =>
-        prev.map((cls) => (cls.id === classId ? { ...cls, status: 'denied' as const } : cls))
-      );
-    } catch (error) {
-      console.error('Error denying attendance:', error);
     }
   };
 
@@ -76,85 +75,39 @@ export default function CalendarScreen() {
     return grouped;
   }, [allClasses]);
 
-  // Generate calendar data
-  const calendarData = useMemo(() => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startingDayOfWeek = firstDay.getDay();
-    const daysInMonth = lastDay.getDate();
-
-    const days: DayData[] = [];
+  // Generate days for horizontal scroll (90 days from now)
+  const days = useMemo(() => {
     const today = new Date();
+    const daysArray: DayData[] = [];
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-    // Add previous month's days
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
-    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-      const date = prevMonthLastDay - i;
-      const dateObj = new Date(year, month - 1, date);
-      const dateString = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-      days.push({
+    for (let i = 0; i < 90; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+
+      const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+      const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+
+      daysArray.push({
         date,
         dateString,
-        isCurrentMonth: false,
-        isToday: false,
-        classes: classesByDate[dateString] || [],
-      });
-    }
-
-    // Add current month's days
-    for (let i = 1; i <= daysInMonth; i++) {
-      const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-      days.push({
-        date: i,
-        dateString,
-        isCurrentMonth: true,
+        dayName,
+        dayNumber: date.getDate(),
+        monthName,
         isToday: dateString === todayString,
         classes: classesByDate[dateString] || [],
       });
     }
 
-    // Add next month's days to complete the grid
-    const remainingDays = 42 - days.length; // 6 rows * 7 days
-    for (let i = 1; i <= remainingDays; i++) {
-      const dateObj = new Date(year, month + 1, i);
-      const dateString = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-      days.push({
-        date: i,
-        dateString,
-        isCurrentMonth: false,
-        isToday: false,
-        classes: classesByDate[dateString] || [],
-      });
-    }
-
-    return days;
-  }, [currentDate, classesByDate]);
+    return daysArray;
+  }, [classesByDate]);
 
   const selectedDateClasses = useMemo(() => {
-    if (!selectedDate) return [];
     return classesByDate[selectedDate] || [];
   }, [selectedDate, classesByDate]);
 
-  const monthName = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-  const previousMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-    setSelectedDate(null);
-  };
-
-  const nextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-    setSelectedDate(null);
-  };
-
-  const formatSelectedDate = (dateStr: string) => {
-    const date = new Date(dateStr + 'T00:00:00');
-    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-  };
+  const selectedDayData = days.find((day) => day.dateString === selectedDate);
 
   const getCategoryColor = (category: string) => {
     const categoryColors: { [key: string]: string } = {
@@ -173,123 +126,139 @@ export default function CalendarScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title={t('calendar.title')} showBack />
+      {/* Horizontal Scrollable Days */}
+      <View className="border-b border-border bg-secondary pb-3 pt-4">
+        <ScrollView
+          ref={scrollViewRef}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 12 }}>
+          {days.map((day, index) => {
+            const isSelected = day.dateString === selectedDate;
+            const hasClasses = day.classes.length > 0;
 
-      <ThemedScroller className="flex-1">
-        {/* Month Navigation */}
-        <View className="border-b border-border bg-secondary px-6 py-4">
-          <View className="flex-row items-center justify-between">
-            <Pressable
-              onPress={previousMonth}
-              className="rounded-full p-2"
-              style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
-              <Icon name="ChevronLeft" size={24} color={colors.text} />
-            </Pressable>
-
-            <ThemedText className="text-xl font-bold">{monthName}</ThemedText>
-
-            <Pressable
-              onPress={nextMonth}
-              className="rounded-full p-2"
-              style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
-              <Icon name="ChevronRight" size={24} color={colors.text} />
-            </Pressable>
-          </View>
-        </View>
-
-        {/* Calendar Grid */}
-        <View className="px-4 py-4">
-          {/* Day names */}
-          <View className="mb-2 flex-row">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <View key={day} className="flex-1 items-center py-2">
-                <ThemedText className="text-xs font-semibold opacity-50">{day}</ThemedText>
-              </View>
-            ))}
-          </View>
-
-          {/* Calendar days */}
-          {loading ? (
-            <View className="items-center justify-center py-12">
-              <ActivityIndicator size="large" color={colors.highlight} />
-            </View>
-          ) : (
-            <View className="flex-row flex-wrap">
-              {calendarData.map((day, index) => (
-                <Pressable
-                  key={index}
-                  onPress={() => {
-                    if (day.classes.length > 0) {
-                      setSelectedDate(day.dateString === selectedDate ? null : day.dateString);
-                    }
-                  }}
-                  className="w-[14.28%] aspect-square p-1">
-                  <View
-                    className={`flex-1 items-center justify-center rounded-lg ${
-                      day.isToday ? 'border-2' : ''
-                    } ${selectedDate === day.dateString ? 'bg-highlight' : ''}`}
+            return (
+              <Pressable
+                key={day.dateString}
+                onPress={() => setSelectedDate(day.dateString)}
+                className="mx-1"
+                style={{ width: DAY_ITEM_WIDTH }}>
+                <View
+                  className={`items-center rounded-2xl px-3 py-4 ${isSelected ? '' : ''}`}
+                  style={{
+                    backgroundColor: isSelected
+                      ? colors.highlight
+                      : day.isToday
+                        ? colors.isDark
+                          ? '#2A2A2A'
+                          : '#E5E5E5'
+                        : 'transparent',
+                  }}>
+                  {/* Day name */}
+                  <ThemedText
+                    className="mb-1 text-xs font-semibold uppercase"
                     style={{
-                      borderColor: day.isToday ? colors.highlight : 'transparent',
-                      backgroundColor: selectedDate === day.dateString ? colors.highlight : 'transparent',
+                      color: isSelected ? '#FFFFFF' : colors.text,
+                      opacity: isSelected ? 1 : 0.5,
                     }}>
+                    {day.dayName}
+                  </ThemedText>
+
+                  {/* Day number */}
+                  <ThemedText
+                    className="mb-2 text-2xl font-bold"
+                    style={{
+                      color: isSelected ? '#FFFFFF' : colors.text,
+                    }}>
+                    {day.dayNumber}
+                  </ThemedText>
+
+                  {/* Month (show only on 1st of month or first item) */}
+                  {(day.dayNumber === 1 || index === 0) && (
                     <ThemedText
-                      className={`text-sm font-semibold ${
-                        !day.isCurrentMonth ? 'opacity-30' : ''
-                      } ${selectedDate === day.dateString ? 'text-white' : ''}`}
+                      className="text-xs font-semibold"
                       style={{
-                        color: selectedDate === day.dateString ? '#FFFFFF' : colors.text,
+                        color: isSelected ? '#FFFFFF' : colors.text,
+                        opacity: isSelected ? 0.8 : 0.4,
                       }}>
-                      {day.date}
+                      {day.monthName}
                     </ThemedText>
+                  )}
 
-                    {/* Class indicators */}
-                    {day.classes.length > 0 && (
-                      <View className="absolute bottom-1 flex-row gap-0.5">
-                        {day.classes.slice(0, 3).map((cls, idx) => (
-                          <View
-                            key={idx}
-                            className="h-1 w-1 rounded-full"
-                            style={{ backgroundColor: getCategoryColor(cls.category) }}
-                          />
-                        ))}
-                      </View>
-                    )}
-                  </View>
-                </Pressable>
-              ))}
-            </View>
-          )}
-        </View>
-
-        {/* Selected Date Classes */}
-        {selectedDate && selectedDateClasses.length > 0 && (
-          <View className="border-t border-border px-6 py-4">
-            <View className="mb-4 flex-row items-center justify-between">
-              <ThemedText className="text-lg font-bold">
-                {formatSelectedDate(selectedDate)}
-              </ThemedText>
-              <Pressable onPress={() => setSelectedDate(null)}>
-                <Icon name="X" size={20} color={colors.text} />
+                  {/* Class indicators */}
+                  {hasClasses && (
+                    <View className="mt-2 flex-row gap-1">
+                      {day.classes.slice(0, 3).map((cls, idx) => (
+                        <View
+                          key={idx}
+                          className="h-1.5 w-1.5 rounded-full"
+                          style={{
+                            backgroundColor: isSelected ? '#FFFFFF' : getCategoryColor(cls.category),
+                          }}
+                        />
+                      ))}
+                    </View>
+                  )}
+                </View>
               </Pressable>
+            );
+          })}
+        </ScrollView>
+      </View>
+
+      {/* Classes List */}
+      <ThemedScroller className="flex-1 px-6 pt-6">
+        {loading ? (
+          <View className="items-center justify-center py-12">
+            <ActivityIndicator size="large" color={colors.highlight} />
+          </View>
+        ) : selectedDateClasses.length > 0 ? (
+          <>
+            {/* Selected Date Header */}
+            <View className="mb-4">
+              <ThemedText className="text-2xl font-bold">
+                {selectedDayData?.date.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </ThemedText>
+              <ThemedText className="mt-1 text-sm opacity-60">
+                {selectedDateClasses.length} {selectedDateClasses.length === 1 ? 'class' : 'classes'} scheduled
+              </ThemedText>
             </View>
 
-            <View className="gap-3">
-              {selectedDateClasses.map((classItem) => (
-                <ClassCard
-                  key={classItem.id}
-                  classData={classItem}
-                  onConfirm={handleConfirm}
-                  onDeny={handleDeny}
-                />
-              ))}
+            {/* Classes */}
+            {selectedDateClasses.map((classItem) => (
+              <CalendarClassCard key={classItem.id} classData={classItem} />
+            ))}
+          </>
+        ) : (
+          <View className="items-center justify-center py-16">
+            <View
+              className="mb-4 rounded-full p-6"
+              style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+              <Icon name="Calendar" size={48} color={colors.text} className="opacity-30" />
             </View>
+            <ThemedText className="text-center text-xl font-bold opacity-80">
+              {t('calendar.noClasses')}
+            </ThemedText>
+            <ThemedText className="mt-2 text-center opacity-50">
+              {selectedDayData?.date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </ThemedText>
           </View>
         )}
 
-        {/* Legend */}
-        <View className="mx-6 mb-6 rounded-2xl bg-secondary p-4">
-          <ThemedText className="mb-3 text-sm font-semibold">{t('calendar.legend')}</ThemedText>
-          <View className="flex-row flex-wrap gap-2">
+        {/* Category Legend */}
+        <View className="mb-6 mt-8 rounded-2xl bg-secondary p-5">
+          <ThemedText className="mb-4 text-sm font-bold uppercase opacity-60">
+            {t('calendar.legend')}
+          </ThemedText>
+          <View className="flex-row flex-wrap gap-3">
             {Object.entries({
               'BJJ': '#9333EA',
               'Muay Thai': '#DC2626',
@@ -300,11 +269,8 @@ export default function CalendarScreen() {
               'Fitness': '#0891B2',
             }).map(([category, color]) => (
               <View key={category} className="flex-row items-center gap-2">
-                <View
-                  className="h-3 w-3 rounded-full"
-                  style={{ backgroundColor: color }}
-                />
-                <ThemedText className="text-xs">{category}</ThemedText>
+                <View className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
+                <ThemedText className="text-sm">{category}</ThemedText>
               </View>
             ))}
           </View>
