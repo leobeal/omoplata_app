@@ -216,6 +216,21 @@ export default {
     overdue: 'Überfällig',
   },
 
+  // Kursseite
+  classes: {
+    title: 'Alle Kurse',
+    filters: 'Filter',
+    clearFilters: 'Alle löschen',
+    category: 'Kategorie',
+    level: 'Niveau',
+    instructor: 'Trainer',
+    location: 'Standort',
+    showingResults: '{{count}} von {{total}} Kursen anzeigen',
+    loadMore: 'Mehr Kurse laden',
+    noClassesFound: 'Keine Kurse gefunden',
+    tryDifferentFilters: 'Versuchen Sie, Ihre Filter anzupassen',
+  },
+
   // Datum/Zeit
   date: {
     monday: 'Montag',

@@ -216,6 +216,21 @@ export default {
     overdue: 'Vencido',
   },
 
+  // Tela de Aulas
+  classes: {
+    title: 'Todas as Aulas',
+    filters: 'Filtros',
+    clearFilters: 'Limpar Tudo',
+    category: 'Categoria',
+    level: 'Nível',
+    instructor: 'Instrutor',
+    location: 'Localização',
+    showingResults: 'Mostrando {{count}} de {{total}} aulas',
+    loadMore: 'Carregar Mais Aulas',
+    noClassesFound: 'Nenhuma Aula Encontrada',
+    tryDifferentFilters: 'Tente ajustar seus filtros',
+  },
+
   // Data/Hora
   date: {
     monday: 'Segunda-feira',

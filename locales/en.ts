@@ -216,6 +216,21 @@ export default {
     overdue: 'Overdue',
   },
 
+  // Classes Screen
+  classes: {
+    title: 'All Classes',
+    filters: 'Filters',
+    clearFilters: 'Clear All',
+    category: 'Category',
+    level: 'Level',
+    instructor: 'Instructor',
+    location: 'Location',
+    showingResults: 'Showing {{count}} of {{total}} classes',
+    loadMore: 'Load More Classes',
+    noClassesFound: 'No Classes Found',
+    tryDifferentFilters: 'Try adjusting your filters',
+  },
+
   // Date/Time
   date: {
     monday: 'Monday',
