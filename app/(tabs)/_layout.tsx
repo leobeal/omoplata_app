@@ -1,18 +1,21 @@
 import { useThemeColors } from '@/contexts/ThemeColors';
 import { TabButton } from '@/components/TabButton';
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CheckInButton from '@/components/CheckInButton';
 import { useT } from '@/contexts/LocalizationContext';
 import { defaultNavigation, NavigationConfig as FullNavigationConfig } from '@/configs/navigation';
 import { getNavigationConfig, NavigationConfig as ApiNavigationConfig } from '@/api/app-config';
+import { useTenant } from '@/contexts/TenantContext';
+import { router } from 'expo-router';
 
 export default function TabsLayout() {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const t = useT();
+  const { tenant, isLoading: isTenantLoading, isTenantRequired } = useTenant();
 
   const [apiConfig, setApiConfig] = useState<ApiNavigationConfig | null>(null);
 
@@ -56,6 +59,23 @@ export default function TabsLayout() {
 
   const tabs = navConfig.tabs || [];
   const showCheckInButton = navConfig.showCheckInButton ?? true;
+
+  // Check if tenant selection is needed
+  useEffect(() => {
+    if (!isTenantLoading && isTenantRequired && !tenant) {
+      // Tenant is required but not selected, redirect to tenant selection
+      router.replace('/screens/tenant-selection');
+    }
+  }, [isTenantLoading, isTenantRequired, tenant]);
+
+  // Show loading while checking tenant
+  if (isTenantLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.bg }}>
+        <ActivityIndicator size="large" color={colors.highlight} />
+      </View>
+    );
+  }
 
   // Calculate tab width based on number of tabs
   const hasCheckIn = showCheckInButton;
