@@ -39,11 +39,16 @@ export interface FeatureFlags {
   membershipCancellationEnabled: boolean;
 }
 
+export interface AnalyticsSettings {
+  aggregationPeriod: 'daily' | 'weekly'; // daily = last 7 days, weekly = last 4 weeks
+}
+
 export interface AppConfig {
   navigation: NavigationConfig;
   membership: MembershipSettings;
   billing: BillingSettings;
   features: FeatureFlags;
+  analytics: AnalyticsSettings;
   version: string;
   lastUpdated: string;
 }
@@ -75,6 +80,9 @@ export const defaultConfig: Partial<AppConfig> = {
     socialSharingEnabled: false,
     referralProgramEnabled: false,
     membershipCancellationEnabled: true,
+  },
+  analytics: {
+    aggregationPeriod: 'daily', // Default to daily (last 7 days)
   },
 };
 
@@ -217,6 +225,19 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
   } catch (error) {
     console.error('Error getting feature flags:', error);
     return defaultConfig.features!;
+  }
+};
+
+/**
+ * Get analytics settings from config
+ */
+export const getAnalyticsSettings = async (): Promise<AnalyticsSettings> => {
+  try {
+    const config = await getAppConfig();
+    return config?.analytics || defaultConfig.analytics!;
+  } catch (error) {
+    console.error('Error getting analytics settings:', error);
+    return defaultConfig.analytics!;
   }
 };
 

@@ -28,5 +28,8 @@
     "socialSharingEnabled": false,
     "referralProgramEnabled": false,
     "membershipCancellationEnabled": true
+  },
+  "analytics": {
+    "aggregationPeriod": "daily"
   }
 }
