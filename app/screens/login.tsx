@@ -99,7 +99,12 @@ export default function LoginScreen() {
             className="w-full flex-row items-center justify-between px-global"
             style={{ paddingTop: insets.top + 16 }}
           >
-            <Icon name="ArrowLeft" onPress={handleBack} size={24} color="white" />
+            {/* Only show back button for generic builds where tenant selection is required */}
+            {isTenantRequired ? (
+              <Icon name="ArrowLeft" onPress={handleBack} size={24} color="white" />
+            ) : (
+              <View style={{ width: 24 }} />
+            )}
             <Link href="/screens/signup" className="text-white border border-white/60 px-3 rounded-xl py-2">
               Sign Up
             </Link>
