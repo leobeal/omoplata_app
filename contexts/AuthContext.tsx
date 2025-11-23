@@ -70,10 +70,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const { token: authToken, refreshToken, user: userData } = response.data;
 
-      // Save to storage
-      await Promise.all([
+      // Save auth token and user data
+      const savePromises = [
         saveAuthToken(authToken),
-        saveRefreshToken(refreshToken),
         saveUser({
           id: userData.id,
           email: userData.email,
@@ -83,7 +82,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           avatar: userData.avatar,
           membershipId: userData.membershipId,
         }),
-      ]);
+      ];
+
+      // Only save refresh token if it exists
+      if (refreshToken) {
+        savePromises.push(saveRefreshToken(refreshToken));
+      }
+
+      await Promise.all(savePromises);
 
       // Update state
       setToken(authToken);
