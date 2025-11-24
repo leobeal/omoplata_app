@@ -146,9 +146,9 @@ export default function BillingScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.text}
-            colors={[colors.highlight, colors.text]}
-            progressBackgroundColor={colors.secondary}
+            tintColor="#FFFFFF"
+            colors={['#FFFFFF', colors.highlight]}
+            progressBackgroundColor={colors.bg}
           />
         }>
         {/* Next Invoice Card */}
