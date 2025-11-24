@@ -1,9 +1,11 @@
-import { View } from 'react-native';
-import ThemedText from './ThemedText';
-import { LineChart } from 'react-native-chart-kit';
-import { useThemeColors } from '@/contexts/ThemeColors';
 import { useState } from 'react';
+import { View } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
+
 import Icon from './Icon';
+import ThemedText from './ThemedText';
+
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 interface SmallChartCardProps {
   title: string;
@@ -31,7 +33,7 @@ export const SmallChartCard = ({
     labels: data.map(() => ''),
     datasets: [
       {
-        data: data,
+        data,
         color: () => lineColor || colors.highlight,
         strokeWidth: 4,
       },
@@ -81,7 +83,7 @@ export const SmallChartCard = ({
           width={containerWidth + 20}
           height={height}
           chartConfig={chartConfig}
-          withDots={true}
+          withDots
           withShadow={false}
           style={{
             paddingRight: 10,

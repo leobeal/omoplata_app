@@ -1,4 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+
+import { authApi } from '@/api/auth';
+import { setAuthToken as setApiAuthToken } from '@/api/client';
+import { useTenant } from '@/contexts/TenantContext';
 import {
   saveAuthToken,
   loadAuthToken,
@@ -9,9 +13,6 @@ import {
   clearAllAuthData,
   StoredUser,
 } from '@/utils/auth-storage';
-import { setAuthToken as setApiAuthToken } from '@/api/client';
-import { authApi, type User } from '@/api/auth';
-import { useTenant } from '@/contexts/TenantContext';
 
 interface AuthContextType {
   user: StoredUser | null;
@@ -42,7 +43,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // If tenant changed (and it's not the first load), clear auth
     if (previousTenantSlug !== null && previousTenantSlug !== currentTenantSlug) {
-      console.log(`Tenant changed from ${previousTenantSlug} to ${currentTenantSlug}, clearing auth`);
+      console.log(
+        `Tenant changed from ${previousTenantSlug} to ${currentTenantSlug}, clearing auth`
+      );
       // Clear the old tenant's auth data
       clearAllAuthData(previousTenantSlug).catch((error) => {
         console.error('Failed to clear old tenant auth:', error);
@@ -84,7 +87,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await authApi.login({ email, password });
 

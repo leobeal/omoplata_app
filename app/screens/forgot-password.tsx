@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
-import { View, ScrollView, KeyboardAvoidingView, Platform, ImageBackground, Alert } from 'react-native';
-import { router } from 'expo-router';
-import Input from '@/components/forms/Input';
-import ThemedText from '@/components/ThemedText';
-import { Button } from '@/components/Button';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
+import {
+  View,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  ImageBackground,
+  Alert,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import AnimatedView from '@/components/AnimatedView';
+import { Button } from '@/components/Button';
 import Icon from '@/components/Icon';
+import ThemedText from '@/components/ThemedText';
+import Input from '@/components/forms/Input';
 
 export default function ForgotPasswordScreen() {
   const insets = useSafeAreaInsets();
@@ -50,13 +58,11 @@ export default function ForgotPasswordScreen() {
           "We've sent a password reset link to your email address. Please check your inbox.",
           [{ text: 'OK', onPress: () => router.back() }]
         );
-      } catch (error) {
+      } catch {
         setIsLoading(false);
-        Alert.alert(
-          'Error',
-          'Failed to send password reset link. Please try again.',
-          [{ text: 'OK' }]
-        );
+        Alert.alert('Error', 'Failed to send password reset link. Please try again.', [
+          { text: 'OK' },
+        ]);
       }
     }
   };
@@ -68,17 +74,15 @@ export default function ForgotPasswordScreen() {
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          bounces={true}
-          alwaysBounceVertical={true}
-          className="flex-1"
-        >
+          bounces
+          alwaysBounceVertical
+          className="flex-1">
           <StatusBar style="light" />
 
           {/* Header */}
           <View
             className="w-full flex-row items-center justify-between px-global"
-            style={{ paddingTop: insets.top + 16 }}
-          >
+            style={{ paddingTop: insets.top + 16 }}>
             <Icon name="ArrowLeft" onPress={() => router.back()} size={24} color="white" />
             <View style={{ width: 24 }} />
           </View>
@@ -89,13 +93,12 @@ export default function ForgotPasswordScreen() {
           {/* Reset Password Form */}
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-          >
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
             <AnimatedView duration={500} delay={200} animation="slideInBottom" className="p-4">
-              <View className="p-6 bg-background border border-border rounded-3xl">
-                <View className="items-center justify-center mb-6">
-                  <ThemedText className="text-3xl font-outfit-bold">Reset Password</ThemedText>
-                  <ThemedText className="text-sm opacity-60 text-center">
+              <View className="rounded-3xl border border-border bg-background p-6">
+                <View className="mb-6 items-center justify-center">
+                  <ThemedText className="font-outfit-bold text-3xl">Reset Password</ThemedText>
+                  <ThemedText className="text-center text-sm opacity-60">
                     Enter your email address to recover password
                   </ThemedText>
                 </View>

@@ -1,7 +1,9 @@
 import { View } from 'react-native';
-import ThemedText from './ThemedText';
-import { useThemeColors } from '@/contexts/ThemeColors';
+
 import Icon from './Icon';
+import ThemedText from './ThemedText';
+
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 interface ProgressBarData {
   percentage: number;
@@ -47,7 +49,7 @@ export const SmallProgressBarCard = ({
                 className="relative overflow-hidden rounded-full bg-background"
                 style={{
                   width: barWidth,
-                  height: height,
+                  height,
                   marginHorizontal: 4,
                 }}>
                 <View

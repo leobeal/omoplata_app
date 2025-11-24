@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Reference/old code
+__old/
+
+# Test files
+__tests__/
+
+# Build output
+.expo/
+dist/
+build/
+
+# Generated files
+*.generated.*

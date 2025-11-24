@@ -1,6 +1,7 @@
-import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
+import React from 'react';
 import { Text } from 'react-native';
+
 import {
   AppConfigProvider,
   useAppConfig,

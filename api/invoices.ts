@@ -65,7 +65,9 @@ export const getInvoices = async (params?: InvoicesParams): Promise<InvoicesResp
       .map(([k, v]) => [k, String(v)])
   ).toString();
 
-  const endpoint = queryParams ? `${ENDPOINTS.INVOICES.LIST}?${queryParams}` : ENDPOINTS.INVOICES.LIST;
+  const endpoint = queryParams
+    ? `${ENDPOINTS.INVOICES.LIST}?${queryParams}`
+    : ENDPOINTS.INVOICES.LIST;
 
   const response = await api.get<InvoicesResponse>(endpoint);
 

@@ -1,5 +1,6 @@
-import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react-native';
+import React from 'react';
+
 import HomeScreen from '../../app/(tabs)/index';
 
 // Mock the contexts

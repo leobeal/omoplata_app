@@ -1,8 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
-import ThemedText from './ThemedText';
+
 import { Button } from './Button';
 import Icon from './Icon';
+import ThemedText from './ThemedText';
+
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 interface ErrorStateProps {
@@ -24,19 +26,16 @@ export default function ErrorState({
     <View className="flex-1 items-center justify-center px-global py-8">
       {/* Error Icon */}
       <View
-        className="w-16 h-16 rounded-full items-center justify-center mb-4"
-        style={{ backgroundColor: colors.error + '20' }}
-      >
+        className="mb-4 h-16 w-16 items-center justify-center rounded-full"
+        style={{ backgroundColor: colors.error + '20' }}>
         <Icon name="AlertCircle" size={32} color={colors.error} />
       </View>
 
       {/* Title */}
-      <ThemedText className="text-xl font-bold text-center mb-2">
-        {title}
-      </ThemedText>
+      <ThemedText className="mb-2 text-center text-xl font-bold">{title}</ThemedText>
 
       {/* Message */}
-      <ThemedText className="text-base text-text-muted text-center mb-6 max-w-sm">
+      <ThemedText className="text-text-muted mb-6 max-w-sm text-center text-base">
         {message}
       </ThemedText>
 
@@ -44,9 +43,7 @@ export default function ErrorState({
       <Button onPress={onRetry} className="min-w-[140px]">
         <View className="flex-row items-center justify-center">
           <Icon name="RefreshCw" size={18} color={colors.background} style={{ marginRight: 8 }} />
-          <ThemedText className="text-white font-semibold">
-            {retryButtonText}
-          </ThemedText>
+          <ThemedText className="font-semibold text-white">{retryButtonText}</ThemedText>
         </View>
       </Button>
     </View>

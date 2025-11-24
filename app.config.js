@@ -1,5 +1,7 @@
 if (!process.env.TENANT) {
-  throw new Error('TENANT environment variable is required. Use TENANT=MAIN for generic build with tenant selection, or TENANT=evolve for club-specific build.');
+  throw new Error(
+    'TENANT environment variable is required. Use TENANT=MAIN for generic build with tenant selection, or TENANT=evolve for club-specific build.'
+  );
 }
 
 const tenantEnv = process.env.TENANT;
@@ -11,7 +13,7 @@ try {
   // For generic build, use main config. For specific tenants, use their config.
   const configName = isGenericBuild ? 'main' : tenantEnv;
   config = require('./configs/' + configName + '.js');
-} catch (e) {
+} catch (_e) {
   throw new Error(`Invalid TENANT environment variable: ${tenantEnv}. Config file not found.`);
 }
 
@@ -44,10 +46,7 @@ module.exports = {
     icon: config.icon,
     userInterfaceStyle: 'automatic',
     splash: config.splash,
-    assetBundlePatterns: [
-      'assets/_global/**/*',
-      `assets/${config.slug}/**/*`,
-    ],
+    assetBundlePatterns: ['assets/_global/**/*', `assets/${config.slug}/**/*`],
     ios: {
       supportsTablet: true,
       bundleIdentifier: config.bundleIdentifier,

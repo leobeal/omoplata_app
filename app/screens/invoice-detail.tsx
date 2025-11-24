@@ -1,15 +1,16 @@
+import { useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, Pressable, Share } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+
+import { getInvoiceById, Invoice } from '@/api/invoices';
+import { Button } from '@/components/Button';
+import ErrorState from '@/components/ErrorState';
 import Header from '@/components/Header';
+import Icon from '@/components/Icon';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
-import Icon from '@/components/Icon';
-import ErrorState from '@/components/ErrorState';
-import { Button } from '@/components/Button';
-import { getInvoiceById, Invoice } from '@/api/invoices';
-import { useThemeColors } from '@/contexts/ThemeColors';
 import { useAuth } from '@/contexts/AuthContext';
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function InvoiceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -32,9 +33,10 @@ export default function InvoiceDetailScreen() {
       }
     } catch (error) {
       console.error('Error loading invoice:', error);
-      const errorMessage = error instanceof Error
-        ? error.message
-        : 'Failed to load invoice. Please check your connection and try again.';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load invoice. Please check your connection and try again.';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -151,7 +153,9 @@ export default function InvoiceDetailScreen() {
             <View
               className="rounded-full px-3 py-1"
               style={{ backgroundColor: `${getStatusColor(invoice.status)}20` }}>
-              <ThemedText className="font-semibold" style={{ color: getStatusColor(invoice.status) }}>
+              <ThemedText
+                className="font-semibold"
+                style={{ color: getStatusColor(invoice.status) }}>
                 {getStatusLabel(invoice.status)}
               </ThemedText>
             </View>
@@ -227,7 +231,9 @@ export default function InvoiceDetailScreen() {
           <ThemedText className="font-semibold">
             {user ? `${user.firstName} ${user.lastName}`.trim() : 'User'}
           </ThemedText>
-          <ThemedText className="mt-1 text-sm opacity-70">{user?.email || 'user@example.com'}</ThemedText>
+          <ThemedText className="mt-1 text-sm opacity-70">
+            {user?.email || 'user@example.com'}
+          </ThemedText>
           <ThemedText className="mt-1 text-sm opacity-70">Address on file</ThemedText>
         </View>
 

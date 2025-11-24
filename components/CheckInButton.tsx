@@ -1,7 +1,8 @@
-import React from 'react';
-import Icon from './Icon';
-import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
+import React from 'react';
+import { Pressable, View } from 'react-native';
+
+import Icon from './Icon';
 
 const CheckInButton = () => {
   const handlePress = () => {

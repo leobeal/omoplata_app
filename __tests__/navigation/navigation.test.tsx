@@ -1,6 +1,6 @@
-import React from 'react';
 import { render } from '@testing-library/react-native';
 import { router } from 'expo-router';
+import React from 'react';
 
 // Mock contexts
 jest.mock('@/contexts/ThemeColors', () => ({

@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, Pressable, ScrollView, RefreshControl } from 'react-native';
-import Header from '@/components/Header';
-import ThemedScroller from '@/components/ThemedScroller';
-import ThemedText from '@/components/ThemedText';
-import Icon from '@/components/Icon';
-import ClassCard from '@/components/ClassCard';
-import { Chip } from '@/components/Chip';
-import ErrorState from '@/components/ErrorState';
+
 import {
   getClassesPaginated,
   getClassCategories,
@@ -16,6 +10,13 @@ import {
   Class,
   ClassFilters,
 } from '@/api/classes';
+import { Chip } from '@/components/Chip';
+import ClassCard from '@/components/ClassCard';
+import ErrorState from '@/components/ErrorState';
+import Header from '@/components/Header';
+import Icon from '@/components/Icon';
+import ThemedScroller from '@/components/ThemedScroller';
+import ThemedText from '@/components/ThemedText';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
@@ -29,7 +30,6 @@ export default function NextClassesScreen() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
 
@@ -67,7 +67,6 @@ export default function NextClassesScreen() {
   const loadClasses = async (reset: boolean = false) => {
     if (reset) {
       setLoading(true);
-      setOffset(0);
       setError(null); // Clear previous errors
     }
 
@@ -84,7 +83,10 @@ export default function NextClassesScreen() {
       setError(null); // Clear error on success
     } catch (error) {
       console.error('Error loading classes:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load classes. Please check your connection and try again.';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load classes. Please check your connection and try again.';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -195,7 +197,9 @@ export default function NextClassesScreen() {
       {/* Results count */}
       <View className="border-b border-border px-6 py-3">
         <ThemedText className="text-sm opacity-70">
-          {loading ? t('common.loading') : t('classes.showingResults', { count: classes.length, total })}
+          {loading
+            ? t('common.loading')
+            : t('classes.showingResults', { count: classes.length, total })}
         </ThemedText>
       </View>
 
@@ -210,8 +214,7 @@ export default function NextClassesScreen() {
             colors={['#FFFFFF', colors.highlight]}
             progressBackgroundColor={colors.bg}
           />
-        }
-      >
+        }>
         {loading ? (
           <View className="items-center justify-center py-12">
             <ActivityIndicator size="large" />

@@ -1,16 +1,17 @@
-import { useThemeColors } from '@/contexts/ThemeColors';
-import { TabButton } from '@/components/TabButton';
-import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
-import { View, ActivityIndicator } from 'react-native';
-import React, { useState, useEffect, useMemo } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import CheckInButton from '@/components/CheckInButton';
-import { useT } from '@/contexts/LocalizationContext';
-import { defaultNavigation, NavigationConfig as FullNavigationConfig } from '@/configs/navigation';
-import { getNavigationConfig, NavigationConfig as ApiNavigationConfig } from '@/api/app-config';
-import { useTenant } from '@/contexts/TenantContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
+import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { getNavigationConfig, NavigationConfig as ApiNavigationConfig } from '@/api/app-config';
+import CheckInButton from '@/components/CheckInButton';
+import { TabButton } from '@/components/TabButton';
+import { defaultNavigation, NavigationConfig as FullNavigationConfig } from '@/configs/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { useT } from '@/contexts/LocalizationContext';
+import { useTenant } from '@/contexts/TenantContext';
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function TabsLayout() {
   const colors = useThemeColors();
@@ -49,9 +50,7 @@ export default function TabsLayout() {
     }
 
     // Filter default tabs based on API response (which only contains tab names)
-    const filteredTabs = defaultNavigation.tabs.filter((tab) =>
-      apiConfig.tabs.includes(tab.name)
-    );
+    const filteredTabs = defaultNavigation.tabs.filter((tab) => apiConfig.tabs.includes(tab.name));
 
     return {
       tabs: filteredTabs,
@@ -79,14 +78,19 @@ export default function TabsLayout() {
     // Priority 2: Check authentication after tenant is selected
     if (!isAuthenticated) {
       router.replace('/screens/login');
-      return;
     }
   }, [isAuthLoading, isAuthenticated, isTenantLoading, isTenantRequired, tenant]);
 
   // Show loading while checking auth and tenant
   if (isAuthLoading || isTenantLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.bg }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.bg,
+        }}>
         <ActivityIndicator size="large" color={colors.highlight} />
       </View>
     );
@@ -103,7 +107,7 @@ export default function TabsLayout() {
       // No check-in button, render all tabs
       return tabs.map((tab) => (
         <TabTrigger key={tab.name} name={tab.name} href={tab.href} asChild>
-          <TabButton labelAnimated={true} icon={tab.icon}>
+          <TabButton labelAnimated icon={tab.icon}>
             {t(tab.label)}
           </TabButton>
         </TabTrigger>
@@ -119,7 +123,7 @@ export default function TabsLayout() {
       <>
         {leftTabs.map((tab) => (
           <TabTrigger key={tab.name} name={tab.name} href={tab.href} asChild>
-            <TabButton labelAnimated={true} icon={tab.icon}>
+            <TabButton labelAnimated icon={tab.icon}>
               {t(tab.label)}
             </TabButton>
           </TabTrigger>
@@ -132,7 +136,7 @@ export default function TabsLayout() {
 
         {rightTabs.map((tab) => (
           <TabTrigger key={tab.name} name={tab.name} href={tab.href} asChild>
-            <TabButton labelAnimated={true} icon={tab.icon}>
+            <TabButton labelAnimated icon={tab.icon}>
               {t(tab.label)}
             </TabButton>
           </TabTrigger>

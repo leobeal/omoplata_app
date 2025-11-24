@@ -1,21 +1,20 @@
+import { LinearGradient } from 'expo-linear-gradient';
+import { Link, router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { View, ScrollView, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
-import { Link, router } from 'expo-router';
-import Input from '@/components/forms/Input';
-import ThemedText from '@/components/ThemedText';
-import { Button } from '@/components/Button';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useThemeColors } from '@/contexts/ThemeColors';
-import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
+
 import AnimatedView from '@/components/AnimatedView';
+import { Button } from '@/components/Button';
 import Icon from '@/components/Icon';
+import ThemedText from '@/components/ThemedText';
+import Input from '@/components/forms/Input';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTenant } from '@/contexts/TenantContext';
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
-  const colors = useThemeColors();
   const { login } = useAuth();
   const { isTenantRequired } = useTenant();
   const [email, setEmail] = useState('');
@@ -73,7 +72,7 @@ export default function LoginScreen() {
         } else {
           setGeneralError(result.error || 'Login failed. Please try again.');
         }
-      } catch (error) {
+      } catch {
         setGeneralError('An unexpected error occurred. Please try again.');
       } finally {
         setIsLoading(false);
@@ -88,17 +87,15 @@ export default function LoginScreen() {
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          bounces={true}
-          alwaysBounceVertical={true}
-          className="flex-1"
-        >
+          bounces
+          alwaysBounceVertical
+          className="flex-1">
           <StatusBar style="light" />
 
           {/* Header */}
           <View
             className="w-full flex-row items-center justify-between px-global"
-            style={{ paddingTop: insets.top + 16 }}
-          >
+            style={{ paddingTop: insets.top + 16 }}>
             {/* Only show back button for generic builds where tenant selection is required */}
             {isTenantRequired ? (
               <Icon name="ArrowLeft" onPress={handleBack} size={24} color="white" />
@@ -114,18 +111,17 @@ export default function LoginScreen() {
           {/* Login Form */}
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-          >
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
             <AnimatedView duration={500} delay={200} animation="slideInBottom" className="p-4">
-              <View className="p-6 bg-background border border-border rounded-3xl">
-                <View className="items-center justify-center mb-6">
-                  <ThemedText className="text-3xl font-outfit-bold">Login</ThemedText>
+              <View className="rounded-3xl border border-border bg-background p-6">
+                <View className="mb-6 items-center justify-center">
+                  <ThemedText className="font-outfit-bold text-3xl">Login</ThemedText>
                   <ThemedText className="text-sm opacity-60">Sign in to your account</ThemedText>
                 </View>
 
                 {generalError ? (
-                  <View className="bg-red-500/10 border border-red-500 rounded-lg p-3 mb-4">
-                    <ThemedText className="text-red-500 text-center">{generalError}</ThemedText>
+                  <View className="mb-4 rounded-lg border border-red-500 bg-red-500/10 p-3">
+                    <ThemedText className="text-center text-red-500">{generalError}</ThemedText>
                   </View>
                 ) : null}
 
@@ -151,7 +147,7 @@ export default function LoginScreen() {
                     if (passwordError) validatePassword(text);
                   }}
                   error={passwordError}
-                  isPassword={true}
+                  isPassword
                   autoCapitalize="none"
                   variant="inline"
                 />
@@ -164,7 +160,9 @@ export default function LoginScreen() {
                   className="mb-4"
                 />
 
-                <Link className="underline text-center text-text text-sm mb-4" href="/screens/forgot-password">
+                <Link
+                  className="mb-4 text-center text-sm text-text underline"
+                  href="/screens/forgot-password">
                   Forgot Password?
                 </Link>
               </View>

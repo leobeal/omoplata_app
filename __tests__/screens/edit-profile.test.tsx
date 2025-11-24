@@ -1,7 +1,8 @@
-import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react-native';
-import EditProfileScreen from '../../app/screens/edit-profile';
 import { router } from 'expo-router';
+import React from 'react';
+
+import EditProfileScreen from '../../app/screens/edit-profile';
 
 // Mock the contexts
 jest.mock('@/contexts/ThemeColors', () => ({
@@ -296,7 +297,10 @@ describe('EditProfileScreen', () => {
     it('shows loading state while saving', async () => {
       let resolveSave: () => void;
       mockUpdateProfile.mockImplementationOnce(
-        () => new Promise((resolve) => { resolveSave = () => resolve(mockProfile); })
+        () =>
+          new Promise((resolve) => {
+            resolveSave = () => resolve(mockProfile);
+          })
       );
 
       const { getByText, queryByText } = render(<EditProfileScreen />);
@@ -316,7 +320,10 @@ describe('EditProfileScreen', () => {
     it('disables buttons while saving', async () => {
       let resolveSave: () => void;
       mockUpdateProfile.mockImplementationOnce(
-        () => new Promise((resolve) => { resolveSave = () => resolve(mockProfile); })
+        () =>
+          new Promise((resolve) => {
+            resolveSave = () => resolve(mockProfile);
+          })
       );
 
       const { getByText } = render(<EditProfileScreen />);

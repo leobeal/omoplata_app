@@ -1,10 +1,11 @@
-import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
+import React from 'react';
+
+import { authApi } from '../../api/auth';
+import * as apiClient from '../../api/client';
 import { AuthProvider, useAuth } from '../../contexts/AuthContext';
 import { TenantProvider } from '../../contexts/TenantContext';
 import * as authStorage from '../../utils/auth-storage';
-import * as apiClient from '../../api/client';
-import { authApi } from '../../api/auth';
 
 // Mock dependencies
 jest.mock('../../utils/auth-storage');
@@ -31,11 +32,13 @@ describe('AuthContext', () => {
   });
 
   // Helper to create wrapper with providers
-  const createWrapper = () => ({ children }: { children: React.ReactNode }) => (
-    <TenantProvider>
-      <AuthProvider>{children}</AuthProvider>
-    </TenantProvider>
-  );
+  const createWrapper =
+    () =>
+    ({ children }: { children: React.ReactNode }) => (
+      <TenantProvider>
+        <AuthProvider>{children}</AuthProvider>
+      </TenantProvider>
+    );
 
   describe('Initialization', () => {
     it('should initialize with loading state', () => {
@@ -136,15 +139,18 @@ describe('AuthContext', () => {
       expect(loginResult?.success).toBe(true);
       expect(mockAuthStorage.saveAuthToken).toHaveBeenCalledWith('new-auth-token', 'evolve');
       expect(mockAuthStorage.saveRefreshToken).toHaveBeenCalledWith('new-refresh-token', 'evolve');
-      expect(mockAuthStorage.saveUser).toHaveBeenCalledWith({
-        id: 'usr_456',
-        email: 'john@example.com',
-        firstName: 'John',
-        lastName: 'Smith',
-        phone: '1234567890',
-        avatar: 'https://example.com/avatar.jpg',
-        membershipId: 'mem-123',
-      }, 'evolve');
+      expect(mockAuthStorage.saveUser).toHaveBeenCalledWith(
+        {
+          id: 'usr_456',
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Smith',
+          phone: '1234567890',
+          avatar: 'https://example.com/avatar.jpg',
+          membershipId: 'mem-123',
+        },
+        'evolve'
+      );
 
       expect(result.current.token).toBe('new-auth-token');
       expect(result.current.user?.email).toBe('john@example.com');

@@ -112,9 +112,10 @@ const transformApiClass = (apiClass: ApiClassSession): Class => {
     duration,
     location: apiClass.venue.name,
     capacity: apiClass.capacity,
-    enrolled: apiClass.capacity.max && apiClass.capacity.available_spots !== null
-      ? apiClass.capacity.max - apiClass.capacity.available_spots
-      : 0,
+    enrolled:
+      apiClass.capacity.max && apiClass.capacity.available_spots !== null
+        ? apiClass.capacity.max - apiClass.capacity.available_spots
+        : 0,
     status,
     description: apiClass.class.description || '',
     level: apiClass.class.level || '',
@@ -142,9 +143,7 @@ export const getUpcomingClasses = async (limit?: number): Promise<Class[]> => {
 export const getClassesPaginated = async (
   limit: number = 10
 ): Promise<{ classes: Class[]; total: number }> => {
-  const response = await api.get<ApiClassesResponse>(
-    `${ENDPOINTS.CLASSES.NEXT}?limit=${limit}`
-  );
+  const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.NEXT}?limit=${limit}`);
 
   if (response.error || !response.data) {
     throw new Error(response.error || 'Failed to fetch classes');
@@ -165,7 +164,7 @@ export const setAttendanceIntention = async (
   notes?: string
 ): Promise<void> => {
   const response = await api.post(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
-    occurrence_id: parseInt(occurrenceId),
+    occurrence_id: parseInt(occurrenceId, 10),
     decision,
     notes: notes || '',
   });

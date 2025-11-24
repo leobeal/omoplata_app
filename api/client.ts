@@ -32,12 +32,7 @@ export async function apiRequest<T>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<ApiResponse<T>> {
-  const {
-    method = 'GET',
-    body,
-    headers = {},
-    timeout = API_CONFIG.timeout,
-  } = options;
+  const { method = 'GET', body, headers = {}, timeout = API_CONFIG.timeout } = options;
 
   const url = `${API_CONFIG.baseUrl}${endpoint}`;
 
@@ -91,7 +86,9 @@ export async function apiRequest<T>(
       };
     }
 
-    console.error(`[API Error] ${method} ${url} - ${error instanceof Error ? error.message : 'Network error'}`);
+    console.error(
+      `[API Error] ${method} ${url} - ${error instanceof Error ? error.message : 'Network error'}`
+    );
     return {
       data: null,
       error: error instanceof Error ? error.message : 'Network error',

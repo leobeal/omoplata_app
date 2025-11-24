@@ -1,8 +1,9 @@
+import { Link } from 'expo-router';
 import React from 'react';
 import { View, ViewStyle } from 'react-native';
-import ThemedText from './ThemedText';
+
 import Icon, { IconName } from './Icon';
-import { Link } from 'expo-router';
+import ThemedText from './ThemedText';
 
 type TitleSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
 

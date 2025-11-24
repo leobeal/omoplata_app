@@ -27,7 +27,8 @@ export function ScrollToTopProvider({ children }: { children: React.ReactNode })
   };
 
   return (
-    <ScrollToTopContext.Provider value={{ scrollToTop, registerScrollHandler, unregisterScrollHandler }}>
+    <ScrollToTopContext.Provider
+      value={{ scrollToTop, registerScrollHandler, unregisterScrollHandler }}>
       {children}
     </ScrollToTopContext.Provider>
   );

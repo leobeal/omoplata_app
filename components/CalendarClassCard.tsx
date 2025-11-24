@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Pressable } from 'react-native';
-import ThemedText from './ThemedText';
-import Icon from './Icon';
+
 import Avatar from './Avatar';
-import { useThemeColors } from '@/contexts/ThemeColors';
+import Icon from './Icon';
+import ThemedText from './ThemedText';
+
 import { Class } from '@/api/classes';
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 interface CalendarClassCardProps {
   classData: Class;
@@ -16,14 +18,14 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
 
   const getCategoryColor = (category: string) => {
     const categoryColors: { [key: string]: string } = {
-      'BJJ': '#9333EA',
+      BJJ: '#9333EA',
       'Muay Thai': '#DC2626',
-      'Boxing': '#2563EB',
-      'Wrestling': '#EA580C',
-      'MMA': '#16A34A',
-      'Grappling': '#7C3AED',
+      Boxing: '#2563EB',
+      Wrestling: '#EA580C',
+      MMA: '#16A34A',
+      Grappling: '#7C3AED',
       'Self Defense': '#DB2777',
-      'Fitness': '#0891B2',
+      Fitness: '#0891B2',
       'Open Mat': '#65A30D',
     };
     return categoryColors[category] || colors.highlight;

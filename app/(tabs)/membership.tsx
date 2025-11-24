@@ -1,16 +1,17 @@
+import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Alert, Pressable, RefreshControl } from 'react-native';
+import { View, ActivityIndicator, Alert, RefreshControl } from 'react-native';
+
+import { getMembership, downloadContract, Membership as MembershipType } from '@/api/membership';
+import { Button } from '@/components/Button';
 import Header from '@/components/Header';
+import Icon from '@/components/Icon';
+import Section from '@/components/Section';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
-import Icon from '@/components/Icon';
-import { Button } from '@/components/Button';
-import Section from '@/components/Section';
-import { getMembership, downloadContract, Membership as MembershipType } from '@/api/membership';
-import { useThemeColors } from '@/contexts/ThemeColors';
-import { useT } from '@/contexts/LocalizationContext';
 import { useMembershipSettings, useFeatureFlags } from '@/contexts/AppConfigContext';
-import { useRouter } from 'expo-router';
+import { useT } from '@/contexts/LocalizationContext';
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function MembershipScreen() {
   const t = useT();
@@ -54,9 +55,11 @@ export default function MembershipScreen() {
     try {
       const pdfUrl = await downloadContract(membership.contract.id);
       // In a real app, this would open the PDF or download it
-      Alert.alert(t('membership.contractPdfTitle'), t('membership.contractDownloadMessage', { url: pdfUrl }), [
-        { text: t('common.confirm'), style: 'default' },
-      ]);
+      Alert.alert(
+        t('membership.contractPdfTitle'),
+        t('membership.contractDownloadMessage', { url: pdfUrl }),
+        [{ text: t('common.confirm'), style: 'default' }]
+      );
     } catch (error) {
       console.error('Error downloading contract:', error);
       Alert.alert(t('common.error'), t('membership.downloadError'));
@@ -124,13 +127,14 @@ export default function MembershipScreen() {
             colors={['#FFFFFF', colors.highlight]}
             progressBackgroundColor={colors.bg}
           />
-        }
-      >
+        }>
         {/* Current Plan Card */}
         <View className="mb-6 rounded-2xl bg-secondary p-6">
           <View className="mb-4 flex-row items-start justify-between">
             <View className="flex-1">
-              <ThemedText className="mb-1 text-sm opacity-50">{t('membership.currentPlan')}</ThemedText>
+              <ThemedText className="mb-1 text-sm opacity-50">
+                {t('membership.currentPlan')}
+              </ThemedText>
               <ThemedText className="text-3xl font-bold">{membership.contract.type}</ThemedText>
               <View className="mt-2 flex-row items-center">
                 <View
@@ -166,11 +170,15 @@ export default function MembershipScreen() {
         <View className="mb-6 rounded-2xl bg-secondary">
           <View className="flex-row items-center justify-between border-b border-border p-5">
             <ThemedText className="opacity-70">{t('membership.startDate')}</ThemedText>
-            <ThemedText className="font-semibold">{formatDate(membership.contract.startDate)}</ThemedText>
+            <ThemedText className="font-semibold">
+              {formatDate(membership.contract.startDate)}
+            </ThemedText>
           </View>
           <View className="flex-row items-center justify-between border-b border-border p-5">
             <ThemedText className="opacity-70">{t('membership.endDate')}</ThemedText>
-            <ThemedText className="font-semibold">{formatDate(membership.contract.endDate)}</ThemedText>
+            <ThemedText className="font-semibold">
+              {formatDate(membership.contract.endDate)}
+            </ThemedText>
           </View>
           <View className="flex-row items-center justify-between border-b border-border p-5">
             <ThemedText className="opacity-70">{t('membership.renewalDate')}</ThemedText>
@@ -198,7 +206,9 @@ export default function MembershipScreen() {
                 style={{
                   color: membership.contract.autoRenewal ? '#10B981' : '#EF4444',
                 }}>
-                {membership.contract.autoRenewal ? t('membership.enabled') : t('membership.disabled')}
+                {membership.contract.autoRenewal
+                  ? t('membership.enabled')
+                  : t('membership.disabled')}
               </ThemedText>
             </View>
           </View>
@@ -215,15 +225,20 @@ export default function MembershipScreen() {
               </ThemedText>
             </View>
             <View className="items-end">
-              <ThemedText className="text-sm opacity-50">{t('membership.monthlyEquivalent')}</ThemedText>
+              <ThemedText className="text-sm opacity-50">
+                {t('membership.monthlyEquivalent')}
+              </ThemedText>
               <ThemedText className="text-lg font-semibold">
-                {formatAmount(membership.contract.price.monthlyEquivalent)}{t('membership.perMonth')}
+                {formatAmount(membership.contract.price.monthlyEquivalent)}
+                {t('membership.perMonth')}
               </ThemedText>
             </View>
           </View>
           <View className="border-t border-border pt-4">
             <ThemedText className="text-sm opacity-70">
-              {membership.contract.price.billingCycle === 'annual' ? t('membership.billedAnnually') : t('membership.billedMonthly')}
+              {membership.contract.price.billingCycle === 'annual'
+                ? t('membership.billedAnnually')
+                : t('membership.billedMonthly')}
             </ThemedText>
           </View>
         </View>
@@ -237,7 +252,9 @@ export default function MembershipScreen() {
             </View>
             <View className="flex-1">
               <ThemedText className="font-semibold">{membership.paymentMethod.type}</ThemedText>
-              <ThemedText className="text-sm opacity-50">{membership.paymentMethod.iban}</ThemedText>
+              <ThemedText className="text-sm opacity-50">
+                {membership.paymentMethod.iban}
+              </ThemedText>
               <ThemedText className="mt-1 text-xs opacity-50">
                 {membership.paymentMethod.accountHolder}
               </ThemedText>
@@ -252,13 +269,19 @@ export default function MembershipScreen() {
             <View className="mb-2 flex-row items-start">
               <Icon name="XCircle" size={16} className="mr-2 mt-1 opacity-50" />
               <View className="flex-1">
-                <ThemedText className="font-semibold">{t('membership.cancellationPolicy')}</ThemedText>
+                <ThemedText className="font-semibold">
+                  {t('membership.cancellationPolicy')}
+                </ThemedText>
                 <ThemedText className="mt-1 text-sm opacity-70">
                   {membership.contract.cancellationPolicy}
                   {membershipSettings.cancellationNoticeDays && (
                     <ThemedText className="text-sm font-semibold">
                       {' '}
-                      ({t('membership.daysNoticeRequired', { count: membershipSettings.cancellationNoticeDays })})
+                      (
+                      {t('membership.daysNoticeRequired', {
+                        count: membershipSettings.cancellationNoticeDays,
+                      })}
+                      )
                     </ThemedText>
                   )}
                 </ThemedText>
@@ -276,7 +299,11 @@ export default function MembershipScreen() {
                     {membershipSettings.maxFreezeDaysPerYear && (
                       <ThemedText className="text-sm font-semibold">
                         {' '}
-                        ({t('membership.upTo')} {t('membership.daysPerYear', { count: membershipSettings.maxFreezeDaysPerYear })})
+                        ({t('membership.upTo')}{' '}
+                        {t('membership.daysPerYear', {
+                          count: membershipSettings.maxFreezeDaysPerYear,
+                        })}
+                        )
                       </ThemedText>
                     )}
                   </ThemedText>
@@ -284,7 +311,8 @@ export default function MembershipScreen() {
               </View>
             </View>
           )}
-          <View className={`${membershipSettings.allowFreeze ? 'border-t border-border pt-4' : ''}`}>
+          <View
+            className={`${membershipSettings.allowFreeze ? 'border-t border-border pt-4' : ''}`}>
             <View className="flex-row items-start">
               <Icon name="UserX" size={16} className="mr-2 mt-1 opacity-50" />
               <View className="flex-1">

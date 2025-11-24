@@ -28,7 +28,10 @@ const getTenantKey = (baseKey: string, tenantSlug: string | null): string => {
 /**
  * Save authentication token to persistent storage (per tenant)
  */
-export const saveAuthToken = async (token: string, tenantSlug: string | null = null): Promise<void> => {
+export const saveAuthToken = async (
+  token: string,
+  tenantSlug: string | null = null
+): Promise<void> => {
   try {
     const key = getTenantKey(AUTH_TOKEN_KEY, tenantSlug);
     await AsyncStorage.setItem(key, token);
@@ -67,7 +70,10 @@ export const clearAuthToken = async (tenantSlug: string | null = null): Promise<
 /**
  * Save refresh token to persistent storage (per tenant)
  */
-export const saveRefreshToken = async (refreshToken: string, tenantSlug: string | null = null): Promise<void> => {
+export const saveRefreshToken = async (
+  refreshToken: string,
+  tenantSlug: string | null = null
+): Promise<void> => {
   try {
     const key = getTenantKey(REFRESH_TOKEN_KEY, tenantSlug);
     await AsyncStorage.setItem(key, refreshToken);
@@ -80,7 +86,9 @@ export const saveRefreshToken = async (refreshToken: string, tenantSlug: string 
 /**
  * Load refresh token from persistent storage (per tenant)
  */
-export const loadRefreshToken = async (tenantSlug: string | null = null): Promise<string | null> => {
+export const loadRefreshToken = async (
+  tenantSlug: string | null = null
+): Promise<string | null> => {
   try {
     const key = getTenantKey(REFRESH_TOKEN_KEY, tenantSlug);
     return await AsyncStorage.getItem(key);
@@ -106,7 +114,10 @@ export const clearRefreshToken = async (tenantSlug: string | null = null): Promi
 /**
  * Save user data to persistent storage (per tenant)
  */
-export const saveUser = async (user: StoredUser, tenantSlug: string | null = null): Promise<void> => {
+export const saveUser = async (
+  user: StoredUser,
+  tenantSlug: string | null = null
+): Promise<void> => {
   try {
     const key = getTenantKey(USER_KEY, tenantSlug);
     await AsyncStorage.setItem(key, JSON.stringify(user));

@@ -1,6 +1,8 @@
-import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import React from 'react';
+
 import ClassCard from '../../components/ClassCard';
+
 import { Class } from '@/api/classes';
 
 // Mock the contexts
@@ -202,7 +204,10 @@ describe('ClassCard', () => {
     it('shows loading indicator when confirming', async () => {
       let resolveConfirm: () => void;
       const delayedConfirm = jest.fn(
-        () => new Promise<void>((resolve) => { resolveConfirm = resolve; })
+        () =>
+          new Promise<void>((resolve) => {
+            resolveConfirm = resolve;
+          })
       );
 
       const { getByText, queryByText, UNSAFE_getAllByType } = render(
@@ -224,7 +229,10 @@ describe('ClassCard', () => {
     it('handles async confirm actions', async () => {
       let resolveConfirm: () => void;
       const delayedConfirm = jest.fn(
-        () => new Promise<void>((resolve) => { resolveConfirm = resolve; })
+        () =>
+          new Promise<void>((resolve) => {
+            resolveConfirm = resolve;
+          })
       );
 
       const { getByText } = render(

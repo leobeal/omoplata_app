@@ -1,6 +1,7 @@
+import { Link } from 'expo-router';
 import React from 'react';
 import { View, Pressable, ViewStyle } from 'react-native';
-import { Link } from 'expo-router';
+
 import Icon, { IconName } from './Icon';
 import ThemedText from './ThemedText';
 

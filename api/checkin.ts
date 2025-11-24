@@ -35,7 +35,7 @@ export interface CheckinResponse {
 
 export interface CheckinHistoryResponse {
   success: boolean;
-  data: Array<{
+  data: {
     id: string;
     location: {
       id: string;
@@ -44,7 +44,7 @@ export interface CheckinHistoryResponse {
     checkedInAt: string;
     checkedOutAt: string | null;
     duration: number;
-  }>;
+  }[];
   meta: {
     page: number;
     limit: number;
@@ -80,10 +80,10 @@ export interface CheckinStatsResponse {
     };
     byDay: Record<string, number>;
     byTime: Record<string, number>;
-    weeklyTrend: Array<{
+    weeklyTrend: {
       week: string;
       visits: number;
-    }>;
+    }[];
   };
 }
 
@@ -139,7 +139,9 @@ export const checkinApi = {
         .map(([k, v]) => [k, String(v)])
     ).toString();
 
-    const endpoint = queryParams ? `${ENDPOINTS.CHECKIN.HISTORY}?${queryParams}` : ENDPOINTS.CHECKIN.HISTORY;
+    const endpoint = queryParams
+      ? `${ENDPOINTS.CHECKIN.HISTORY}?${queryParams}`
+      : ENDPOINTS.CHECKIN.HISTORY;
 
     return api.get<CheckinHistoryResponse>(endpoint);
   },
@@ -148,7 +150,9 @@ export const checkinApi = {
    * Get check-in statistics
    */
   getStats: async (period?: 'week' | 'month' | 'year' | 'all') => {
-    const endpoint = period ? `${ENDPOINTS.CHECKIN.STATS}?period=${period}` : ENDPOINTS.CHECKIN.STATS;
+    const endpoint = period
+      ? `${ENDPOINTS.CHECKIN.STATS}?period=${period}`
+      : ENDPOINTS.CHECKIN.STATS;
     return api.get<CheckinStatsResponse>(endpoint);
   },
 

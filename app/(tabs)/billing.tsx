@@ -1,13 +1,14 @@
+import { router } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
+
+import { getInvoicesPaginated, getNextInvoice, Invoice } from '@/api/invoices';
+import ErrorState from '@/components/ErrorState';
 import Header from '@/components/Header';
+import Icon from '@/components/Icon';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
-import Icon from '@/components/Icon';
-import ErrorState from '@/components/ErrorState';
 import { useT } from '@/contexts/LocalizationContext';
-import { getInvoicesPaginated, getNextInvoice, Invoice } from '@/api/invoices';
-import { router } from 'expo-router';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function BillingScreen() {
@@ -43,9 +44,10 @@ export default function BillingScreen() {
       setError(null);
     } catch (error) {
       console.error('Error loading invoices:', error);
-      const errorMessage = error instanceof Error
-        ? error.message
-        : 'Failed to load invoices. Please check your connection and try again.';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load invoices. Please check your connection and try again.';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -159,7 +161,9 @@ export default function BillingScreen() {
             <View className="mb-4 flex-row items-center justify-between">
               <View className="flex-1">
                 <ThemedText className="text-sm opacity-50">{t('billing.nextInvoice')}</ThemedText>
-                <ThemedText className="text-3xl font-bold">{formatAmount(nextInvoice.amount)}</ThemedText>
+                <ThemedText className="text-3xl font-bold">
+                  {formatAmount(nextInvoice.amount)}
+                </ThemedText>
                 <ThemedText className="mt-1 text-sm opacity-70">
                   {t('billing.due')} {formatDate(nextInvoice.dueDate)}
                 </ThemedText>
@@ -174,7 +178,9 @@ export default function BillingScreen() {
                 <ThemedText className="text-sm opacity-70">{nextInvoice.id}</ThemedText>
               </View>
               <View className="flex-row items-center">
-                <ThemedText className="mr-2 text-sm font-semibold text-highlight">{t('billing.viewDetails')}</ThemedText>
+                <ThemedText className="mr-2 text-sm font-semibold text-highlight">
+                  {t('billing.viewDetails')}
+                </ThemedText>
                 <Icon name="ChevronRight" size={16} color={colors.highlight} />
               </View>
             </View>

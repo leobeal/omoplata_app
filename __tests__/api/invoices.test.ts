@@ -1,4 +1,5 @@
 import { api } from '../../api/client';
+import { ENDPOINTS } from '../../api/config';
 import {
   getInvoices,
   getInvoiceById,
@@ -7,7 +8,6 @@ import {
   type Invoice,
   type InvoiceStatus,
 } from '../../api/invoices';
-import { ENDPOINTS } from '../../api/config';
 
 // Mock API client
 jest.mock('../../api/client');
@@ -324,9 +324,9 @@ describe('Invoices API', () => {
     });
 
     it('should fetch paginated invoices with custom parameters', async () => {
-      const mockInvoices = Array(20).fill(null).map((_, i) =>
-        createMockInvoice({ id: `INV${i}` })
-      );
+      const mockInvoices = Array(20)
+        .fill(null)
+        .map((_, i) => createMockInvoice({ id: `INV${i}` }));
       const mockResponse = createMockApiResponse(mockInvoices, {
         page: 2,
         limit: 20,
@@ -361,9 +361,9 @@ describe('Invoices API', () => {
     });
 
     it('should handle first page with multiple pages available', async () => {
-      const mockInvoices = Array(10).fill(null).map((_, i) =>
-        createMockInvoice({ id: `INV${i}` })
-      );
+      const mockInvoices = Array(10)
+        .fill(null)
+        .map((_, i) => createMockInvoice({ id: `INV${i}` }));
       const mockResponse = createMockApiResponse(mockInvoices, {
         page: 1,
         limit: 10,
@@ -512,9 +512,9 @@ describe('Invoices API', () => {
 
   describe('Meta pagination data', () => {
     it('should return correct pagination meta', async () => {
-      const mockInvoices = Array(20).fill(null).map((_, i) =>
-        createMockInvoice({ id: `INV${i}` })
-      );
+      const mockInvoices = Array(20)
+        .fill(null)
+        .map((_, i) => createMockInvoice({ id: `INV${i}` }));
       const mockResponse = createMockApiResponse(mockInvoices, {
         page: 2,
         limit: 20,

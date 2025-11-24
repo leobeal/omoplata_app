@@ -144,7 +144,6 @@ describe('Profile API', () => {
       expect(profile.primaryResponsible?.firstName).toBe('Jane');
       expect(profile.primaryResponsible?.relationship).toBe('Spouse');
     });
-
   });
 
   describe('updateProfile', () => {
@@ -176,10 +175,7 @@ describe('Profile API', () => {
       expect(updatedProfile.firstName).toBe('Jane');
       expect(updatedProfile.lastName).toBe('Smith');
       expect(updatedProfile.phone).toBe('(555) 111-2222');
-      expect(mockApiPut).toHaveBeenCalledWith(
-        expect.stringContaining(userId),
-        updates
-      );
+      expect(mockApiPut).toHaveBeenCalledWith(expect.stringContaining(userId), updates);
     });
 
     it('should update address fields', async () => {
@@ -227,10 +223,7 @@ describe('Profile API', () => {
 
       await updateProfile(userId, updates);
 
-      expect(mockApiPut).toHaveBeenCalledWith(
-        expect.stringContaining(userId),
-        updates
-      );
+      expect(mockApiPut).toHaveBeenCalledWith(expect.stringContaining(userId), updates);
     });
 
     it('should handle empty updates object', async () => {
