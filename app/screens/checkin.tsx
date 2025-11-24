@@ -164,7 +164,7 @@ export default function CheckInScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Camera View */}
+      {/* Camera View - No children */}
       <CameraView
         style={StyleSheet.absoluteFill}
         facing="back"
@@ -172,70 +172,71 @@ export default function CheckInScreen() {
         barcodeScannerSettings={{
           barcodeTypes: ['qr'],
         }}
-        enableTorch={enableTorch}>
-        {/* Overlay */}
-        <View style={styles.overlay}>
-          {/* Top bar */}
-          <View style={[styles.topBar, { backgroundColor: colors.bg }]}>
-            <Pressable onPress={handleClose} style={styles.closeButton}>
-              <Icon name="X" size={24} color={colors.text} />
-            </Pressable>
-            <ThemedText className="text-lg font-bold">Scan QR Code</ThemedText>
-            <Pressable onPress={() => setEnableTorch(!enableTorch)} style={styles.torchButton}>
-              <Icon
-                name={enableTorch ? 'Flashlight' : 'FlashlightOff'}
-                size={24}
-                color={enableTorch ? colors.highlight : colors.text}
-              />
-            </Pressable>
-          </View>
+        enableTorch={enableTorch}
+      />
 
-          {/* Scanning area */}
-          <View style={styles.scanArea}>
-            <View style={styles.scanFrame}>
-              {/* Corners */}
-              <View style={[styles.corner, styles.topLeft, { borderColor: colors.highlight }]} />
-              <View style={[styles.corner, styles.topRight, { borderColor: colors.highlight }]} />
-              <View style={[styles.corner, styles.bottomLeft, { borderColor: colors.highlight }]} />
-              <View
-                style={[styles.corner, styles.bottomRight, { borderColor: colors.highlight }]}
-              />
+      {/* Overlay - Positioned absolutely on top of camera */}
+      <View style={styles.overlay}>
+        {/* Top bar */}
+        <View style={[styles.topBar, { backgroundColor: colors.bg }]}>
+          <Pressable onPress={handleClose} style={styles.closeButton}>
+            <Icon name="X" size={24} color={colors.text} />
+          </Pressable>
+          <ThemedText className="text-lg font-bold">Scan QR Code</ThemedText>
+          <Pressable onPress={() => setEnableTorch(!enableTorch)} style={styles.torchButton}>
+            <Icon
+              name={enableTorch ? 'Flashlight' : 'FlashlightOff'}
+              size={24}
+              color={enableTorch ? colors.highlight : colors.text}
+            />
+          </Pressable>
+        </View>
 
-              {/* Instructions */}
-              {scanState === 'idle' && (
-                <View style={styles.instructions}>
-                  <ThemedText className="text-center text-lg text-white">
-                    Point camera at QR code
-                  </ThemedText>
-                </View>
-              )}
+        {/* Scanning area */}
+        <View style={styles.scanArea}>
+          <View style={styles.scanFrame}>
+            {/* Corners */}
+            <View style={[styles.corner, styles.topLeft, { borderColor: colors.highlight }]} />
+            <View style={[styles.corner, styles.topRight, { borderColor: colors.highlight }]} />
+            <View style={[styles.corner, styles.bottomLeft, { borderColor: colors.highlight }]} />
+            <View
+              style={[styles.corner, styles.bottomRight, { borderColor: colors.highlight }]}
+            />
 
-              {/* Loading */}
-              {scanState === 'scanning' && (
-                <View style={styles.instructions}>
-                  <ActivityIndicator size="large" color="#fff" />
-                  <ThemedText className="mt-4 text-center text-white">Checking in...</ThemedText>
-                </View>
-              )}
+            {/* Instructions */}
+            {scanState === 'idle' && (
+              <View style={styles.instructions}>
+                <ThemedText className="text-center text-lg text-white">
+                  Point camera at QR code
+                </ThemedText>
+              </View>
+            )}
 
-              {/* Error */}
-              {scanState === 'error' && (
-                <View style={styles.instructions}>
-                  <Icon name="XCircle" size={48} color="#EF4444" />
-                  <ThemedText className="mt-4 text-center text-white">{errorMessage}</ThemedText>
-                </View>
-              )}
-            </View>
-          </View>
+            {/* Loading */}
+            {scanState === 'scanning' && (
+              <View style={styles.instructions}>
+                <ActivityIndicator size="large" color="#fff" />
+                <ThemedText className="mt-4 text-center text-white">Checking in...</ThemedText>
+              </View>
+            )}
 
-          {/* Bottom instructions */}
-          <View style={styles.bottomInstructions}>
-            <ThemedText className="text-center opacity-70">
-              Align the QR code within the frame
-            </ThemedText>
+            {/* Error */}
+            {scanState === 'error' && (
+              <View style={styles.instructions}>
+                <Icon name="XCircle" size={48} color="#EF4444" />
+                <ThemedText className="mt-4 text-center text-white">{errorMessage}</ThemedText>
+              </View>
+            )}
           </View>
         </View>
-      </CameraView>
+
+        {/* Bottom instructions */}
+        <View style={styles.bottomInstructions}>
+          <ThemedText className="text-center opacity-70">
+            Align the QR code within the frame
+          </ThemedText>
+        </View>
+      </View>
 
       {/* Success Overlay */}
       {scanState === 'success' && (
