@@ -114,6 +114,7 @@ export default {
     permissionRequired: 'Camera Permission Required',
     grantPermission: 'Grant Permission',
     permissionMessage: 'Please grant camera access to scan QR codes for check-in',
+    requestingPermission: 'Requesting camera permission...',
     goBack: 'Go Back',
     pointCameraAtQR: 'Point camera at QR code',
     alignQRCode: 'Align the QR code within the frame',
