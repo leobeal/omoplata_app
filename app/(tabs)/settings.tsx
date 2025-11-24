@@ -1,4 +1,4 @@
-import { View, Pressable, Alert, RefreshControl } from 'react-native';
+import { View, Alert, RefreshControl } from 'react-native';
 import Header from '@/components/Header';
 import ThemedText from '@/components/ThemedText';
 import Avatar from '@/components/Avatar';
@@ -7,21 +7,15 @@ import ThemedScroller from '@/components/ThemedScroller';
 import React, { useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useT } from '@/contexts/LocalizationContext';
-import { useTenant } from '@/contexts/TenantContext';
 import { useAuth } from '@/contexts/AuthContext';
-import Constants from 'expo-constants';
 import { router } from 'expo-router';
-import Icon from '@/components/Icon';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function SettingsScreen() {
   const t = useT();
   const colors = useThemeColors();
-  const { tenant, clearTenant: clearTenantContext, isTenantRequired } = useTenant();
   const { logout, user } = useAuth();
-  const [isClearing, setIsClearing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const isDevelopment = Constants.expoConfig?.extra?.env === 'development' || __DEV__;
 
   // Get user display name
   const userName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';
@@ -58,33 +52,6 @@ export default function SettingsScreen() {
     } finally {
       setRefreshing(false);
     }
-  };
-
-  const handleClearTenant = async () => {
-    Alert.alert(
-      'Clear Tenant Cache',
-      'This will clear the cached tenant and redirect you to the tenant selection screen. Continue?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Clear',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              setIsClearing(true);
-              await clearTenantContext();
-              // Redirect to tenant selection
-              router.replace('/screens/tenant-selection');
-            } catch (error) {
-              console.error('Failed to clear tenant:', error);
-              Alert.alert('Error', 'Failed to clear tenant cache');
-            } finally {
-              setIsClearing(false);
-            }
-          },
-        },
-      ]
-    );
   };
 
   return (
@@ -169,35 +136,6 @@ export default function SettingsScreen() {
             onPress={handleLogout}
           />
         </View>
-
-        {/* Debug Section - Only in Development Mode */}
-        {isDevelopment && isTenantRequired && tenant && (
-          <View className="mt-4 rounded-2xl bg-secondary p-4">
-            <View className="mb-3 flex-row items-center">
-              <Icon name="Code" size={16} color={colors.textMuted} />
-              <ThemedText className="ml-2 text-sm font-semibold opacity-70">
-                Debug Tools
-              </ThemedText>
-            </View>
-            <View className="rounded-xl p-3" style={{ backgroundColor: colors.background }}>
-              <ThemedText className="text-xs opacity-70 mb-2">
-                Current Tenant: <ThemedText className="font-semibold">{tenant.slug}</ThemedText>
-              </ThemedText>
-              <Pressable
-                onPress={handleClearTenant}
-                disabled={isClearing}
-                className="mt-2 rounded-lg px-4 py-2"
-                style={{ backgroundColor: colors.error + '20' }}>
-                <View className="flex-row items-center justify-center">
-                  <Icon name="Trash2" size={16} color={colors.error} />
-                  <ThemedText className="ml-2 font-semibold" style={{ color: colors.error }}>
-                    {isClearing ? 'Clearing...' : 'Clear Tenant Cache'}
-                  </ThemedText>
-                </View>
-              </Pressable>
-            </View>
-          </View>
-        )}
       </ThemedScroller>
     </>
   );
