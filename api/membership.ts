@@ -1,5 +1,29 @@
 import membershipData from '@/data/membership.json';
 
+/**
+ * Convert snake_case keys to camelCase
+ */
+function toCamelCase(str: string): string {
+  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+
+/**
+ * Transform snake_case object to camelCase
+ */
+function transformToCamelCase(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(transformToCamelCase);
+  }
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).reduce((acc, key) => {
+      const camelKey = toCamelCase(key);
+      acc[camelKey] = transformToCamelCase(obj[key]);
+      return acc;
+    }, {} as any);
+  }
+  return obj;
+}
+
 export interface Address {
   street: string;
   city: string;
@@ -67,7 +91,7 @@ export interface Membership {
 export const getMembership = async (): Promise<Membership> => {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 300));
-  return membershipData as Membership;
+  return transformToCamelCase(membershipData) as Membership;
 };
 
 /**

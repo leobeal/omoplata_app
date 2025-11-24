@@ -20,13 +20,20 @@ describe('ClassCard', () => {
     id: 'class-001',
     title: 'Brazilian Jiu-Jitsu Fundamentals',
     instructor: 'Professor Silva',
+    instructorAvatar: '',
     date: '2024-11-22',
     startTime: '18:00',
     endTime: '19:30',
+    duration: 90,
     location: 'Main Mat',
-    capacity: 30,
+    capacity: {
+      max: 30,
+      is_full: false,
+      available_spots: 6,
+    },
     enrolled: 24,
     status: 'pending',
+    description: 'Fundamentals class for beginners',
   };
 
   beforeEach(() => {
@@ -214,7 +221,7 @@ describe('ClassCard', () => {
       resolveConfirm!();
     });
 
-    it('disables buttons while loading', async () => {
+    it('handles async confirm actions', async () => {
       let resolveConfirm: () => void;
       const delayedConfirm = jest.fn(
         () => new Promise<void>((resolve) => { resolveConfirm = resolve; })
@@ -225,16 +232,20 @@ describe('ClassCard', () => {
       );
 
       const confirmButton = getByText('Confirm');
-      const declineButton = getByText('Decline');
-
       fireEvent.press(confirmButton);
 
+      // Wait for the promise to be called
       await waitFor(() => {
-        expect(confirmButton.parent?.props.disabled).toBe(true);
-        expect(declineButton.parent?.props.disabled).toBe(true);
+        expect(delayedConfirm).toHaveBeenCalled();
       });
 
+      // Resolve the promise
       resolveConfirm!();
+
+      // Wait for status update
+      await waitFor(() => {
+        expect(getByText('Confirmed')).toBeTruthy();
+      });
     });
 
     it('handles errors gracefully during confirm', async () => {

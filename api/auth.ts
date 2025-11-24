@@ -4,6 +4,30 @@
 import { api, setAuthToken } from './client';
 import { ENDPOINTS } from './config';
 
+/**
+ * Convert snake_case keys to camelCase
+ */
+function toCamelCase(str: string): string {
+  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+
+/**
+ * Transform snake_case object to camelCase
+ */
+function transformToCamelCase(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(transformToCamelCase);
+  }
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).reduce((acc, key) => {
+      const camelKey = toCamelCase(key);
+      acc[camelKey] = transformToCamelCase(obj[key]);
+      return acc;
+    }, {} as any);
+  }
+  return obj;
+}
+
 // Types
 export interface LoginRequest {
   email: string;
@@ -24,7 +48,8 @@ export interface RegisterRequest {
   phone?: string;
 }
 
-// API Response format (camelCase as returned by backend)
+// App User format (camelCase for use in app)
+// Note: API returns snake_case, which is transformed to camelCase
 export interface User {
   id: string;
   email: string;
@@ -53,6 +78,11 @@ export const authApi = {
   login: async (credentials: LoginRequest) => {
     const response = await api.post<LoginResponse>(ENDPOINTS.AUTH.LOGIN, credentials);
 
+    // Transform snake_case response to camelCase
+    if (response.data) {
+      response.data = transformToCamelCase(response.data) as LoginResponse;
+    }
+
     if (response.data?.token) {
       setAuthToken(response.data.token);
     }
@@ -65,6 +95,11 @@ export const authApi = {
    */
   register: async (data: RegisterRequest) => {
     const response = await api.post<LoginResponse>(ENDPOINTS.AUTH.REGISTER, data);
+
+    // Transform snake_case response to camelCase
+    if (response.data) {
+      response.data = transformToCamelCase(response.data) as LoginResponse;
+    }
 
     if (response.data?.token) {
       setAuthToken(response.data.token);

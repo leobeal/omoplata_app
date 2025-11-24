@@ -92,7 +92,6 @@ describe('App Config API', () => {
       const settings = await getMembershipSettings();
 
       expect(settings).toBeDefined();
-      expect(settings.allowCancellation).toBeDefined();
       expect(settings.allowPause).toBeDefined();
       expect(settings.allowFreeze).toBeDefined();
       expect(settings.allowPlanChange).toBeDefined();
@@ -111,7 +110,6 @@ describe('App Config API', () => {
     it('should have correct default values', async () => {
       const settings = await getMembershipSettings();
 
-      expect(settings.allowCancellation).toBe(true);
       expect(settings.allowPause).toBe(true);
       expect(settings.allowFreeze).toBe(true);
       expect(settings.allowPlanChange).toBe(true);

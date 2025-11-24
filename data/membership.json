@@ -1,48 +1,48 @@
 {
-  "memberId": "MEM-2023-001234",
-  "memberName": "John Doe",
+  "member_id": "MEM-2023-001234",
+  "member_name": "John Doe",
   "email": "johndoe@example.com",
   "phone": "+1 (555) 123-4567",
   "address": {
     "street": "123 Fitness Street",
     "city": "New York",
     "state": "NY",
-    "zipCode": "10001",
+    "zip_code": "10001",
     "country": "USA"
   },
   "contract": {
     "id": "CTR-2023-001234",
     "type": "Premium Annual",
     "status": "active",
-    "startDate": "2023-01-15",
-    "endDate": "2025-01-14",
-    "renewalDate": "2025-01-15",
-    "autoRenewal": true,
+    "start_date": "2023-01-15",
+    "end_date": "2025-01-14",
+    "renewal_date": "2025-01-15",
+    "auto_renewal": true,
     "price": {
       "amount": 959.88,
       "currency": "USD",
-      "billingCycle": "annual",
-      "monthlyEquivalent": 79.99
+      "billing_cycle": "annual",
+      "monthly_equivalent": 79.99
     },
-    "cancellationPolicy": "30 days notice required",
-    "freezePolicy": "Can freeze membership up to 2 times per year (max 30 days each)",
-    "transferPolicy": "Non-transferable",
-    "nextCancellationDate": "2024-12-22"
+    "cancellation_policy": "30 days notice required",
+    "freeze_policy": "Can freeze membership up to 2 times per year (max 30 days each)",
+    "transfer_policy": "Non-transferable",
+    "next_cancellation_date": "2024-12-22"
   },
-  "paymentMethod": {
+  "payment_method": {
     "type": "SEPA Direct Debit",
-    "iban": "DE89 3704 0044 0532 •••• 00",
-    "accountHolder": "John Doe"
+    "iban": "DE89 3704 0044 0532 \u2022\u2022\u2022\u2022 00",
+    "account_holder": "John Doe"
   },
-  "emergencyContact": {
+  "emergency_contact": {
     "name": "Jane Doe",
     "relationship": "Spouse",
     "phone": "+1 (555) 987-6543"
   },
-  "medicalInfo": {
-    "bloodType": "O+",
+  "medical_info": {
+    "blood_type": "O+",
     "allergies": "None",
     "conditions": "None",
-    "lastCheckup": "2024-06-15"
+    "last_checkup": "2024-06-15"
   }
 }

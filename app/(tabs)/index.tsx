@@ -146,7 +146,7 @@ export default function HomeScreen() {
           </View>
           {loadingClasses ? (
             <View className="items-center justify-center py-8">
-              <ActivityIndicator size="large" />
+              <ActivityIndicator size="large" testID="activity-indicator" />
             </View>
           ) : classesError ? (
             <View className="items-center justify-center rounded-2xl bg-secondary py-12">

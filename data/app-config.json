@@ -1,35 +1,35 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2025-11-21T00:00:00.000Z",
+  "last_updated": "2025-11-21T00:00:00.000Z",
   "navigation": {
     "tabs": ["index", "membership", "billing", "settings"],
-    "showCheckInButton": true
+    "show_check_in_button": true
   },
   "membership": {
-    "allowPause": true,
-    "allowFreeze": true,
-    "allowPlanChange": true,
-    "allowGuestPasses": true,
-    "showContractDownload": true,
-    "cancellationNoticeDays": 30,
-    "maxFreezeDaysPerYear": 90
+    "allow_pause": true,
+    "allow_freeze": true,
+    "allow_plan_change": true,
+    "allow_guest_passes": true,
+    "show_contract_download": true,
+    "cancellation_notice_days": 30,
+    "max_freeze_days_per_year": 90
   },
   "billing": {
-    "allowPaymentMethodChange": true,
-    "allowAutoPay": true,
-    "showInvoiceHistory": true,
-    "allowOneTimePayments": true
+    "allow_payment_method_change": true,
+    "allow_auto_pay": true,
+    "show_invoice_history": true,
+    "allow_one_time_payments": true
   },
   "features": {
-    "checkInEnabled": true,
-    "qrCheckInEnabled": true,
-    "notificationsEnabled": true,
-    "classBookingEnabled": true,
-    "socialSharingEnabled": false,
-    "referralProgramEnabled": false,
-    "membershipCancellationEnabled": true
+    "check_in_enabled": true,
+    "qr_check_in_enabled": true,
+    "notifications_enabled": true,
+    "class_booking_enabled": true,
+    "social_sharing_enabled": false,
+    "referral_program_enabled": false,
+    "membership_cancellation_enabled": true
   },
   "analytics": {
-    "aggregationPeriod": "daily"
+    "aggregation_period": "daily"
   }
 }

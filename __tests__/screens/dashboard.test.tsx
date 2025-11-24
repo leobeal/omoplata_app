@@ -45,43 +45,69 @@ jest.mock('@/contexts/ScrollToTopContext', () => ({
   }),
 }));
 
+jest.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      id: 'user-001',
+      email: 'john@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
+    },
+    isAuthenticated: true,
+    isLoading: false,
+    token: 'test-token',
+  }),
+}));
+
 // Mock the classes API
 const mockClasses = [
   {
     id: 'cls-001',
     title: 'Brazilian Jiu-Jitsu - Fundamentals',
     instructor: 'Professor Carlos Silva',
+    instructorAvatar: '',
     date: '2025-11-21',
     startTime: '18:00',
     endTime: '19:30',
+    duration: 90,
     location: 'Mat Room A',
-    capacity: 20,
+    capacity: { max: 20, is_full: false, available_spots: 8 },
     enrolled: 12,
     status: 'confirmed',
+    description: '',
+    level: 'Beginner',
   },
   {
     id: 'cls-002',
     title: 'No-Gi Grappling',
     instructor: 'Coach Mike Johnson',
+    instructorAvatar: '',
     date: '2025-11-22',
     startTime: '19:00',
     endTime: '20:00',
+    duration: 60,
     location: 'Mat Room B',
-    capacity: 15,
+    capacity: { max: 15, is_full: false, available_spots: 7 },
     enrolled: 8,
     status: 'pending',
+    description: '',
+    level: 'Intermediate',
   },
   {
     id: 'cls-003',
     title: 'Muay Thai - Striking Fundamentals',
     instructor: 'Kru Sarah Martinez',
+    instructorAvatar: '',
     date: '2025-11-23',
     startTime: '10:00',
     endTime: '11:00',
+    duration: 60,
     location: 'Ring Area',
-    capacity: 25,
+    capacity: { max: 25, is_full: false, available_spots: 7 },
     enrolled: 18,
     status: 'pending',
+    description: '',
+    level: 'Beginner',
   },
 ];
 
@@ -195,13 +221,17 @@ describe('HomeScreen (Dashboard)', () => {
           id: 'cls-004',
           title: 'Extra Class',
           instructor: 'Instructor',
+          instructorAvatar: '',
           date: '2025-11-24',
           startTime: '12:00',
           endTime: '13:00',
+          duration: 60,
           location: 'Room',
-          capacity: 10,
+          capacity: { max: 10, is_full: false, available_spots: 5 },
           enrolled: 5,
           status: 'pending',
+          description: '',
+          level: 'All Levels',
         },
       ];
 
@@ -238,15 +268,15 @@ describe('HomeScreen (Dashboard)', () => {
 
   describe('Class Interactions', () => {
     it('calls confirmAttendance when Confirm button is pressed', async () => {
-      const { getByText } = render(<HomeScreen />);
+      const { getAllByText, getByText } = render(<HomeScreen />);
 
       await waitFor(() => {
         expect(getByText('Brazilian Jiu-Jitsu - Fundamentals')).toBeTruthy();
       });
 
       // Find a class with pending status and confirm it
-      const confirmButton = getByText('Confirm');
-      fireEvent.press(confirmButton);
+      const confirmButtons = getAllByText('Confirm');
+      fireEvent.press(confirmButtons[0]);
 
       await waitFor(() => {
         expect(mockConfirmAttendance).toHaveBeenCalled();
@@ -254,15 +284,15 @@ describe('HomeScreen (Dashboard)', () => {
     });
 
     it('calls denyAttendance when Decline button is pressed', async () => {
-      const { getByText } = render(<HomeScreen />);
+      const { getAllByText, getByText } = render(<HomeScreen />);
 
       await waitFor(() => {
         expect(getByText('No-Gi Grappling')).toBeTruthy();
       });
 
       // Find a class with pending status and decline it
-      const declineButton = getByText('Decline');
-      fireEvent.press(declineButton);
+      const declineButtons = getAllByText('Decline');
+      fireEvent.press(declineButtons[0]);
 
       await waitFor(() => {
         expect(mockDenyAttendance).toHaveBeenCalled();
@@ -311,8 +341,10 @@ describe('HomeScreen (Dashboard)', () => {
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalled();
-        // The screen should not crash and should show empty state
-        expect(getByText('No upcoming classes scheduled')).toBeTruthy();
+        // The screen should not crash and should show error state
+        expect(getByText('Unable to load classes')).toBeTruthy();
+        expect(getByText('Network error')).toBeTruthy();
+        expect(getByText('Try Again')).toBeTruthy();
       });
 
       consoleError.mockRestore();

@@ -160,18 +160,25 @@ describe('Auth API', () => {
 
   describe('API Endpoints', () => {
     it('should have correct auth endpoints', () => {
-      expect(ENDPOINTS.AUTH.LOGIN).toBe('/auth/login');
-      expect(ENDPOINTS.AUTH.REGISTER).toBe('/auth/register');
-      expect(ENDPOINTS.AUTH.LOGOUT).toBe('/auth/logout');
-      expect(ENDPOINTS.AUTH.REFRESH).toBe('/auth/refresh');
-      expect(ENDPOINTS.AUTH.FORGOT_PASSWORD).toBe('/auth/forgot-password');
-      expect(ENDPOINTS.AUTH.RESET_PASSWORD).toBe('/auth/reset-password');
+      expect(ENDPOINTS.AUTH.LOGIN).toBe('/login');
+      expect(ENDPOINTS.AUTH.REGISTER).toBe('/register');
+      expect(ENDPOINTS.AUTH.LOGOUT).toBe('/logout');
+      expect(ENDPOINTS.AUTH.REFRESH).toBe('/refresh');
+      expect(ENDPOINTS.AUTH.FORGOT_PASSWORD).toBe('/forgot-password');
+      expect(ENDPOINTS.AUTH.RESET_PASSWORD).toBe('/reset-password');
+      expect(ENDPOINTS.AUTH.VERIFY_EMAIL).toBe('/verify-email');
     });
 
     it('should have correct user endpoints', () => {
       expect(ENDPOINTS.USER.PROFILE).toBe('/user/profile');
       expect(ENDPOINTS.USER.UPDATE_PROFILE).toBe('/user/profile');
       expect(ENDPOINTS.USER.CHANGE_PASSWORD).toBe('/user/change-password');
+      expect(ENDPOINTS.USER.UPLOAD_AVATAR).toBe('/user/avatar');
+    });
+
+    it('should have correct users endpoints', () => {
+      expect(ENDPOINTS.USERS.ME).toBe('/users/me');
+      expect(ENDPOINTS.USERS.UPDATE).toBe('/users/:id');
     });
 
     it('should have correct membership endpoints', () => {
@@ -180,13 +187,35 @@ describe('Auth API', () => {
       expect(ENDPOINTS.MEMBERSHIPS.SUBSCRIBE).toBe('/memberships/subscribe');
       expect(ENDPOINTS.MEMBERSHIPS.DETAILS('123')).toBe('/memberships/123');
       expect(ENDPOINTS.MEMBERSHIPS.CANCEL('123')).toBe('/memberships/123/cancel');
+      expect(ENDPOINTS.MEMBERSHIPS.PAUSE('123')).toBe('/memberships/123/pause');
+      expect(ENDPOINTS.MEMBERSHIPS.RESUME('123')).toBe('/memberships/123/resume');
     });
 
     it('should have correct class endpoints', () => {
-      expect(ENDPOINTS.CLASSES.LIST).toBe('/classes');
-      expect(ENDPOINTS.CLASSES.SCHEDULE).toBe('/classes/schedule');
+      expect(ENDPOINTS.CLASSES.NEXT).toBe('/classes/next');
       expect(ENDPOINTS.CLASSES.DETAILS('456')).toBe('/classes/456');
-      expect(ENDPOINTS.CLASSES.BOOK('456')).toBe('/classes/456/book');
+    });
+
+    it('should have correct attendance endpoints', () => {
+      expect(ENDPOINTS.ATTENDANCE.CREATE_INTENTION).toBe('/attendance-intentions');
+    });
+
+    it('should have correct check-in endpoints', () => {
+      expect(ENDPOINTS.CHECKIN.CREATE).toBe('/checkin');
+      expect(ENDPOINTS.CHECKIN.HISTORY).toBe('/checkin/history');
+      expect(ENDPOINTS.CHECKIN.STATS).toBe('/checkin/stats');
+      expect(ENDPOINTS.CHECKIN.QR_CODE).toBe('/checkin/qr-code');
+    });
+
+    it('should have correct invoice endpoints', () => {
+      expect(ENDPOINTS.INVOICES.LIST).toBe('/invoices');
+    });
+
+    it('should have correct notification endpoints', () => {
+      expect(ENDPOINTS.NOTIFICATIONS.LIST).toBe('/notifications');
+      expect(ENDPOINTS.NOTIFICATIONS.MARK_READ('123')).toBe('/notifications/123/read');
+      expect(ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ).toBe('/notifications/read-all');
+      expect(ENDPOINTS.NOTIFICATIONS.SETTINGS).toBe('/notifications/settings');
     });
   });
 });
@@ -202,11 +231,11 @@ describe('Login Flow', () => {
       user: {
         id: 'usr_123',
         email: 'test@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
+        first_name: 'John',
+        last_name: 'Doe',
       },
       token: 'jwt-access-token',
-      refreshToken: 'jwt-refresh-token',
+      refresh_token: 'jwt-refresh-token',
     };
 
     (global.fetch as jest.Mock).mockResolvedValueOnce({

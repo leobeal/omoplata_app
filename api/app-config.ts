@@ -4,6 +4,30 @@ const CACHE_KEY = 'app_config';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 /**
+ * Convert snake_case keys to camelCase
+ */
+function toCamelCase(str: string): string {
+  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+
+/**
+ * Transform snake_case object to camelCase
+ */
+function transformToCamelCase(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(transformToCamelCase);
+  }
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).reduce((acc, key) => {
+      const camelKey = toCamelCase(key);
+      acc[camelKey] = transformToCamelCase(obj[key]);
+      return acc;
+    }, {} as any);
+  }
+  return obj;
+}
+
+/**
  * Navigation configuration from API
  * Only specifies which tabs to show, not their full configuration
  */
@@ -97,11 +121,11 @@ export const fetchAppConfig = async (): Promise<AppConfig> => {
   // In production, replace this with actual API call:
   // const response = await fetch(`${API_BASE_URL}/config/app`);
   // const data = await response.json();
-  // return data;
+  // return transformToCamelCase(data);
 
-  // For now, return dummy data from local file
+  // For now, return dummy data from local file (in snake_case, transform to camelCase)
   const configData = require('../data/app-config.json');
-  return configData;
+  return transformToCamelCase(configData) as AppConfig;
 };
 
 /**

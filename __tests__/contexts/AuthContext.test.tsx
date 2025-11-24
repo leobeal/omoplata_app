@@ -1,6 +1,7 @@
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { AuthProvider, useAuth } from '../../contexts/AuthContext';
+import { TenantProvider } from '../../contexts/TenantContext';
 import * as authStorage from '../../utils/auth-storage';
 import * as apiClient from '../../api/client';
 import { authApi } from '../../api/auth';
@@ -29,13 +30,16 @@ describe('AuthContext', () => {
     mockApiClient.setAuthToken.mockImplementation(() => {});
   });
 
+  // Helper to create wrapper with providers
+  const createWrapper = () => ({ children }: { children: React.ReactNode }) => (
+    <TenantProvider>
+      <AuthProvider>{children}</AuthProvider>
+    </TenantProvider>
+  );
+
   describe('Initialization', () => {
     it('should initialize with loading state', () => {
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       expect(result.current.isLoading).toBe(true);
       expect(result.current.isAuthenticated).toBe(false);
@@ -55,11 +59,7 @@ describe('AuthContext', () => {
       mockAuthStorage.loadAuthToken.mockResolvedValue(mockToken);
       mockAuthStorage.loadUser.mockResolvedValue(mockUser);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -75,11 +75,7 @@ describe('AuthContext', () => {
       mockAuthStorage.loadAuthToken.mockResolvedValue(null);
       mockAuthStorage.loadUser.mockResolvedValue(null);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -93,11 +89,7 @@ describe('AuthContext', () => {
     it('should handle initialization errors gracefully', async () => {
       mockAuthStorage.loadAuthToken.mockRejectedValue(new Error('Storage error'));
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -109,6 +101,7 @@ describe('AuthContext', () => {
 
   describe('Login', () => {
     it('should login successfully with refresh token', async () => {
+      // Mock API response returns camelCase (because auth.ts transforms it)
       const mockLoginResponse = {
         data: {
           token: 'new-auth-token',
@@ -129,11 +122,7 @@ describe('AuthContext', () => {
 
       mockAuthApi.login.mockResolvedValue(mockLoginResponse as any);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -145,8 +134,8 @@ describe('AuthContext', () => {
       });
 
       expect(loginResult?.success).toBe(true);
-      expect(mockAuthStorage.saveAuthToken).toHaveBeenCalledWith('new-auth-token');
-      expect(mockAuthStorage.saveRefreshToken).toHaveBeenCalledWith('new-refresh-token');
+      expect(mockAuthStorage.saveAuthToken).toHaveBeenCalledWith('new-auth-token', 'evolve');
+      expect(mockAuthStorage.saveRefreshToken).toHaveBeenCalledWith('new-refresh-token', 'evolve');
       expect(mockAuthStorage.saveUser).toHaveBeenCalledWith({
         id: 'usr_456',
         email: 'john@example.com',
@@ -155,7 +144,7 @@ describe('AuthContext', () => {
         phone: '1234567890',
         avatar: 'https://example.com/avatar.jpg',
         membershipId: 'mem-123',
-      });
+      }, 'evolve');
 
       expect(result.current.token).toBe('new-auth-token');
       expect(result.current.user?.email).toBe('john@example.com');
@@ -181,11 +170,7 @@ describe('AuthContext', () => {
 
       mockAuthApi.login.mockResolvedValue(mockLoginResponse as any);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -197,7 +182,7 @@ describe('AuthContext', () => {
       });
 
       expect(loginResult?.success).toBe(true);
-      expect(mockAuthStorage.saveAuthToken).toHaveBeenCalledWith('new-auth-token');
+      expect(mockAuthStorage.saveAuthToken).toHaveBeenCalledWith('new-auth-token', 'evolve');
       expect(mockAuthStorage.saveRefreshToken).not.toHaveBeenCalled();
       expect(result.current.isAuthenticated).toBe(true);
     });
@@ -210,11 +195,7 @@ describe('AuthContext', () => {
 
       mockAuthApi.login.mockResolvedValue(mockLoginResponse as any);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -234,11 +215,7 @@ describe('AuthContext', () => {
     it('should handle login network errors', async () => {
       mockAuthApi.login.mockRejectedValue(new Error('Network error'));
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -269,11 +246,7 @@ describe('AuthContext', () => {
       mockAuthStorage.loadUser.mockResolvedValue(mockUser);
       mockAuthApi.logout.mockResolvedValue({ data: { success: true }, error: null } as any);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isAuthenticated).toBe(true);
@@ -304,11 +277,7 @@ describe('AuthContext', () => {
       mockAuthStorage.loadUser.mockResolvedValue(mockUser);
       mockAuthApi.logout.mockRejectedValue(new Error('API error'));
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isAuthenticated).toBe(true);
@@ -334,11 +303,7 @@ describe('AuthContext', () => {
         error: null,
       } as any);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -349,7 +314,7 @@ describe('AuthContext', () => {
       });
 
       expect(mockAuthApi.refreshToken).toHaveBeenCalledWith(mockRefreshToken);
-      expect(mockAuthStorage.saveAuthToken).toHaveBeenCalledWith(mockNewToken);
+      expect(mockAuthStorage.saveAuthToken).toHaveBeenCalledWith(mockNewToken, 'evolve');
       expect(result.current.token).toBe(mockNewToken);
       expect(mockApiClient.setAuthToken).toHaveBeenCalledWith(mockNewToken);
     });
@@ -358,11 +323,7 @@ describe('AuthContext', () => {
       mockAuthStorage.loadRefreshToken.mockResolvedValue(null);
       mockAuthApi.logout.mockResolvedValue({ data: { success: true }, error: null } as any);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -386,11 +347,7 @@ describe('AuthContext', () => {
       } as any);
       mockAuthApi.logout.mockResolvedValue({ data: { success: true }, error: null } as any);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);

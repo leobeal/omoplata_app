@@ -1,25 +1,25 @@
 {
   "id": "user-001",
-  "firstName": "John",
-  "lastName": "Doe",
+  "first_name": "John",
+  "last_name": "Doe",
   "email": "johndoe@example.com",
   "phone": "+1 (555) 123-4567",
-  "dateOfBirth": "1990-05-15",
+  "date_of_birth": "1990-05-15",
   "gender": "male",
   "address": {
     "street": "123 Fitness Street",
     "city": "New York",
     "state": "NY",
-    "zipCode": "10001",
+    "zip_code": "10001",
     "country": "USA"
   },
-  "emergencyContact": {
+  "emergency_contact": {
     "name": "Jane Doe",
     "relationship": "Spouse",
     "phone": "+1 (555) 987-6543"
   },
-  "medicalInfo": {
-    "bloodType": "O+",
+  "medical_info": {
+    "blood_type": "O+",
     "allergies": "None",
     "conditions": "None",
     "medications": "None"

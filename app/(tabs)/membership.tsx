@@ -93,7 +93,7 @@ export default function MembershipScreen() {
       <View className="flex-1 bg-background">
         <Header title={t('membership.title')} />
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" testID="activity-indicator" />
         </View>
       </View>
     );

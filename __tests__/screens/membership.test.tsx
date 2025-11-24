@@ -13,8 +13,8 @@ jest.mock('@/contexts/ThemeColors', () => ({
 }));
 
 jest.mock('@/contexts/LocalizationContext', () => ({
-  useT: () => (key: string) => {
-    const translations: Record<string, string> = {
+  useT: () => (key: string, params?: any) => {
+    const translations: Record<string, string | ((p: any) => string)> = {
       'membership.title': 'My Membership',
       'membership.currentPlan': 'Current Plan',
       'membership.memberId': 'Member ID',
@@ -23,19 +23,41 @@ jest.mock('@/contexts/LocalizationContext', () => ({
       'membership.startDate': 'Start Date',
       'membership.endDate': 'End Date',
       'membership.renewalDate': 'Renewal Date',
+      'membership.nextCancellationDate': 'Next Cancellation Date',
       'membership.autoRenewal': 'Auto-Renewal',
       'membership.enabled': 'Enabled',
       'membership.disabled': 'Disabled',
       'membership.pricing': 'Pricing',
       'membership.annualFee': 'Annual Fee',
       'membership.monthlyEquivalent': 'Monthly Equivalent',
+      'membership.perMonth': '/mo',
+      'membership.billedAnnually': 'Billed annually',
+      'membership.billedMonthly': 'Billed monthly',
       'membership.planFeatures': 'Plan Features',
       'membership.paymentMethod': 'Payment Method',
       'membership.policies': 'Membership Policies',
+      'membership.cancellationPolicy': 'Cancellation Policy',
+      'membership.freezePolicy': 'Freeze Policy',
+      'membership.transferPolicy': 'Transfer Policy',
+      'membership.upTo': 'up to',
+      'membership.daysPerYear': (p: any) => `${p.count} days per year`,
+      'membership.daysNoticeRequired': (p: any) => `${p.count} days notice required`,
       'membership.downloadContract': 'Download Contract PDF',
+      'membership.contractPdfTitle': 'Contract PDF',
+      'membership.contractDownloadMessage': (p: any) => `Contract PDF available at: ${p.url}`,
+      'membership.downloadError': 'Failed to download contract',
+      'membership.supportMessage': 'For any questions, please contact support',
+      'membership.noMembership': 'No membership found',
+      'membership.cancelMembership': 'Cancel Membership',
       'membership.active': 'Active',
+      'common.error': 'Error',
+      'common.confirm': 'Confirm',
     };
-    return translations[key] || key;
+    const translation = translations[key];
+    if (typeof translation === 'function') {
+      return translation(params);
+    }
+    return translation || key;
   },
 }));
 
@@ -58,6 +80,12 @@ jest.mock('@/contexts/AppConfigContext', () => ({
     cancellationNoticeDays: 30,
     maxFreezeDaysPerYear: 90,
   }),
+  useFeatureFlags: () => ({
+    enableMemberships: true,
+    enableCheckIn: true,
+    enableClasses: true,
+    enableBilling: true,
+  }),
 }));
 
 // Mock the API - inline the mock data to ensure proper hoisting
@@ -79,9 +107,10 @@ jest.mock('@/api/membership', () => ({
         id: 'CNT-2024-001',
         type: 'Annual Premium',
         status: 'active',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        renewalDate: '2024-12-31',
+        startDate: '2024-01-15',
+        endDate: '2024-12-15',
+        renewalDate: '2024-12-15',
+        nextCancellationDate: '2024-11-15',
         autoRenewal: true,
         price: {
           amount: 1200,
@@ -114,10 +143,9 @@ jest.mock('@/api/membership', () => ({
   downloadContract: jest.fn(() => Promise.resolve('/contracts/CNT-2024-001.pdf')),
 }));
 
-// Mock Alert
-jest.mock('react-native/Libraries/Alert/Alert', () => ({
-  alert: jest.fn(),
-}));
+// Mock Alert - we'll spy on it in the test
+import { Alert } from 'react-native';
+const mockAlert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
 describe('MembershipScreen', () => {
   beforeEach(() => {
@@ -189,7 +217,9 @@ describe('MembershipScreen', () => {
 
       await waitFor(() => {
         expect(getByText('Membership Policies')).toBeTruthy();
-        expect(getByText('Cancel anytime with 30 days notice')).toBeTruthy();
+        expect(getByText('Cancellation Policy')).toBeTruthy();
+        expect(getByText('Freeze Policy')).toBeTruthy();
+        expect(getByText('Transfer Policy')).toBeTruthy();
       });
     });
 
@@ -213,7 +243,6 @@ describe('MembershipScreen', () => {
 
   describe('Download Contract', () => {
     it('calls downloadContract when button is pressed', async () => {
-      const Alert = require('react-native/Libraries/Alert/Alert');
       const { downloadContract } = require('@/api/membership');
       const { getByText } = render(<MembershipScreen />);
 
@@ -226,9 +255,9 @@ describe('MembershipScreen', () => {
 
       await waitFor(() => {
         expect(downloadContract).toHaveBeenCalled();
-        expect(Alert.alert).toHaveBeenCalledWith(
+        expect(mockAlert).toHaveBeenCalledWith(
           'Contract PDF',
-          expect.stringContaining('/contracts/CNT-2024-001'),
+          'Contract PDF available at: /contracts/CNT-2024-001.pdf',
           expect.any(Array)
         );
       });
@@ -255,12 +284,14 @@ describe('MembershipScreen', () => {
 
   describe('Date Formatting', () => {
     it('formats dates correctly', async () => {
-      const { getByText } = render(<MembershipScreen />);
+      const { getAllByText } = render(<MembershipScreen />);
 
       await waitFor(() => {
         // Check that dates are formatted (they should contain month names)
-        expect(getByText(/January/)).toBeTruthy();
-        expect(getByText(/December/)).toBeTruthy();
+        const januaryDates = getAllByText(/January/);
+        const decemberDates = getAllByText(/December/);
+        expect(januaryDates.length).toBeGreaterThan(0);
+        expect(decemberDates.length).toBeGreaterThan(0);
       });
     });
   });
