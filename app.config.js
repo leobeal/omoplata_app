@@ -28,8 +28,7 @@ module.exports = {
     runtimeVersion: version,
     scheme: config.slug,
     experiments: {
-      tsconfigPaths: true,
-      typedRoutes: true,
+      typedRoutes: false,
     },
     platforms: ['ios', 'android'],
     plugins: [

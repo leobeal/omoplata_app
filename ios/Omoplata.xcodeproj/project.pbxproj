@@ -7,29 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0F5C3D89258C791E61DBAD25 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1C210157D543CBF7A4D88037 /* PrivacyInfo.xcprivacy */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		256C6D1C74B7A234D77265CD /* libPods-Evolve.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BC97A9A7AF5C9CF715636A /* libPods-Evolve.a */; };
+		34A454E25CB7FE3F95CE91FA /* libPods-Omoplata.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFADEF1E795C518748F14BF2 /* libPods-Omoplata.a */; };
+		3CF7CC03B0448B70D44F6B67 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B4341F08FC3F1B5739C9D8 /* ExpoModulesProvider.swift */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		A82769BF945BE4F045E2192C /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3559227CBC6FABF3E73DC7EC /* ExpoModulesProvider.swift */; };
+		6B883C6D54F8B0BD17F4B499 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 790BDFA027D82C93C2BADCC9 /* PrivacyInfo.xcprivacy */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		08F8FB9B6017A704471B186A /* Pods-Evolve.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Evolve.release.xcconfig"; path = "Target Support Files/Pods-Evolve/Pods-Evolve.release.xcconfig"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* Evolve.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Evolve.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Evolve/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Evolve/Info.plist; sourceTree = "<group>"; };
-		1C210157D543CBF7A4D88037 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Evolve/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		3559227CBC6FABF3E73DC7EC /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Evolve/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		420FF460E74F3B902B32DC70 /* Pods-Evolve.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Evolve.debug.xcconfig"; path = "Target Support Files/Pods-Evolve/Pods-Evolve.debug.xcconfig"; sourceTree = "<group>"; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Evolve/SplashScreen.storyboard; sourceTree = "<group>"; };
+		12B4341F08FC3F1B5739C9D8 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Omoplata/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* Omoplata.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Omoplata.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Omoplata/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Omoplata/Info.plist; sourceTree = "<group>"; };
+		790BDFA027D82C93C2BADCC9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Omoplata/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Omoplata/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		BEF44DE392936B4736FAD770 /* Pods-Omoplata.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Omoplata.release.xcconfig"; path = "Target Support Files/Pods-Omoplata/Pods-Omoplata.release.xcconfig"; sourceTree = "<group>"; };
+		DB82A9457A12B05B6C9D9DC0 /* Pods-Omoplata.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Omoplata.debug.xcconfig"; path = "Target Support Files/Pods-Omoplata/Pods-Omoplata.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Evolve/AppDelegate.swift; sourceTree = "<group>"; };
-		F11748442D0722820044C1D9 /* Evolve-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Evolve-Bridging-Header.h"; path = "Evolve/Evolve-Bridging-Header.h"; sourceTree = "<group>"; };
-		F8BC97A9A7AF5C9CF715636A /* libPods-Evolve.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Evolve.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EFADEF1E795C518748F14BF2 /* libPods-Omoplata.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Omoplata.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Omoplata/AppDelegate.swift; sourceTree = "<group>"; };
+		F11748442D0722820044C1D9 /* Omoplata-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Omoplata-Bridging-Header.h"; path = "Omoplata/Omoplata-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,52 +37,42 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				256C6D1C74B7A234D77265CD /* libPods-Evolve.a in Frameworks */,
+				34A454E25CB7FE3F95CE91FA /* libPods-Omoplata.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13B07FAE1A68108700A75B9A /* Evolve */ = {
+		13B07FAE1A68108700A75B9A /* Omoplata */ = {
 			isa = PBXGroup;
 			children = (
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
-				F11748442D0722820044C1D9 /* Evolve-Bridging-Header.h */,
+				F11748442D0722820044C1D9 /* Omoplata-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				1C210157D543CBF7A4D88037 /* PrivacyInfo.xcprivacy */,
+				790BDFA027D82C93C2BADCC9 /* PrivacyInfo.xcprivacy */,
 			);
-			name = Evolve;
+			name = Omoplata;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				F8BC97A9A7AF5C9CF715636A /* libPods-Evolve.a */,
+				EFADEF1E795C518748F14BF2 /* libPods-Omoplata.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		41DA3B31D37AD8468F88FE37 /* Evolve */ = {
+		40FE4A82C821C4EF8C93BC02 /* Omoplata */ = {
 			isa = PBXGroup;
 			children = (
-				3559227CBC6FABF3E73DC7EC /* ExpoModulesProvider.swift */,
+				12B4341F08FC3F1B5739C9D8 /* ExpoModulesProvider.swift */,
 			);
-			name = Evolve;
-			sourceTree = "<group>";
-		};
-		7418B083C2F84F1D954EE416 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				420FF460E74F3B902B32DC70 /* Pods-Evolve.debug.xcconfig */,
-				08F8FB9B6017A704471B186A /* Pods-Evolve.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
+			name = Omoplata;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -95,12 +85,12 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* Evolve */,
+				13B07FAE1A68108700A75B9A /* Omoplata */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				7418B083C2F84F1D954EE416 /* Pods */,
-				9C20D628417E33F2EF33AB50 /* ExpoModulesProviders */,
+				C9B35FF427E2B1295DB0B6FB /* Pods */,
+				8EAE31AE6B7CF262BE0F0EB6 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -110,15 +100,15 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* Evolve.app */,
+				13B07F961A680F5B00A75B9A /* Omoplata.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9C20D628417E33F2EF33AB50 /* ExpoModulesProviders */ = {
+		8EAE31AE6B7CF262BE0F0EB6 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				41DA3B31D37AD8468F88FE37 /* Evolve */,
+				40FE4A82C821C4EF8C93BC02 /* Omoplata */,
 			);
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
@@ -129,32 +119,42 @@
 				BB2F792C24A3F905000567C9 /* Expo.plist */,
 			);
 			name = Supporting;
-			path = Evolve/Supporting;
+			path = Omoplata/Supporting;
+			sourceTree = "<group>";
+		};
+		C9B35FF427E2B1295DB0B6FB /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				DB82A9457A12B05B6C9D9DC0 /* Pods-Omoplata.debug.xcconfig */,
+				BEF44DE392936B4736FAD770 /* Pods-Omoplata.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* Evolve */ = {
+		13B07F861A680F5B00A75B9A /* Omoplata */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Evolve" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Omoplata" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				1650F1FE03A938921FCFCD97 /* [Expo] Configure project */,
+				0F06C066572ADD653EF4CB5E /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				7CF5824E2BEFB33E5756B9E9 /* [CP] Embed Pods Frameworks */,
+				C421261608884CFA285AEE22 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = Evolve;
-			productName = Evolve;
-			productReference = 13B07F961A680F5B00A75B9A /* Evolve.app */;
+			name = Omoplata;
+			productName = Omoplata;
+			productReference = 13B07F961A680F5B00A75B9A /* Omoplata.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -170,7 +170,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Evolve" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Omoplata" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -183,7 +183,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* Evolve */,
+				13B07F861A680F5B00A75B9A /* Omoplata */,
 			);
 		};
 /* End PBXProject section */
@@ -196,7 +196,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				0F5C3D89258C791E61DBAD25 /* PrivacyInfo.xcprivacy in Resources */,
+				6B883C6D54F8B0BD17F4B499 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,14 +235,14 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Evolve-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Omoplata-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		1650F1FE03A938921FCFCD97 /* [Expo] Configure project */ = {
+		0F06C066572ADD653EF4CB5E /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -253,40 +253,18 @@
 			inputPaths = (
 				"$(SRCROOT)/.xcode.env",
 				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/Evolve/Evolve.entitlements",
-				"$(SRCROOT)/Pods/Target Support Files/Pods-Evolve/expo-configure-project.sh",
+				"$(SRCROOT)/Omoplata/Omoplata.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-Omoplata/expo-configure-project.sh",
 			);
 			name = "[Expo] Configure project";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(SRCROOT)/Pods/Target Support Files/Pods-Evolve/ExpoModulesProvider.swift",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-Omoplata/ExpoModulesProvider.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-Evolve/expo-configure-project.sh\"\n";
-		};
-		7CF5824E2BEFB33E5756B9E9 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Evolve/Pods-Evolve-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Evolve/Pods-Evolve-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-Omoplata/expo-configure-project.sh\"\n";
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -294,7 +272,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Evolve/Pods-Evolve-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Omoplata/Pods-Omoplata-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/ExpoApplication_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
@@ -327,7 +305,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Evolve/Pods-Evolve-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Omoplata/Pods-Omoplata-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C421261608884CFA285AEE22 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Omoplata/Pods-Omoplata-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Omoplata/Pods-Omoplata-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -338,7 +338,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				A82769BF945BE4F045E2192C /* ExpoModulesProvider.swift in Sources */,
+				3CF7CC03B0448B70D44F6B67 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,18 +347,18 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 420FF460E74F3B902B32DC70 /* Pods-Evolve.debug.xcconfig */;
+			baseConfigurationReference = DB82A9457A12B05B6C9D9DC0 /* Pods-Omoplata.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Evolve/Evolve.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Omoplata/Omoplata.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
-				INFOPLIST_FILE = Evolve/Info.plist;
+				INFOPLIST_FILE = Omoplata/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -371,9 +371,9 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.evolve;
-				PRODUCT_NAME = "Evolve";
-				SWIFT_OBJC_BRIDGING_HEADER = "Evolve/Evolve-Bridging-Header.h";
+				PRODUCT_BUNDLE_IDENTIFIER = com.omoplata.app;
+				PRODUCT_NAME = Omoplata;
+				SWIFT_OBJC_BRIDGING_HEADER = "Omoplata/Omoplata-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -383,13 +383,13 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 08F8FB9B6017A704471B186A /* Pods-Evolve.release.xcconfig */;
+			baseConfigurationReference = BEF44DE392936B4736FAD770 /* Pods-Omoplata.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Evolve/Evolve.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Omoplata/Omoplata.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				INFOPLIST_FILE = Evolve/Info.plist;
+				INFOPLIST_FILE = Omoplata/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -402,9 +402,9 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.evolve;
-				PRODUCT_NAME = "Evolve";
-				SWIFT_OBJC_BRIDGING_HEADER = "Evolve/Evolve-Bridging-Header.h";
+				PRODUCT_BUNDLE_IDENTIFIER = com.omoplata.app;
+				PRODUCT_NAME = Omoplata;
+				SWIFT_OBJC_BRIDGING_HEADER = "Omoplata/Omoplata-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -532,7 +532,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Evolve" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Omoplata" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -541,7 +541,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Evolve" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Omoplata" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

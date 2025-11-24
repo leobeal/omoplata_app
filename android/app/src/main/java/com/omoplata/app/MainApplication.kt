@@ -1,4 +1,4 @@
-package com.anonymous.evolve
+package com.omoplata.app
 
 import android.app.Application
 import android.content.res.Configuration
