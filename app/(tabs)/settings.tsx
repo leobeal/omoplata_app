@@ -1,14 +1,15 @@
-import { View, Alert, RefreshControl } from 'react-native';
-import Header from '@/components/Header';
-import ThemedText from '@/components/ThemedText';
-import Avatar from '@/components/Avatar';
-import ListLink from '@/components/ListLink';
-import ThemedScroller from '@/components/ThemedScroller';
-import React, { useState } from 'react';
-import ThemeToggle from '@/components/ThemeToggle';
-import { useT } from '@/contexts/LocalizationContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { View, Alert, RefreshControl } from 'react-native';
+
+import Avatar from '@/components/Avatar';
+import Header from '@/components/Header';
+import ListLink from '@/components/ListLink';
+import ThemeToggle from '@/components/ThemeToggle';
+import ThemedScroller from '@/components/ThemedScroller';
+import ThemedText from '@/components/ThemedText';
+import { useAuth } from '@/contexts/AuthContext';
+import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function SettingsScreen() {
@@ -22,26 +23,22 @@ export default function SettingsScreen() {
   const userEmail = user?.email || 'user@example.com';
 
   const handleLogout = async () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await logout();
-              router.replace('/screens/login');
-            } catch (error) {
-              console.error('Failed to logout:', error);
-              Alert.alert('Error', 'Failed to logout. Please try again.');
-            }
-          },
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await logout();
+            router.replace('/screens/login');
+          } catch (error) {
+            console.error('Failed to logout:', error);
+            Alert.alert('Error', 'Failed to logout. Please try again.');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleRefresh = async () => {
@@ -67,8 +64,7 @@ export default function SettingsScreen() {
             colors={['#FFFFFF', colors.highlight]}
             progressBackgroundColor={colors.bg}
           />
-        }
-      >
+        }>
         <View className="mb-4 w-full flex-row rounded-2xl bg-secondary pb-10 pt-10">
           <View className="w-1/2 flex-col items-center">
             <Avatar name={userName} size="xl" src={user?.avatar} />
