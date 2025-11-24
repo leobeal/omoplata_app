@@ -11,6 +11,7 @@ import {
 } from '@/utils/auth-storage';
 import { setAuthToken as setApiAuthToken } from '@/api/client';
 import { authApi, type User } from '@/api/auth';
+import { useTenant } from '@/contexts/TenantContext';
 
 interface AuthContextType {
   user: StoredUser | null;
@@ -29,26 +30,52 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const { tenant } = useTenant();
   const [user, setUser] = useState<StoredUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [previousTenantSlug, setPreviousTenantSlug] = useState<string | null>(null);
 
+  // Initialize auth when component mounts or when tenant changes
   useEffect(() => {
+    const currentTenantSlug = tenant?.slug || null;
+
+    // If tenant changed (and it's not the first load), clear auth
+    if (previousTenantSlug !== null && previousTenantSlug !== currentTenantSlug) {
+      console.log(`Tenant changed from ${previousTenantSlug} to ${currentTenantSlug}, clearing auth`);
+      // Clear the old tenant's auth data
+      clearAllAuthData(previousTenantSlug).catch((error) => {
+        console.error('Failed to clear old tenant auth:', error);
+      });
+      // Reset state
+      setToken(null);
+      setUser(null);
+      setApiAuthToken(null);
+    }
+
+    setPreviousTenantSlug(currentTenantSlug);
     initializeAuth();
-  }, []);
+  }, [tenant?.slug]);
 
   const initializeAuth = async () => {
     try {
       setIsLoading(true);
+      const tenantSlug = tenant?.slug || null;
+
       const [storedToken, storedUser] = await Promise.all([
-        loadAuthToken(),
-        loadUser(),
+        loadAuthToken(tenantSlug),
+        loadUser(tenantSlug),
       ]);
 
       if (storedToken && storedUser) {
         setToken(storedToken);
         setUser(storedUser);
         setApiAuthToken(storedToken);
+      } else {
+        // No auth data for this tenant
+        setToken(null);
+        setUser(null);
+        setApiAuthToken(null);
       }
     } catch (error) {
       console.error('Failed to initialize auth:', error);
@@ -81,15 +108,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         membershipId: userData.membershipId,
       };
 
-      // Save auth token and user data
+      const tenantSlug = tenant?.slug || null;
+
+      // Save auth token and user data with tenant context
       const savePromises = [
-        saveAuthToken(authToken),
-        saveUser(userToStore),
+        saveAuthToken(authToken, tenantSlug),
+        saveUser(userToStore, tenantSlug),
       ];
 
       // Only save refresh token if it exists
       if (refreshToken) {
-        savePromises.push(saveRefreshToken(refreshToken));
+        savePromises.push(saveRefreshToken(refreshToken, tenantSlug));
       }
 
       await Promise.all(savePromises);
@@ -117,8 +146,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Logout API error:', error);
       // Continue with logout even if API call fails
     } finally {
-      // Clear storage and state
-      await clearAllAuthData();
+      const tenantSlug = tenant?.slug || null;
+      // Clear storage and state for current tenant
+      await clearAllAuthData(tenantSlug);
       setToken(null);
       setUser(null);
       setApiAuthToken(null);
@@ -127,7 +157,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshSession = async () => {
     try {
-      const storedRefreshToken = await loadRefreshToken();
+      const tenantSlug = tenant?.slug || null;
+      const storedRefreshToken = await loadRefreshToken(tenantSlug);
       if (!storedRefreshToken) {
         throw new Error('No refresh token available');
       }
@@ -139,7 +170,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const newToken = response.data.token;
-      await saveAuthToken(newToken);
+      await saveAuthToken(newToken, tenantSlug);
       setToken(newToken);
       setApiAuthToken(newToken);
     } catch (error) {
