@@ -1,5 +1,3 @@
-import '@testing-library/jest-native/extend-expect';
-
 // Mock expo-constants
 jest.mock('expo-constants', () => ({
   expoConfig: {

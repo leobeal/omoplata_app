@@ -124,11 +124,7 @@ const Input: React.FC<CustomTextInputProps> = ({
         )}
         <RNTextInput
           ref={inputRef}
-          className={`rounded-lg border border-border bg-border px-3 ${isMultiline ? 'h-40 pt-4' : 'h-16 pt-6'} ${isPassword || rightIcon ? 'pr-10' : ''}
-            text-text
-            ${isFocused ? 'border-border' : 'border-border/60'}
-            ${error ? 'border-red-500' : ''}
-            ${className}`}
+          className={`rounded-lg border border-border bg-border px-3 ${isMultiline ? 'h-40 pt-4' : 'h-16 pt-6'} ${isPassword || rightIcon ? 'pr-10' : ''} text-text ${isFocused ? 'border-border' : 'border-border/60'} ${error ? 'border-red-500' : ''} ${className}`}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           value={localValue}
@@ -155,11 +151,7 @@ const Input: React.FC<CustomTextInputProps> = ({
         <View className="relative">
           <RNTextInput
             ref={inputRef}
-            className={`rounded-lg border bg-secondary  px-3 ${isMultiline ? 'h-36 pt-4' : 'h-14'} ${isPassword || rightIcon ? 'pr-10' : ''}
-              bg-transparent text-text
-              ${isFocused ? 'border-border' : 'border-border/60'}
-              ${error ? 'border-red-500' : ''}
-              ${className}`}
+            className={`rounded-lg border bg-secondary px-3 ${isMultiline ? 'h-36 pt-4' : 'h-14'} ${isPassword || rightIcon ? 'pr-10' : ''} bg-transparent text-text ${isFocused ? 'border-border' : 'border-border/60'} ${error ? 'border-red-500' : ''} ${className}`}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             value={localValue}
@@ -213,11 +205,7 @@ const Input: React.FC<CustomTextInputProps> = ({
 
           <RNTextInput
             ref={inputRef}
-            className={`border-b-2 px-0 py-3 ${isMultiline ? 'h-36 pt-4' : 'h-14'} ${isPassword || rightIcon ? 'pr-10' : ''}
-              border-l-0 border-r-0 border-t-0 bg-transparent text-text
-              ${isFocused ? 'border-border' : 'border-border'}
-              ${error ? 'border-red-500' : ''}
-              ${className}`}
+            className={`border-b-2 px-0 py-3 ${isMultiline ? 'h-36 pt-4' : 'h-14'} ${isPassword || rightIcon ? 'pr-10' : ''} border-l-0 border-r-0 border-t-0 bg-transparent text-text ${isFocused ? 'border-border' : 'border-border'} ${error ? 'border-red-500' : ''} ${className}`}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             value={localValue}
@@ -242,7 +230,7 @@ const Input: React.FC<CustomTextInputProps> = ({
   return (
     <View className={`relative mb-8 ${containerClassName}`}>
       <Pressable
-        className="z-40 bg-background px-1 "
+        className="z-40 bg-background px-1"
         style={{ position: 'absolute', left: -6, top: 0 }}
         onPress={() => inputRef.current?.focus()}>
         <Animated.Text style={[labelStyle]} className="bg-background text-text">
@@ -252,11 +240,7 @@ const Input: React.FC<CustomTextInputProps> = ({
 
       <RNTextInput
         ref={inputRef}
-        className={`rounded-lg  border px-3 py-3 ${isMultiline ? 'h-36 pt-4' : 'h-14'} ${isPassword || rightIcon ? 'pr-10' : ''}
-            bg-transparent text-text
-            ${isFocused ? 'border-border' : 'border-border'}
-            ${error ? 'border-red-500' : ''}
-            ${className}`}
+        className={`rounded-lg border px-3 py-3 ${isMultiline ? 'h-36 pt-4' : 'h-14'} ${isPassword || rightIcon ? 'pr-10' : ''} bg-transparent text-text ${isFocused ? 'border-border' : 'border-border'} ${error ? 'border-red-500' : ''} ${className}`}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         value={localValue}
