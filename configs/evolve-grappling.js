@@ -2,7 +2,7 @@ module.exports = {
   // App identity
   name: 'Evolve',
   slug: 'evolve-grappling',
-  bundleIdentifier: 'de.omoplata.evolve_grappling',
+  bundleIdentifier: 'de.omoplata.evolvegrappling',
   owner: 'omoplata',
   easProjectId: '526cedec-aab6-4391-b8bc-c442ca6fb49f',
 
