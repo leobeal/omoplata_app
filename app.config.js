@@ -66,9 +66,6 @@ module.exports = {
       // If club-specific build (TENANT=evolve), tenant is set here
       tenant: isGenericBuild ? undefined : tenantEnv,
       env: process.env.APP_ENV || 'development',
-      router: {
-        origin: false,
-      },
       eas: {
         projectId: config.easProjectId,
       },
