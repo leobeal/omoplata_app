@@ -34,7 +34,8 @@ export default function ThemedScroller({
     <ScrollView
       ref={scrollViewRef}
       className={`bg-background px-6 ${className}`}
-      bounces={false}
+      bounces={true}
+      alwaysBounceVertical={true}
       contentContainerStyle={[{ flexGrow: 1 }, contentContainerStyle]}
       showsVerticalScrollIndicator={false}
       {...props}>

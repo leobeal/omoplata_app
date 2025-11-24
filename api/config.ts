@@ -3,26 +3,61 @@
 
 import Constants from 'expo-constants';
 
-// Get tenant from app config
-const tenant = Constants.expoConfig?.extra?.tenant || 'evolve';
-
-// Base URLs per environment
-const API_URLS = {
-  development: 'http://localhost:3000/api',
-  staging: 'https://staging-api.omoplata.com/api',
-  production: 'https://api.omoplata.com/api',
-} as const;
-
 // Get current environment
-const ENV = (Constants.expoConfig?.extra?.env || 'development') as keyof typeof API_URLS;
+const ENV = (Constants.expoConfig?.extra?.env || 'development') as 'development' | 'staging' | 'production';
+
+// Base URLs per environment with tenant slug
+const getApiUrl = (env: typeof ENV, tenant: string): string => {
+  switch (env) {
+    case 'development':
+      return `http://${tenant}.sportsmanager.test/api`;
+    case 'staging':
+      return `https://${tenant}.omoplata.eu/api`;
+    case 'production':
+      return `https://${tenant}.omoplata.de/api`;
+    default:
+      return `http://${tenant}.sportsmanager.test/api`;
+  }
+};
+
+// Runtime tenant - can be updated via setTenant()
+let currentTenant = Constants.expoConfig?.extra?.tenant || 'evolve';
+
+/**
+ * Update the current tenant at runtime
+ * This is used when the app is in multi-tenant mode
+ */
+export const setTenant = (tenant: string) => {
+  currentTenant = tenant;
+};
+
+/**
+ * Get the current tenant slug
+ */
+export const getTenant = (): string => {
+  return currentTenant;
+};
+
+/**
+ * Get the current API base URL (dynamically calculated)
+ */
+export const getBaseUrl = (): string => {
+  return getApiUrl(ENV, currentTenant);
+};
 
 export const API_CONFIG = {
-  baseUrl: API_URLS[ENV],
+  get baseUrl(): string {
+    return getBaseUrl();
+  },
   timeout: 30000, // 30 seconds
-  tenant,
-  headers: {
-    'Content-Type': 'application/json',
-    'X-Tenant': tenant,
+  get tenant(): string {
+    return getTenant();
+  },
+  get headers(): Record<string, string> {
+    return {
+      'Content-Type': 'application/json',
+      'X-Tenant': getTenant(),
+    };
   },
 };
 
@@ -30,13 +65,18 @@ export const API_CONFIG = {
 export const ENDPOINTS = {
   // Auth
   AUTH: {
-    LOGIN: '/auth/login',
-    REGISTER: '/auth/register',
-    LOGOUT: '/auth/logout',
-    REFRESH: '/auth/refresh',
-    FORGOT_PASSWORD: '/auth/forgot-password',
-    RESET_PASSWORD: '/auth/reset-password',
-    VERIFY_EMAIL: '/auth/verify-email',
+    LOGIN: '/login',
+    REGISTER: '/register',
+    LOGOUT: '/logout',
+    REFRESH: '/refresh',
+    FORGOT_PASSWORD: '/forgot-password',
+    RESET_PASSWORD: '/reset-password',
+    VERIFY_EMAIL: '/verify-email',
+  },
+  // Users
+  USERS: {
+    ME: '/users/me',
+    UPDATE: '/users/:id',
   },
   // User
   USER: {
@@ -57,25 +97,23 @@ export const ENDPOINTS = {
   },
   // Classes
   CLASSES: {
-    LIST: '/classes',
+    NEXT: '/classes/next',
     DETAILS: (id: string) => `/classes/${id}`,
-    SCHEDULE: '/classes/schedule',
-    BOOK: (id: string) => `/classes/${id}/book`,
-    CANCEL_BOOKING: (id: string) => `/classes/${id}/cancel`,
+  },
+  // Attendance Intentions
+  ATTENDANCE: {
+    CREATE_INTENTION: '/attendance-intentions',
   },
   // Check-in
   CHECKIN: {
     CREATE: '/checkin',
     HISTORY: '/checkin/history',
+    STATS: '/checkin/stats',
     QR_CODE: '/checkin/qr-code',
   },
-  // Payments
-  PAYMENTS: {
-    METHODS: '/payments/methods',
-    ADD_METHOD: '/payments/methods',
-    DELETE_METHOD: (id: string) => `/payments/methods/${id}`,
-    INVOICES: '/payments/invoices',
-    PAY_INVOICE: (id: string) => `/payments/invoices/${id}/pay`,
+  // Invoices
+  INVOICES: {
+    LIST: '/invoices',
   },
   // Notifications
   NOTIFICATIONS: {

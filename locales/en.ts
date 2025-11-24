@@ -21,6 +21,7 @@ export default {
     error: 'Error',
     success: 'Success',
     retry: 'Retry',
+    tryAgain: 'Try Again',
     viewPlans: 'View Plans',
     logout: 'Logout',
   },
@@ -113,6 +114,7 @@ export default {
     permissionRequired: 'Camera Permission Required',
     grantPermission: 'Grant Permission',
     permissionMessage: 'Please grant camera access to scan QR codes for check-in',
+    requestingPermission: 'Requesting camera permission...',
     goBack: 'Go Back',
     pointCameraAtQR: 'Point camera at QR code',
     alignQRCode: 'Align the QR code within the frame',
@@ -209,6 +211,7 @@ export default {
     sepaDirectDebit: 'SEPA Direct Debit',
     edit: 'Edit',
     loadMore: 'Load More',
+    errorTitle: 'Unable to load invoices',
 
     // Invoice status
     paid: 'Paid',
@@ -229,6 +232,7 @@ export default {
     loadMore: 'Load More Classes',
     noClassesFound: 'No Classes Found',
     tryDifferentFilters: 'Try adjusting your filters',
+    errorTitle: 'Unable to load classes',
   },
 
   // Calendar Screen
@@ -236,6 +240,7 @@ export default {
     title: 'Class Calendar',
     legend: 'Class Categories',
     noClasses: 'No classes scheduled for this day',
+    errorTitle: 'Unable to load classes',
   },
 
   // Date/Time

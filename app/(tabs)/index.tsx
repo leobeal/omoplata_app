@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Pressable } from 'react-native';
+import { View, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
 import ThemedText from '@/components/ThemedText';
 import ThemedScroller from '@/components/ThemedScroller';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -14,12 +14,18 @@ import { useT } from '@/contexts/LocalizationContext';
 import ClassCard from '@/components/ClassCard';
 import { getUpcomingClasses, confirmAttendance, denyAttendance, Class } from '@/api/classes';
 import { router } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function HomeScreen() {
   const t = useT();
   const colors = useThemeColors();
+  const { user } = useAuth();
   const [classes, setClasses] = useState<Class[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(true);
+  const [classesError, setClassesError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const userName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';
 
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -34,10 +40,16 @@ export default function HomeScreen() {
 
   const loadClasses = async () => {
     try {
+      setLoadingClasses(true);
+      setClassesError(null);
       const data = await getUpcomingClasses();
       setClasses(data);
     } catch (error) {
       console.error('Error loading classes:', error);
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to load classes. Please check your connection and try again.';
+      setClassesError(errorMessage);
     } finally {
       setLoadingClasses(false);
     }
@@ -67,14 +79,35 @@ export default function HomeScreen() {
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadClasses();
+      // TODO: Reload other data like analytics, membership info, etc.
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <>
       <Header
         className="bg-secondary"
-        leftComponent={<Avatar name="John Doe" size="sm" link="/settings" />}
+        leftComponent={<Avatar name={userName} size="sm" link="/settings" src={user?.avatar} />}
         rightComponents={[<HeaderIcon icon="Bell" hasBadge href="/screens/notifications" />]}
       />
-      <ThemedScroller className="flex-1 bg-background !px-0">
+      <ThemedScroller
+        className="flex-1 bg-background !px-0"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#FFFFFF"
+            colors={['#FFFFFF', colors.highlight]}
+            progressBackgroundColor={colors.bg}
+          />
+        }
+      >
         <View className="bg-secondary px-6">
           <Section
             title={t('home.welcomeBack')}
@@ -114,6 +147,31 @@ export default function HomeScreen() {
           {loadingClasses ? (
             <View className="items-center justify-center py-8">
               <ActivityIndicator size="large" />
+            </View>
+          ) : classesError ? (
+            <View className="items-center justify-center rounded-2xl bg-secondary py-12">
+              <View
+                className="mb-4 h-16 w-16 items-center justify-center rounded-full"
+                style={{ backgroundColor: colors.error + '20' }}>
+                <Icon name="AlertCircle" size={32} color={colors.error} />
+              </View>
+              <ThemedText className="mb-2 text-center font-semibold">
+                Unable to load classes
+              </ThemedText>
+              <ThemedText className="mb-6 text-center text-sm opacity-70">
+                {classesError}
+              </ThemedText>
+              <Pressable
+                onPress={loadClasses}
+                className="rounded-full px-6 py-3"
+                style={{ backgroundColor: colors.highlight }}>
+                <View className="flex-row items-center">
+                  <Icon name="RefreshCw" size={16} color="#FFFFFF" />
+                  <ThemedText className="ml-2 font-semibold" style={{ color: '#FFFFFF' }}>
+                    Try Again
+                  </ThemedText>
+                </View>
+              </Pressable>
             </View>
           ) : classes.length > 0 ? (
             classes.slice(0, 3).map((classItem) => (

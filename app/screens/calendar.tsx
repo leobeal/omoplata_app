@@ -38,6 +38,7 @@ export default function CalendarScreen() {
   const [visibleMonthYear, setVisibleMonthYear] = useState<string>('');
   const [allClasses, setAllClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadClasses();
@@ -62,10 +63,15 @@ export default function CalendarScreen() {
   const loadClasses = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await getUpcomingClasses();
       setAllClasses(data);
     } catch (error) {
       console.error('Error loading classes:', error);
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to load classes. Please check your connection and try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -264,6 +270,31 @@ export default function CalendarScreen() {
           {loading ? (
             <View className="items-center justify-center py-12">
               <ActivityIndicator size="large" color={colors.highlight} />
+            </View>
+          ) : error ? (
+            <View className="items-center justify-center py-16">
+              <View
+                className="mb-4 h-16 w-16 items-center justify-center rounded-full"
+                style={{ backgroundColor: colors.error + '20' }}>
+                <Icon name="AlertCircle" size={32} color={colors.error} />
+              </View>
+              <ThemedText className="mb-2 text-center text-lg font-bold">
+                {t('calendar.errorTitle') || 'Unable to load classes'}
+              </ThemedText>
+              <ThemedText className="mb-6 text-center text-sm opacity-70 max-w-sm">
+                {error}
+              </ThemedText>
+              <Pressable
+                onPress={loadClasses}
+                className="rounded-full px-6 py-3"
+                style={{ backgroundColor: colors.highlight }}>
+                <View className="flex-row items-center">
+                  <Icon name="RefreshCw" size={16} color="#FFFFFF" />
+                  <ThemedText className="ml-2 font-semibold" style={{ color: '#FFFFFF' }}>
+                    {t('common.tryAgain') || 'Try Again'}
+                  </ThemedText>
+                </View>
+              </Pressable>
             </View>
           ) : selectedDateClasses.length > 0 ? (
             <>

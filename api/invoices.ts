@@ -1,4 +1,18 @@
-import invoicesData from '@/data/invoices.json';
+import { api } from './client';
+import { ENDPOINTS } from './config';
+
+export type InvoiceStatus =
+  | 'pending'
+  | 'processing'
+  | 'waiting_to_send'
+  | 'sent_to_bank'
+  | 'on_hold'
+  | 'canceled'
+  | 'paid'
+  | 'refunded'
+  | 'pending_retry'
+  | 'overdue'
+  | 'void';
 
 export interface LineItem {
   id: string;
@@ -12,7 +26,7 @@ export interface Invoice {
   id: string;
   date: string;
   dueDate: string;
-  status: 'paid' | 'pending' | 'overdue';
+  status: InvoiceStatus;
   amount: number;
   paymentMethod: string;
   paymentDetails?: string;
@@ -22,58 +36,81 @@ export interface Invoice {
   total: number;
 }
 
+export interface InvoicesParams {
+  page?: number;
+  limit?: number;
+  start_date?: string;
+  end_date?: string;
+  status?: InvoiceStatus;
+}
+
+export interface InvoicesResponse {
+  success: boolean;
+  data: Invoice[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    lastPage: number;
+  };
+}
+
 /**
- * Fetch all invoices
+ * Fetch invoices with optional filtering and pagination
  */
-export const getInvoices = async (): Promise<Invoice[]> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return invoicesData as Invoice[];
+export const getInvoices = async (params?: InvoicesParams): Promise<InvoicesResponse> => {
+  const queryParams = new URLSearchParams(
+    Object.entries(params || {})
+      .filter(([_, v]) => v !== undefined)
+      .map(([k, v]) => [k, String(v)])
+  ).toString();
+
+  const endpoint = queryParams ? `${ENDPOINTS.INVOICES.LIST}?${queryParams}` : ENDPOINTS.INVOICES.LIST;
+
+  const response = await api.get<InvoicesResponse>(endpoint);
+
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to fetch invoices');
+  }
+
+  return response.data;
 };
 
 /**
  * Fetch a single invoice by ID
+ * Note: This endpoint may not be available in the API. Use getInvoices with filtering instead.
  */
 export const getInvoiceById = async (id: string): Promise<Invoice | null> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  const invoice = invoicesData.find((inv) => inv.id === id);
-  return invoice ? (invoice as Invoice) : null;
+  const response = await getInvoices({ limit: 100 });
+  const invoice = response.data.find((inv) => inv.id === id);
+  return invoice || null;
 };
 
 /**
  * Fetch invoices with pagination
  */
-export const getInvoicesPaginated = async (limit: number = 10, offset: number = 0): Promise<{ invoices: Invoice[]; hasMore: boolean; total: number }> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
+export const getInvoicesPaginated = async (
+  limit: number = 10,
+  page: number = 1
+): Promise<{ invoices: Invoice[]; hasMore: boolean; total: number }> => {
+  const response = await getInvoices({ limit, page });
 
-  const allInvoices = invoicesData as Invoice[];
-  const total = allInvoices.length;
-  const invoices = allInvoices.slice(offset, offset + limit);
-  const hasMore = offset + limit < total;
-
-  return { invoices, hasMore, total };
+  return {
+    invoices: response.data,
+    hasMore: page < response.meta.lastPage,
+    total: response.meta.total,
+  };
 };
 
 /**
  * Fetch the next upcoming invoice
  */
 export const getNextInvoice = async (): Promise<Invoice | null> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  const response = await getInvoices({ status: 'pending', limit: 1 });
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  if (response.data.length === 0) {
+    return null;
+  }
 
-  // Find the next pending invoice
-  const upcomingInvoices = (invoicesData as Invoice[])
-    .filter((inv) => {
-      const dueDate = new Date(inv.dueDate);
-      dueDate.setHours(0, 0, 0, 0);
-      return dueDate >= today && inv.status === 'pending';
-    })
-    .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-
-  return upcomingInvoices.length > 0 ? upcomingInvoices[0] : null;
+  return response.data[0];
 };

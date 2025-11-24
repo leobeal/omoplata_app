@@ -1,12 +1,18 @@
 if (!process.env.TENANT) {
-  throw new Error('TENANT environment variable is required');
+  throw new Error('TENANT environment variable is required. Use TENANT=MAIN for generic build with tenant selection, or TENANT=evolve for club-specific build.');
 }
 
+const tenantEnv = process.env.TENANT;
+const isGenericBuild = tenantEnv.toUpperCase() === 'MAIN';
+
+// Load tenant config
 let config;
 try {
-  config = require('./configs/' + process.env.TENANT + '.js');
+  // For generic build, use main config. For specific tenants, use their config.
+  const configName = isGenericBuild ? 'main' : tenantEnv;
+  config = require('./configs/' + configName + '.js');
 } catch (e) {
-  throw new Error(`Invalid TENANT environment variable: ${process.env.TENANT}`);
+  throw new Error(`Invalid TENANT environment variable: ${tenantEnv}. Config file not found.`);
 }
 
 const version = '1.0.0';
@@ -57,6 +63,10 @@ module.exports = {
     },
     extra: {
       ...config,
+      // If generic build (TENANT=MAIN), tenant is undefined and users select at runtime
+      // If club-specific build (TENANT=evolve), tenant is set here
+      tenant: isGenericBuild ? undefined : tenantEnv,
+      env: process.env.APP_ENV || 'development',
       router: {
         origin: false,
       },

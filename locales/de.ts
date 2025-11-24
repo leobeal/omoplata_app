@@ -113,6 +113,7 @@ export default {
     permissionRequired: 'Kameraberechtigung erforderlich',
     grantPermission: 'Berechtigung erteilen',
     permissionMessage: 'Bitte gewähren Sie Kamerazugriff zum Scannen von QR-Codes beim Check-in',
+    requestingPermission: 'Kameraberechtigung wird angefordert...',
     goBack: 'Zurück',
     pointCameraAtQR: 'Kamera auf QR-Code richten',
     alignQRCode: 'Richten Sie den QR-Code im Rahmen aus',

@@ -1,6 +1,66 @@
-import classesData from '@/data/classes.json';
+import { api } from './client';
+import { ENDPOINTS } from './config';
 
 export type AttendanceStatus = 'pending' | 'confirmed' | 'denied';
+
+// API Response Types (snake_case as returned by backend)
+interface ApiClassInfo {
+  id: number;
+  name: string;
+  description: string | null;
+  level: string | null;
+  discipline: string;
+  max_participants: number | null;
+  requires_assignment: boolean;
+}
+
+interface ApiVenue {
+  id: number;
+  name: string;
+}
+
+interface ApiCapacity {
+  max: number | null;
+  is_full: boolean;
+  available_spots: number | null;
+}
+
+interface ApiUserStatus {
+  has_intention: boolean;
+  intention: {
+    status: 'yes' | 'no';
+    notes: string | null;
+  } | null;
+  can_register: boolean;
+}
+
+interface ApiClassSession {
+  id: number;
+  class: ApiClassInfo;
+  starts_at: string;
+  ends_at: string;
+  trainer: string | null;
+  venue: ApiVenue;
+  capacity: ApiCapacity;
+  user_status: ApiUserStatus;
+}
+
+interface ApiClassesResponse {
+  success: boolean;
+  data: ApiClassSession[];
+  meta: {
+    total: number;
+    limit: string;
+    has_assignments: boolean;
+  };
+}
+
+// Internal App Types (camelCase, simplified)
+export interface ClassCapacity {
+  max: number | null;
+  is_full: boolean;
+  available_spots: number | null;
+}
 
 export interface Class {
   id: string;
@@ -12,7 +72,7 @@ export interface Class {
   endTime: string;
   duration: number;
   location: string;
-  capacity: number;
+  capacity: ClassCapacity;
   enrolled: number;
   status: AttendanceStatus;
   description: string;
@@ -28,155 +88,116 @@ export interface ClassFilters {
 }
 
 /**
- * Fetch upcoming classes
+ * Transform API response to internal Class format
  */
-export const getUpcomingClasses = async (): Promise<Class[]> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
+const transformApiClass = (apiClass: ApiClassSession): Class => {
+  const startsAt = new Date(apiClass.starts_at);
+  const endsAt = new Date(apiClass.ends_at);
+  const duration = Math.round((endsAt.getTime() - startsAt.getTime()) / (1000 * 60)); // minutes
 
-  // Filter classes that are today or in the future
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  return (classesData as Class[])
-    .filter((cls) => {
-      const classDate = new Date(cls.date);
-      classDate.setHours(0, 0, 0, 0);
-      return classDate >= today;
-    })
-    .sort((a, b) => {
-      // Sort by date, then by start time
-      const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
-      if (dateCompare !== 0) return dateCompare;
-      return a.startTime.localeCompare(b.startTime);
-    });
-};
-
-/**
- * Fetch classes with pagination and filtering
- */
-export const getClassesPaginated = async (
-  limit: number = 10,
-  offset: number = 0,
-  filters?: ClassFilters
-): Promise<{ classes: Class[]; hasMore: boolean; total: number }> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Filter classes that are today or in the future
-  let filteredClasses = (classesData as Class[]).filter((cls) => {
-    const classDate = new Date(cls.date);
-    classDate.setHours(0, 0, 0, 0);
-    return classDate >= today;
-  });
-
-  // Apply filters
-  if (filters) {
-    if (filters.category) {
-      filteredClasses = filteredClasses.filter((cls) => cls.category === filters.category);
-    }
-    if (filters.level) {
-      filteredClasses = filteredClasses.filter((cls) => cls.level === filters.level);
-    }
-    if (filters.instructor) {
-      filteredClasses = filteredClasses.filter((cls) => cls.instructor === filters.instructor);
-    }
-    if (filters.location) {
-      filteredClasses = filteredClasses.filter((cls) => cls.location === filters.location);
-    }
+  // Determine status based on user_status
+  let status: AttendanceStatus = 'pending';
+  if (apiClass.user_status.has_intention && apiClass.user_status.intention) {
+    status = apiClass.user_status.intention.status === 'yes' ? 'confirmed' : 'denied';
   }
 
-  // Sort by date and time
-  filteredClasses.sort((a, b) => {
-    const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
-    if (dateCompare !== 0) return dateCompare;
-    return a.startTime.localeCompare(b.startTime);
+  return {
+    id: apiClass.id.toString(),
+    title: apiClass.class.name,
+    instructor: apiClass.trainer || 'TBA',
+    instructorAvatar: '', // Not provided by API
+    date: apiClass.starts_at,
+    startTime: startsAt.toISOString().split('T')[1].substring(0, 5), // HH:MM format
+    endTime: endsAt.toISOString().split('T')[1].substring(0, 5), // HH:MM format
+    duration,
+    location: apiClass.venue.name,
+    capacity: apiClass.capacity,
+    enrolled: apiClass.capacity.max && apiClass.capacity.available_spots !== null
+      ? apiClass.capacity.max - apiClass.capacity.available_spots
+      : 0,
+    status,
+    description: apiClass.class.description || '',
+    level: apiClass.class.level || '',
+    category: apiClass.class.discipline,
+  };
+};
+
+/**
+ * Fetch upcoming classes
+ */
+export const getUpcomingClasses = async (limit?: number): Promise<Class[]> => {
+  const params = limit ? `?limit=${limit}` : '';
+  const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.NEXT}${params}`);
+
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to fetch classes');
+  }
+
+  return response.data.data.map(transformApiClass);
+};
+
+/**
+ * Fetch classes with pagination
+ */
+export const getClassesPaginated = async (
+  limit: number = 10
+): Promise<{ classes: Class[]; total: number }> => {
+  const response = await api.get<ApiClassesResponse>(
+    `${ENDPOINTS.CLASSES.NEXT}?limit=${limit}`
+  );
+
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to fetch classes');
+  }
+
+  return {
+    classes: response.data.data.map(transformApiClass),
+    total: response.data.meta.total,
+  };
+};
+
+/**
+ * Set attendance intention for a class
+ */
+export const setAttendanceIntention = async (
+  occurrenceId: string,
+  decision: 'confirm' | 'decline',
+  notes?: string
+): Promise<void> => {
+  const response = await api.post(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
+    occurrence_id: parseInt(occurrenceId),
+    decision,
+    notes: notes || '',
   });
 
-  const total = filteredClasses.length;
-  const classes = filteredClasses.slice(offset, offset + limit);
-  const hasMore = offset + limit < total;
-
-  return { classes, hasMore, total };
-};
-
-/**
- * Get unique categories from classes
- */
-export const getClassCategories = async (): Promise<string[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  const categories = [...new Set((classesData as Class[]).map((cls) => cls.category).filter(Boolean))];
-  return categories as string[];
-};
-
-/**
- * Get unique levels from classes
- */
-export const getClassLevels = async (): Promise<string[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  const levels = [...new Set((classesData as Class[]).map((cls) => cls.level))];
-  return levels;
-};
-
-/**
- * Get unique instructors from classes
- */
-export const getClassInstructors = async (): Promise<string[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  const instructors = [...new Set((classesData as Class[]).map((cls) => cls.instructor))];
-  return instructors;
-};
-
-/**
- * Get unique locations from classes
- */
-export const getClassLocations = async (): Promise<string[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  const locations = [...new Set((classesData as Class[]).map((cls) => cls.location))];
-  return locations;
+  if (response.error) {
+    throw new Error(response.error || 'Failed to set attendance intention');
+  }
 };
 
 /**
  * Confirm attendance for a class
  */
-export const confirmAttendance = async (classId: string): Promise<Class> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const classItem = (classesData as Class[]).find((cls) => cls.id === classId);
-  if (!classItem) {
-    throw new Error('Class not found');
-  }
-
-  // In a real app, this would update the backend
-  return { ...classItem, status: 'confirmed' };
+export const confirmAttendance = async (classId: string, notes?: string): Promise<void> => {
+  await setAttendanceIntention(classId, 'confirm', notes);
 };
 
 /**
  * Deny attendance for a class
  */
-export const denyAttendance = async (classId: string): Promise<Class> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const classItem = (classesData as Class[]).find((cls) => cls.id === classId);
-  if (!classItem) {
-    throw new Error('Class not found');
-  }
-
-  // In a real app, this would update the backend
-  return { ...classItem, status: 'denied' };
+export const denyAttendance = async (classId: string, notes?: string): Promise<void> => {
+  await setAttendanceIntention(classId, 'decline', notes);
 };
 
 /**
  * Get a single class by ID
  */
 export const getClassById = async (id: string): Promise<Class | null> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  const classItem = (classesData as Class[]).find((cls) => cls.id === id);
-  return classItem ? (classItem as Class) : null;
+  const response = await api.get<{ class: Class }>(ENDPOINTS.CLASSES.DETAILS(id));
+
+  if (response.error || !response.data) {
+    return null;
+  }
+
+  return response.data.class;
 };

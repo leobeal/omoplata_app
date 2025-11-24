@@ -21,6 +21,21 @@ jest.mock('@/contexts/ThemeContext', () => ({
   }),
 }));
 
+jest.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    login: jest.fn().mockResolvedValue({ success: true }),
+    isLoading: false,
+    isAuthenticated: false,
+  }),
+}));
+
+jest.mock('@/contexts/TenantContext', () => ({
+  useTenant: () => ({
+    isTenantRequired: true,
+    tenant: null,
+  }),
+}));
+
 // Mock the API
 jest.mock('@/api', () => ({
   authApi: {
@@ -190,14 +205,14 @@ describe('LoginScreen', () => {
   });
 
   describe('Navigation', () => {
-    it('navigates back when back button is pressed', () => {
+    it('navigates to tenant selection when back button is pressed', () => {
       const { getByTestId } = render(<LoginScreen />);
 
       // Find the back icon and press it
       const backButton = getByTestId('icon-ArrowLeft');
       fireEvent.press(backButton);
 
-      expect(router.back).toHaveBeenCalled();
+      expect(router.push).toHaveBeenCalledWith('/screens/tenant-selection');
     });
   });
 

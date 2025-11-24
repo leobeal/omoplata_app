@@ -5,6 +5,8 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LocalizationProvider } from '@/contexts/LocalizationContext';
 import { ScrollToTopProvider } from '@/contexts/ScrollToTopContext';
 import { AppConfigProvider } from '@/contexts/AppConfigContext';
+import { TenantProvider } from '@/contexts/TenantContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export default function RootLayout() {
   return (
@@ -12,9 +14,13 @@ export default function RootLayout() {
       <LocalizationProvider>
         <ThemeProvider>
           <AppConfigProvider>
-            <ScrollToTopProvider>
-              <Stack screenOptions={{ headerShown: false }} />
-            </ScrollToTopProvider>
+            <TenantProvider>
+              <AuthProvider>
+                <ScrollToTopProvider>
+                  <Stack screenOptions={{ headerShown: false }} />
+                </ScrollToTopProvider>
+              </AuthProvider>
+            </TenantProvider>
           </AppConfigProvider>
         </ThemeProvider>
       </LocalizationProvider>

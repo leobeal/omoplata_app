@@ -1,18 +1,23 @@
 import { useThemeColors } from '@/contexts/ThemeColors';
 import { TabButton } from '@/components/TabButton';
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CheckInButton from '@/components/CheckInButton';
 import { useT } from '@/contexts/LocalizationContext';
 import { defaultNavigation, NavigationConfig as FullNavigationConfig } from '@/configs/navigation';
 import { getNavigationConfig, NavigationConfig as ApiNavigationConfig } from '@/api/app-config';
+import { useTenant } from '@/contexts/TenantContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { router } from 'expo-router';
 
 export default function TabsLayout() {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const t = useT();
+  const { tenant, isLoading: isTenantLoading, isTenantRequired } = useTenant();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
   const [apiConfig, setApiConfig] = useState<ApiNavigationConfig | null>(null);
 
@@ -56,6 +61,36 @@ export default function TabsLayout() {
 
   const tabs = navConfig.tabs || [];
   const showCheckInButton = navConfig.showCheckInButton ?? true;
+
+  // Check authentication and tenant requirements
+  useEffect(() => {
+    // Wait for both auth and tenant to finish loading
+    if (isAuthLoading || isTenantLoading) {
+      return;
+    }
+
+    // Priority 1: Check if tenant selection is needed first
+    // (User must select tenant before logging in for generic builds)
+    if (isTenantRequired && !tenant) {
+      router.replace('/screens/tenant-selection');
+      return;
+    }
+
+    // Priority 2: Check authentication after tenant is selected
+    if (!isAuthenticated) {
+      router.replace('/screens/login');
+      return;
+    }
+  }, [isAuthLoading, isAuthenticated, isTenantLoading, isTenantRequired, tenant]);
+
+  // Show loading while checking auth and tenant
+  if (isAuthLoading || isTenantLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.bg }}>
+        <ActivityIndicator size="large" color={colors.highlight} />
+      </View>
+    );
+  }
 
   // Calculate tab width based on number of tabs
   const hasCheckIn = showCheckInButton;

@@ -24,6 +24,7 @@ export interface RegisterRequest {
   phone?: string;
 }
 
+// API Response format (camelCase as returned by backend)
 export interface User {
   id: string;
   email: string;

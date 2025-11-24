@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, ActivityIndicator, Animated } from '
 import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { router } from 'expo-router';
 import { useThemeColors } from '@/contexts/ThemeColors';
+import { useT } from '@/contexts/LocalizationContext';
 import Icon from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
 import { checkinApi } from '@/api';
@@ -12,6 +13,7 @@ type ScanState = 'idle' | 'scanning' | 'success' | 'error';
 
 export default function CheckInScreen() {
   const colors = useThemeColors();
+  const t = useT();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanState, setScanState] = useState<ScanState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -39,14 +41,14 @@ export default function CheckInScreen() {
       const parseResult = parseQRCode(data);
 
       if (!parseResult.valid || !parseResult.data) {
-        throw new Error(parseResult.error || 'Invalid QR code');
+        throw new Error(parseResult.error || t('checkin.invalidQRCode'));
       }
 
       // Validate QR data
       const validationResult = validateQRData(parseResult.data);
 
       if (!validationResult.valid) {
-        throw new Error(validationResult.error || 'Invalid QR data');
+        throw new Error(validationResult.error || t('checkin.invalidQRCode'));
       }
 
       // Format request for API
@@ -57,9 +59,9 @@ export default function CheckInScreen() {
 
       if (response.data && response.data.success) {
         // Success!
-        const greeting = response.data.data.greeting || 'Welcome!';
+        const greeting = response.data.data.greeting || t('checkin.welcomeBack', { name: '' });
         const streak = response.data.data.monthlyVisits;
-        setSuccessMessage(`${greeting}\n\nCheck-in #${streak} this month`);
+        setSuccessMessage(`${greeting}\n\n${t('checkin.checkInNumber', { count: streak })}`);
         setScanState('success');
 
         // Animate success
@@ -82,13 +84,13 @@ export default function CheckInScreen() {
           router.back();
         }, 2500);
       } else {
-        throw new Error('Check-in failed');
+        throw new Error(t('checkin.checkInFailed'));
       }
     } catch (error: any) {
       console.error('Check-in error:', error);
 
       // Map error messages
-      let errorMsg = 'Failed to check in';
+      let errorMsg = t('checkin.checkInFailed');
 
       if (error.message) {
         errorMsg = error.message;
@@ -99,16 +101,16 @@ export default function CheckInScreen() {
 
         switch (apiError) {
           case 'invalid_code':
-            errorMsg = 'Invalid QR code';
+            errorMsg = t('checkin.invalidQRCode');
             break;
           case 'already_checked_in':
-            errorMsg = "You're already checked in";
+            errorMsg = t('checkin.alreadyCheckedIn');
             break;
           case 'membership_inactive':
-            errorMsg = 'Your membership is inactive.\nPlease contact the front desk.';
+            errorMsg = t('checkin.membershipInactive');
             break;
           default:
-            errorMsg = error.response.data.message || 'Check-in failed';
+            errorMsg = error.response.data.message || t('checkin.checkInFailed');
         }
       }
 
@@ -136,7 +138,7 @@ export default function CheckInScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color={colors.highlight} />
-        <ThemedText className="mt-4">Requesting camera permission...</ThemedText>
+        <ThemedText className="mt-4">{t('checkin.requestingPermission')}</ThemedText>
       </View>
     );
   }
@@ -147,16 +149,16 @@ export default function CheckInScreen() {
       <View className="flex-1 items-center justify-center bg-background px-8">
         <Icon name="Camera" size={64} color={colors.text} className="mb-8" />
         <ThemedText className="mb-4 text-center text-2xl font-bold">
-          Camera Permission Required
+          {t('checkin.permissionRequired')}
         </ThemedText>
         <ThemedText className="mb-8 text-center opacity-70">
-          Please grant camera access to scan QR codes for check-in
+          {t('checkin.permissionMessage')}
         </ThemedText>
         <Pressable onPress={requestPermission} className="rounded-full bg-highlight px-8 py-4">
-          <Text className="text-lg font-bold text-white">Grant Permission</Text>
+          <Text className="text-lg font-bold text-white">{t('checkin.grantPermission')}</Text>
         </Pressable>
         <Pressable onPress={handleClose} className="mt-4 px-8 py-4">
-          <ThemedText className="text-center">Go Back</ThemedText>
+          <ThemedText className="text-center">{t('checkin.goBack')}</ThemedText>
         </Pressable>
       </View>
     );
@@ -164,7 +166,7 @@ export default function CheckInScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Camera View */}
+      {/* Camera View - No children */}
       <CameraView
         style={StyleSheet.absoluteFill}
         facing="back"
@@ -172,70 +174,73 @@ export default function CheckInScreen() {
         barcodeScannerSettings={{
           barcodeTypes: ['qr'],
         }}
-        enableTorch={enableTorch}>
-        {/* Overlay */}
-        <View style={styles.overlay}>
-          {/* Top bar */}
-          <View style={[styles.topBar, { backgroundColor: colors.bg }]}>
-            <Pressable onPress={handleClose} style={styles.closeButton}>
-              <Icon name="X" size={24} color={colors.text} />
-            </Pressable>
-            <ThemedText className="text-lg font-bold">Scan QR Code</ThemedText>
-            <Pressable onPress={() => setEnableTorch(!enableTorch)} style={styles.torchButton}>
-              <Icon
-                name={enableTorch ? 'Flashlight' : 'FlashlightOff'}
-                size={24}
-                color={enableTorch ? colors.highlight : colors.text}
-              />
-            </Pressable>
-          </View>
+        enableTorch={enableTorch}
+      />
 
-          {/* Scanning area */}
-          <View style={styles.scanArea}>
-            <View style={styles.scanFrame}>
-              {/* Corners */}
-              <View style={[styles.corner, styles.topLeft, { borderColor: colors.highlight }]} />
-              <View style={[styles.corner, styles.topRight, { borderColor: colors.highlight }]} />
-              <View style={[styles.corner, styles.bottomLeft, { borderColor: colors.highlight }]} />
-              <View
-                style={[styles.corner, styles.bottomRight, { borderColor: colors.highlight }]}
-              />
+      {/* Overlay - Positioned absolutely on top of camera */}
+      <View style={styles.overlay}>
+        {/* Top bar */}
+        <View style={[styles.topBar, { backgroundColor: colors.bg }]}>
+          <Pressable onPress={handleClose} style={styles.closeButton}>
+            <Icon name="X" size={24} color={colors.text} />
+          </Pressable>
+          <ThemedText className="text-lg font-bold">{t('checkin.title')}</ThemedText>
+          <Pressable onPress={() => setEnableTorch(!enableTorch)} style={styles.torchButton}>
+            <Icon
+              name={enableTorch ? 'Flashlight' : 'FlashlightOff'}
+              size={24}
+              color={enableTorch ? colors.highlight : colors.text}
+            />
+          </Pressable>
+        </View>
 
-              {/* Instructions */}
-              {scanState === 'idle' && (
-                <View style={styles.instructions}>
-                  <ThemedText className="text-center text-lg text-white">
-                    Point camera at QR code
-                  </ThemedText>
-                </View>
-              )}
+        {/* Scanning area */}
+        <View style={styles.scanArea}>
+          <View style={styles.scanFrame}>
+            {/* Corners */}
+            <View style={[styles.corner, styles.topLeft, { borderColor: colors.highlight }]} />
+            <View style={[styles.corner, styles.topRight, { borderColor: colors.highlight }]} />
+            <View style={[styles.corner, styles.bottomLeft, { borderColor: colors.highlight }]} />
+            <View
+              style={[styles.corner, styles.bottomRight, { borderColor: colors.highlight }]}
+            />
 
-              {/* Loading */}
-              {scanState === 'scanning' && (
-                <View style={styles.instructions}>
-                  <ActivityIndicator size="large" color="#fff" />
-                  <ThemedText className="mt-4 text-center text-white">Checking in...</ThemedText>
-                </View>
-              )}
+            {/* Instructions */}
+            {scanState === 'idle' && (
+              <View style={styles.instructions}>
+                <ThemedText className="text-center text-lg text-white">
+                  {t('checkin.pointCameraAtQR')}
+                </ThemedText>
+              </View>
+            )}
 
-              {/* Error */}
-              {scanState === 'error' && (
-                <View style={styles.instructions}>
-                  <Icon name="XCircle" size={48} color="#EF4444" />
-                  <ThemedText className="mt-4 text-center text-white">{errorMessage}</ThemedText>
-                </View>
-              )}
-            </View>
-          </View>
+            {/* Loading */}
+            {scanState === 'scanning' && (
+              <View style={styles.instructions}>
+                <ActivityIndicator size="large" color="#fff" />
+                <ThemedText className="mt-4 text-center text-white">
+                  {t('checkin.checkingIn')}
+                </ThemedText>
+              </View>
+            )}
 
-          {/* Bottom instructions */}
-          <View style={styles.bottomInstructions}>
-            <ThemedText className="text-center opacity-70">
-              Align the QR code within the frame
-            </ThemedText>
+            {/* Error */}
+            {scanState === 'error' && (
+              <View style={styles.instructions}>
+                <Icon name="XCircle" size={48} color="#EF4444" />
+                <ThemedText className="mt-4 text-center text-white">{errorMessage}</ThemedText>
+              </View>
+            )}
           </View>
         </View>
-      </CameraView>
+
+        {/* Bottom instructions */}
+        <View style={styles.bottomInstructions}>
+          <ThemedText className="text-center opacity-70">
+            {t('checkin.alignQRCode')}
+          </ThemedText>
+        </View>
+      </View>
 
       {/* Success Overlay */}
       {scanState === 'success' && (
@@ -255,7 +260,7 @@ export default function CheckInScreen() {
             ]}>
             <Icon name="CheckCircle" size={80} color="#10B981" />
             <Text className="mt-6 text-center text-2xl font-bold text-white">
-              Check-in Success!
+              {t('checkin.checkInSuccess')}
             </Text>
             <Text className="mt-4 text-center text-lg text-white">{successMessage}</Text>
           </Animated.View>

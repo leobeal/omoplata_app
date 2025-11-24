@@ -38,12 +38,13 @@ nvm use 20
 # Install dependencies
 npm install --legacy-peer-deps
 
-# Start the Expo development server with a clean cache
-npx expo start -c
+# Start the Expo development server (TENANT is required)
+TENANT=evolve npx expo start -c     # For Evolve gym
+TENANT=MAIN npx expo start -c       # For generic build with tenant selection
 
 # Or run on specific platform
-npm run ios      # iOS simulator
-npm run android  # Android emulator
+TENANT=evolve npm run ios      # iOS simulator
+TENANT=evolve npm run android  # Android emulator
 ```
 
 ## Available Scripts
@@ -59,18 +60,54 @@ npm run android  # Android emulator
 | `npm run lint` | Check code quality |
 | `npm run format` | Auto-format code |
 
-## Multi-Tenant Support
+## Tenant Configuration
 
-The app supports multiple gym brands through environment configuration:
+The app is **single-tenant** from the user's perspective but supports two deployment modes via the `TENANT` environment variable:
 
-- **Evolve**: Green theme (#4CAF50)
-- **Sparta**: Red theme (#D32F2F)
+### 1. Club-Specific Build
+- Set `TENANT=evolve` (or any gym slug)
+- White-labeled app for a specific gym
+- Users skip tenant selection - it's pre-configured
+- Perfect for gym-branded apps
 
-Configure tenant in `app.config.js` or via environment variable:
+### 2. Generic Build with One-Time Selection
+- Set `TENANT=MAIN`
+- Users select their gym once on first launch
+- Selection is permanent until app reinstall
+- Perfect for SaaS model with single App Store listing
+
+**Important:** Once a tenant is selected (either way), the app is locked to that tenant. Users cannot switch gyms within the app.
+
+### Quick Start
+
 ```bash
+# Club-specific build (Evolve gym)
 TENANT=evolve npm start
-TENANT=sparta npm start
+
+# Generic build with tenant selection
+TENANT=MAIN npm start
+
+# If you've previously selected a tenant, clear AsyncStorage via Expo dev menu
 ```
+
+### All Commands
+
+```bash
+# Development
+TENANT=evolve npm start      # Evolve gym
+TENANT=sparta npm start      # Sparta gym
+TENANT=MAIN npm start        # Generic - users select gym
+
+# iOS
+TENANT=evolve npm run ios
+TENANT=MAIN npm run ios
+
+# Android
+TENANT=evolve npm run android
+TENANT=MAIN npm run android
+```
+
+📖 **[Full Tenant Configuration Guide](./docs/TENANT_CONFIGURATION.md)**
 
 ## Testing
 
@@ -119,11 +156,15 @@ omoplata_app/
 │   ├── _layout.tsx        # Root layout with theme provider
 │   ├── index.tsx          # Home/Dashboard
 │   └── screens/
-│       └── login.tsx      # Login screen
+│       ├── login.tsx               # Login screen
+│       └── tenant-selection.tsx    # Gym selection (generic builds)
 ├── api/                   # API client and services
-│   ├── config.ts         # Endpoints and configuration
+│   ├── config.ts         # API config with dynamic tenant support
 │   ├── client.ts         # HTTP client with auth
-│   └── auth.ts           # Authentication service
+│   ├── auth.ts           # Authentication service
+│   ├── classes.ts        # Classes API
+│   ├── checkin.ts        # Check-in API
+│   └── invoices.ts       # Invoices API
 ├── components/           # Reusable UI components
 │   ├── Button.tsx
 │   ├── Icon.tsx
@@ -132,18 +173,22 @@ omoplata_app/
 │   └── forms/
 │       └── Input.tsx
 ├── contexts/            # React contexts
-│   ├── ThemeContext.tsx  # Theme provider
-│   └── ThemeColors.tsx   # Theme colors hook
-├── backend_apis/        # Backend API documentation
-├── configs/             # Multi-tenant configurations
-│   ├── evolve.js       # Evolve brand
-│   └── sparta.js       # Sparta brand
+│   ├── ThemeContext.tsx   # Theme provider
+│   ├── ThemeColors.tsx    # Theme colors hook
+│   └── TenantContext.tsx  # Tenant state management
 ├── utils/              # Utility functions
-│   └── color-theme.ts  # Theme definitions
-└── __tests__/          # Test suite
-    ├── screens/
-    ├── navigation/
-    └── api/
+│   ├── color-theme.ts      # Theme definitions
+│   └── tenant-storage.ts   # Persistent tenant storage
+├── backend_apis/       # Backend API documentation
+├── configs/            # Multi-tenant configurations
+│   ├── evolve.js      # Evolve brand
+│   └── sparta.js      # Sparta brand
+├── __tests__/         # Test suite
+│   ├── screens/
+│   ├── navigation/
+│   └── api/
+└── docs/              # Documentation
+    └── TENANT_CONFIGURATION.md  # Tenant setup guide
 ```
 
 ## API Integration

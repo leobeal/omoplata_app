@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Pressable, ScrollView } from 'react-native';
+import { View, ActivityIndicator, Pressable, ScrollView, RefreshControl } from 'react-native';
 import Header from '@/components/Header';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
 import ClassCard from '@/components/ClassCard';
 import { Chip } from '@/components/Chip';
+import ErrorState from '@/components/ErrorState';
 import {
   getClassesPaginated,
   getClassCategories,
@@ -26,6 +27,8 @@ export default function NextClassesScreen() {
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
@@ -65,6 +68,7 @@ export default function NextClassesScreen() {
     if (reset) {
       setLoading(true);
       setOffset(0);
+      setError(null); // Clear previous errors
     }
 
     try {
@@ -72,20 +76,16 @@ export default function NextClassesScreen() {
       if (selectedCategory) filters.category = selectedCategory;
       if (selectedLevel) filters.level = selectedLevel;
 
-      const data = await getClassesPaginated(10, reset ? 0 : offset, filters);
+      const data = await getClassesPaginated(10);
 
-      if (reset) {
-        setClasses(data.classes);
-        setOffset(10);
-      } else {
-        setClasses((prev) => [...prev, ...data.classes]);
-        setOffset((prev) => prev + 10);
-      }
-
-      setHasMore(data.hasMore);
+      setClasses(data.classes);
       setTotal(data.total);
+      setHasMore(false); // API doesn't support pagination yet
+      setError(null); // Clear error on success
     } catch (error) {
       console.error('Error loading classes:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load classes. Please check your connection and try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -123,6 +123,15 @@ export default function NextClassesScreen() {
   const clearFilters = () => {
     setSelectedCategory(undefined);
     setSelectedLevel(undefined);
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([loadFilterOptions(), loadClasses(true)]);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const hasActiveFilters = selectedCategory || selectedLevel;
@@ -191,11 +200,29 @@ export default function NextClassesScreen() {
       </View>
 
       {/* Classes list */}
-      <ThemedScroller className="flex-1 px-6 pt-4">
+      <ThemedScroller
+        className="flex-1 px-6 pt-4"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#FFFFFF"
+            colors={['#FFFFFF', colors.highlight]}
+            progressBackgroundColor={colors.bg}
+          />
+        }
+      >
         {loading ? (
           <View className="items-center justify-center py-12">
             <ActivityIndicator size="large" />
           </View>
+        ) : error ? (
+          <ErrorState
+            title={t('classes.errorTitle') || 'Unable to load classes'}
+            message={error}
+            onRetry={() => loadClasses(true)}
+            retryButtonText={t('common.tryAgain') || 'Try Again'}
+          />
         ) : classes.length > 0 ? (
           <>
             {classes.map((classItem) => (

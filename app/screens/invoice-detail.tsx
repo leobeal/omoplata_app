@@ -5,15 +5,19 @@ import Header from '@/components/Header';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
+import ErrorState from '@/components/ErrorState';
 import { Button } from '@/components/Button';
 import { getInvoiceById, Invoice } from '@/api/invoices';
 import { useThemeColors } from '@/contexts/ThemeColors';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function InvoiceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colors = useThemeColors();
+  const { user } = useAuth();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadInvoice();
@@ -21,12 +25,17 @@ export default function InvoiceDetailScreen() {
 
   const loadInvoice = async () => {
     try {
+      setError(null);
       if (id) {
         const data = await getInvoiceById(id);
         setInvoice(data);
       }
     } catch (error) {
       console.error('Error loading invoice:', error);
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to load invoice. Please check your connection and try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -87,6 +96,23 @@ export default function InvoiceDetailScreen() {
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" />
         </View>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="flex-1 bg-background">
+        <Header showBackButton title="Invoice Details" />
+        <ErrorState
+          title="Unable to load invoice"
+          message={error}
+          onRetry={() => {
+            setLoading(true);
+            loadInvoice();
+          }}
+          retryButtonText="Try Again"
+        />
       </View>
     );
   }
@@ -198,10 +224,11 @@ export default function InvoiceDetailScreen() {
         </View>
 
         <View className="mb-6 rounded-2xl bg-secondary p-5">
-          <ThemedText className="font-semibold">John Doe</ThemedText>
-          <ThemedText className="mt-1 text-sm opacity-70">johndoe@example.com</ThemedText>
-          <ThemedText className="mt-1 text-sm opacity-70">123 Fitness Street</ThemedText>
-          <ThemedText className="text-sm opacity-70">New York, NY 10001</ThemedText>
+          <ThemedText className="font-semibold">
+            {user ? `${user.firstName} ${user.lastName}`.trim() : 'User'}
+          </ThemedText>
+          <ThemedText className="mt-1 text-sm opacity-70">{user?.email || 'user@example.com'}</ThemedText>
+          <ThemedText className="mt-1 text-sm opacity-70">Address on file</ThemedText>
         </View>
 
         {/* Actions */}

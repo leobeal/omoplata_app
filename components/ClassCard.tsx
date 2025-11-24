@@ -18,7 +18,11 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
   const [localStatus, setLocalStatus] = useState(classData.status);
 
   const formatTime = (time: string) => {
+    if (!time) return 'Time TBA';
+
     const [hours, minutes] = time.split(':');
+    if (!hours || !minutes) return time; // Return original if format is unexpected
+
     const hour = parseInt(hours);
     const ampm = hour >= 12 ? 'PM' : 'AM';
     const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
@@ -130,7 +134,9 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
         <View className="flex-row items-center">
           <Icon name="Users" size={16} className="mr-2 opacity-50" />
           <ThemedText className="text-sm opacity-70">
-            {classData.enrolled}/{classData.capacity} enrolled
+            {classData.capacity.max !== null
+              ? `${classData.enrolled}/${classData.capacity.max} enrolled`
+              : `${classData.enrolled} enrolled`}
           </ThemedText>
         </View>
       </View>
