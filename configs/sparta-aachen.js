@@ -2,7 +2,7 @@ module.exports = {
   // App identity
   name: 'Sparta',
   slug: 'sparta-aachen',
-  bundleIdentifier: 'de.omoplata.sparta-aachen',
+  bundleIdentifier: 'de.omoplata.sparta_aachen',
   owner: 'omoplata',
   easProjectId: '5e13eeaf-5e9e-49a2-9210-c2dcceff6365', // Add your EAS project ID
 
