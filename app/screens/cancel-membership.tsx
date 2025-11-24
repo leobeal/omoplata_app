@@ -1,27 +1,24 @@
+import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, Alert } from 'react-native';
+
+import { getMembership, cancelMembership, Membership as MembershipType } from '@/api/membership';
+import { Button } from '@/components/Button';
 import Header from '@/components/Header';
+import Icon from '@/components/Icon';
+import Section from '@/components/Section';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
-import Icon from '@/components/Icon';
-import { Button } from '@/components/Button';
-import Section from '@/components/Section';
-import { getMembership, cancelMembership, Membership as MembershipType } from '@/api/membership';
-import { useThemeColors } from '@/contexts/ThemeColors';
-import { useT } from '@/contexts/LocalizationContext';
-import { useRouter } from 'expo-router';
 import { useMembershipSettings } from '@/contexts/AppConfigContext';
 
 export default function CancelMembershipScreen() {
-  const t = useT();
-  const colors = useThemeColors();
   const router = useRouter();
   const membershipSettings = useMembershipSettings();
   const [membership, setMembership] = useState<MembershipType | null>(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>('');
-  const [reason, setReason] = useState('');
+  const [reason] = useState('');
 
   useEffect(() => {
     loadMembership();
@@ -207,7 +204,7 @@ export default function CancelMembershipScreen() {
             variant="solid"
             onPress={handleCancel}
             disabled={cancelling}
-            className="bg-red-500 mb-3"
+            className="mb-3 bg-red-500"
           />
           <Button
             title="Keep My Membership"

@@ -1,8 +1,10 @@
 import { View } from 'react-native';
-import ThemedText from './ThemedText';
-import { useThemeColors } from '@/contexts/ThemeColors';
-import Icon from './Icon';
 import Svg, { Circle } from 'react-native-svg';
+
+import Icon from './Icon';
+import ThemedText from './ThemedText';
+
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 interface SmallCircleCardProps {
   title: string;

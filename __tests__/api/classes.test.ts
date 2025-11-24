@@ -1,4 +1,3 @@
-import { api } from '../../api/client';
 import {
   getUpcomingClasses,
   getClassesPaginated,
@@ -6,6 +5,7 @@ import {
   denyAttendance,
   getClassById,
 } from '../../api/classes';
+import { api } from '../../api/client';
 import { ENDPOINTS } from '../../api/config';
 
 // Mock API client

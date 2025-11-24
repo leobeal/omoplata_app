@@ -37,6 +37,7 @@ Omoplata is a multi-tenant fitness club management mobile application built with
 |------|----------------|
 | **Start dev server** | `npx expo start` |
 | **Run tests** | `npm test` |
+| **Fix lint issues** | `npm run lint:fix` |
 | **Switch tenant** | `TENANT=evolve npx expo start` |
 | **Clear cache** | `npx expo start -c` |
 | **Find component pattern** | Check `__old/components/` first |
@@ -496,8 +497,10 @@ Use Claude-generated branches: `claude/<task-description>-<session-id>`
 5. **Add translations** to ALL language files (`locales/en.ts`, `locales/pt-BR.ts`, `locales/de.ts`)
 6. **Update config** if changing navigation or features
 7. **Write tests** in `__tests__/`
-8. **Test functionality** - Try with different tenants
-9. **Commit and push** to feature branch
+8. **Run lint:fix** - `npm run lint:fix` to fix any linting issues
+9. **Run tests** - `npm test` to verify nothing broke
+10. **Test functionality** - Try with different tenants
+11. **Commit and push** to feature branch
 
 ### Example Workflow:
 
@@ -509,10 +512,13 @@ ls __old/components/ | grep -i "modal"
 # 3. Add translations
 # Edit locales/en.ts, locales/pt-BR.ts, locales/de.ts
 
-# 4. Test
+# 4. Fix any linting issues
+npm run lint:fix
+
+# 5. Run tests to verify changes
 npm test
 
-# 5. Commit
+# 6. Commit
 git add .
 git commit -m "Add new modal feature"
 git push -u origin <branch-name>
@@ -544,6 +550,10 @@ git push -u origin <branch-name>
 6. **Mock API delays** - Simulate real network conditions (300-500ms)
 7. **Follow naming conventions** - Use clear, descriptive names
 8. **Document complex logic** - Add comments for non-obvious code
+9. **Run lint:fix before committing** - Always run `npm run lint:fix` to auto-fix linting issues
+10. **Run tests to verify changes** - Always run `npm test` to ensure nothing broke
+
+> **Note:** The `lint:fix` and `lint` commands automatically exclude the `__old/` reference folder and `__tests__/` directory, focusing only on the active codebase.
 
 ## Resources
 

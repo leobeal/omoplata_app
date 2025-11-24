@@ -1,6 +1,10 @@
-import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react-native';
+import React from 'react';
+import { Alert } from 'react-native';
+
 import MembershipScreen from '../../app/(tabs)/membership';
+
+// Mock Alert - we'll spy on it in the test
 
 // Mock the contexts
 jest.mock('@/contexts/ThemeColors', () => ({
@@ -142,9 +146,6 @@ jest.mock('@/api/membership', () => ({
   ),
   downloadContract: jest.fn(() => Promise.resolve('/contracts/CNT-2024-001.pdf')),
 }));
-
-// Mock Alert - we'll spy on it in the test
-import { Alert } from 'react-native';
 const mockAlert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
 describe('MembershipScreen', () => {

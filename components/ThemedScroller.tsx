@@ -1,7 +1,8 @@
+import { usePathname } from 'expo-router';
 import React, { useRef, useEffect } from 'react';
 import { ScrollView, ScrollViewProps, View } from 'react-native';
+
 import { useScrollToTop } from '@/contexts/ScrollToTopContext';
-import { usePathname } from 'expo-router';
 
 interface ThemedScrollerProps extends ScrollViewProps {
   className?: string;
@@ -34,8 +35,8 @@ export default function ThemedScroller({
     <ScrollView
       ref={scrollViewRef}
       className={`bg-background px-6 ${className}`}
-      bounces={true}
-      alwaysBounceVertical={true}
+      bounces
+      alwaysBounceVertical
       contentContainerStyle={[{ flexGrow: 1 }, contentContainerStyle]}
       showsVerticalScrollIndicator={false}
       {...props}>

@@ -71,7 +71,8 @@ function parseHTTPLink(url: string): QRValidationResult {
     // Extract optional parameters from query parameters
     const code = urlObj.searchParams.get('code');
     const locationId = urlObj.searchParams.get('location') || urlObj.searchParams.get('locationId');
-    const facilityId = urlObj.searchParams.get('facility_id') || urlObj.searchParams.get('facilityId');
+    const facilityId =
+      urlObj.searchParams.get('facility_id') || urlObj.searchParams.get('facilityId');
 
     return {
       valid: true,

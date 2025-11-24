@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Pressable, ActivityIndicator } from 'react-native';
-import ThemedText from './ThemedText';
+
 import Icon from './Icon';
-import Avatar from './Avatar';
+import ThemedText from './ThemedText';
+
 import { Class } from '@/api/classes';
-import { useThemeColors } from '@/contexts/ThemeColors';
 
 interface ClassCardProps {
   classData: Class;
@@ -13,7 +13,6 @@ interface ClassCardProps {
 }
 
 export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardProps) {
-  const colors = useThemeColors();
   const [loading, setLoading] = useState(false);
   const [localStatus, setLocalStatus] = useState(classData.status);
 
@@ -23,21 +22,23 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
     const [hours, minutes] = time.split(':');
     if (!hours || !minutes) return time; // Return original if format is unexpected
 
-    const hour = parseInt(hours);
+    const hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? 'PM' : 'AM';
     const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    // Parse the date string as local date (not UTC)
+    const [year, month, day] = dateString.split('-').map(Number);
+    const classDate = new Date(year, month - 1, day); // month is 0-indexed
+
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    today.setHours(0, 0, 0, 0);
-    tomorrow.setHours(0, 0, 0, 0);
-    const classDate = new Date(date);
     classDate.setHours(0, 0, 0, 0);
 
     if (classDate.getTime() === today.getTime()) {
@@ -45,7 +46,7 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
     } else if (classDate.getTime() === tomorrow.getTime()) {
       return 'Tomorrow';
     } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return classDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
   };
 

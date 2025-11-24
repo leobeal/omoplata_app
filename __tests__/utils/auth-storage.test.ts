@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {
   saveAuthToken,
   loadAuthToken,
@@ -54,7 +55,10 @@ describe('Auth Storage - Tenant-Based', () => {
 
     it('should save auth token with tenant slug', async () => {
       await saveAuthToken('token456', 'evolve');
-      expect(mockAsyncStorage.setItem).toHaveBeenCalledWith('@omoplata/auth_token:evolve', 'token456');
+      expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(
+        '@omoplata/auth_token:evolve',
+        'token456'
+      );
     });
 
     it('should load auth token without tenant', async () => {

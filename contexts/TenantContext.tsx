@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import Constants from 'expo-constants';
-import { saveTenant, loadTenant, clearTenant, TenantInfo } from '@/utils/tenant-storage';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+
 import { setTenant as setApiTenant } from '@/api/config';
+import { saveTenant, loadTenant, clearTenant, TenantInfo } from '@/utils/tenant-storage';
 
 interface TenantContextType {
   tenant: TenantInfo | null;
@@ -100,8 +101,7 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
         isTenantRequired,
         setTenant,
         clearTenant: clearTenantHandler,
-      }}
-    >
+      }}>
       {children}
     </TenantContext.Provider>
   );

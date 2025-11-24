@@ -1,9 +1,10 @@
-import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
+import Constants from 'expo-constants';
+import React from 'react';
+
+import * as apiConfig from '../../api/config';
 import { TenantProvider, useTenant } from '../../contexts/TenantContext';
 import * as tenantStorage from '../../utils/tenant-storage';
-import * as apiConfig from '../../api/config';
-import Constants from 'expo-constants';
 
 // Mock dependencies
 jest.mock('../../utils/tenant-storage');

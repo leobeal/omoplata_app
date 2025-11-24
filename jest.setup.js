@@ -63,12 +63,15 @@ jest.mock('nativewind', () => ({
 // Mock lucide-react-native icons
 jest.mock('lucide-react-native', () => {
   const { View } = require('react-native');
-  return new Proxy({}, {
-    get: (target, prop) => {
-      if (prop === '__esModule') return true;
-      return (props) => <View testID={`icon-${prop}`} {...props} />;
-    },
-  });
+  return new Proxy(
+    {},
+    {
+      get: (target, prop) => {
+        if (prop === '__esModule') return true;
+        return (props) => <View testID={`icon-${prop}`} {...props} />;
+      },
+    }
+  );
 });
 
 // Mock expo-status-bar

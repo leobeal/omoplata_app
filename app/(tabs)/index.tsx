@@ -1,20 +1,21 @@
+import { router } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
-import ThemedText from '@/components/ThemedText';
-import ThemedScroller from '@/components/ThemedScroller';
-import { useThemeColors } from '@/contexts/ThemeColors';
-import Icon from '@/components/Icon';
+
+import { getUpcomingClasses, confirmAttendance, denyAttendance, Class } from '@/api/classes';
+import Avatar from '@/components/Avatar';
+import ClassCard from '@/components/ClassCard';
 import Header, { HeaderIcon } from '@/components/Header';
+import Icon from '@/components/Icon';
 import Section from '@/components/Section';
 import { SmallChartCard } from '@/components/SmallChartCard';
 import { SmallCircleCard } from '@/components/SmallCircleCard';
 import { SmallProgressBarCard } from '@/components/SmallProgressBarCard';
-import Avatar from '@/components/Avatar';
-import { useT } from '@/contexts/LocalizationContext';
-import ClassCard from '@/components/ClassCard';
-import { getUpcomingClasses, confirmAttendance, denyAttendance, Class } from '@/api/classes';
-import { router } from 'expo-router';
+import ThemedScroller from '@/components/ThemedScroller';
+import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
+import { useT } from '@/contexts/LocalizationContext';
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function HomeScreen() {
   const t = useT();
@@ -46,9 +47,10 @@ export default function HomeScreen() {
       setClasses(data);
     } catch (error) {
       console.error('Error loading classes:', error);
-      const errorMessage = error instanceof Error
-        ? error.message
-        : 'Failed to load classes. Please check your connection and try again.';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load classes. Please check your connection and try again.';
       setClassesError(errorMessage);
     } finally {
       setLoadingClasses(false);
@@ -106,8 +108,7 @@ export default function HomeScreen() {
             colors={['#FFFFFF', colors.highlight]}
             progressBackgroundColor={colors.bg}
           />
-        }
-      >
+        }>
         <View className="bg-secondary px-6">
           <Section
             title={t('home.welcomeBack')}
@@ -174,14 +175,16 @@ export default function HomeScreen() {
               </Pressable>
             </View>
           ) : classes.length > 0 ? (
-            classes.slice(0, 3).map((classItem) => (
-              <ClassCard
-                key={classItem.id}
-                classData={classItem}
-                onConfirm={handleConfirm}
-                onDeny={handleDeny}
-              />
-            ))
+            classes
+              .slice(0, 3)
+              .map((classItem) => (
+                <ClassCard
+                  key={classItem.id}
+                  classData={classItem}
+                  onConfirm={handleConfirm}
+                  onDeny={handleDeny}
+                />
+              ))
           ) : (
             <View className="items-center justify-center rounded-2xl bg-secondary py-12">
               <Icon name="Calendar" size={48} className="mb-4 opacity-30" />
@@ -248,7 +251,6 @@ const ActivityStats = () => {
 };
 
 const MembershipOverview = () => {
-  const colors = useThemeColors();
   const t = useT();
 
   return (

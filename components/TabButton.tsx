@@ -1,10 +1,11 @@
-import { useThemeColors } from '@/contexts/ThemeColors';
+import { usePathname } from 'expo-router';
 import { TabTriggerSlotProps } from 'expo-router/ui';
 import { forwardRef, useEffect, useState } from 'react';
 import { Text, Pressable, View, Animated } from 'react-native';
+
 import Icon, { IconName } from '@/components/Icon';
 import { useScrollToTop } from '@/contexts/ScrollToTopContext';
-import { usePathname } from 'expo-router';
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 export type TabButtonProps = TabTriggerSlotProps & {
   icon?: IconName;
@@ -75,10 +76,10 @@ export const TabButton = forwardRef<View, TabButtonProps>(
                 opacity: labelOpacity,
                 transform: [{ translateY: labelMarginBottom }],
               }}>
-              <Text className={`mt-px text-[9px] text-highlight`}>{children}</Text>
+              <Text className="mt-px text-[9px] text-highlight">{children}</Text>
             </Animated.View>
           ) : (
-            <Text className={`mt-px text-[9px]`} style={{ color: colors.text }}>
+            <Text className="mt-px text-[9px]" style={{ color: colors.text }}>
               {children}
             </Text>
           )}

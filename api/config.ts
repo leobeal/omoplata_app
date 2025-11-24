@@ -4,7 +4,10 @@
 import Constants from 'expo-constants';
 
 // Get current environment
-const ENV = (Constants.expoConfig?.extra?.env || 'development') as 'development' | 'staging' | 'production';
+const ENV = (Constants.expoConfig?.extra?.env || 'development') as
+  | 'development'
+  | 'staging'
+  | 'production';
 
 // Base URLs per environment with tenant slug
 const getApiUrl = (env: typeof ENV, tenant: string): string => {

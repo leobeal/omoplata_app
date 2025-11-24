@@ -1,14 +1,15 @@
+import Constants from 'expo-constants';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, ScrollView, TextInput, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
-import ThemedText from '@/components/ThemedText';
-import { Button } from '@/components/Button';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useThemeColors } from '@/contexts/ThemeColors';
+
 import AnimatedView from '@/components/AnimatedView';
+import { Button } from '@/components/Button';
 import Icon from '@/components/Icon';
+import ThemedText from '@/components/ThemedText';
 import { useTenant } from '@/contexts/TenantContext';
-import Constants from 'expo-constants';
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function TenantSelectionScreen() {
   const insets = useSafeAreaInsets();
@@ -85,15 +86,13 @@ export default function TenantSelectionScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        bounces={true}
-        alwaysBounceVertical={true}
-        className="flex-1"
-      >
+        bounces
+        alwaysBounceVertical
+        className="flex-1">
         {/* Header */}
         <View
           className="w-full flex-row items-center justify-between px-global"
-          style={{ paddingTop: insets.top + 16 }}
-        >
+          style={{ paddingTop: insets.top + 16 }}>
           <View style={{ width: 24 }} />
           <ThemedText className="text-lg font-semibold">Omoplata</ThemedText>
           <View style={{ width: 24 }} />
@@ -103,38 +102,32 @@ export default function TenantSelectionScreen() {
         <View style={{ flex: 0.2 }} />
 
         {/* Content */}
-        <AnimatedView className="px-global flex-1">
+        <AnimatedView className="flex-1 px-global">
           {/* Logo/Icon Area */}
-          <View className="items-center mb-8">
+          <View className="mb-8 items-center">
             <View
-              className="w-20 h-20 rounded-full items-center justify-center"
-              style={{ backgroundColor: colors.primary + '20' }}
-            >
+              className="h-20 w-20 items-center justify-center rounded-full"
+              style={{ backgroundColor: colors.primary + '20' }}>
               <Icon name="Building2" size={40} color={colors.primary} />
             </View>
           </View>
 
           {/* Title */}
-          <ThemedText className="text-3xl font-bold mb-2">
-            Welcome to Omoplata
-          </ThemedText>
-          <ThemedText className="text-base text-text-muted mb-8">
+          <ThemedText className="mb-2 text-3xl font-bold">Welcome to Omoplata</ThemedText>
+          <ThemedText className="text-text-muted mb-8 text-base">
             Enter your gym identifier to get started
           </ThemedText>
 
           {/* Input */}
           <View className="mb-4">
-            <ThemedText className="text-sm font-medium mb-2">
-              Gym Identifier
-            </ThemedText>
+            <ThemedText className="mb-2 text-sm font-medium">Gym Identifier</ThemedText>
             <View
               className="flex-row items-center rounded-xl px-4 py-3"
               style={{
                 backgroundColor: colors.card,
                 borderWidth: 1,
                 borderColor: error ? colors.error : colors.border,
-              }}
-            >
+              }}>
               <TextInput
                 value={tenantSlug}
                 onChangeText={(text) => {
@@ -153,18 +146,11 @@ export default function TenantSelectionScreen() {
                 }}
               />
             </View>
-            {error ? (
-              <ThemedText className="text-sm text-error mt-1">
-                {error}
-              </ThemedText>
-            ) : null}
+            {error ? <ThemedText className="text-error mt-1 text-sm">{error}</ThemedText> : null}
           </View>
 
           {/* Info Box */}
-          <View
-            className="rounded-xl p-4 mb-6"
-            style={{ backgroundColor: colors.primary + '10' }}
-          >
+          <View className="mb-6 rounded-xl p-4" style={{ backgroundColor: colors.primary + '10' }}>
             <View className="flex-row items-start">
               <Icon
                 name="Info"
@@ -173,8 +159,9 @@ export default function TenantSelectionScreen() {
                 style={{ marginTop: 2, marginRight: 8 }}
               />
               <View className="flex-1">
-                <ThemedText className="text-sm text-text-muted">
-                  Not sure what your gym identifier is? Contact your gym or check the welcome email you received.
+                <ThemedText className="text-text-muted text-sm">
+                  Not sure what your gym identifier is? Contact your gym or check the welcome email
+                  you received.
                 </ThemedText>
               </View>
             </View>
@@ -184,14 +171,11 @@ export default function TenantSelectionScreen() {
           <Button
             onPress={handleContinue}
             disabled={isLoading || !tenantSlug.trim()}
-            className="mb-4"
-          >
+            className="mb-4">
             {isLoading ? (
               <ActivityIndicator color={colors.background} />
             ) : (
-              <ThemedText className="text-white font-semibold text-base">
-                Continue
-              </ThemedText>
+              <ThemedText className="text-base font-semibold text-white">Continue</ThemedText>
             )}
           </Button>
 

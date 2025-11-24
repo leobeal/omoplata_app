@@ -1,10 +1,12 @@
+import { router } from 'expo-router';
 import React from 'react';
 import { View, TouchableOpacity, ViewStyle } from 'react-native';
-import { useThemeColors } from '@/contexts/ThemeColors';
-import Icon, { IconName } from './Icon';
-import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import Icon, { IconName } from './Icon';
 import ThemedText from './ThemedText';
+
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 type HeaderProps = {
   title?: string;

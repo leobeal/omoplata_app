@@ -1,12 +1,13 @@
+import { router } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, ActivityIndicator, Alert, ScrollView } from 'react-native';
-import Header from '@/components/Header';
-import ThemedText from '@/components/ThemedText';
-import { Button } from '@/components/Button';
-import Section from '@/components/Section';
+
 import { getProfile, updateProfile, Profile } from '@/api/profile';
+import { Button } from '@/components/Button';
+import Header from '@/components/Header';
+import Section from '@/components/Section';
+import ThemedText from '@/components/ThemedText';
 import { useThemeColors } from '@/contexts/ThemeColors';
-import { router } from 'expo-router';
 
 export default function EditProfileScreen() {
   const colors = useThemeColors();
@@ -108,7 +109,11 @@ export default function EditProfileScreen() {
   return (
     <View className="flex-1 bg-background">
       <Header showBackButton title="Edit Profile" />
-      <ScrollView className="flex-1 px-6 pt-4" bounces={true} alwaysBounceVertical={true} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1 px-6 pt-4"
+        bounces
+        alwaysBounceVertical
+        showsVerticalScrollIndicator={false}>
         {/* Personal Information */}
         <Section title="Personal Information" className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">
@@ -232,7 +237,8 @@ export default function EditProfileScreen() {
         </View>
 
         {/* Emergency Contact - Display only (read from responsibles) */}
-        {(profile?.primaryResponsible || (profile?.responsibles && profile.responsibles.length > 0)) && (
+        {(profile?.primaryResponsible ||
+          (profile?.responsibles && profile.responsibles.length > 0)) && (
           <>
             <Section title="Emergency Contact" className="mb-4" />
             <View className="mb-6 rounded-2xl bg-secondary p-5">

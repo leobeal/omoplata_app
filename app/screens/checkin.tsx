@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, Animated } from 'react-native';
 import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { router } from 'expo-router';
-import { useThemeColors } from '@/contexts/ThemeColors';
-import { useT } from '@/contexts/LocalizationContext';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, Animated } from 'react-native';
+
+import { checkinApi } from '@/api';
 import Icon from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
-import { checkinApi } from '@/api';
+import { useT } from '@/contexts/LocalizationContext';
+import { useThemeColors } from '@/contexts/ThemeColors';
 import { parseQRCode, validateQRData, formatCheckinRequest } from '@/utils/qr-validator';
 
 type ScanState = 'idle' | 'scanning' | 'success' | 'error';
@@ -201,9 +202,7 @@ export default function CheckInScreen() {
             <View style={[styles.corner, styles.topLeft, { borderColor: colors.highlight }]} />
             <View style={[styles.corner, styles.topRight, { borderColor: colors.highlight }]} />
             <View style={[styles.corner, styles.bottomLeft, { borderColor: colors.highlight }]} />
-            <View
-              style={[styles.corner, styles.bottomRight, { borderColor: colors.highlight }]}
-            />
+            <View style={[styles.corner, styles.bottomRight, { borderColor: colors.highlight }]} />
 
             {/* Instructions */}
             {scanState === 'idle' && (
@@ -236,9 +235,7 @@ export default function CheckInScreen() {
 
         {/* Bottom instructions */}
         <View style={styles.bottomInstructions}>
-          <ThemedText className="text-center opacity-70">
-            {t('checkin.alignQRCode')}
-          </ThemedText>
+          <ThemedText className="text-center opacity-70">{t('checkin.alignQRCode')}</ThemedText>
         </View>
       </View>
 

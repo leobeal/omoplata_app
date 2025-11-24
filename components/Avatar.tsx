@@ -1,6 +1,7 @@
+import { router } from 'expo-router';
 import React from 'react';
 import { Image, Pressable, View, ViewStyle, ImageSourcePropType } from 'react-native';
-import { router } from 'expo-router';
+
 import ThemedText from './ThemedText';
 
 type AvatarProps = {

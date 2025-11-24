@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, Pressable, Linking } from 'react-native';
+
+import { getFAQs, FAQCategory } from '@/api/faqs';
 import Header from '@/components/Header';
-import ThemedScroller from '@/components/ThemedScroller';
-import ThemedText from '@/components/ThemedText';
 import Icon from '@/components/Icon';
 import Section from '@/components/Section';
-import { getFAQs, FAQCategory, FAQ } from '@/api/faqs';
-import { useThemeColors } from '@/contexts/ThemeColors';
+import ThemedScroller from '@/components/ThemedScroller';
+import ThemedText from '@/components/ThemedText';
 import { useT } from '@/contexts/LocalizationContext';
 
 export default function HelpScreen() {
   const t = useT();
-  const colors = useThemeColors();
   const [categories, setCategories] = useState<FAQCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());

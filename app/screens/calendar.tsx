@@ -1,12 +1,13 @@
+import { router } from 'expo-router';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { View, Pressable, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+
+import { getUpcomingClasses, Class } from '@/api/classes';
+import CalendarClassCard from '@/components/CalendarClassCard';
+import Icon from '@/components/Icon';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
-import Icon from '@/components/Icon';
-import CalendarClassCard from '@/components/CalendarClassCard';
-import { getUpcomingClasses, Class } from '@/api/classes';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
@@ -50,7 +51,8 @@ export default function CalendarScreen() {
       const selectedIndex = days.findIndex((day) => day.dateString === selectedDate);
       if (selectedIndex !== -1) {
         // Calculate item center: padding + margin + (index * totalWidth) + (itemWidth / 2)
-        const itemCenter = SCROLL_PADDING + DAY_MARGIN + selectedIndex * DAY_TOTAL_WIDTH + DAY_ITEM_WIDTH / 2;
+        const itemCenter =
+          SCROLL_PADDING + DAY_MARGIN + selectedIndex * DAY_TOTAL_WIDTH + DAY_ITEM_WIDTH / 2;
         // Center on screen
         const scrollToX = Math.max(0, itemCenter - SCREEN_WIDTH / 2);
         setTimeout(() => {
@@ -68,9 +70,10 @@ export default function CalendarScreen() {
       setAllClasses(data);
     } catch (error) {
       console.error('Error loading classes:', error);
-      const errorMessage = error instanceof Error
-        ? error.message
-        : 'Failed to load classes. Please check your connection and try again.';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load classes. Please check your connection and try again.';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -137,7 +140,9 @@ export default function CalendarScreen() {
     const centerX = scrollX + SCREEN_WIDTH / 2;
     // Calculate which item is at the center of the screen
     // First item center is at: SCROLL_PADDING + DAY_MARGIN + DAY_ITEM_WIDTH / 2
-    const centerIndex = Math.round((centerX - SCROLL_PADDING - DAY_MARGIN - DAY_ITEM_WIDTH / 2) / DAY_TOTAL_WIDTH);
+    const centerIndex = Math.round(
+      (centerX - SCROLL_PADDING - DAY_MARGIN - DAY_ITEM_WIDTH / 2) / DAY_TOTAL_WIDTH
+    );
 
     if (days[centerIndex]) {
       const centerDate = days[centerIndex].date;
@@ -154,22 +159,6 @@ export default function CalendarScreen() {
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     return selectedDate === todayString;
   }, [selectedDate]);
-
-  // Navigate to previous month
-  const goToPreviousMonth = () => {
-    const currentDate = new Date(selectedDate);
-    const previousMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-    const dateString = `${previousMonth.getFullYear()}-${String(previousMonth.getMonth() + 1).padStart(2, '0')}-${String(previousMonth.getDate()).padStart(2, '0')}`;
-    setSelectedDate(dateString);
-  };
-
-  // Navigate to next month
-  const goToNextMonth = () => {
-    const currentDate = new Date(selectedDate);
-    const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
-    const dateString = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}-${String(nextMonth.getDate()).padStart(2, '0')}`;
-    setSelectedDate(dateString);
-  };
 
   // Go to today
   const goToToday = () => {
@@ -281,7 +270,7 @@ export default function CalendarScreen() {
               <ThemedText className="mb-2 text-center text-lg font-bold">
                 {t('calendar.errorTitle') || 'Unable to load classes'}
               </ThemedText>
-              <ThemedText className="mb-6 text-center text-sm opacity-70 max-w-sm">
+              <ThemedText className="mb-6 max-w-sm text-center text-sm opacity-70">
                 {error}
               </ThemedText>
               <Pressable
@@ -308,7 +297,8 @@ export default function CalendarScreen() {
                   })}
                 </ThemedText>
                 <ThemedText className="mt-1 text-sm opacity-60">
-                  {selectedDateClasses.length} {selectedDateClasses.length === 1 ? 'class' : 'classes'} scheduled
+                  {selectedDateClasses.length}{' '}
+                  {selectedDateClasses.length === 1 ? 'class' : 'classes'} scheduled
                 </ThemedText>
               </View>
 

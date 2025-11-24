@@ -1,6 +1,7 @@
-import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { router } from 'expo-router';
+import React from 'react';
+
 import LoginScreen from '../../app/screens/login';
 
 // Mock the contexts
@@ -136,7 +137,9 @@ describe('LoginScreen', () => {
     });
 
     it('clears email error when valid email is entered', async () => {
-      const { getAllByText, getByPlaceholderText, findByText, queryByText } = render(<LoginScreen />);
+      const { getAllByText, getByPlaceholderText, findByText, queryByText } = render(
+        <LoginScreen />
+      );
 
       const emailInput = getByPlaceholderText('Email');
       const loginButton = getAllByText('Login')[1]; // Get the button

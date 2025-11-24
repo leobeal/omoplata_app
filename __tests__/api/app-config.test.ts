@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {
   getAppConfig,
   getMembershipSettings,
@@ -9,7 +11,6 @@ import {
   refreshAppConfig,
   defaultConfig,
 } from '../../api/app-config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage');
@@ -186,10 +187,7 @@ describe('App Config API', () => {
     it('should cache config after fetching', async () => {
       await getAppConfig();
 
-      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        'app_config',
-        expect.any(String)
-      );
+      expect(AsyncStorage.setItem).toHaveBeenCalledWith('app_config', expect.any(String));
     });
 
     it('should clear cache', async () => {

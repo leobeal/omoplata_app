@@ -1,6 +1,8 @@
 import { Pressable } from 'react-native';
-import { useTheme } from '@/contexts/ThemeContext';
+
 import Icon from './Icon';
+
+import { useTheme } from '@/contexts/ThemeContext';
 
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
