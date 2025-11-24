@@ -17,7 +17,8 @@
       "Bash(npm install:*)",
       "Bash(npm uninstall:*)",
       "Bash(npm outdated:*)",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []

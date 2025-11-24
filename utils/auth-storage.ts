@@ -11,7 +11,7 @@ export interface StoredUser {
   firstName: string;
   lastName: string;
   phone?: string;
-  avatar?: string;
+  profilePicture?: string;
   membershipId?: string;
 }
 

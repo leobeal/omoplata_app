@@ -1,10 +1,10 @@
 module.exports = {
   // App identity
   name: 'Sparta',
-  slug: 'sparta',
-  bundleIdentifier: 'com.anonymous.sparta',
+  slug: 'sparta-aachen',
+  bundleIdentifier: 'de.omoplata.sparta-aachen',
   owner: 'omoplata',
-  easProjectId: '3206a6b8-0efa-401c-8894-39502f4bf59c', // Add your EAS project ID
+  easProjectId: '5e13eeaf-5e9e-49a2-9210-c2dcceff6365', // Add your EAS project ID
 
   // Branding - icons
   icon: './assets/sparta/icon.png',
@@ -28,4 +28,8 @@ module.exports = {
 
   // Localization
   language: 'de', // de, en, pt-BR
+
+  // Login screen
+  loginBackground:
+    'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?q=80&w=2000&auto=format&fit=crop',
 };

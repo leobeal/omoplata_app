@@ -110,7 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         firstName: userData.firstName,
         lastName: userData.lastName,
         phone: userData.phone,
-        avatar: userData.avatar,
+        profilePicture: userData.profilePicture,
         membershipId: userData.membershipId,
       };
 

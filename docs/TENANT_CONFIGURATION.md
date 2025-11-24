@@ -50,7 +50,7 @@ TENANT=evolve npm start
 TENANT=evolve eas build --platform ios
 ```
 
-The `app.config.js` automatically loads the corresponding config file from `configs/{tenant}.js` (e.g., `configs/evolve.js`).
+The `app.config.js` automatically loads the corresponding config file from `configs/{tenant}.js` (e.g., `configs/evolve-grappling.js`).
 
 ### Behavior
 

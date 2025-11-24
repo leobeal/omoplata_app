@@ -10,8 +10,18 @@ import {
   useFeatureFlags,
 } from '../../contexts/AppConfigContext';
 
+// Mock the TenantContext
+jest.mock('@/contexts/TenantContext', () => ({
+  useTenant: () => ({
+    tenant: { slug: 'test-tenant', name: 'Test Tenant', domain: 'test.example.com' },
+    isLoading: false,
+    isTenantRequired: false,
+  }),
+}));
+
 // Mock the app-config API
 jest.mock('../../api/app-config', () => ({
+  clearConfigCache: jest.fn(() => Promise.resolve()),
   getAppConfig: jest.fn(() =>
     Promise.resolve({
       membership: {

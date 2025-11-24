@@ -2,9 +2,9 @@ module.exports = {
   // App identity - Generic Omoplata app
   name: 'Omoplata',
   slug: 'omoplata',
-  bundleIdentifier: 'com.omoplata.app',
+  bundleIdentifier: 'de.omoplata.app',
   owner: 'omoplata',
-  easProjectId: 'ce7caf25-ffcd-4916-a58b-c8b29682d3cd', // You may want a different project ID for generic build
+  easProjectId: '3bff59d5-a63b-4bdd-b2ed-ea12e293de46', // You may want a different project ID for generic build
 
   // Branding - Generic icons
   icon: './assets/_global/icon.png',
@@ -14,8 +14,8 @@ module.exports = {
   },
   splash: {
     image: './assets/_global/splash.png',
-    resizeMode: 'contain',
-    backgroundColor: '#ffffff',
+    resizeMode: 'cover',
+    backgroundColor: '#000000',
   },
 
   // Theme colors - Neutral/generic
@@ -26,8 +26,8 @@ module.exports = {
     text: '#333333',
   },
 
-  // Localization - Default English
-  language: 'en', // de, en, pt-BR
+  // Localization
+  language: 'de', // de, en, pt-BR
 
   // Tenant is undefined for generic build - users select at runtime
   tenant: undefined,

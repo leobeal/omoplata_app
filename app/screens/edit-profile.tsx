@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, ActivityIndicator, Alert, ScrollView } from 'react-native';
 
 import { getProfile, updateProfile, Profile } from '@/api/profile';
+import Avatar from '@/components/Avatar';
 import { Button } from '@/components/Button';
 import Header from '@/components/Header';
 import Section from '@/components/Section';
@@ -114,6 +115,19 @@ export default function EditProfileScreen() {
         bounces
         alwaysBounceVertical
         showsVerticalScrollIndicator={false}>
+        {/* Profile Avatar */}
+        <View className="mb-6 items-center">
+          <Avatar
+            name={`${firstName} ${lastName}`}
+            size="xxl"
+            src={profile?.profilePicture}
+            border
+          />
+          <ThemedText className="mt-3 text-xs opacity-50">
+            Contact your gym to update your profile picture
+          </ThemedText>
+        </View>
+
         {/* Personal Information */}
         <Section title="Personal Information" className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">

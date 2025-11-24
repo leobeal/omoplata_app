@@ -13,13 +13,13 @@ const ENV = (Constants.expoConfig?.extra?.env || 'development') as
 const getApiUrl = (env: typeof ENV, tenant: string): string => {
   switch (env) {
     case 'development':
-      return `http://${tenant}.sportsmanager.test/api`;
+      return `https://${tenant}.sportsmanager.test/api`;
     case 'staging':
       return `https://${tenant}.omoplata.eu/api`;
     case 'production':
       return `https://${tenant}.omoplata.de/api`;
     default:
-      return `http://${tenant}.sportsmanager.test/api`;
+      return `https://${tenant}.sportsmanager.test/api`;
   }
 };
 

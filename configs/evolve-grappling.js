@@ -1,10 +1,10 @@
 module.exports = {
   // App identity
   name: 'Evolve',
-  slug: 'evolve',
-  bundleIdentifier: 'com.anonymous.evolve',
+  slug: 'evolve-grappling',
+  bundleIdentifier: 'de.omoplata.evolve-grappling',
   owner: 'omoplata',
-  easProjectId: 'ce7caf25-ffcd-4916-a58b-c8b29682d3cd',
+  easProjectId: '526cedec-aab6-4391-b8bc-c442ca6fb49f',
 
   // Branding - icons
   icon: './assets/evolve/icon.png',
@@ -28,4 +28,8 @@ module.exports = {
 
   // Localization
   language: 'de', // de, en, pt-BR
+
+  // Login screen
+  loginBackground:
+    'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2000&auto=format&fit=crop',
 };

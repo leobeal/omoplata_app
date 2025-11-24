@@ -78,8 +78,8 @@ omoplata_app/
 │   └── ...
 ├── configs/              # Tenant configurations
 │   ├── navigation.ts     # Default navigation config
-│   ├── evolve.js         # Evolve gym config
-│   └── sparta.js         # Sparta gym config
+│   ├── evolve-grappling.js         # Evolve gym config
+│   └── sparta-aachen.js         # Sparta gym config
 ├── contexts/             # React contexts
 │   ├── AppConfigContext.tsx      # App configuration
 │   ├── LocalizationContext.tsx   # i18n

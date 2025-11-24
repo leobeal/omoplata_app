@@ -56,7 +56,7 @@ export interface User {
   firstName: string;
   lastName: string;
   phone?: string;
-  avatar?: string;
+  profilePicture?: string;
   membershipId?: string;
   createdAt: string;
 }

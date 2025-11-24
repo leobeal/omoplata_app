@@ -181,8 +181,8 @@ omoplata_app/
 │   └── tenant-storage.ts   # Persistent tenant storage
 ├── backend_apis/       # Backend API documentation
 ├── configs/            # Multi-tenant configurations
-│   ├── evolve.js      # Evolve brand
-│   └── sparta.js      # Sparta brand
+│   ├── evolve-grappling.js      # Evolve brand
+│   └── sparta-aachen.js      # Sparta brand
 ├── __tests__/         # Test suite
 │   ├── screens/
 │   ├── navigation/

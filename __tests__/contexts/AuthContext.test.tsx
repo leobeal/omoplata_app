@@ -115,7 +115,7 @@ describe('AuthContext', () => {
             firstName: 'John',
             lastName: 'Smith',
             phone: '1234567890',
-            avatar: 'https://example.com/avatar.jpg',
+            profilePicture: 'https://example.com/avatar.jpg',
             membershipId: 'mem-123',
             createdAt: '2024-01-01T00:00:00Z',
           },
@@ -146,7 +146,7 @@ describe('AuthContext', () => {
           firstName: 'John',
           lastName: 'Smith',
           phone: '1234567890',
-          avatar: 'https://example.com/avatar.jpg',
+          profilePicture: 'https://example.com/avatar.jpg',
           membershipId: 'mem-123',
         },
         'evolve'

@@ -43,6 +43,7 @@ const Avatar: React.FC<AvatarProps> = ({
     if (!name) return null;
     const initials = name
       .split(' ')
+      .filter((part) => part.length > 0)
       .map((part) => part[0].toUpperCase())
       .join('');
     return <ThemedText className="text-center font-medium">{initials}</ThemedText>;

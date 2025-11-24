@@ -8,6 +8,7 @@ import AnimatedView from '@/components/AnimatedView';
 import { Button } from '@/components/Button';
 import Icon from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
+import { getTenantConfig } from '@/configs/tenant-registry';
 import { useTenant } from '@/contexts/TenantContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
@@ -62,10 +63,14 @@ export default function TenantSelectionScreen() {
     setError('');
 
     try {
+      // Look up tenant config from registry
+      const tenantConfig = getTenantConfig(slug);
+
       const tenantInfo = {
         slug,
-        name: slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' '),
+        name: tenantConfig?.name || slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' '),
         domain: getDomainForTenant(slug),
+        loginBackground: tenantConfig?.loginBackground,
       };
 
       await setTenant(tenantInfo);

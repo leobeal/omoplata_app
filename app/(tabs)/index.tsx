@@ -95,7 +95,9 @@ export default function HomeScreen() {
     <>
       <Header
         className="bg-secondary"
-        leftComponent={<Avatar name={userName} size="sm" link="/settings" src={user?.avatar} />}
+        leftComponent={
+          <Avatar name={userName} size="sm" link="/settings" src={user?.profilePicture} />
+        }
         rightComponents={[<HeaderIcon icon="Bell" hasBadge href="/screens/notifications" />]}
       />
       <ThemedScroller

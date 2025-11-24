@@ -38,6 +38,7 @@ const mockProfile = {
   phone: '(555) 123-4567',
   dateOfBirth: '1990-05-15',
   profilePicture: null,
+  avatar: null,
   requiresPayer: false,
   address: {
     street: '123 Fitness Street',
@@ -198,9 +199,11 @@ describe('EditProfileScreen', () => {
       const { getByDisplayValue, getByText } = render(<EditProfileScreen />);
 
       await waitFor(() => {
-        const firstNameInput = getByDisplayValue('John');
-        fireEvent.changeText(firstNameInput, '');
+        expect(getByDisplayValue('John')).toBeTruthy();
       });
+
+      const firstNameInput = getByDisplayValue('John');
+      fireEvent.changeText(firstNameInput, '');
 
       const saveButton = getByText('Save Changes');
       fireEvent.press(saveButton);
@@ -217,9 +220,11 @@ describe('EditProfileScreen', () => {
       const { getByDisplayValue, getByText } = render(<EditProfileScreen />);
 
       await waitFor(() => {
-        const lastNameInput = getByDisplayValue('Doe');
-        fireEvent.changeText(lastNameInput, '');
+        expect(getByDisplayValue('Doe')).toBeTruthy();
       });
+
+      const lastNameInput = getByDisplayValue('Doe');
+      fireEvent.changeText(lastNameInput, '');
 
       const saveButton = getByText('Save Changes');
       fireEvent.press(saveButton);
@@ -236,9 +241,11 @@ describe('EditProfileScreen', () => {
       const { getByDisplayValue, getByText } = render(<EditProfileScreen />);
 
       await waitFor(() => {
-        const firstNameInput = getByDisplayValue('John');
-        fireEvent.changeText(firstNameInput, '  Jane  ');
+        expect(getByDisplayValue('John')).toBeTruthy();
       });
+
+      const firstNameInput = getByDisplayValue('John');
+      fireEvent.changeText(firstNameInput, '  Jane  ');
 
       const saveButton = getByText('Save Changes');
       fireEvent.press(saveButton);

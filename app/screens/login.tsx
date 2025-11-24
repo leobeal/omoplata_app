@@ -1,7 +1,8 @@
+import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -12,17 +13,49 @@ import ThemedText from '@/components/ThemedText';
 import Input from '@/components/forms/Input';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTenant } from '@/contexts/TenantContext';
+import { getCachedImage } from '@/utils/image-cache';
+
+// Default background image
+const DEFAULT_BACKGROUND = require('@/assets/_global/img/onboarding-1.jpg');
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const { login } = useAuth();
-  const { isTenantRequired } = useTenant();
+  const { tenant, isTenantRequired } = useTenant();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [generalError, setGeneralError] = useState('');
+  const [backgroundUri, setBackgroundUri] = useState<string | null>(null);
+
+  // Load cached background image (preloaded by _layout.tsx during splash)
+  useEffect(() => {
+    loadCachedBackground();
+  }, [tenant?.loginBackground]);
+
+  const loadCachedBackground = async () => {
+    try {
+      // Get background URL from tenant context (runtime-selected) or build config
+      const buildConfig = Constants.expoConfig?.extra;
+      const backgroundUrl = tenant?.loginBackground || buildConfig?.loginBackground;
+
+      if (!backgroundUrl) {
+        // No remote background configured, use default
+        return;
+      }
+
+      // Check cache (should be preloaded by _layout.tsx)
+      const cachedUri = await getCachedImage(backgroundUrl);
+      if (cachedUri) {
+        setBackgroundUri(cachedUri);
+      }
+    } catch (error) {
+      console.error('Failed to load cached background:', error);
+      // Will use default background
+    }
+  };
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -80,8 +113,11 @@ export default function LoginScreen() {
     }
   };
 
+  // Determine which background to use (cached or default)
+  const backgroundSource = backgroundUri ? { uri: backgroundUri } : DEFAULT_BACKGROUND;
+
   return (
-    <ImageBackground source={require('@/assets/_global/img/onboarding-1.jpg')} style={{ flex: 1 }}>
+    <ImageBackground source={backgroundSource} style={{ flex: 1 }}>
       <LinearGradient colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.5)']} style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
