@@ -10,79 +10,71 @@ function toCamelCase(str: string): string {
 /**
  * Transform snake_case object to camelCase
  */
-function transformToCamelCase(obj: any): any {
+function transformToCamelCase<T>(obj: unknown): T {
   if (Array.isArray(obj)) {
-    return obj.map(transformToCamelCase);
+    return obj.map(transformToCamelCase) as T;
   }
   if (obj !== null && typeof obj === 'object') {
-    return Object.keys(obj).reduce((acc, key) => {
-      const camelKey = toCamelCase(key);
-      acc[camelKey] = transformToCamelCase(obj[key]);
-      return acc;
-    }, {} as any);
+    return Object.keys(obj).reduce(
+      (acc, key) => {
+        const camelKey = toCamelCase(key);
+        acc[camelKey] = transformToCamelCase((obj as Record<string, unknown>)[key]);
+        return acc;
+      },
+      {} as Record<string, unknown>
+    ) as T;
   }
-  return obj;
+  return obj as T;
 }
 
-export interface Address {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-}
-
-export interface ContractPrice {
+// Plan interface - details about the subscription plan
+export interface Plan {
+  id: string;
+  name: string;
+  priceId: string;
+  priceName: string;
   amount: number;
   currency: string;
-  billingCycle: string;
-  monthlyEquivalent: number;
+  chargeInterval: 'monthly' | 'yearly' | 'weekly';
+  contractDuration: number; // in months
 }
 
-export interface Contract {
+// Member interface - person included in the membership
+export interface Member {
   id: string;
-  type: string;
-  status: 'active' | 'expired' | 'suspended' | 'cancelled';
-  startDate: string;
-  endDate: string;
-  renewalDate: string;
-  autoRenewal: boolean;
-  price: ContractPrice;
-  cancellationPolicy: string;
-  freezePolicy: string;
-  transferPolicy: string;
-  nextCancellationDate: string; // Earliest date when cancellation can be requested
+  prefixedId: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  role: 'primary' | 'secondary' | 'dependent';
 }
 
-export interface PaymentMethod {
-  type: string;
-  iban: string;
-  accountHolder: string;
+// Payer interface - person responsible for payment
+export interface Payer {
+  id: string;
+  prefixedId: string;
+  fullName: string;
 }
 
-export interface EmergencyContact {
-  name: string;
-  relationship: string;
-  phone: string;
-}
-
-export interface MedicalInfo {
-  bloodType: string;
-  allergies: string;
-  conditions: string;
-  lastCheckup: string;
-}
-
+// Main Membership interface
 export interface Membership {
-  memberId: string;
-  memberName: string;
-  email: string;
-  phone: string;
-  address: Address;
-  contract: Contract;
-  paymentMethod: PaymentMethod;
-  emergencyContact: EmergencyContact;
-  medicalInfo: MedicalInfo;
+  id: string;
+  status: 'active' | 'expired' | 'suspended' | 'cancelled' | 'pending';
+  startsAt: string;
+  chargeStartsAt: string;
+  endsAt: string;
+  renewsAt: string;
+  renewsAutomatically: boolean;
+  amount: number;
+  currency: string;
+  plan: Plan;
+  members: Member[];
+  payer: Payer;
+}
+
+// API Response wrapper
+export interface MembershipResponse {
+  membership: Membership;
 }
 
 /**
@@ -91,27 +83,28 @@ export interface Membership {
 export const getMembership = async (): Promise<Membership> => {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 300));
-  return transformToCamelCase(membershipData) as Membership;
+  const response = transformToCamelCase<MembershipResponse>(membershipData);
+  return response.membership;
 };
 
 /**
  * Download contract PDF (simulated)
  */
-export const downloadContract = async (contractId: string): Promise<string> => {
+export const downloadContract = async (membershipId: string): Promise<string> => {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
   // In a real app, this would return a PDF URL or blob
-  return `https://api.omoplata.com/contracts/${contractId}/download`;
+  return `https://api.omoplata.com/memberships/${membershipId}/contract/download`;
 };
 
 /**
  * Cancel membership (simulated)
- * @param contractId - The contract ID to cancel
- * @param cancellationDate - The effective cancellation date (must be >= nextCancellationDate)
+ * @param membershipId - The membership ID to cancel
+ * @param cancellationDate - The effective cancellation date
  * @param reason - Optional cancellation reason
  */
 export const cancelMembership = async (
-  contractId: string,
+  membershipId: string,
   cancellationDate: string,
   reason?: string
 ): Promise<{ success: boolean; message: string }> => {
@@ -119,14 +112,49 @@ export const cancelMembership = async (
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // In a real app, this would call your backend API:
-  // const response = await fetch(`${API_BASE_URL}/contracts/${contractId}/cancel`, {
+  // const response = await fetch(`${API_BASE_URL}/memberships/${membershipId}/cancel`, {
   //   method: 'POST',
   //   body: JSON.stringify({ cancellationDate, reason })
   // });
   // return response.json();
 
+  console.log('Cancellation reason:', reason);
+
   return {
     success: true,
     message: `Membership will be cancelled effective ${cancellationDate}`,
   };
+};
+
+/**
+ * Helper to get the primary member from a membership
+ */
+export const getPrimaryMember = (membership: Membership): Member | undefined => {
+  return membership.members.find((m) => m.role === 'primary');
+};
+
+/**
+ * Helper to calculate monthly equivalent from plan amount
+ */
+export const getMonthlyEquivalent = (plan: Plan): number => {
+  switch (plan.chargeInterval) {
+    case 'yearly':
+      return plan.amount / 12;
+    case 'monthly':
+      return plan.amount;
+    case 'weekly':
+      return (plan.amount * 52) / 12;
+    default:
+      return plan.amount;
+  }
+};
+
+/**
+ * Helper to format currency amount
+ */
+export const formatCurrency = (amount: number, currency: string): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+  }).format(amount);
 };

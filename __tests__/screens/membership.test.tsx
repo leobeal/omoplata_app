@@ -4,8 +4,6 @@ import { Alert } from 'react-native';
 
 import MembershipScreen from '../../app/(tabs)/membership';
 
-// Mock Alert - we'll spy on it in the test
-
 // Mock the contexts
 jest.mock('@/contexts/ThemeColors', () => ({
   useThemeColors: () => ({
@@ -22,27 +20,31 @@ jest.mock('@/contexts/LocalizationContext', () => ({
       'membership.title': 'My Membership',
       'membership.currentPlan': 'Current Plan',
       'membership.memberId': 'Member ID',
-      'membership.contractId': 'Contract ID',
+      'membership.membershipId': 'Membership ID',
+      'membership.members': 'Members',
       'membership.contractDetails': 'Contract Details',
       'membership.startDate': 'Start Date',
       'membership.endDate': 'End Date',
       'membership.renewalDate': 'Renewal Date',
-      'membership.nextCancellationDate': 'Next Cancellation Date',
       'membership.autoRenewal': 'Auto-Renewal',
       'membership.enabled': 'Enabled',
       'membership.disabled': 'Disabled',
       'membership.pricing': 'Pricing',
       'membership.annualFee': 'Annual Fee',
+      'membership.monthlyFee': 'Monthly Fee',
       'membership.monthlyEquivalent': 'Monthly Equivalent',
       'membership.perMonth': '/mo',
       'membership.billedAnnually': 'Billed annually',
       'membership.billedMonthly': 'Billed monthly',
-      'membership.planFeatures': 'Plan Features',
+      'membership.billedWeekly': 'Billed weekly',
       'membership.paymentMethod': 'Payment Method',
       'membership.policies': 'Membership Policies',
       'membership.cancellationPolicy': 'Cancellation Policy',
       'membership.freezePolicy': 'Freeze Policy',
       'membership.transferPolicy': 'Transfer Policy',
+      'membership.defaultCancellationPolicy': 'Contact support for cancellation',
+      'membership.defaultFreezePolicy': 'Freeze available upon request',
+      'membership.defaultTransferPolicy': 'Memberships are non-transferable',
       'membership.upTo': 'up to',
       'membership.daysPerYear': (p: any) => `${p.count} days per year`,
       'membership.daysNoticeRequired': (p: any) => `${p.count} days notice required`,
@@ -54,6 +56,10 @@ jest.mock('@/contexts/LocalizationContext', () => ({
       'membership.noMembership': 'No membership found',
       'membership.cancelMembership': 'Cancel Membership',
       'membership.active': 'Active',
+      'membership.pending': 'Pending',
+      'membership.suspended': 'Suspended',
+      'membership.cancelled': 'Cancelled',
+      'membership.expired': 'Expired',
       'common.error': 'Error',
       'common.confirm': 'Confirm',
     };
@@ -92,60 +98,76 @@ jest.mock('@/contexts/AppConfigContext', () => ({
   }),
 }));
 
-// Mock the API - inline the mock data to ensure proper hoisting
+// Mock the membership API with new structure
 jest.mock('@/api/membership', () => ({
   getMembership: jest.fn(() =>
     Promise.resolve({
-      memberId: 'MEM-2024-001',
-      memberName: 'John Doe',
-      email: 'johndoe@example.com',
-      phone: '+1 (555) 123-4567',
-      address: {
-        street: '123 Fitness Street',
-        city: 'New York',
-        state: 'NY',
-        zipCode: '10001',
-        country: 'USA',
+      id: 'mem_abc123',
+      status: 'active',
+      startsAt: '2024-01-15T00:00:00Z',
+      chargeStartsAt: '2024-01-15T00:00:00Z',
+      endsAt: '2024-12-15T23:59:59Z',
+      renewsAt: '2024-12-15T00:00:00Z',
+      renewsAutomatically: true,
+      amount: 100,
+      currency: 'EUR',
+      plan: {
+        id: 'plan_premium',
+        name: 'Annual Premium',
+        priceId: 'price_abc123',
+        priceName: 'Annual Payment',
+        amount: 1200,
+        currency: 'EUR',
+        chargeInterval: 'yearly',
+        contractDuration: 12,
       },
-      contract: {
-        id: 'CNT-2024-001',
-        type: 'Annual Premium',
-        status: 'active',
-        startDate: '2024-01-15',
-        endDate: '2024-12-15',
-        renewalDate: '2024-12-15',
-        nextCancellationDate: '2024-11-15',
-        autoRenewal: true,
-        price: {
-          amount: 1200,
-          currency: 'USD',
-          billingCycle: 'annual',
-          monthlyEquivalent: 100,
+      members: [
+        {
+          id: 'usr_001',
+          prefixedId: 'MEM-2024-001',
+          firstName: 'John',
+          lastName: 'Doe',
+          fullName: 'John Doe',
+          role: 'primary',
         },
-        cancellationPolicy: 'Cancel anytime with 30 days notice',
-        freezePolicy: 'Freeze membership for up to 3 months per year',
-        transferPolicy: 'Non-transferable',
-      },
-      paymentMethod: {
-        type: 'SEPA Direct Debit',
-        iban: 'DE89 3704 0044 0532 •••• 00',
-        accountHolder: 'John Doe',
-      },
-      emergencyContact: {
-        name: 'Jane Doe',
-        relationship: 'Spouse',
-        phone: '+1 (555) 987-6543',
-      },
-      medicalInfo: {
-        bloodType: 'O+',
-        allergies: 'None',
-        conditions: 'None',
-        lastCheckup: '2024-06-15',
+      ],
+      payer: {
+        id: 'usr_001',
+        prefixedId: 'MEM-2024-001',
+        fullName: 'John Doe',
       },
     })
   ),
-  downloadContract: jest.fn(() => Promise.resolve('/contracts/CNT-2024-001.pdf')),
+  downloadContract: jest.fn(() =>
+    Promise.resolve('https://api.omoplata.com/memberships/mem_abc123/contract/download')
+  ),
+  getPrimaryMember: jest.fn((membership: any) =>
+    membership.members.find((m: any) => m.role === 'primary')
+  ),
+  getMonthlyEquivalent: jest.fn((plan: any) => {
+    if (plan.chargeInterval === 'yearly') return plan.amount / 12;
+    return plan.amount;
+  }),
+  formatCurrency: jest.fn((amount: number, currency: string) => {
+    const symbol = currency === 'EUR' ? '€' : '$';
+    return `${symbol}${amount.toFixed(2)}`;
+  }),
 }));
+
+// Mock the payment methods API
+jest.mock('@/api/payment-methods', () => ({
+  getPaymentMethod: jest.fn(() =>
+    Promise.resolve({
+      id: 'pm_abc123',
+      type: 'SEPA Direct Debit',
+      maskedIban: 'DE89 •••• •••• •••• •••• 00',
+      accountHolder: 'John Doe',
+      isDefault: true,
+      createdAt: '2024-01-15T00:00:00Z',
+    })
+  ),
+}));
+
 const mockAlert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
 describe('MembershipScreen', () => {
@@ -155,7 +177,7 @@ describe('MembershipScreen', () => {
 
   describe('Loading State', () => {
     it('shows loading indicator initially', () => {
-      const { getByTestId, getAllByTestId } = render(<MembershipScreen />);
+      const { getAllByTestId } = render(<MembershipScreen />);
 
       // ActivityIndicator should be present
       const indicators = getAllByTestId(/activity-indicator/i);
@@ -170,7 +192,7 @@ describe('MembershipScreen', () => {
       await waitFor(() => {
         expect(getByText('Annual Premium')).toBeTruthy();
         expect(getByText('MEM-2024-001')).toBeTruthy();
-        expect(getByText('CNT-2024-001')).toBeTruthy();
+        expect(getByText('mem_abc123')).toBeTruthy();
       });
     });
 
@@ -198,8 +220,8 @@ describe('MembershipScreen', () => {
 
       await waitFor(() => {
         expect(getByText('Pricing')).toBeTruthy();
-        expect(getByText('$1200.00')).toBeTruthy();
-        expect(getByText('$100.00/mo')).toBeTruthy();
+        expect(getByText('€1200.00')).toBeTruthy();
+        expect(getByText('€100.00/mo')).toBeTruthy();
       });
     });
 
@@ -209,7 +231,7 @@ describe('MembershipScreen', () => {
       await waitFor(() => {
         expect(getByText('Payment Method')).toBeTruthy();
         expect(getByText('SEPA Direct Debit')).toBeTruthy();
-        expect(getByText('DE89 3704 0044 0532 •••• 00')).toBeTruthy();
+        expect(getByText('DE89 •••• •••• •••• •••• 00')).toBeTruthy();
       });
     });
 
@@ -255,10 +277,10 @@ describe('MembershipScreen', () => {
       fireEvent.press(downloadButton);
 
       await waitFor(() => {
-        expect(downloadContract).toHaveBeenCalled();
+        expect(downloadContract).toHaveBeenCalledWith('mem_abc123');
         expect(mockAlert).toHaveBeenCalledWith(
           'Contract PDF',
-          'Contract PDF available at: /contracts/CNT-2024-001.pdf',
+          'Contract PDF available at: https://api.omoplata.com/memberships/mem_abc123/contract/download',
           expect.any(Array)
         );
       });

@@ -1,48 +1,38 @@
 {
-  "member_id": "MEM-2023-001234",
-  "member_name": "John Doe",
-  "email": "johndoe@example.com",
-  "phone": "+1 (555) 123-4567",
-  "address": {
-    "street": "123 Fitness Street",
-    "city": "New York",
-    "state": "NY",
-    "zip_code": "10001",
-    "country": "USA"
-  },
-  "contract": {
-    "id": "CTR-2023-001234",
-    "type": "Premium Annual",
+  "membership": {
+    "id": "mem_abc123",
     "status": "active",
-    "start_date": "2023-01-15",
-    "end_date": "2025-01-14",
-    "renewal_date": "2025-01-15",
-    "auto_renewal": true,
-    "price": {
+    "starts_at": "2023-01-15T00:00:00Z",
+    "charge_starts_at": "2023-01-15T00:00:00Z",
+    "ends_at": "2025-01-14T23:59:59Z",
+    "renews_at": "2025-01-15T00:00:00Z",
+    "renews_automatically": true,
+    "amount": 79.99,
+    "currency": "EUR",
+    "plan": {
+      "id": "plan_premium",
+      "name": "Premium Annual",
+      "price_id": "price_abc123",
+      "price_name": "Annual Payment",
       "amount": 959.88,
-      "currency": "USD",
-      "billing_cycle": "annual",
-      "monthly_equivalent": 79.99
+      "currency": "EUR",
+      "charge_interval": "yearly",
+      "contract_duration": 12
     },
-    "cancellation_policy": "30 days notice required",
-    "freeze_policy": "Can freeze membership up to 2 times per year (max 30 days each)",
-    "transfer_policy": "Non-transferable",
-    "next_cancellation_date": "2024-12-22"
-  },
-  "payment_method": {
-    "type": "SEPA Direct Debit",
-    "iban": "DE89 3704 0044 0532 \u2022\u2022\u2022\u2022 00",
-    "account_holder": "John Doe"
-  },
-  "emergency_contact": {
-    "name": "Jane Doe",
-    "relationship": "Spouse",
-    "phone": "+1 (555) 987-6543"
-  },
-  "medical_info": {
-    "blood_type": "O+",
-    "allergies": "None",
-    "conditions": "None",
-    "last_checkup": "2024-06-15"
+    "members": [
+      {
+        "id": "usr_001",
+        "prefixed_id": "MEM-2023-001234",
+        "first_name": "John",
+        "last_name": "Doe",
+        "full_name": "John Doe",
+        "role": "primary"
+      }
+    ],
+    "payer": {
+      "id": "usr_001",
+      "prefixed_id": "MEM-2023-001234",
+      "full_name": "John Doe"
+    }
   }
 }
