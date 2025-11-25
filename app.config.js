@@ -50,6 +50,9 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: config.bundleIdentifier,
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
     },
     android: {
       package: config.bundleIdentifier,

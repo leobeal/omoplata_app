@@ -18,7 +18,9 @@
       "Bash(npm uninstall:*)",
       "Bash(npm outdated:*)",
       "Bash(npm view:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(npx expo-doctor:*)",
+      "Bash(TENANT=evolve npx expo-doctor:*)"
     ],
     "deny": [],
     "ask": []

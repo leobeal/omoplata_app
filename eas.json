@@ -5,25 +5,29 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "channel": "development"
     },
     "ios-simulator": {
       "ios": {
         "simulator": true,
         "env": {
-          "TENANT": "sparta"
+          "TENANT": "main"
         }
-      }
+      },
+      "channel": "ios-simulator"
     },
     "production": {
       "env": {
         "APP_ENV": "production"
-      }
+      },
+      "channel": "production"
     },
     "evolve": {
       "env": {
         "TENANT": "evolve"
-      }
+      },
+      "channel": "evolve"
     }
   },
   "submit": {

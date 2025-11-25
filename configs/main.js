@@ -6,7 +6,7 @@ module.exports = {
   owner: 'omoplata',
   easProjectId: '3bff59d5-a63b-4bdd-b2ed-ea12e293de46', // You may want a different project ID for generic build
 
-  // Branding - Generic icons
+  // Branding - Geaseneric icons
   icon: './assets/_global/icon.png',
   adaptiveIcon: {
     foregroundImage: './assets/_global/adaptive-icon.png',
