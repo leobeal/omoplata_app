@@ -20,7 +20,10 @@
       "Bash(npm view:*)",
       "Bash(echo:*)",
       "Bash(npx expo-doctor:*)",
-      "Bash(TENANT=evolve npx expo-doctor:*)"
+      "Bash(TENANT=evolve npx expo-doctor:*)",
+      "Bash(TENANT=main npx expo-doctor:*)",
+      "Bash(npx expo install:*)",
+      "Bash(TENANT=main npx expo install:*)"
     ],
     "deny": [],
     "ask": []
