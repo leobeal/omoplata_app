@@ -17,6 +17,14 @@
       },
       "channel": "ios-simulator"
     },
+    "android-simulator": {
+      "android": {
+        "env": {
+          "TENANT": "main"
+        }
+      },
+      "channel": "android-simulator"
+    },
     "production": {
       "env": {
         "APP_ENV": "production"

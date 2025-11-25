@@ -13,7 +13,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "build": "eas build --profile $TENANT",
-    "simulator": "eas build --profile ios-simulator --platform ios"
+    "simulator": "eas build --profile ios-simulator --platform ios",
+    "android-simulator": "eas build --profile android-simulator --platform android"
   },
   "dependencies": {
     "@expo-google-fonts/outfit": "^0.4.3",
