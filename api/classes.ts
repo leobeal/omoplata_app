@@ -81,10 +81,11 @@ export interface Class {
 }
 
 export interface ClassFilters {
-  category?: string;
-  level?: string;
-  instructor?: string;
-  location?: string;
+  onlyMe?: boolean;
+  userDemographicId?: number;
+  disciplineId?: number;
+  clazzId?: number;
+  limit?: number;
 }
 
 /**
@@ -124,11 +125,30 @@ const transformApiClass = (apiClass: ApiClassSession): Class => {
 };
 
 /**
- * Fetch upcoming classes
+ * Build query string from filters
  */
-export const getUpcomingClasses = async (limit?: number): Promise<Class[]> => {
-  const params = limit ? `?limit=${limit}` : '';
-  const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.NEXT}${params}`);
+const buildQueryString = (filters?: ClassFilters): string => {
+  if (!filters) return '';
+
+  const params = new URLSearchParams();
+
+  if (filters.onlyMe) params.append('only_me', 'true');
+  if (filters.userDemographicId)
+    params.append('user_demographic_id', String(filters.userDemographicId));
+  if (filters.disciplineId) params.append('discipline_id', String(filters.disciplineId));
+  if (filters.clazzId) params.append('clazz_id', String(filters.clazzId));
+  if (filters.limit) params.append('limit', String(filters.limit));
+
+  const queryString = params.toString();
+  return queryString ? `?${queryString}` : '';
+};
+
+/**
+ * Fetch classes with optional filters
+ */
+export const getClasses = async (filters?: ClassFilters): Promise<Class[]> => {
+  const queryString = buildQueryString(filters);
+  const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.LIST}${queryString}`);
 
   if (response.error || !response.data) {
     throw new Error(response.error || 'Failed to fetch classes');
@@ -138,12 +158,27 @@ export const getUpcomingClasses = async (limit?: number): Promise<Class[]> => {
 };
 
 /**
+ * Fetch upcoming classes (convenience wrapper)
+ */
+export const getUpcomingClasses = async (limit?: number): Promise<Class[]> => {
+  return getClasses(limit ? { limit } : undefined);
+};
+
+/**
+ * Fetch only user's classes
+ */
+export const getMyClasses = async (limit?: number): Promise<Class[]> => {
+  return getClasses({ onlyMe: true, limit });
+};
+
+/**
  * Fetch classes with pagination
  */
 export const getClassesPaginated = async (
-  limit: number = 10
+  filters?: ClassFilters
 ): Promise<{ classes: Class[]; total: number }> => {
-  const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.NEXT}?limit=${limit}`);
+  const queryString = buildQueryString(filters);
+  const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.LIST}${queryString}`);
 
   if (response.error || !response.data) {
     throw new Error(response.error || 'Failed to fetch classes');

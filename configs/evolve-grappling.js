@@ -7,13 +7,13 @@ module.exports = {
   easProjectId: '526cedec-aab6-4391-b8bc-c442ca6fb49f',
 
   // Branding - icons
-  icon: './assets/evolve/icon.png',
+  icon: './assets/evolve-grappling/icon.png',
   adaptiveIcon: {
-    foregroundImage: './assets/evolve/adaptive-icon.png',
+    foregroundImage: './assets/evolve-grappling/adaptive-icon.png',
     backgroundColor: '#ffffff',
   },
   splash: {
-    image: './assets/evolve/splash.png',
+    image: './assets/evolve-grappling/splash.png',
     resizeMode: 'contain',
     backgroundColor: '#ffffff',
   },

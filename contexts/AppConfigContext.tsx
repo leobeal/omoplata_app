@@ -9,6 +9,7 @@ import {
   defaultConfig,
   clearConfigCache,
 } from '@/api/app-config';
+import { useAuth } from '@/contexts/AuthContext';
 import { useTenant } from '@/contexts/TenantContext';
 
 interface AppConfigContextType {
@@ -25,6 +26,7 @@ const AppConfigContext = createContext<AppConfigContextType | undefined>(undefin
 
 export function AppConfigProvider({ children }: { children: ReactNode }) {
   const { tenant, isTenantRequired } = useTenant();
+  const { isLoading: isAuthLoading } = useAuth();
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -51,9 +53,15 @@ export function AppConfigProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Handle config loading based on tenant state
+  // Handle config loading based on tenant and auth state
   useEffect(() => {
     const currentTenantSlug = tenant?.slug || null;
+
+    // Wait for auth to finish loading before fetching config
+    // This ensures the auth token is set in the API client
+    if (isAuthLoading) {
+      return;
+    }
 
     // If tenant is required but not selected, mark as not loading (waiting for tenant)
     if (isTenantRequired && !tenant) {
@@ -74,7 +82,7 @@ export function AppConfigProvider({ children }: { children: ReactNode }) {
       };
       reloadForTenant();
     }
-  }, [tenant?.slug, isTenantRequired]);
+  }, [tenant?.slug, isTenantRequired, isAuthLoading]);
 
   const refreshConfig = async () => {
     await loadConfig();

@@ -1,7 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import api from './client';
+import { ENDPOINTS } from './config';
+
 const CACHE_KEY = 'app_config';
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const CACHE_DURATION = 5; //TODO change in prod
 
 /**
  * Convert snake_case keys to camelCase
@@ -33,17 +36,14 @@ function transformToCamelCase(obj: any): any {
  */
 export interface NavigationConfig {
   tabs: string[]; // Array of tab names to show (e.g., ["index", "membership", "billing", "settings"])
-  showCheckInButton?: boolean;
 }
 
 export interface MembershipSettings {
   allowPause: boolean;
-  allowFreeze: boolean;
   allowPlanChange: boolean;
   allowGuestPasses: boolean;
   showContractDownload: boolean;
   cancellationNoticeDays?: number; // e.g., 30 days notice required
-  maxFreezeDaysPerYear?: number; // e.g., 90 days
 }
 
 export interface BillingSettings {
@@ -54,8 +54,7 @@ export interface BillingSettings {
 }
 
 export interface FeatureFlags {
-  checkInEnabled: boolean;
-  qrCheckInEnabled: boolean;
+  checkInEnabled: boolean; // Controls both check-in feature and navigation button visibility
   notificationsEnabled: boolean;
   classBookingEnabled: boolean;
   socialSharingEnabled: boolean;
@@ -83,12 +82,10 @@ export interface AppConfig {
 export const defaultConfig: Partial<AppConfig> = {
   membership: {
     allowPause: true,
-    allowFreeze: true,
     allowPlanChange: true,
     allowGuestPasses: true,
     showContractDownload: true,
     cancellationNoticeDays: 30,
-    maxFreezeDaysPerYear: 90,
   },
   billing: {
     allowPaymentMethodChange: true,
@@ -98,7 +95,6 @@ export const defaultConfig: Partial<AppConfig> = {
   },
   features: {
     checkInEnabled: true,
-    qrCheckInEnabled: true,
     notificationsEnabled: true,
     classBookingEnabled: true,
     socialSharingEnabled: false,
@@ -112,20 +108,27 @@ export const defaultConfig: Partial<AppConfig> = {
 
 /**
  * Fetch app configuration from the API
- * In production, this would call your backend API
+ * Falls back to local data if API fails
  */
 export const fetchAppConfig = async (): Promise<AppConfig> => {
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  try {
+    const response = await api.get<Record<string, unknown>>(ENDPOINTS.CONFIG.APP);
 
-  // In production, replace this with actual API call:
-  // const response = await fetch(`${API_BASE_URL}/config/app`);
-  // const data = await response.json();
-  // return transformToCamelCase(data);
+    if (response.data) {
+      console.log('[AppConfig] Fetched from remote API');
+      return transformToCamelCase(response.data) as AppConfig;
+    }
 
-  // For now, return dummy data from local file (in snake_case, transform to camelCase)
-  const configData = require('../data/app-config.json');
-  return transformToCamelCase(configData) as AppConfig;
+    // API returned no data, fall back to local
+    console.warn('[AppConfig] API returned no data, using local fallback');
+    const configData = require('../data/app-config.json');
+    return transformToCamelCase(configData) as AppConfig;
+  } catch (error) {
+    // API failed, fall back to local data
+    console.warn('[AppConfig] API fetch failed, using local fallback:', error);
+    const configData = require('../data/app-config.json');
+    return transformToCamelCase(configData) as AppConfig;
+  }
 };
 
 /**

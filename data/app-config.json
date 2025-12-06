@@ -2,17 +2,14 @@
   "version": "1.0.0",
   "last_updated": "2025-11-21T00:00:00.000Z",
   "navigation": {
-    "tabs": ["index", "membership", "billing", "settings"],
-    "show_check_in_button": true
+    "tabs": ["index", "calendar", "membership", "settings"]
   },
   "membership": {
     "allow_pause": true,
-    "allow_freeze": true,
     "allow_plan_change": true,
     "allow_guest_passes": true,
     "show_contract_download": true,
-    "cancellation_notice_days": 30,
-    "max_freeze_days_per_year": 90
+    "cancellation_notice_days": 30
   },
   "billing": {
     "allow_payment_method_change": true,
@@ -22,7 +19,6 @@
   },
   "features": {
     "check_in_enabled": true,
-    "qr_check_in_enabled": true,
     "notifications_enabled": true,
     "class_booking_enabled": true,
     "social_sharing_enabled": false,

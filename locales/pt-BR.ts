@@ -3,6 +3,7 @@ export default {
   nav: {
     dashboard: 'Painel',
     checkin: 'Check-in',
+    classes: 'Aulas',
     membership: 'Assinatura',
     billing: 'Faturamento',
     settings: 'Configurações',
@@ -245,6 +246,13 @@ export default {
     title: 'Calendário de Aulas',
     legend: 'Categorias de Aulas',
     noClasses: 'Nenhuma aula agendada para este dia',
+    errorTitle: 'Não foi possível carregar as aulas',
+    today: 'Hoje',
+    scheduled: 'agendadas',
+    classCount: {
+      one: 'aula',
+      other: 'aulas',
+    },
   },
 
   // Data/Hora

@@ -3,6 +3,7 @@ export default {
   nav: {
     dashboard: 'Dashboard',
     checkin: 'Check-in',
+    classes: 'Classes',
     membership: 'Membership',
     billing: 'Billing',
     settings: 'Settings',
@@ -249,6 +250,12 @@ export default {
     legend: 'Class Categories',
     noClasses: 'No classes scheduled for this day',
     errorTitle: 'Unable to load classes',
+    today: 'Today',
+    scheduled: 'scheduled',
+    classCount: {
+      one: 'class',
+      other: 'classes',
+    },
   },
 
   // Date/Time

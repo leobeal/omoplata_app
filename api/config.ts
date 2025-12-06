@@ -100,7 +100,7 @@ export const ENDPOINTS = {
   },
   // Classes
   CLASSES: {
-    NEXT: '/classes/next',
+    LIST: '/classes',
     DETAILS: (id: string) => `/classes/${id}`,
   },
   // Attendance Intentions
@@ -117,6 +117,10 @@ export const ENDPOINTS = {
   // Invoices
   INVOICES: {
     LIST: '/invoices',
+  },
+  // App Config
+  CONFIG: {
+    APP: '/config/app',
   },
   // Notifications
   NOTIFICATIONS: {

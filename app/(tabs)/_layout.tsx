@@ -1,12 +1,12 @@
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getNavigationConfig, NavigationConfig as ApiNavigationConfig } from '@/api/app-config';
 import CheckInButton from '@/components/CheckInButton';
 import { TabButton } from '@/components/TabButton';
 import { defaultNavigation, NavigationConfig as FullNavigationConfig } from '@/configs/navigation';
+import { useAppConfig, useFeatureFlags } from '@/contexts/AppConfigContext';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
@@ -15,46 +15,32 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const t = useT();
 
-  const [apiConfig, setApiConfig] = useState<ApiNavigationConfig | null>(null);
-
-  // Fetch navigation config from API on mount
-  useEffect(() => {
-    const loadConfig = async () => {
-      try {
-        const config = await getNavigationConfig();
-        if (config) {
-          console.log('Loaded navigation config from API');
-          setApiConfig(config);
-        }
-      } catch (error) {
-        console.error('Failed to load navigation config from API:', error);
-        // Will fall back to local config
-      }
-    };
-
-    loadConfig();
-  }, []);
+  // Use config from context (already loaded before app shows)
+  const { config } = useAppConfig();
+  const featureFlags = useFeatureFlags();
 
   // Get navigation config with priority:
   // 1. API config specifies which tabs to show (if loaded)
   // 2. All default tabs (fallback)
   const navConfig: FullNavigationConfig = useMemo(() => {
-    if (!apiConfig) {
+    if (!config?.navigation) {
       // No API config, use all default tabs
       return defaultNavigation;
     }
 
     // Filter default tabs based on API response (which only contains tab names)
-    const filteredTabs = defaultNavigation.tabs.filter((tab) => apiConfig.tabs.includes(tab.name));
+    const filteredTabs = defaultNavigation.tabs.filter((tab) =>
+      config.navigation.tabs.includes(tab.name)
+    );
 
     return {
       tabs: filteredTabs,
-      showCheckInButton: apiConfig.showCheckInButton ?? true,
+      showCheckInButton: featureFlags.checkInEnabled,
     };
-  }, [apiConfig]);
+  }, [config, featureFlags]);
 
   const tabs = navConfig.tabs || [];
-  const showCheckInButton = navConfig.showCheckInButton ?? true;
+  const showCheckInButton = featureFlags.checkInEnabled;
 
   // Calculate tab width based on number of tabs
   const hasCheckIn = showCheckInButton;

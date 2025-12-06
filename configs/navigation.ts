@@ -34,6 +34,12 @@ export const defaultNavigation: NavigationConfig = {
       href: '/',
     },
     {
+      name: 'calendar',
+      icon: 'Calendar',
+      label: 'nav.classes',
+      href: '/calendar',
+    },
+    {
       name: 'membership',
       icon: 'Award',
       label: 'nav.membership',

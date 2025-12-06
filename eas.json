@@ -31,11 +31,11 @@
       },
       "channel": "production"
     },
-    "evolve": {
+    "evolve-grappling": {
       "env": {
-        "TENANT": "evolve"
+        "TENANT": "evolve-grappling"
       },
-      "channel": "evolve"
+      "channel": "evolve-grappling"
     }
   },
   "submit": {

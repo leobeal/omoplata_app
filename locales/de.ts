@@ -3,6 +3,7 @@ export default {
   nav: {
     dashboard: 'Dashboard',
     checkin: 'Check-in',
+    classes: 'Kurse',
     membership: 'Mitgliedschaft',
     billing: 'Abrechnung',
     settings: 'Einstellungen',
@@ -246,6 +247,13 @@ export default {
     title: 'Kurskalender',
     legend: 'Kurskategorien',
     noClasses: 'Keine Kurse für diesen Tag geplant',
+    errorTitle: 'Kurse konnten nicht geladen werden',
+    today: 'Heute',
+    scheduled: 'geplant',
+    classCount: {
+      one: 'Kurs',
+      other: 'Kurse',
+    },
   },
 
   // Datum/Zeit

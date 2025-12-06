@@ -89,7 +89,7 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
           <View className="flex-row items-center">
             <Icon name="Users" size={14} color={colors.text} className="opacity-50" />
             <ThemedText className="ml-1 text-sm opacity-70">
-              {classData.enrolled}/{classData.capacity}
+              {classData.enrolled}/{classData.capacity.max ?? '∞'}
             </ThemedText>
           </View>
         </View>

@@ -7,13 +7,13 @@ module.exports = {
   easProjectId: '5e13eeaf-5e9e-49a2-9210-c2dcceff6365', // Add your EAS project ID
 
   // Branding - icons
-  icon: './assets/sparta/icon.png',
+  icon: './assets/sparta-aachen/icon.png',
   adaptiveIcon: {
-    foregroundImage: './assets/sparta/adaptive-icon.png',
+    foregroundImage: './assets/sparta-aachen/adaptive-icon.png',
     backgroundColor: '#ffffff',
   },
   splash: {
-    image: './assets/sparta/splash.png',
+    image: './assets/sparta-aachen/splash.png',
     resizeMode: 'contain',
     backgroundColor: '#ffffff',
   },

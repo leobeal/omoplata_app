@@ -179,15 +179,15 @@ export default function RootLayout() {
       <LocalizationProvider>
         <ThemeProvider>
           <TenantProvider>
-            <AppConfigProvider>
-              <AuthProvider>
+            <AuthProvider>
+              <AppConfigProvider>
                 <ScrollToTopProvider>
                   <AuthGate>
                     <Stack screenOptions={{ headerShown: false }} />
                   </AuthGate>
                 </ScrollToTopProvider>
-              </AuthProvider>
-            </AppConfigProvider>
+              </AppConfigProvider>
+            </AuthProvider>
           </TenantProvider>
         </ThemeProvider>
       </LocalizationProvider>
