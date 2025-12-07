@@ -26,6 +26,28 @@ export default {
     logout: 'Abmelden',
   },
 
+  // Netzwerk
+  network: {
+    offline: 'Sie sind offline',
+    offlineMessage: 'Änderungen werden synchronisiert, wenn die Verbindung wiederhergestellt ist',
+    backOnline: 'Wieder online',
+    usingCachedData: 'Zeige gespeicherte Daten',
+  },
+
+  // Familie / Profilwechsel
+  family: {
+    title: 'Familienmitglieder',
+    viewingAs: 'Ansicht als {{name}}s Konto',
+    switchBack: 'Zurückwechseln',
+    switchBackTo: 'Zurück zu Ihrem Konto',
+    switchAccount: 'Konto wechseln',
+    tapToView: 'Tippen, um das Konto anzuzeigen',
+    view: 'Anzeigen',
+    switch: 'Wechseln',
+    switchError: 'Kontowechsel fehlgeschlagen',
+    switchBackError: 'Rückwechsel zu Ihrem Konto fehlgeschlagen',
+  },
+
   // Startseite/Dashboard
   home: {
     welcomeBack: 'Willkommen zurück!',
@@ -48,6 +70,11 @@ export default {
     weeklyActivity: 'Wöchentliche Aktivität',
     pastThreeWeeks: 'Letzte 3 Wochen',
     onTrack: 'auf Kurs',
+    upcomingClasses: 'Kommende Kurse',
+    unableToLoadClasses: 'Kurse konnten nicht geladen werden',
+    noUpcomingClasses: 'Keine kommenden Kurse geplant',
+    childClasses: '{{name}}s Kurse',
+    childrenClasses: 'Kurse der Kinder',
   },
 
   // Einstellungen
@@ -68,6 +95,8 @@ export default {
     getHelp: 'Hilfe zu Ihrem Konto',
     logout: 'Abmelden',
     signOut: 'Von Ihrem Konto abmelden',
+    logoutConfirm: 'Möchten Sie sich wirklich abmelden?',
+    logoutError: 'Abmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.',
   },
 
   // Mitgliedschaften

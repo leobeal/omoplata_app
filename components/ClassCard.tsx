@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Pressable, ActivityIndicator } from 'react-native';
 
 import Icon from './Icon';
@@ -8,13 +8,19 @@ import { Class } from '@/api/classes';
 
 interface ClassCardProps {
   classData: Class;
-  onConfirm: (classId: string) => Promise<void>;
-  onDeny: (classId: string) => Promise<void>;
+  childId?: string;
+  onConfirm?: (classId: string, childId?: string) => Promise<void>;
+  onDeny?: (classId: string, childId?: string) => Promise<void>;
 }
 
-export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardProps) {
+export default function ClassCard({ classData, childId, onConfirm, onDeny }: ClassCardProps) {
   const [loading, setLoading] = useState(false);
   const [localStatus, setLocalStatus] = useState(classData.status);
+
+  // Sync localStatus when classData changes (e.g., when switching between children)
+  useEffect(() => {
+    setLocalStatus(classData.status);
+  }, [classData.id, classData.status]);
 
   const formatTime = (time: string) => {
     if (!time) return 'Time TBA';
@@ -51,9 +57,10 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
   };
 
   const handleConfirm = async () => {
+    if (!onConfirm) return;
     setLoading(true);
     try {
-      await onConfirm(classData.id);
+      await onConfirm(classData.id, childId);
       setLocalStatus('confirmed');
     } catch (error) {
       console.error('Error confirming attendance:', error);
@@ -63,9 +70,10 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
   };
 
   const handleDeny = async () => {
+    if (!onDeny) return;
     setLoading(true);
     try {
-      await onDeny(classData.id);
+      await onDeny(classData.id, childId);
       setLocalStatus('denied');
     } catch (error) {
       console.error('Error denying attendance:', error);
@@ -143,10 +151,11 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
       </View>
 
       {/* Action Buttons */}
-      {localStatus === 'pending' && (
+      {onConfirm && onDeny && localStatus === 'pending' && (
         <View className="flex-row gap-3 border-t border-border pt-4">
           <Pressable
-            className="flex-1 flex-row items-center justify-center rounded-xl bg-red-500/10 py-3"
+            className="flex-1 flex-row items-center justify-center rounded-xl bg-red-500/10"
+            style={{ height: 48 }}
             onPress={handleDeny}
             disabled={loading}>
             {loading ? (
@@ -162,7 +171,8 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
           </Pressable>
 
           <Pressable
-            className="flex-1 flex-row items-center justify-center rounded-xl bg-green-500/10 py-3"
+            className="flex-1 flex-row items-center justify-center rounded-xl bg-green-500/10"
+            style={{ height: 48 }}
             onPress={handleConfirm}
             disabled={loading}>
             {loading ? (
@@ -179,10 +189,11 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
         </View>
       )}
 
-      {localStatus === 'confirmed' && (
+      {onConfirm && onDeny && localStatus === 'confirmed' && (
         <View className="flex-row gap-3 border-t border-border pt-4">
           <Pressable
-            className="flex-1 flex-row items-center justify-center rounded-xl border border-border py-3"
+            className="flex-1 flex-row items-center justify-center rounded-xl border border-border"
+            style={{ height: 48 }}
             onPress={handleDeny}
             disabled={loading}>
             {loading ? (
@@ -197,10 +208,11 @@ export default function ClassCard({ classData, onConfirm, onDeny }: ClassCardPro
         </View>
       )}
 
-      {localStatus === 'denied' && (
+      {onConfirm && onDeny && localStatus === 'denied' && (
         <View className="flex-row gap-3 border-t border-border pt-4">
           <Pressable
-            className="flex-1 flex-row items-center justify-center rounded-xl border border-border py-3"
+            className="flex-1 flex-row items-center justify-center rounded-xl border border-border"
+            style={{ height: 48 }}
             onPress={handleConfirm}
             disabled={loading}>
             {loading ? (

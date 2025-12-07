@@ -1,4 +1,13 @@
-import membershipData from '@/data/membership.json';
+import api from './client';
+import { ENDPOINTS } from './config';
+
+import {
+  CACHE_KEYS,
+  CACHE_DURATIONS,
+  getFromCache,
+  getFromCacheWithStale,
+  saveToCache,
+} from '@/utils/local-cache';
 
 /**
  * Convert snake_case keys to camelCase
@@ -117,13 +126,39 @@ export interface MembershipResponse {
 }
 
 /**
- * Fetch membership data
+ * Fetch membership data from API with caching
  */
-export const getMembership = async (): Promise<Membership> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  const response = transformToCamelCase<MembershipResponse>(membershipData);
-  return response.membership;
+export const getMembership = async (): Promise<Membership | null> => {
+  // Try to get from cache first
+  const cached = await getFromCache<Membership>(CACHE_KEYS.MEMBERSHIP, CACHE_DURATIONS.MEDIUM);
+  if (cached) {
+    return cached;
+  }
+
+  // Fetch from API
+  const response = await api.get<MembershipResponse>(ENDPOINTS.MEMBERSHIPS.CURRENT);
+
+  if (response.error || !response.data) {
+    // On error, try to use stale cache as fallback
+    const { data: staleData } = await getFromCacheWithStale<Membership>(
+      CACHE_KEYS.MEMBERSHIP,
+      CACHE_DURATIONS.MEDIUM
+    );
+    if (staleData) {
+      console.log('[Membership] Using stale cache data due to API error');
+      return staleData;
+    }
+    console.error('[Membership] API error:', response.error);
+    return null;
+  }
+
+  // Transform snake_case to camelCase
+  const membership = transformToCamelCase<Membership>(response.data.membership);
+
+  // Save to cache
+  await saveToCache(CACHE_KEYS.MEMBERSHIP, membership);
+
+  return membership;
 };
 
 /**

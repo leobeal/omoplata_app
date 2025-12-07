@@ -37,6 +37,8 @@ export default function ThemedScroller({
       className={`bg-background px-6 ${className}`}
       bounces
       alwaysBounceVertical
+      directionalLockEnabled
+      nestedScrollEnabled
       contentContainerStyle={[{ flexGrow: 1 }, contentContainerStyle]}
       showsVerticalScrollIndicator={false}
       {...props}>

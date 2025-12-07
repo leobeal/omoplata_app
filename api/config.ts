@@ -81,6 +81,8 @@ export const ENDPOINTS = {
   USERS: {
     ME: '/users/me',
     UPDATE: '/users/:id',
+    SWITCH_TO_CHILD: (childId: string) => `/users/${childId}/switch`,
+    ACTIVITY_STATS: '/users/activity-stats',
   },
   // User
   USER: {
@@ -91,6 +93,7 @@ export const ENDPOINTS = {
   },
   // Memberships
   MEMBERSHIPS: {
+    CURRENT: '/memberships/current',
     LIST: '/memberships',
     DETAILS: (id: string) => `/memberships/${id}`,
     PLANS: '/memberships/plans',

@@ -3,13 +3,16 @@ import Constants from 'expo-constants';
 import { Stack, Redirect, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState, useCallback } from 'react';
-import { Image } from 'react-native';
+import { Image, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import OfflineBanner from '@/components/OfflineBanner';
+import ViewingAsChildBanner from '@/components/ViewingAsChildBanner';
 import { AppConfigProvider, useAppConfig } from '@/contexts/AppConfigContext';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { DashboardReadyProvider, useDashboardReady } from '@/contexts/DashboardReadyContext';
 import { LocalizationProvider } from '@/contexts/LocalizationContext';
+import { NetworkProvider } from '@/contexts/NetworkContext';
 import { ScrollToTopProvider } from '@/contexts/ScrollToTopContext';
 import { TenantProvider, useTenant } from '@/contexts/TenantContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
@@ -182,29 +185,37 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     return <Redirect href="/" />;
   }
 
-  return <>{children}</>;
+  return (
+    <View style={{ flex: 1 }}>
+      <OfflineBanner />
+      <ViewingAsChildBanner />
+      {children}
+    </View>
+  );
 }
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <LocalizationProvider>
-        <ThemeProvider>
-          <TenantProvider>
-            <AuthProvider>
-              <AppConfigProvider>
-                <DashboardReadyProvider>
-                  <ScrollToTopProvider>
-                    <AuthGate>
-                      <Stack screenOptions={{ headerShown: false }} />
-                    </AuthGate>
-                  </ScrollToTopProvider>
-                </DashboardReadyProvider>
-              </AppConfigProvider>
-            </AuthProvider>
-          </TenantProvider>
-        </ThemeProvider>
-      </LocalizationProvider>
+      <NetworkProvider>
+        <LocalizationProvider>
+          <ThemeProvider>
+            <TenantProvider>
+              <AuthProvider>
+                <AppConfigProvider>
+                  <DashboardReadyProvider>
+                    <ScrollToTopProvider>
+                      <AuthGate>
+                        <Stack screenOptions={{ headerShown: false }} />
+                      </AuthGate>
+                    </ScrollToTopProvider>
+                  </DashboardReadyProvider>
+                </AppConfigProvider>
+              </AuthProvider>
+            </TenantProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </NetworkProvider>
     </GestureHandlerRootView>
   );
 }

@@ -1,8 +1,8 @@
-import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Pressable, RefreshControl } from 'react-native';
+import { View, Pressable, RefreshControl, useWindowDimensions } from 'react-native';
+import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 
-import { confirmAttendance, denyAttendance } from '@/api/classes';
+import { confirmAttendance, denyAttendance, ChildWithClasses } from '@/api/classes';
 import { getStatusTranslationKey, Membership } from '@/api/membership';
 import { isSepaAvailable, PaymentMethod } from '@/api/payment-methods';
 import Avatar from '@/components/Avatar';
@@ -24,9 +24,10 @@ import { useThemeColors } from '@/contexts/ThemeColors';
 export default function HomeScreen() {
   const t = useT();
   const colors = useThemeColors();
-  const { user } = useAuth();
+  const { user, isMember } = useAuth();
   const {
     classes,
+    childrenWithClasses,
     classesError,
     membership,
     paymentMethods,
@@ -53,9 +54,9 @@ export default function HomeScreen() {
     setPaymentMethods((prev) => [...prev, newPaymentMethod]);
   };
 
-  const handleConfirm = async (classId: string) => {
+  const handleConfirm = async (classId: string, childId?: string) => {
     try {
-      await confirmAttendance(classId);
+      await confirmAttendance(classId, childId ? { childId } : undefined);
       // Update local state
       setClasses((prev) =>
         prev.map((cls) => (cls.id === classId ? { ...cls, status: 'confirmed' as const } : cls))
@@ -65,9 +66,9 @@ export default function HomeScreen() {
     }
   };
 
-  const handleDeny = async (classId: string) => {
+  const handleDeny = async (classId: string, childId?: string) => {
     try {
-      await denyAttendance(classId);
+      await denyAttendance(classId, childId ? { childId } : undefined);
       // Update local state
       setClasses((prev) =>
         prev.map((cls) => (cls.id === classId ? { ...cls, status: 'denied' as const } : cls))
@@ -120,78 +121,64 @@ export default function HomeScreen() {
             <SepaForm onSuccess={handleSepaSuccess} />
           </View>
         )}
-        <View className="bg-background p-5">
-          <ActivityStats />
-        </View>
-        <View className="bg-background px-5 pb-5">
-          <View className="mb-4 flex-row items-center justify-between">
-            <Section title="Upcoming Classes" className="flex-1" />
-            <View className="flex-row items-center gap-4">
-              <Pressable onPress={() => router.push('/screens/calendar')}>
-                <View className="flex-row items-center">
-                  <Icon name="Calendar" size={20} color={colors.highlight} />
-                  <ThemedText className="ml-1 text-sm font-semibold text-highlight">
-                    Calendar
-                  </ThemedText>
+        {/* Only show activity stats for members */}
+        {isMember && (
+          <View className="bg-background p-5">
+            <ActivityStats />
+          </View>
+        )}
+        {/* Only show user's classes section if they have classes or there's an error */}
+        {(classes.length > 0 || classesError) && (
+          <View className="bg-background px-5 pb-5">
+            <Section title={t('home.upcomingClasses')} className="mb-4" />
+            {classesError ? (
+              <View className="items-center justify-center rounded-2xl bg-secondary py-12">
+                <View
+                  className="mb-4 h-16 w-16 items-center justify-center rounded-full"
+                  style={{ backgroundColor: colors.error + '20' }}>
+                  <Icon name="AlertCircle" size={32} color={colors.error} />
                 </View>
-              </Pressable>
-              {classes.length > 3 && (
-                <Pressable onPress={() => router.push('/screens/next-classes')}>
+                <ThemedText className="mb-2 text-center font-semibold">
+                  {t('home.unableToLoadClasses')}
+                </ThemedText>
+                <ThemedText className="mb-6 text-center text-sm opacity-70">
+                  {classesError}
+                </ThemedText>
+                <Pressable
+                  onPress={refreshData}
+                  className="rounded-full px-6 py-3"
+                  style={{ backgroundColor: colors.highlight }}>
                   <View className="flex-row items-center">
-                    <ThemedText className="mr-1 text-sm font-semibold text-highlight">
-                      View All
+                    <Icon name="RefreshCw" size={16} color="#FFFFFF" />
+                    <ThemedText className="ml-2 font-semibold" style={{ color: '#FFFFFF' }}>
+                      {t('common.tryAgain')}
                     </ThemedText>
-                    <Icon name="ChevronRight" size={16} color={colors.highlight} />
                   </View>
                 </Pressable>
-              )}
-            </View>
-          </View>
-          {classesError ? (
-            <View className="items-center justify-center rounded-2xl bg-secondary py-12">
-              <View
-                className="mb-4 h-16 w-16 items-center justify-center rounded-full"
-                style={{ backgroundColor: colors.error + '20' }}>
-                <Icon name="AlertCircle" size={32} color={colors.error} />
               </View>
-              <ThemedText className="mb-2 text-center font-semibold">
-                Unable to load classes
-              </ThemedText>
-              <ThemedText className="mb-6 text-center text-sm opacity-70">
-                {classesError}
-              </ThemedText>
-              <Pressable
-                onPress={refreshData}
-                className="rounded-full px-6 py-3"
-                style={{ backgroundColor: colors.highlight }}>
-                <View className="flex-row items-center">
-                  <Icon name="RefreshCw" size={16} color="#FFFFFF" />
-                  <ThemedText className="ml-2 font-semibold" style={{ color: '#FFFFFF' }}>
-                    Try Again
-                  </ThemedText>
-                </View>
-              </Pressable>
-            </View>
-          ) : classes.length > 0 ? (
-            classes
-              .slice(0, 3)
-              .map((classItem) => (
-                <ClassCard
-                  key={classItem.id}
-                  classData={classItem}
-                  onConfirm={handleConfirm}
-                  onDeny={handleDeny}
-                />
-              ))
-          ) : (
-            <View className="items-center justify-center rounded-2xl bg-secondary py-12">
-              <Icon name="Calendar" size={48} className="mb-4 opacity-30" />
-              <ThemedText className="text-center opacity-70">
-                No upcoming classes scheduled
-              </ThemedText>
-            </View>
-          )}
-        </View>
+            ) : (
+              classes
+                .slice(0, 3)
+                .map((classItem) => (
+                  <ClassCard
+                    key={classItem.id}
+                    classData={classItem}
+                    onConfirm={handleConfirm}
+                    onDeny={handleDeny}
+                  />
+                ))
+            )}
+          </View>
+        )}
+
+        {/* Children's Classes Section with Tabs */}
+        {childrenWithClasses.length > 0 && (
+          <ChildrenClassesTabs
+            children={childrenWithClasses}
+            onConfirm={handleConfirm}
+            onDeny={handleDeny}
+          />
+        )}
       </ThemedScroller>
     </>
   );
@@ -328,5 +315,72 @@ const MembershipOverview = ({ membership }: MembershipOverviewProps) => {
         </View>
       </View>
     </View>
+  );
+};
+
+interface ChildrenClassesTabsProps {
+  children: ChildWithClasses[];
+  onConfirm: (classId: string, childId?: string) => Promise<void>;
+  onDeny: (classId: string, childId?: string) => Promise<void>;
+}
+
+interface ChildClassesScrollProps {
+  child: ChildWithClasses;
+  onConfirm: (classId: string, childId?: string) => Promise<void>;
+  onDeny: (classId: string, childId?: string) => Promise<void>;
+}
+
+const ChildClassesScroll = ({ child, onConfirm, onDeny }: ChildClassesScrollProps) => {
+  const { width } = useWindowDimensions();
+  const cardWidth = width - 40; // Full width minus padding (20 on each side)
+
+  return (
+    <GHScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      decelerationRate="fast"
+      snapToInterval={cardWidth + 12}
+      snapToAlignment="start"
+      contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}>
+      {child.classes.slice(0, 3).map((classItem) => (
+        <View key={classItem.id} style={{ width: cardWidth }}>
+          <ClassCard
+            classData={classItem}
+            childId={child.id}
+            onConfirm={onConfirm}
+            onDeny={onDeny}
+          />
+        </View>
+      ))}
+      <View style={{ width: 8 }} />
+    </GHScrollView>
+  );
+};
+
+const ChildrenClassesTabs = ({ children, onConfirm, onDeny }: ChildrenClassesTabsProps) => {
+  const t = useT();
+
+  // Filter children with classes
+  const childrenWithClassesFiltered = children.filter((child) => child.classes.length > 0);
+
+  if (childrenWithClassesFiltered.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      {childrenWithClassesFiltered.map((child) => (
+        <View key={child.id} className="bg-background pb-5">
+          {/* Child header with avatar and name */}
+          <View className="mb-4 flex-row items-center px-5">
+            <Avatar name={child.fullName} size="sm" />
+            <Section title={t('home.childClasses', { name: child.firstName })} className="ml-3" />
+          </View>
+
+          {/* Child's classes in horizontal scroll */}
+          <ChildClassesScroll child={child} onConfirm={onConfirm} onDeny={onDeny} />
+        </View>
+      ))}
+    </>
   );
 };

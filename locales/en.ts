@@ -27,6 +27,28 @@ export default {
     logout: 'Logout',
   },
 
+  // Network
+  network: {
+    offline: "You're offline",
+    offlineMessage: 'Changes will sync when connection is restored',
+    backOnline: 'Back online',
+    usingCachedData: 'Showing cached data',
+  },
+
+  // Family / Profile Switching
+  family: {
+    title: 'Family Members',
+    viewingAs: "Viewing as {{name}}'s account",
+    switchBack: 'Switch back',
+    switchBackTo: 'Switch back to your account',
+    switchAccount: 'Switch Account',
+    tapToView: 'Tap to view their account',
+    view: 'View',
+    switch: 'Switch',
+    switchError: 'Failed to switch account',
+    switchBackError: 'Failed to switch back to your account',
+  },
+
   // Home/Dashboard Screen
   home: {
     welcomeBack: 'Welcome back!',
@@ -49,6 +71,11 @@ export default {
     weeklyActivity: 'Weekly Activity',
     pastThreeWeeks: 'Past 3 weeks',
     onTrack: 'on track',
+    upcomingClasses: 'Upcoming Classes',
+    unableToLoadClasses: 'Unable to load classes',
+    noUpcomingClasses: 'No upcoming classes scheduled',
+    childClasses: "{{name}}'s Classes",
+    childrenClasses: "Children's Classes",
   },
 
   // Settings Screen
@@ -69,6 +96,8 @@ export default {
     getHelp: 'Get help with your account',
     logout: 'Logout',
     signOut: 'Sign out of your account',
+    logoutConfirm: 'Are you sure you want to logout?',
+    logoutError: 'Failed to logout. Please try again.',
   },
 
   // Memberships Screen

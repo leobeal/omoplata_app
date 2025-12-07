@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import { useAuth } from './AuthContext';
 import { useTenant } from './TenantContext';
 
-import { getUpcomingClasses, Class } from '@/api/classes';
+import { getMyClassesWithChildren, Class, ChildWithClasses } from '@/api/classes';
 import { getMembership, Membership } from '@/api/membership';
 import {
   getPaymentMethods,
@@ -18,6 +18,7 @@ interface AppDataContextType {
 
   // Data
   classes: Class[];
+  childrenWithClasses: ChildWithClasses[];
   classesError: string | null;
   membership: Membership | null;
   paymentMethods: PaymentMethod[];
@@ -32,6 +33,7 @@ interface AppDataContextType {
 const AppDataContext = createContext<AppDataContextType>({
   isAppDataReady: false,
   classes: [],
+  childrenWithClasses: [],
   classesError: null,
   membership: null,
   paymentMethods: [],
@@ -43,9 +45,10 @@ const AppDataContext = createContext<AppDataContextType>({
 
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const { tenant, isLoading: isTenantLoading, isTenantRequired } = useTenant();
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
   const [isAppDataReady, setIsAppDataReady] = useState(false);
   const [classes, setClasses] = useState<Class[]>([]);
+  const [childrenWithClasses, setChildrenWithClasses] = useState<ChildWithClasses[]>([]);
   const [classesError, setClassesError] = useState<string | null>(null);
   const [membership, setMembership] = useState<Membership | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -57,16 +60,16 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const loadAllData = useCallback(async () => {
     setClassesError(null);
 
-    const [classesData, membershipData, paymentMethodsData, availablePaymentMethodsData] =
+    const [classesResult, membershipData, paymentMethodsData, availablePaymentMethodsData] =
       await Promise.all([
-        getUpcomingClasses().catch((error) => {
+        getMyClassesWithChildren().catch((error) => {
           console.error('Error loading classes:', error);
           const errorMessage =
             error instanceof Error
               ? error.message
               : 'Failed to load classes. Please check your connection and try again.';
           setClassesError(errorMessage);
-          return [];
+          return { classes: [], children: [] };
         }),
         getMembership().catch((error) => {
           console.error('Error loading membership:', error);
@@ -82,13 +85,17 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         }),
       ]);
 
-    setClasses(classesData);
+    setClasses(classesResult.classes);
+    setChildrenWithClasses(classesResult.children);
     setMembership(membershipData);
     setPaymentMethods(paymentMethodsData);
     setAvailablePaymentMethods(availablePaymentMethodsData);
     setIsAppDataReady(true);
     hasLoadedData.current = true;
   }, []);
+
+  // Track user ID to detect profile switches
+  const previousUserIdRef = useRef<string | null>(null);
 
   // Load data only when tenant and auth are ready, and user is authenticated
   useEffect(() => {
@@ -105,11 +112,28 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    const currentUserId = user?.id || null;
+
+    // Check if user changed (profile switch)
+    if (previousUserIdRef.current !== null && previousUserIdRef.current !== currentUserId) {
+      console.log('[AppData] User changed, reloading data');
+      hasLoadedData.current = false;
+    }
+    previousUserIdRef.current = currentUserId;
+
     // Don't reload if already loaded
     if (hasLoadedData.current) return;
 
     loadAllData();
-  }, [isTenantLoading, isAuthLoading, isTenantRequired, tenant, isAuthenticated, loadAllData]);
+  }, [
+    isTenantLoading,
+    isAuthLoading,
+    isTenantRequired,
+    tenant,
+    isAuthenticated,
+    user?.id,
+    loadAllData,
+  ]);
 
   const refreshData = useCallback(async () => {
     hasLoadedData.current = false;
@@ -122,6 +146,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       hasLoadedData.current = false;
       setIsAppDataReady(false);
       setClasses([]);
+      setChildrenWithClasses([]);
       setMembership(null);
       setPaymentMethods([]);
       setAvailablePaymentMethods([]);
@@ -133,6 +158,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       value={{
         isAppDataReady,
         classes,
+        childrenWithClasses,
         classesError,
         membership,
         paymentMethods,

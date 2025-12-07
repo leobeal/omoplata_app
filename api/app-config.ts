@@ -4,7 +4,7 @@ import api from './client';
 import { ENDPOINTS } from './config';
 
 const CACHE_KEY = 'app_config';
-const CACHE_DURATION = 5; //TODO change in prod
+const CACHE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 /**
  * Convert snake_case keys to camelCase
@@ -149,28 +149,38 @@ export const fetchAppConfig = async (): Promise<AppConfigResult> => {
 
 /**
  * Get cached navigation config from AsyncStorage
+ * @param allowStale - If true, returns expired cache for offline fallback
  */
-export const getCachedConfig = async (): Promise<AppConfig | null> => {
+export const getCachedConfig = async (
+  allowStale: boolean = false
+): Promise<{ config: AppConfig | null; isStale: boolean }> => {
   try {
     const cachedData = await AsyncStorage.getItem(CACHE_KEY);
     if (!cachedData) {
-      return null;
+      return { config: null, isStale: false };
     }
 
     const parsed = JSON.parse(cachedData);
     const cacheAge = Date.now() - new Date(parsed.lastUpdated).getTime();
+    const isStale = cacheAge >= CACHE_DURATION_MS;
 
     // Check if cache is still valid
-    if (cacheAge < CACHE_DURATION) {
-      return parsed;
+    if (!isStale) {
+      return { config: parsed, isStale: false };
     }
 
-    // Cache expired, remove it
+    // Cache expired
+    if (allowStale) {
+      console.log('[AppConfig] Using stale cache for offline fallback');
+      return { config: parsed, isStale: true };
+    }
+
+    // Remove expired cache if not allowing stale
     await AsyncStorage.removeItem(CACHE_KEY);
-    return null;
+    return { config: null, isStale: false };
   } catch (error) {
     console.error('Error reading cached config:', error);
-    return null;
+    return { config: null, isStale: false };
   }
 };
 
@@ -191,29 +201,46 @@ export const cacheConfig = async (config: AppConfig): Promise<void> => {
  * 2. If no cache or expired, fetch from API
  * 3. Cache the new config
  * 4. Return the config with error type
+ * 5. If API fails and we have stale cache, use it (offline fallback)
  */
-export const getAppConfig = async (): Promise<AppConfigResult> => {
+export const getAppConfig = async (): Promise<AppConfigResult & { isStale?: boolean }> => {
   try {
-    // Try cache first
-    const cached = await getCachedConfig();
-    if (cached) {
-      console.log('Using cached app config');
-      return { config: cached, error: null };
+    // Try fresh cache first
+    const { config: cached, isStale } = await getCachedConfig(false);
+    if (cached && !isStale) {
+      console.log('[AppConfig] Using fresh cached config');
+      return { config: cached, error: null, isStale: false };
     }
 
     // Fetch from API
-    console.log('Fetching app config from API');
+    console.log('[AppConfig] Fetching from API');
     const result = await fetchAppConfig();
 
     // Only cache if successful
     if (result.config) {
       await cacheConfig(result.config);
+      return { ...result, isStale: false };
     }
 
-    return result;
+    // API failed - try stale cache as fallback (offline mode)
+    const { config: staleCache } = await getCachedConfig(true);
+    if (staleCache) {
+      console.log('[AppConfig] API failed, using stale cache as offline fallback');
+      return { config: staleCache, error: null, isStale: true };
+    }
+
+    return { ...result, isStale: false };
   } catch (error) {
-    console.error('Error getting app config:', error);
-    return { config: null, error: 'network_error' };
+    console.error('[AppConfig] Error getting app config:', error);
+
+    // Try stale cache as last resort
+    const { config: staleCache } = await getCachedConfig(true);
+    if (staleCache) {
+      console.log('[AppConfig] Exception occurred, using stale cache as offline fallback');
+      return { config: staleCache, error: null, isStale: true };
+    }
+
+    return { config: null, error: 'network_error', isStale: false };
   }
 };
 

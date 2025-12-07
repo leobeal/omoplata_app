@@ -1,6 +1,13 @@
 import { api } from './client';
 import { ENDPOINTS } from './config';
 
+import {
+  getFromCacheWithStale,
+  saveToCache,
+  CACHE_KEYS,
+  CACHE_DURATIONS,
+} from '@/utils/local-cache';
+
 export type AttendanceStatus = 'pending' | 'confirmed' | 'denied';
 
 // API Response Types (snake_case as returned by backend)
@@ -45,9 +52,19 @@ interface ApiClassSession {
   user_status: ApiUserStatus;
 }
 
+interface ApiChildWithClasses {
+  id: number;
+  prefixed_id: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  classes: ApiClassSession[];
+}
+
 interface ApiClassesResponse {
   success: boolean;
   data: ApiClassSession[];
+  children: ApiChildWithClasses[];
   meta: {
     total: number;
     limit: string;
@@ -86,6 +103,24 @@ export interface ClassFilters {
   disciplineId?: number;
   clazzId?: number;
   limit?: number;
+  fromDate?: string; // YYYY-MM-DD format
+  toDate?: string; // YYYY-MM-DD format
+}
+
+// Child with their classes (for responsible users)
+export interface ChildWithClasses {
+  id: string;
+  prefixedId: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  classes: Class[];
+}
+
+// Response type including children's classes
+export interface ClassesWithChildren {
+  classes: Class[];
+  children: ChildWithClasses[];
 }
 
 /**
@@ -138,6 +173,8 @@ const buildQueryString = (filters?: ClassFilters): string => {
   if (filters.disciplineId) params.append('discipline_id', String(filters.disciplineId));
   if (filters.clazzId) params.append('clazz_id', String(filters.clazzId));
   if (filters.limit) params.append('limit', String(filters.limit));
+  if (filters.fromDate) params.append('from_date', filters.fromDate);
+  if (filters.toDate) params.append('to_date', filters.toDate);
 
   const queryString = params.toString();
   return queryString ? `?${queryString}` : '';
@@ -145,16 +182,40 @@ const buildQueryString = (filters?: ClassFilters): string => {
 
 /**
  * Fetch classes with optional filters
+ * Uses cache for offline support
  */
 export const getClasses = async (filters?: ClassFilters): Promise<Class[]> => {
   const queryString = buildQueryString(filters);
-  const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.LIST}${queryString}`);
+  const cacheKey = `${CACHE_KEYS.CLASSES}:${queryString || 'default'}`;
 
-  if (response.error || !response.data) {
-    throw new Error(response.error || 'Failed to fetch classes');
+  try {
+    const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.LIST}${queryString}`);
+
+    if (response.error || !response.data) {
+      throw new Error(response.error || 'Failed to fetch classes');
+    }
+
+    const classes = response.data.data.map(transformApiClass);
+
+    // Cache successful response
+    await saveToCache(cacheKey, classes);
+
+    return classes;
+  } catch (error) {
+    // Try to get cached data as fallback (allow stale for offline)
+    const { data: cachedClasses } = await getFromCacheWithStale<Class[]>(
+      cacheKey,
+      CACHE_DURATIONS.MEDIUM
+    );
+
+    if (cachedClasses) {
+      console.log('[Classes] Using cached data as offline fallback');
+      return cachedClasses;
+    }
+
+    // No cache available, re-throw original error
+    throw error;
   }
-
-  return response.data.data.map(transformApiClass);
 };
 
 /**
@@ -169,6 +230,59 @@ export const getUpcomingClasses = async (limit?: number): Promise<Class[]> => {
  */
 export const getMyClasses = async (limit?: number): Promise<Class[]> => {
   return getClasses({ onlyMe: true, limit });
+};
+
+/**
+ * Transform API child response to internal format
+ */
+const transformApiChild = (apiChild: ApiChildWithClasses): ChildWithClasses => ({
+  id: String(apiChild.id),
+  prefixedId: apiChild.prefixed_id,
+  firstName: apiChild.first_name,
+  lastName: apiChild.last_name,
+  fullName: apiChild.full_name,
+  classes: apiChild.classes.map(transformApiClass),
+});
+
+/**
+ * Fetch user's classes and children's classes
+ * Returns both the user's own classes and their children's classes (for responsible users)
+ */
+export const getMyClassesWithChildren = async (limit?: number): Promise<ClassesWithChildren> => {
+  const queryString = buildQueryString({ onlyMe: true, limit });
+  const cacheKey = `${CACHE_KEYS.CLASSES}:with_children:${queryString || 'default'}`;
+
+  try {
+    const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.LIST}${queryString}`);
+
+    if (response.error || !response.data) {
+      throw new Error(response.error || 'Failed to fetch classes');
+    }
+
+    const result: ClassesWithChildren = {
+      classes: response.data.data.map(transformApiClass),
+      children: (response.data.children || []).map(transformApiChild),
+    };
+
+    // Cache successful response
+    await saveToCache(cacheKey, result);
+
+    return result;
+  } catch (error) {
+    // Try to get cached data as fallback (allow stale for offline)
+    const { data: cachedData } = await getFromCacheWithStale<ClassesWithChildren>(
+      cacheKey,
+      CACHE_DURATIONS.MEDIUM
+    );
+
+    if (cachedData) {
+      console.log('[Classes] Using cached data as offline fallback');
+      return cachedData;
+    }
+
+    // No cache available, re-throw original error
+    throw error;
+  }
 };
 
 /**
@@ -192,17 +306,26 @@ export const getClassesPaginated = async (
 
 /**
  * Set attendance intention for a class
+ * @param occurrenceId - The class occurrence ID
+ * @param decision - 'confirm' or 'decline'
+ * @param options - Optional parameters (notes, childId)
  */
 export const setAttendanceIntention = async (
   occurrenceId: string,
   decision: 'confirm' | 'decline',
-  notes?: string
+  options?: { notes?: string; childId?: string }
 ): Promise<void> => {
-  const response = await api.post(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
+  const payload: Record<string, unknown> = {
     occurrence_id: parseInt(occurrenceId, 10),
     decision,
-    notes: notes || '',
-  });
+    notes: options?.notes || '',
+  };
+
+  if (options?.childId) {
+    payload.child_id = parseInt(options.childId, 10);
+  }
+
+  const response = await api.post(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, payload);
 
   if (response.error) {
     throw new Error(response.error || 'Failed to set attendance intention');
@@ -212,15 +335,21 @@ export const setAttendanceIntention = async (
 /**
  * Confirm attendance for a class
  */
-export const confirmAttendance = async (classId: string, notes?: string): Promise<void> => {
-  await setAttendanceIntention(classId, 'confirm', notes);
+export const confirmAttendance = async (
+  classId: string,
+  options?: { notes?: string; childId?: string }
+): Promise<void> => {
+  await setAttendanceIntention(classId, 'confirm', options);
 };
 
 /**
  * Deny attendance for a class
  */
-export const denyAttendance = async (classId: string, notes?: string): Promise<void> => {
-  await setAttendanceIntention(classId, 'decline', notes);
+export const denyAttendance = async (
+  classId: string,
+  options?: { notes?: string; childId?: string }
+): Promise<void> => {
+  await setAttendanceIntention(classId, 'decline', options);
 };
 
 /**

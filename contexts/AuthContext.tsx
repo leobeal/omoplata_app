@@ -1,7 +1,16 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+} from 'react';
 
+import { switchToChild as switchToChildApi } from '@/api/account-switch';
 import { authApi } from '@/api/auth';
 import { setAuthToken as setApiAuthToken } from '@/api/client';
+import { Child, getProfile } from '@/api/profile';
 import { useTenant } from '@/contexts/TenantContext';
 import {
   saveAuthToken,
@@ -11,17 +20,37 @@ import {
   saveUser,
   loadUser,
   clearAllAuthData,
+  saveParentSession,
+  loadParentSession,
+  clearParentSession,
   StoredUser,
+  ParentSession,
+  UserRole,
+  storedUserIsMember,
+  storedUserIsResponsibleOnly,
 } from '@/utils/auth-storage';
+import { clearUserCache } from '@/utils/local-cache';
 
 interface AuthContextType {
   user: StoredUser | null;
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  // Role helpers
+  isMember: boolean;
+  isResponsibleOnly: boolean;
+  // Profile switching
+  isViewingAsChild: boolean;
+  parentUser: StoredUser | null;
+  children: Child[];
+  childrenLoading: boolean;
+  // Actions
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
+  switchToChild: (childId: string) => Promise<{ success: boolean; error?: string }>;
+  switchBackToParent: () => Promise<{ success: boolean; error?: string }>;
+  refreshChildren: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,12 +59,18 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenProp }) => {
   const { tenant } = useTenant();
   const [user, setUser] = useState<StoredUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [previousTenantSlug, setPreviousTenantSlug] = useState<string | null>(null);
+
+  // Profile switching state
+  const [isViewingAsChild, setIsViewingAsChild] = useState(false);
+  const [parentUser, setParentUser] = useState<StoredUser | null>(null);
+  const [children, setChildren] = useState<Child[]>([]);
+  const [childrenLoading, setChildrenLoading] = useState(false);
 
   // Initialize auth when component mounts or when tenant changes
   useEffect(() => {
@@ -65,20 +100,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       const tenantSlug = tenant?.slug || null;
 
-      const [storedToken, storedUser] = await Promise.all([
+      const [storedToken, storedUser, storedParentSession] = await Promise.all([
         loadAuthToken(tenantSlug),
         loadUser(tenantSlug),
+        loadParentSession(tenantSlug),
       ]);
 
       if (storedToken && storedUser) {
         setToken(storedToken);
         setUser(storedUser);
         setApiAuthToken(storedToken);
+
+        // Check if we're viewing as child (parent session exists)
+        if (storedParentSession) {
+          setIsViewingAsChild(true);
+          setParentUser(storedParentSession.user);
+        } else {
+          setIsViewingAsChild(false);
+          setParentUser(null);
+        }
       } else {
         // No auth data for this tenant
         setToken(null);
         setUser(null);
         setApiAuthToken(null);
+        setIsViewingAsChild(false);
+        setParentUser(null);
       }
     } catch (error) {
       console.error('Failed to initialize auth:', error);
@@ -153,11 +200,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Continue with logout even if API call fails
     } finally {
       const tenantSlug = tenant?.slug || null;
-      // Clear storage and state for current tenant
-      await clearAllAuthData(tenantSlug);
+      // Clear storage, state, and user-specific cache for current tenant
+      await Promise.all([
+        clearAllAuthData(tenantSlug),
+        clearParentSession(tenantSlug),
+        clearUserCache(),
+      ]);
       setToken(null);
       setUser(null);
       setApiAuthToken(null);
+      setIsViewingAsChild(false);
+      setParentUser(null);
+      setChildren([]);
     }
   };
 
@@ -186,17 +240,180 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * Fetch children and roles from profile API
+   */
+  const refreshChildren = useCallback(async () => {
+    if (!token || isViewingAsChild) {
+      setChildren([]);
+      return;
+    }
+
+    try {
+      setChildrenLoading(true);
+      const profile = await getProfile();
+      setChildren(profile.children || []);
+
+      // Update user roles from profile if they changed
+      if (user && profile.roles) {
+        const currentRoles = user.roles || [];
+        const profileRoles = profile.roles;
+        const rolesChanged =
+          currentRoles.length !== profileRoles.length ||
+          !currentRoles.every((r) => profileRoles.includes(r));
+
+        if (rolesChanged) {
+          const updatedUser: StoredUser = { ...user, roles: profileRoles };
+          setUser(updatedUser);
+          const tenantSlug = tenant?.slug || null;
+          await saveUser(updatedUser, tenantSlug);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch children:', error);
+      setChildren([]);
+    } finally {
+      setChildrenLoading(false);
+    }
+  }, [token, isViewingAsChild, user, tenant?.slug]);
+
+  // Fetch children when authenticated and not viewing as child
+  useEffect(() => {
+    if (token && !isLoading && !isViewingAsChild) {
+      refreshChildren();
+    }
+  }, [token, isLoading, isViewingAsChild, refreshChildren]);
+
+  /**
+   * Switch to a child account
+   */
+  const switchToChild = async (childId: string): Promise<{ success: boolean; error?: string }> => {
+    if (!token || !user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    if (isViewingAsChild) {
+      return { success: false, error: 'Already viewing as child' };
+    }
+
+    try {
+      const tenantSlug = tenant?.slug || null;
+      const currentRefreshToken = await loadRefreshToken(tenantSlug);
+
+      // Save current parent session before switching
+      const parentSession: ParentSession = {
+        token,
+        refreshToken: currentRefreshToken || undefined,
+        user,
+      };
+      await saveParentSession(parentSession, tenantSlug);
+
+      // Clear user-specific cache before switching
+      await clearUserCache();
+
+      // Call switch API
+      const result = await switchToChildApi(childId);
+
+      // Prepare child user data (children are always members)
+      const childUser: StoredUser = {
+        id: result.user.id,
+        email: result.user.email,
+        firstName: result.user.firstName,
+        lastName: result.user.lastName,
+        roles: ['member'] as UserRole[],
+      };
+
+      // Save new auth data
+      await Promise.all([saveAuthToken(result.token, tenantSlug), saveUser(childUser, tenantSlug)]);
+
+      // Update state
+      setToken(result.token);
+      setUser(childUser);
+      setApiAuthToken(result.token);
+      setIsViewingAsChild(true);
+      setParentUser(user);
+      setChildren([]); // Children don't have children
+
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to switch to child:', error);
+      // Rollback parent session on error
+      const tenantSlug = tenant?.slug || null;
+      await clearParentSession(tenantSlug);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to switch account',
+      };
+    }
+  };
+
+  /**
+   * Switch back to parent account
+   */
+  const switchBackToParent = async (): Promise<{ success: boolean; error?: string }> => {
+    if (!isViewingAsChild) {
+      return { success: false, error: 'Not viewing as child' };
+    }
+
+    try {
+      const tenantSlug = tenant?.slug || null;
+      const parentSession = await loadParentSession(tenantSlug);
+
+      if (!parentSession) {
+        return { success: false, error: 'No parent session found' };
+      }
+
+      // Clear user-specific cache and restore parent session
+      await Promise.all([
+        clearUserCache(),
+        saveAuthToken(parentSession.token, tenantSlug),
+        saveUser(parentSession.user, tenantSlug),
+        parentSession.refreshToken
+          ? saveRefreshToken(parentSession.refreshToken, tenantSlug)
+          : Promise.resolve(),
+        clearParentSession(tenantSlug),
+      ]);
+
+      // Update state
+      setToken(parentSession.token);
+      setUser(parentSession.user);
+      setApiAuthToken(parentSession.token);
+      setIsViewingAsChild(false);
+      setParentUser(null);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to switch back to parent:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to switch back',
+      };
+    }
+  };
+
   const value = {
     user,
     token,
     isLoading,
     isAuthenticated: !!token && !!user,
+    // Role helpers
+    isMember: storedUserIsMember(user),
+    isResponsibleOnly: storedUserIsResponsibleOnly(user),
+    // Profile switching
+    isViewingAsChild,
+    parentUser,
+    children,
+    childrenLoading,
+    // Actions
     login,
     logout,
     refreshSession,
+    switchToChild,
+    switchBackToParent,
+    refreshChildren,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{childrenProp}</AuthContext.Provider>;
 };
 
 export const useAuth = (): AuthContextType => {

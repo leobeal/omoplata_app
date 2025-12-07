@@ -11,7 +11,7 @@
     "currency": "EUR",
     "plan": {
       "id": 1000002,
-      "name": "Unbegrenzt",
+      "name": "test Unbegrenzt",
       "price_id": 1000012,
       "price_name": null,
       "amount": 89,

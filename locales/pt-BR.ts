@@ -26,6 +26,28 @@ export default {
     logout: 'Sair',
   },
 
+  // Rede
+  network: {
+    offline: 'Você está offline',
+    offlineMessage: 'As alterações serão sincronizadas quando a conexão for restaurada',
+    backOnline: 'De volta online',
+    usingCachedData: 'Exibindo dados salvos',
+  },
+
+  // Família / Troca de Perfil
+  family: {
+    title: 'Membros da Família',
+    viewingAs: 'Visualizando como conta de {{name}}',
+    switchBack: 'Voltar',
+    switchBackTo: 'Voltar para sua conta',
+    switchAccount: 'Trocar Conta',
+    tapToView: 'Toque para ver a conta',
+    view: 'Ver',
+    switch: 'Trocar',
+    switchError: 'Falha ao trocar de conta',
+    switchBackError: 'Falha ao voltar para sua conta',
+  },
+
   // Tela Inicial/Painel
   home: {
     welcomeBack: 'Bem-vindo de volta!',
@@ -48,6 +70,11 @@ export default {
     weeklyActivity: 'Atividade Semanal',
     pastThreeWeeks: 'Últimas 3 semanas',
     onTrack: 'no caminho certo',
+    upcomingClasses: 'Próximas Aulas',
+    unableToLoadClasses: 'Não foi possível carregar as aulas',
+    noUpcomingClasses: 'Nenhuma aula agendada',
+    childClasses: 'Aulas de {{name}}',
+    childrenClasses: 'Aulas dos Filhos',
   },
 
   // Tela de Configurações
@@ -68,6 +95,8 @@ export default {
     getHelp: 'Obtenha ajuda com sua conta',
     logout: 'Sair',
     signOut: 'Sair da sua conta',
+    logoutConfirm: 'Tem certeza que deseja sair?',
+    logoutError: 'Falha ao sair. Por favor, tente novamente.',
   },
 
   // Tela de Assinaturas

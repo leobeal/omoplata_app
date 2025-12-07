@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
   View,
   Pressable,
@@ -6,18 +6,19 @@ import {
   ActivityIndicator,
   Dimensions,
   RefreshControl,
+  FlatList,
+  ListRenderItem,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getClasses, Class } from '@/api/classes';
 import CalendarClassCard from '@/components/CalendarClassCard';
 import Icon from '@/components/Icon';
-import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DAY_ITEM_WIDTH = 56;
 const DAY_MARGIN = 4; // mx-1 = 4px on each side
 const DAY_TOTAL_WIDTH = DAY_ITEM_WIDTH + DAY_MARGIN * 2; // 56 + 8 = 64
@@ -37,6 +38,8 @@ export default function CalendarScreen() {
   const t = useT();
   const colors = useThemeColors();
   const scrollViewRef = useRef<ScrollView>(null);
+  const classesListRef = useRef<FlatList<DayData>>(null);
+  const isScrollingFromSwipe = useRef(false);
 
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
@@ -77,8 +80,16 @@ export default function CalendarScreen() {
         setLoading(true);
       }
       setError(null);
-      // Fetch all classes with a higher limit for calendar view
-      const data = await getClasses({ limit: 50 });
+
+      // Fetch classes for the next 90 days using date range
+      const today = new Date();
+      const endDate = new Date(today);
+      endDate.setDate(today.getDate() + 90);
+
+      const fromDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      const toDate = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
+
+      const data = await getClasses({ fromDate, toDate });
       setAllClasses(data);
     } catch (err) {
       console.error('Error loading classes:', err);
@@ -140,12 +151,6 @@ export default function CalendarScreen() {
     return daysArray;
   }, [classesByDate]);
 
-  const selectedDateClasses = useMemo(() => {
-    return classesByDate[selectedDate] || [];
-  }, [selectedDate, classesByDate]);
-
-  const selectedDayData = days.find((day) => day.dateString === selectedDate);
-
   // Initialize visible month/year on first load
   useEffect(() => {
     if (days.length > 0 && !visibleMonthYear) {
@@ -186,6 +191,126 @@ export default function CalendarScreen() {
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     setSelectedDate(todayString);
   };
+
+  // Get selected date index
+  const selectedDateIndex = useMemo(() => {
+    return days.findIndex((day) => day.dateString === selectedDate);
+  }, [days, selectedDate]);
+
+  // Track selected date in ref for viewable items callback
+  const selectedDateRef = useRef(selectedDate);
+  useEffect(() => {
+    selectedDateRef.current = selectedDate;
+  }, [selectedDate]);
+
+  // Handle viewable items change for swipe
+  const onViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: { item: DayData }[] }) => {
+      if (viewableItems.length > 0 && isScrollingFromSwipe.current) {
+        const visibleDay = viewableItems[0].item;
+        if (visibleDay.dateString !== selectedDateRef.current) {
+          setSelectedDate(visibleDay.dateString);
+        }
+        isScrollingFromSwipe.current = false;
+      }
+    }
+  ).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+  }).current;
+
+  // Handle scroll begin to detect swipe
+  const handleScrollBeginDrag = useCallback(() => {
+    isScrollingFromSwipe.current = true;
+  }, []);
+
+  // Scroll classes to selected date when date changes (not from swipe)
+  useEffect(() => {
+    if (!loading && classesListRef.current && !isScrollingFromSwipe.current) {
+      classesListRef.current.scrollToIndex({
+        index: selectedDateIndex,
+        animated: false,
+      });
+    }
+  }, [selectedDateIndex, loading]);
+
+  // FlatList item layout for performance
+  const getItemLayout = useCallback(
+    (_: ArrayLike<DayData> | null | undefined, index: number) => ({
+      length: SCREEN_WIDTH,
+      offset: SCREEN_WIDTH * index,
+      index,
+    }),
+    []
+  );
+
+  // Render each day page
+  const renderDayPage: ListRenderItem<DayData> = useCallback(
+    ({ item: day }) => (
+      <View style={{ width: SCREEN_WIDTH }}>
+        <ScrollView
+          className="flex-1 px-6 pt-6"
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={colors.text}
+              colors={[colors.highlight]}
+              progressBackgroundColor={colors.bg}
+            />
+          }>
+          {day.classes.length > 0 ? (
+            <>
+              {/* Date Header */}
+              <View className="mb-4">
+                <ThemedText className="text-2xl font-bold">
+                  {day.date.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </ThemedText>
+                <ThemedText className="mt-1 text-sm opacity-60">
+                  {day.classes.length}{' '}
+                  {day.classes.length === 1
+                    ? t('calendar.classCount.one')
+                    : t('calendar.classCount.other')}{' '}
+                  {t('calendar.scheduled')}
+                </ThemedText>
+              </View>
+
+              {/* Classes */}
+              {day.classes.map((classItem) => (
+                <CalendarClassCard key={classItem.id} classData={classItem} />
+              ))}
+              <View className="h-24" />
+            </>
+          ) : (
+            <View className="flex-1 items-center justify-center py-16">
+              <View
+                className="mb-4 rounded-full p-6"
+                style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+                <Icon name="Calendar" size={48} color={colors.text} className="opacity-30" />
+              </View>
+              <ThemedText className="text-center text-xl font-bold opacity-80">
+                {t('calendar.noClasses')}
+              </ThemedText>
+              <ThemedText className="mt-2 text-center opacity-50">
+                {day.date.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </ThemedText>
+            </View>
+          )}
+        </ScrollView>
+      </View>
+    ),
+    [refreshing, handleRefresh, colors, t]
+  );
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-secondary">
@@ -269,92 +394,55 @@ export default function CalendarScreen() {
           </ScrollView>
         </View>
 
-        {/* Classes List */}
-        <ThemedScroller
-          className="flex-1 px-6 pt-6"
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              tintColor={colors.text}
-              colors={[colors.highlight]}
-              progressBackgroundColor={colors.bg}
-            />
-          }>
-          {loading ? (
-            <View className="items-center justify-center py-12">
-              <ActivityIndicator size="large" color={colors.highlight} />
+        {/* Classes List - Horizontal Swipeable */}
+        {loading ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color={colors.highlight} />
+          </View>
+        ) : error ? (
+          <View className="flex-1 items-center justify-center px-6">
+            <View
+              className="mb-4 h-16 w-16 items-center justify-center rounded-full"
+              style={{ backgroundColor: colors.error + '20' }}>
+              <Icon name="AlertCircle" size={32} color={colors.error} />
             </View>
-          ) : error ? (
-            <View className="items-center justify-center py-16">
-              <View
-                className="mb-4 h-16 w-16 items-center justify-center rounded-full"
-                style={{ backgroundColor: colors.error + '20' }}>
-                <Icon name="AlertCircle" size={32} color={colors.error} />
-              </View>
-              <ThemedText className="mb-2 text-center text-lg font-bold">
-                {t('calendar.errorTitle')}
-              </ThemedText>
-              <ThemedText className="mb-6 max-w-sm text-center text-sm opacity-70">
-                {error}
-              </ThemedText>
-              <Pressable
-                onPress={loadClasses}
-                className="rounded-full px-6 py-3"
-                style={{ backgroundColor: colors.highlight }}>
-                <View className="flex-row items-center">
-                  <Icon name="RefreshCw" size={16} color="#FFFFFF" />
-                  <ThemedText className="ml-2 font-semibold" style={{ color: '#FFFFFF' }}>
-                    {t('common.tryAgain')}
-                  </ThemedText>
-                </View>
-              </Pressable>
-            </View>
-          ) : selectedDateClasses.length > 0 ? (
-            <>
-              {/* Selected Date Header */}
-              <View className="mb-4">
-                <ThemedText className="text-2xl font-bold">
-                  {selectedDayData?.date.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </ThemedText>
-                <ThemedText className="mt-1 text-sm opacity-60">
-                  {selectedDateClasses.length}{' '}
-                  {selectedDateClasses.length === 1
-                    ? t('calendar.classCount.one')
-                    : t('calendar.classCount.other')}{' '}
-                  {t('calendar.scheduled')}
+            <ThemedText className="mb-2 text-center text-lg font-bold">
+              {t('calendar.errorTitle')}
+            </ThemedText>
+            <ThemedText className="mb-6 max-w-sm text-center text-sm opacity-70">
+              {error}
+            </ThemedText>
+            <Pressable
+              onPress={() => loadClasses()}
+              className="rounded-full px-6 py-3"
+              style={{ backgroundColor: colors.highlight }}>
+              <View className="flex-row items-center">
+                <Icon name="RefreshCw" size={16} color="#FFFFFF" />
+                <ThemedText className="ml-2 font-semibold" style={{ color: '#FFFFFF' }}>
+                  {t('common.tryAgain')}
                 </ThemedText>
               </View>
-
-              {/* Classes */}
-              {selectedDateClasses.map((classItem) => (
-                <CalendarClassCard key={classItem.id} classData={classItem} />
-              ))}
-            </>
-          ) : (
-            <View className="items-center justify-center py-16">
-              <View
-                className="mb-4 rounded-full p-6"
-                style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
-                <Icon name="Calendar" size={48} color={colors.text} className="opacity-30" />
-              </View>
-              <ThemedText className="text-center text-xl font-bold opacity-80">
-                {t('calendar.noClasses')}
-              </ThemedText>
-              <ThemedText className="mt-2 text-center opacity-50">
-                {selectedDayData?.date.toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </ThemedText>
-            </View>
-          )}
-        </ThemedScroller>
+            </Pressable>
+          </View>
+        ) : (
+          <FlatList
+            ref={classesListRef}
+            data={days}
+            renderItem={renderDayPage}
+            keyExtractor={(item) => item.dateString}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScrollBeginDrag={handleScrollBeginDrag}
+            onViewableItemsChanged={onViewableItemsChanged}
+            viewabilityConfig={viewabilityConfig}
+            getItemLayout={getItemLayout}
+            initialScrollIndex={selectedDateIndex}
+            windowSize={3}
+            maxToRenderPerBatch={3}
+            removeClippedSubviews
+          />
+        )}
       </View>
     </SafeAreaView>
   );

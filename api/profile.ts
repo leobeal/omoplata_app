@@ -18,6 +18,24 @@ interface ApiResponsible {
   relationship: string;
 }
 
+interface ApiChild {
+  id: string;
+  prefixed_id: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  email: string;
+  phone_country_code: string | null;
+  phone: string | null;
+  date_of_birth: string | null;
+  profile_picture: string | null;
+  relationship: string | null;
+  responsible_had_account: boolean | null;
+}
+
+// User roles
+export type UserRole = 'member' | 'responsible';
+
 interface ApiUserResponse {
   id: string;
   prefixed_id: string;
@@ -34,10 +52,11 @@ interface ApiUserResponse {
   date_of_birth: string | null;
   profile_picture: string | null;
   requires_payer: boolean;
+  roles: UserRole[];
   address: ApiAddress | null;
   responsibles: ApiResponsible[];
   primary_responsible: ApiResponsible | null;
-  children: ApiResponsible[];
+  children: ApiChild[];
 }
 
 // Internal Types (camelCase for app use)
@@ -57,6 +76,21 @@ export interface Responsible {
   relationship: string;
 }
 
+export interface Child {
+  id: string;
+  prefixedId: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email: string;
+  phoneCountryCode: string | null;
+  phone: string | null;
+  dateOfBirth: string | null;
+  profilePicture: string | null;
+  relationship: string | null;
+  responsibleHadAccount: boolean | null;
+}
+
 export interface Profile {
   id: string;
   prefixedId: string;
@@ -73,11 +107,26 @@ export interface Profile {
   dateOfBirth: string | null;
   profilePicture: string | null;
   requiresPayer: boolean;
+  roles: UserRole[];
   address: Address | null;
   responsibles: Responsible[];
   primaryResponsible: Responsible | null;
-  children: Responsible[];
+  children: Child[];
 }
+
+/**
+ * Check if user has the 'member' role (has their own membership)
+ */
+export const isMember = (profile: Profile): boolean => {
+  return profile.roles.includes('member');
+};
+
+/**
+ * Check if user has only the 'responsible' role (manages children but has no membership)
+ */
+export const isResponsibleOnly = (profile: Profile): boolean => {
+  return profile.roles.includes('responsible') && !profile.roles.includes('member');
+};
 
 export interface ProfileUpdateRequest {
   first_name?: string;
@@ -116,6 +165,7 @@ const transformApiUser = (apiUser: ApiUserResponse): Profile => {
     dateOfBirth: apiUser.date_of_birth,
     profilePicture: apiUser.profile_picture,
     requiresPayer: apiUser.requires_payer,
+    roles: apiUser.roles || [],
     address: apiUser.address
       ? {
           street: apiUser.address.street,
@@ -143,10 +193,17 @@ const transformApiUser = (apiUser: ApiUserResponse): Profile => {
       : null,
     children: apiUser.children.map((c) => ({
       id: c.id,
+      prefixedId: c.prefixed_id,
       firstName: c.first_name,
       lastName: c.last_name,
+      fullName: c.full_name,
       email: c.email,
+      phoneCountryCode: c.phone_country_code,
+      phone: c.phone,
+      dateOfBirth: c.date_of_birth,
+      profilePicture: c.profile_picture,
       relationship: c.relationship,
+      responsibleHadAccount: c.responsible_had_account,
     })),
   };
 };

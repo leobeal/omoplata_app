@@ -100,16 +100,19 @@ export default function LoginScreen() {
         const result = await login(email, password);
 
         if (result.success) {
-          // Navigate to home screen after successful login
-          router.replace('/');
+          // Don't navigate here - let AuthGate in _layout.tsx handle the redirect
+          // This prevents race conditions where router.replace runs before
+          // the auth state has fully propagated through React context
         } else {
           setGeneralError(result.error || 'Login failed. Please try again.');
+          setIsLoading(false);
         }
       } catch {
         setGeneralError('An unexpected error occurred. Please try again.');
-      } finally {
         setIsLoading(false);
       }
+      // Note: Don't setIsLoading(false) on success - keep showing loading
+      // until AuthGate redirects us away from this screen
     }
   };
 

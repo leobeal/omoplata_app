@@ -1,6 +1,13 @@
 import { api } from './client';
 import { ENDPOINTS } from './config';
 
+import {
+  getFromCacheWithStale,
+  saveToCache,
+  CACHE_KEYS,
+  CACHE_DURATIONS,
+} from '@/utils/local-cache';
+
 export type InvoiceStatus =
   | 'pending'
   | 'processing'
@@ -57,6 +64,7 @@ export interface InvoicesResponse {
 
 /**
  * Fetch invoices with optional filtering and pagination
+ * Uses cache for offline support
  */
 export const getInvoices = async (params?: InvoicesParams): Promise<InvoicesResponse> => {
   const queryParams = new URLSearchParams(
@@ -69,13 +77,34 @@ export const getInvoices = async (params?: InvoicesParams): Promise<InvoicesResp
     ? `${ENDPOINTS.INVOICES.LIST}?${queryParams}`
     : ENDPOINTS.INVOICES.LIST;
 
-  const response = await api.get<InvoicesResponse>(endpoint);
+  const cacheKey = `${CACHE_KEYS.INVOICES}:${queryParams || 'default'}`;
 
-  if (response.error || !response.data) {
-    throw new Error(response.error || 'Failed to fetch invoices');
+  try {
+    const response = await api.get<InvoicesResponse>(endpoint);
+
+    if (response.error || !response.data) {
+      throw new Error(response.error || 'Failed to fetch invoices');
+    }
+
+    // Cache successful response
+    await saveToCache(cacheKey, response.data);
+
+    return response.data;
+  } catch (error) {
+    // Try to get cached data as fallback (allow stale for offline)
+    const { data: cachedInvoices } = await getFromCacheWithStale<InvoicesResponse>(
+      cacheKey,
+      CACHE_DURATIONS.LONG
+    );
+
+    if (cachedInvoices) {
+      console.log('[Invoices] Using cached data as offline fallback');
+      return cachedInvoices;
+    }
+
+    // No cache available, re-throw original error
+    throw error;
   }
-
-  return response.data;
 };
 
 /**
