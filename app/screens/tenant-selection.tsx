@@ -1,23 +1,28 @@
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { View, ScrollView, TextInput, ActivityIndicator } from 'react-native';
+import { View, ScrollView, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import api from '@/api/client';
+import { ENDPOINTS, setTenant as setApiTenant } from '@/api/config';
 import AnimatedView from '@/components/AnimatedView';
 import { Button } from '@/components/Button';
 import Icon from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
 import { getTenantConfig } from '@/configs/tenant-registry';
+import { useT } from '@/contexts/LocalizationContext';
 import { useTenant } from '@/contexts/TenantContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function TenantSelectionScreen() {
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
+  const t = useT();
   const { setTenant } = useTenant();
   const [tenantSlug, setTenantSlug] = useState('');
   const [error, setError] = useState('');
+  const [clubNotFound, setClubNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const validateTenantSlug = (slug: string): boolean => {
@@ -61,8 +66,27 @@ export default function TenantSelectionScreen() {
 
     setIsLoading(true);
     setError('');
+    setClubNotFound(false);
 
     try {
+      // Set the API tenant temporarily to make the check call
+      setApiTenant(slug);
+
+      // Check if tenant exists via unauthenticated endpoint
+      const checkResponse = await api.get(ENDPOINTS.TENANT.CHECK);
+
+      if (checkResponse.status === 404) {
+        setClubNotFound(true);
+        setIsLoading(false);
+        return;
+      }
+
+      if (checkResponse.error) {
+        setError(t('common.error'));
+        setIsLoading(false);
+        return;
+      }
+
       // Look up tenant config from registry
       const tenantConfig = getTenantConfig(slug);
 
@@ -80,7 +104,6 @@ export default function TenantSelectionScreen() {
     } catch (err) {
       setError('Failed to save gym selection. Please try again.');
       console.error('Failed to set tenant:', err);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -138,6 +161,7 @@ export default function TenantSelectionScreen() {
                 onChangeText={(text) => {
                   setTenantSlug(text.toLowerCase());
                   setError('');
+                  setClubNotFound(false);
                 }}
                 placeholder="e.g., evolve"
                 placeholderTextColor={colors.textMuted}
@@ -154,35 +178,68 @@ export default function TenantSelectionScreen() {
             {error ? <ThemedText className="text-error mt-1 text-sm">{error}</ThemedText> : null}
           </View>
 
-          {/* Info Box */}
-          <View className="mb-6 rounded-xl p-4" style={{ backgroundColor: colors.primary + '10' }}>
-            <View className="flex-row items-start">
-              <Icon
-                name="Info"
-                size={20}
-                color={colors.primary}
-                style={{ marginTop: 2, marginRight: 8 }}
-              />
-              <View className="flex-1">
+          {/* Club Not Found Error */}
+          {clubNotFound ? (
+            <View className="mb-6 rounded-xl p-4" style={{ backgroundColor: colors.error + '15' }}>
+              <View className="mb-2 flex-row items-center">
+                <Icon
+                  name="AlertCircle"
+                  size={20}
+                  color={colors.error}
+                  style={{ marginRight: 8 }}
+                />
+                <ThemedText className="text-base font-semibold" style={{ color: colors.error }}>
+                  {t('clubNotFound.title')}
+                </ThemedText>
+              </View>
+              <ThemedText className="text-text-muted mb-3 text-sm">
+                {t('clubNotFound.message')}
+              </ThemedText>
+              <ThemedText className="text-text-muted mb-2 text-sm font-medium">
+                {t('clubNotFound.suggestions')}
+              </ThemedText>
+              <View className="ml-2">
+                <ThemedText className="text-text-muted mb-1 text-sm">
+                  • {t('clubNotFound.checkUrl')}
+                </ThemedText>
+                <ThemedText className="text-text-muted mb-1 text-sm">
+                  • {t('clubNotFound.contactClub')}
+                </ThemedText>
                 <ThemedText className="text-text-muted text-sm">
-                  Not sure what your gym identifier is? Contact your gym or check the welcome email
-                  you received.
+                  • {t('clubNotFound.tryLater')}
                 </ThemedText>
               </View>
             </View>
-          </View>
+          ) : (
+            /* Info Box */
+            <View
+              className="mb-6 rounded-xl p-4"
+              style={{ backgroundColor: colors.primary + '10' }}>
+              <View className="flex-row items-start">
+                <Icon
+                  name="Info"
+                  size={20}
+                  color={colors.primary}
+                  style={{ marginTop: 2, marginRight: 8 }}
+                />
+                <View className="flex-1">
+                  <ThemedText className="text-text-muted text-sm">
+                    Not sure what your gym identifier is? Contact your gym or check the welcome
+                    email you received.
+                  </ThemedText>
+                </View>
+              </View>
+            </View>
+          )}
 
           {/* Continue Button */}
           <Button
+            title="Continue"
             onPress={handleContinue}
             disabled={isLoading || !tenantSlug.trim()}
-            className="mb-4">
-            {isLoading ? (
-              <ActivityIndicator color={colors.background} />
-            ) : (
-              <ThemedText className="text-base font-semibold text-white">Continue</ThemedText>
-            )}
-          </Button>
+            loading={isLoading}
+            className="mb-4"
+          />
 
           {/* Bottom Spacer */}
           <View style={{ flex: 0.3 }} />

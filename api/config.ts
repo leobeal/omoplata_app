@@ -59,6 +59,7 @@ export const API_CONFIG = {
   get headers(): Record<string, string> {
     return {
       'Content-Type': 'application/json',
+      Accept: 'application/json',
       'X-Tenant': getTenant(),
     };
   },
@@ -121,6 +122,10 @@ export const ENDPOINTS = {
   // App Config
   CONFIG: {
     APP: '/config/app',
+  },
+  // Tenant Check (unauthenticated)
+  TENANT: {
+    CHECK: '/check',
   },
   // Notifications
   NOTIFICATIONS: {

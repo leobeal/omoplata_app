@@ -29,6 +29,9 @@ module.exports = {
   // Localization
   language: 'de', // de, en, pt-BR
 
+  // Universal Links (production only)
+  universalLinkDomain: 'evolve-grappling.omoplata.de',
+
   // Login screen
   loginBackground:
     'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2000&auto=format&fit=crop',

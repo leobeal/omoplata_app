@@ -4,6 +4,8 @@ import {
   getPrimaryMember,
   getMonthlyEquivalent,
   formatCurrency,
+  parseDurationToMonths,
+  getIntervalLabel,
 } from '../../api/membership';
 
 describe('Membership API', () => {
@@ -16,26 +18,26 @@ describe('Membership API', () => {
       const membership = await getMembership();
 
       expect(membership).toBeDefined();
-      expect(membership.id).toBe('mem_abc123');
-      expect(membership.status).toBe('active');
+      expect(typeof membership.id).toBe('number');
+      expect(membership.status).toBe('new');
     });
 
     it('should have valid plan details', async () => {
       const membership = await getMembership();
 
       expect(membership.plan).toBeDefined();
-      expect(membership.plan.id).toBe('plan_premium');
-      expect(membership.plan.name).toBe('Premium Annual');
-      expect(membership.plan.chargeInterval).toBe('yearly');
-      expect(membership.plan.contractDuration).toBe(12);
+      expect(typeof membership.plan.id).toBe('number');
+      expect(membership.plan.name).toBe('Unbegrenzt');
+      expect(membership.plan.chargeInterval).toBe('P1M');
+      expect(membership.plan.contractDuration).toBe('P6M');
     });
 
     it('should have pricing information', async () => {
       const membership = await getMembership();
 
-      expect(membership.plan.amount).toBe(959.88);
+      expect(membership.plan.amount).toBe(89);
       expect(membership.plan.currency).toBe('EUR');
-      expect(membership.amount).toBe(79.99);
+      expect(membership.amount).toBe(89);
     });
 
     it('should have members array', async () => {
@@ -45,28 +47,29 @@ describe('Membership API', () => {
       expect(Array.isArray(membership.members)).toBe(true);
       expect(membership.members.length).toBeGreaterThan(0);
 
-      const primaryMember = membership.members[0];
-      expect(primaryMember.id).toBe('usr_001');
-      expect(primaryMember.prefixedId).toBe('MEM-2023-001234');
-      expect(primaryMember.fullName).toBe('John Doe');
-      expect(primaryMember.role).toBe('primary');
+      const member = membership.members[0];
+      expect(typeof member.id).toBe('number');
+      expect(member.prefixedId).toBe('USER84aa2d8f26');
+      expect(member.fullName).toBe('John Doe');
+      expect(member.role).toBe('member');
     });
 
     it('should have payer information', async () => {
       const membership = await getMembership();
 
       expect(membership.payer).toBeDefined();
-      expect(membership.payer.id).toBe('usr_001');
+      expect(typeof membership.payer.id).toBe('number');
       expect(membership.payer.fullName).toBe('John Doe');
     });
 
-    it('should have date fields', async () => {
+    it('should handle nullable date fields', async () => {
       const membership = await getMembership();
 
       expect(membership.startsAt).toBeDefined();
-      expect(membership.endsAt).toBeDefined();
-      expect(membership.renewsAt).toBeDefined();
       expect(membership.chargeStartsAt).toBeDefined();
+      // These can be null
+      expect(membership.endsAt).toBeNull();
+      expect(membership.renewsAt).toBeNull();
       expect(membership.renewsAutomatically).toBe(true);
     });
 
@@ -82,7 +85,7 @@ describe('Membership API', () => {
 
   describe('downloadContract', () => {
     it('should return contract PDF URL', async () => {
-      const membershipId = 'mem_abc123';
+      const membershipId = '1000031';
       const pdfUrl = await downloadContract(membershipId);
 
       expect(pdfUrl).toBeDefined();
@@ -93,7 +96,7 @@ describe('Membership API', () => {
 
     it('should simulate API delay for download', async () => {
       const startTime = Date.now();
-      await downloadContract('mem_abc123');
+      await downloadContract('1000031');
       const endTime = Date.now();
 
       const delay = endTime - startTime;
@@ -101,73 +104,119 @@ describe('Membership API', () => {
     });
 
     it('should generate unique URLs for different memberships', async () => {
-      const url1 = await downloadContract('mem_abc123');
-      const url2 = await downloadContract('mem_xyz789');
+      const url1 = await downloadContract('1000031');
+      const url2 = await downloadContract('1000032');
 
       expect(url1).not.toBe(url2);
     });
   });
 
   describe('getPrimaryMember', () => {
-    it('should return the primary member', async () => {
+    it('should return the first member', async () => {
       const membership = await getMembership();
       const primaryMember = getPrimaryMember(membership);
 
       expect(primaryMember).toBeDefined();
-      expect(primaryMember?.role).toBe('primary');
+      expect(primaryMember?.role).toBe('member');
       expect(primaryMember?.fullName).toBe('John Doe');
     });
 
-    it('should return undefined if no primary member exists', () => {
-      const membershipWithNoPrimary = {
-        id: 'test',
+    it('should return undefined if no members exist', () => {
+      const membershipWithNoMembers = {
+        id: 123,
         status: 'active' as const,
         startsAt: '',
         chargeStartsAt: '',
-        endsAt: '',
-        renewsAt: '',
+        endsAt: null,
+        renewsAt: null,
         renewsAutomatically: true,
         amount: 0,
         currency: 'EUR',
         plan: {
-          id: 'test',
+          id: 1,
           name: 'Test',
-          priceId: 'test',
-          priceName: 'Test',
+          priceId: 1,
+          priceName: null,
           amount: 0,
           currency: 'EUR',
-          chargeInterval: 'monthly' as const,
-          contractDuration: 1,
+          chargeInterval: 'P1M',
+          contractDuration: 'P6M',
         },
-        members: [
-          {
-            id: 'usr_002',
-            prefixedId: 'MEM-002',
-            firstName: 'Jane',
-            lastName: 'Doe',
-            fullName: 'Jane Doe',
-            role: 'secondary' as const,
-          },
-        ],
-        payer: { id: 'usr_002', prefixedId: 'MEM-002', fullName: 'Jane Doe' },
+        members: [],
+        payer: { id: 1, prefixedId: 'TEST', fullName: 'Test' },
       };
 
-      const primaryMember = getPrimaryMember(membershipWithNoPrimary);
+      const primaryMember = getPrimaryMember(membershipWithNoMembers);
       expect(primaryMember).toBeUndefined();
+    });
+  });
+
+  describe('parseDurationToMonths', () => {
+    it('should parse months', () => {
+      expect(parseDurationToMonths('P1M')).toBe(1);
+      expect(parseDurationToMonths('P6M')).toBe(6);
+      expect(parseDurationToMonths('P12M')).toBe(12);
+    });
+
+    it('should parse years', () => {
+      expect(parseDurationToMonths('P1Y')).toBe(12);
+      expect(parseDurationToMonths('P2Y')).toBe(24);
+    });
+
+    it('should parse combined years and months', () => {
+      expect(parseDurationToMonths('P1Y6M')).toBe(18);
+    });
+
+    it('should handle weeks approximately', () => {
+      expect(parseDurationToMonths('P4W')).toBe(1);
+    });
+
+    it('should return 0 for invalid format', () => {
+      expect(parseDurationToMonths('invalid')).toBe(0);
+    });
+  });
+
+  describe('getIntervalLabel', () => {
+    it('should return monthly for P1M', () => {
+      expect(getIntervalLabel('P1M')).toBe('monthly');
+    });
+
+    it('should return yearly for P1Y', () => {
+      expect(getIntervalLabel('P1Y')).toBe('yearly');
+    });
+
+    it('should return every 6 months for P6M', () => {
+      expect(getIntervalLabel('P6M')).toBe('every 6 months');
+    });
+
+    it('should return weekly for P1W', () => {
+      expect(getIntervalLabel('P1W')).toBe('weekly');
+    });
+
+    it('should return every 2 weeks for P2W', () => {
+      expect(getIntervalLabel('P2W')).toBe('every 2 weeks');
+    });
+
+    it('should return daily for P1D', () => {
+      expect(getIntervalLabel('P1D')).toBe('daily');
+    });
+
+    it('should return the duration string for unknown durations', () => {
+      expect(getIntervalLabel('P5M')).toBe('P5M');
     });
   });
 
   describe('getMonthlyEquivalent', () => {
     it('should calculate monthly equivalent for yearly plans', () => {
       const plan = {
-        id: 'test',
+        id: 1,
         name: 'Test',
-        priceId: 'test',
-        priceName: 'Test',
+        priceId: 1,
+        priceName: null,
         amount: 1200,
         currency: 'EUR',
-        chargeInterval: 'yearly' as const,
-        contractDuration: 12,
+        chargeInterval: 'P1Y',
+        contractDuration: 'P1Y',
       };
 
       expect(getMonthlyEquivalent(plan)).toBe(100);
@@ -175,33 +224,32 @@ describe('Membership API', () => {
 
     it('should return same amount for monthly plans', () => {
       const plan = {
-        id: 'test',
+        id: 1,
         name: 'Test',
-        priceId: 'test',
-        priceName: 'Test',
+        priceId: 1,
+        priceName: null,
         amount: 100,
         currency: 'EUR',
-        chargeInterval: 'monthly' as const,
-        contractDuration: 1,
+        chargeInterval: 'P1M',
+        contractDuration: 'P6M',
       };
 
       expect(getMonthlyEquivalent(plan)).toBe(100);
     });
 
-    it('should calculate monthly equivalent for weekly plans', () => {
+    it('should calculate monthly equivalent for 6-month plans', () => {
       const plan = {
-        id: 'test',
+        id: 1,
         name: 'Test',
-        priceId: 'test',
-        priceName: 'Test',
-        amount: 25,
+        priceId: 1,
+        priceName: null,
+        amount: 600,
         currency: 'EUR',
-        chargeInterval: 'weekly' as const,
-        contractDuration: 1,
+        chargeInterval: 'P6M',
+        contractDuration: 'P6M',
       };
 
-      // 25 * 52 / 12 = 108.33
-      expect(getMonthlyEquivalent(plan)).toBeCloseTo(108.33, 2);
+      expect(getMonthlyEquivalent(plan)).toBe(100);
     });
   });
 

@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Dimensions, Image, Pressable, SafeAreaView, ImageBackground } from 'react-native';
+import { View, Text, FlatList, Dimensions, Image, Pressable, ImageBackground } from 'react-native';
 import { useState } from 'react';
 import ThemedText from '@/components/ThemedText';
 import ThemeToggle from '@/components/ThemeToggle';

@@ -49,6 +49,9 @@ export async function apiRequest<T>(
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
+    console.log(`[API] ${method} ${url}`);
+    const startTime = Date.now();
+
     const response = await fetch(url, {
       method,
       headers: requestHeaders,
@@ -59,9 +62,10 @@ export async function apiRequest<T>(
     clearTimeout(timeoutId);
 
     const data = await response.json().catch(() => null);
+    const duration = Date.now() - startTime;
 
     if (!response.ok) {
-      console.error(`[API Error] ${method} ${url} - Status: ${response.status}`);
+      console.error(`[API Error] ${method} ${url} - Status: ${response.status} (${duration}ms)`);
       return {
         data: null,
         error: data?.message || `Request failed with status ${response.status}`,
@@ -69,6 +73,7 @@ export async function apiRequest<T>(
       };
     }
 
+    console.log(`[API] ${method} ${url} - ${response.status} (${duration}ms)`);
     return {
       data: data as T,
       error: null,

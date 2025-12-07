@@ -4,7 +4,7 @@ module.exports = {
   slug: 'omoplata',
   bundleIdentifier: 'de.omoplata.app',
   owner: 'omoplata',
-  easProjectId: '3bff59d5-a63b-4bdd-b2ed-ea12e293de46', // You may want a different project ID for generic build
+  easProjectId: '3bff59d5-a63b-4bdd-b2ed-ea12e293de46',
 
   // Branding - Geaseneric icons
   icon: './assets/_global/icon.png',
@@ -28,6 +28,9 @@ module.exports = {
 
   // Localization
   language: 'de', // de, en, pt-BR
+
+  // Universal Links (production only)
+  universalLinkDomain: 'app.omoplata.de',
 
   // Tenant is undefined for generic build - users select at runtime
   tenant: undefined,

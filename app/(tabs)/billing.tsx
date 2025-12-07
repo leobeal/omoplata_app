@@ -3,17 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { View, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
 
 import { getInvoicesPaginated, getNextInvoice, Invoice } from '@/api/invoices';
+import { getPaymentMethodIcon, getPaymentMethodTypeName } from '@/api/payment-methods';
 import ErrorState from '@/components/ErrorState';
 import Header from '@/components/Header';
 import Icon from '@/components/Icon';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
+import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function BillingScreen() {
   const t = useT();
   const colors = useThemeColors();
+  const { paymentMethods } = useAppData();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [nextInvoice, setNextInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
@@ -249,24 +252,40 @@ export default function BillingScreen() {
         )}
 
         {/* Payment Method */}
-        <View className="mb-4">
-          <ThemedText className="mb-3 text-lg font-bold">{t('billing.paymentMethod')}</ThemedText>
-        </View>
+        {paymentMethods.length > 0 && (
+          <>
+            <View className="mb-4">
+              <ThemedText className="mb-3 text-lg font-bold">
+                {t('billing.paymentMethod')}
+              </ThemedText>
+            </View>
 
-        <View className="mb-8 rounded-2xl bg-secondary p-5">
-          <View className="flex-row items-center">
-            <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-background">
-              <Icon name="Building" size={20} />
+            <View className="mb-8 rounded-2xl bg-secondary p-5">
+              {paymentMethods
+                .filter((pm) => pm.isActive)
+                .map((paymentMethod) => (
+                  <View key={paymentMethod.id} className="flex-row items-center">
+                    <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-background">
+                      <Icon name={getPaymentMethodIcon(paymentMethod.type)} size={20} />
+                    </View>
+                    <View className="flex-1">
+                      <ThemedText className="font-semibold">
+                        {getPaymentMethodTypeName(paymentMethod.type)}
+                      </ThemedText>
+                      <ThemedText className="text-sm opacity-50">
+                        {paymentMethod.details?.maskedIban || paymentMethod.last4}
+                      </ThemedText>
+                    </View>
+                    <Pressable onPress={() => router.push('/screens/payment-methods')}>
+                      <ThemedText className="font-semibold text-highlight">
+                        {t('billing.edit')}
+                      </ThemedText>
+                    </Pressable>
+                  </View>
+                ))}
             </View>
-            <View className="flex-1">
-              <ThemedText className="font-semibold">{t('billing.sepaDirectDebit')}</ThemedText>
-              <ThemedText className="text-sm opacity-50">DE89 3704 0044 0532 •••• 00</ThemedText>
-            </View>
-            <Pressable onPress={() => router.push('/screens/payment-methods')}>
-              <ThemedText className="font-semibold text-highlight">{t('billing.edit')}</ThemedText>
-            </Pressable>
-          </View>
-        </View>
+          </>
+        )}
       </ThemedScroller>
     </View>
   );

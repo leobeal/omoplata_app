@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 
 import {
   AppConfig,
+  AppConfigErrorType,
   MembershipSettings,
   BillingSettings,
   FeatureFlags,
@@ -19,6 +20,7 @@ interface AppConfigContextType {
   features: FeatureFlags;
   loading: boolean;
   error: boolean;
+  errorType: AppConfigErrorType;
   refreshConfig: () => Promise<void>;
 }
 
@@ -26,40 +28,52 @@ const AppConfigContext = createContext<AppConfigContextType | undefined>(undefin
 
 export function AppConfigProvider({ children }: { children: ReactNode }) {
   const { tenant, isTenantRequired } = useTenant();
-  const { isLoading: isAuthLoading } = useAuth();
+  const { isLoading: isAuthLoading, isAuthenticated } = useAuth();
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [previousTenantSlug, setPreviousTenantSlug] = useState<string | null | undefined>(
-    undefined
-  );
+  const [errorType, setErrorType] = useState<AppConfigErrorType>(null);
+  const previousTenantSlugRef = useRef<string | null | undefined>(undefined);
 
   const loadConfig = async () => {
     try {
       setLoading(true);
       setError(false);
-      const fetchedConfig = await getAppConfig();
-      if (fetchedConfig) {
-        setConfig(fetchedConfig);
+      setErrorType(null);
+      const result = await getAppConfig();
+
+      if (result.config) {
+        setConfig(result.config);
       } else {
-        // No config returned - treat as error
+        // No config returned - set error with type
         setError(true);
+        setErrorType(result.error);
       }
     } catch (err) {
       console.error('Error loading app config:', err);
       setError(true);
+      setErrorType('network_error');
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle config loading based on tenant and auth state
+  // Handle config loading based on tenant, auth state, and authentication
   useEffect(() => {
     const currentTenantSlug = tenant?.slug || null;
 
-    // Wait for auth to finish loading before fetching config
-    // This ensures the auth token is set in the API client
+    // Wait for auth to finish loading before deciding
     if (isAuthLoading) {
+      return;
+    }
+
+    // If not authenticated, don't fetch config (it requires auth)
+    // Just mark as not loading so the app can proceed to login
+    if (!isAuthenticated) {
+      setLoading(false);
+      setConfig(null);
+      setError(false);
+      setErrorType(null);
       return;
     }
 
@@ -70,19 +84,22 @@ export function AppConfigProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // If we have a tenant (or tenant is not required), load config
+    // If authenticated and we have a tenant (or tenant is not required), load config
     if (tenant || !isTenantRequired) {
       // Clear cache and reload when tenant changes (not on first load)
       const reloadForTenant = async () => {
-        if (previousTenantSlug !== undefined && previousTenantSlug !== currentTenantSlug) {
+        if (
+          previousTenantSlugRef.current !== undefined &&
+          previousTenantSlugRef.current !== currentTenantSlug
+        ) {
           await clearConfigCache();
         }
         await loadConfig();
-        setPreviousTenantSlug(currentTenantSlug);
+        previousTenantSlugRef.current = currentTenantSlug;
       };
       reloadForTenant();
     }
-  }, [tenant?.slug, isTenantRequired, isAuthLoading]);
+  }, [tenant?.slug, isTenantRequired, isAuthLoading, isAuthenticated]);
 
   const refreshConfig = async () => {
     await loadConfig();
@@ -95,6 +112,7 @@ export function AppConfigProvider({ children }: { children: ReactNode }) {
     features: config?.features || defaultConfig.features!,
     loading,
     error,
+    errorType,
     refreshConfig,
   };
 

@@ -174,6 +174,7 @@ export default {
     billedAnnually: 'Billed annually',
     billedMonthly: 'Billed monthly',
     billedWeekly: 'Billed weekly',
+    contractDuration: 'Contract Duration',
     perMonth: '/mo',
     planFeatures: 'Plan Features',
     limit: 'Limit',
@@ -202,11 +203,42 @@ export default {
     defaultTransferPolicy: 'Memberships are non-transferable',
 
     // Status
+    new: 'New',
+    onboardingStarted: 'Onboarding Started',
     active: 'Active',
-    pending: 'Pending',
-    suspended: 'Suspended',
-    expired: 'Expired',
+    paused: 'Paused',
     cancelled: 'Cancelled',
+    defaulted: 'Defaulted',
+
+    // Status descriptions
+    newDescription: 'Membership created, awaiting onboarding',
+    onboardingStartedDescription: 'Onboarding in progress',
+    activeDescription: 'Active membership',
+    pausedDescription: 'Membership temporarily paused',
+    cancelledDescription: 'Membership cancelled',
+    defaultedDescription: 'Payment default - please contact support',
+
+    // Document requests
+    documentRequests: 'Document Requests',
+    pendingDocuments: 'Pending Documents',
+    documentRequired: 'Document Required',
+    uploadDocument: 'Upload Document',
+    uploading: 'Uploading...',
+    uploadSuccess: 'Document uploaded successfully',
+    uploadError: 'Failed to upload document',
+    selectFile: 'Select File',
+    takePhoto: 'Take Photo',
+    chooseFromLibrary: 'Choose from Library',
+
+    // Document types
+    documentTypes: {
+      studentProof: 'Student ID',
+      idCard: 'ID Card',
+      passport: 'Passport',
+      proofOfAddress: 'Proof of Address',
+      medicalCertificate: 'Medical Certificate',
+      other: 'Other Document',
+    },
   },
 
   // Billing Screen
@@ -226,6 +258,26 @@ export default {
     paid: 'Paid',
     pending: 'Pending',
     overdue: 'Overdue',
+  },
+
+  // SEPA Form
+  sepaForm: {
+    title: 'Set Up Direct Debit',
+    subtitle: 'Add your bank details to enable automatic payments',
+    accountHolder: 'Account Holder',
+    accountHolderPlaceholder: 'Full name as shown on account',
+    iban: 'IBAN',
+    ibanPlaceholder: 'DE89 3704 0044 0532 0130 00',
+    bic: 'BIC/SWIFT (optional)',
+    bicPlaceholder: 'COBADEFFXXX',
+    mandateText:
+      'By providing your IBAN, you authorize us to send instructions to your bank to debit your account in accordance with those instructions.',
+    submitButton: 'Set Up Direct Debit',
+    submitting: 'Setting up...',
+    successMessage: 'Direct debit set up successfully',
+    errorMessage: 'Failed to set up direct debit. Please try again.',
+    invalidIban: 'Please enter a valid IBAN',
+    invalidAccountHolder: 'Please enter the account holder name',
   },
 
   // Classes Screen
@@ -256,6 +308,48 @@ export default {
       one: 'class',
       other: 'classes',
     },
+  },
+
+  // Frequencies / Durations (ISO 8601)
+  frequency: {
+    // Recurring intervals (for charge_interval)
+    recurring: {
+      P1D: 'daily',
+      P1W: 'weekly',
+      P2W: 'every 2 weeks',
+      P1M: 'monthly',
+      P3M: 'every 3 months',
+      P6M: 'every 6 months',
+      P12M: 'every 12 months',
+      P18M: 'every 18 months',
+      P24M: 'every 24 months',
+      P1Y: 'yearly',
+    },
+    // One-time durations (for contract_duration)
+    once: {
+      P1W: '1 week',
+      P1M: '1 month',
+      P2M: '2 months',
+      P3M: '3 months',
+      P6M: '6 months',
+      P12M: '12 months',
+      P18M: '18 months',
+      P24M: '24 months',
+      P1Y: '1 year',
+      P2Y: '2 years',
+    },
+  },
+
+  // Club Not Found
+  clubNotFound: {
+    title: 'Club Not Found',
+    message:
+      "We couldn't find this club. The club may have been removed or the link you used may be incorrect.",
+    suggestions: 'What you can try:',
+    checkUrl: 'Check that the club URL or code is correct',
+    contactClub: 'Contact your club directly to verify their details',
+    tryLater: 'Try again later in case of a temporary issue',
+    selectDifferentClub: 'Select a Different Club',
   },
 
   // Date/Time

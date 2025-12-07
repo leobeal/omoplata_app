@@ -1,38 +1,58 @@
 {
   "membership": {
-    "id": "mem_abc123",
-    "status": "active",
-    "starts_at": "2023-01-15T00:00:00Z",
-    "charge_starts_at": "2023-01-15T00:00:00Z",
-    "ends_at": "2025-01-14T23:59:59Z",
-    "renews_at": "2025-01-15T00:00:00Z",
+    "id": 1000031,
+    "status": "new",
+    "starts_at": "2025-12-03",
+    "charge_starts_at": "2026-01-01",
+    "ends_at": null,
+    "renews_at": null,
     "renews_automatically": true,
-    "amount": 79.99,
+    "amount": 89,
     "currency": "EUR",
     "plan": {
-      "id": "plan_premium",
-      "name": "Premium Annual",
-      "price_id": "price_abc123",
-      "price_name": "Annual Payment",
-      "amount": 959.88,
+      "id": 1000002,
+      "name": "Unbegrenzt",
+      "price_id": 1000012,
+      "price_name": null,
+      "amount": 89,
       "currency": "EUR",
-      "charge_interval": "yearly",
-      "contract_duration": 12
+      "charge_interval": "P1M",
+      "contract_duration": "P6M"
     },
     "members": [
       {
-        "id": "usr_001",
-        "prefixed_id": "MEM-2023-001234",
+        "id": 1000029,
+        "prefixed_id": "USER84aa2d8f26",
         "first_name": "John",
         "last_name": "Doe",
         "full_name": "John Doe",
-        "role": "primary"
+        "role": "member"
       }
     ],
     "payer": {
-      "id": "usr_001",
-      "prefixed_id": "MEM-2023-001234",
+      "id": 1000029,
+      "prefixed_id": "USER84aa2d8f26",
       "full_name": "John Doe"
-    }
+    },
+    "document_requests": [
+      {
+        "id": 1,
+        "ulid": "01HXYZ123ABC",
+        "status": "pending",
+        "reason": "Please provide student ID",
+        "note": null,
+        "uploaded_at": null,
+        "created_at": "2025-12-06T22:00:00+00:00",
+        "document_type": {
+          "id": 1,
+          "name": "student_proof"
+        },
+        "user": {
+          "id": 1000029,
+          "prefixed_id": "USER84aa2d8f26",
+          "full_name": "John Doe"
+        }
+      }
+    ]
   }
 }

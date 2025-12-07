@@ -173,6 +173,7 @@ export default {
     billedAnnually: 'Jährlich abgerechnet',
     billedMonthly: 'Monatlich abgerechnet',
     billedWeekly: 'Wöchentlich abgerechnet',
+    contractDuration: 'Vertragslaufzeit',
     perMonth: '/Mo',
     planFeatures: 'Plan-Funktionen',
     limit: 'Limit',
@@ -202,11 +203,42 @@ export default {
     defaultTransferPolicy: 'Mitgliedschaften sind nicht übertragbar',
 
     // Status
+    new: 'Neu',
+    onboardingStarted: 'Onboarding gestartet',
     active: 'Aktiv',
-    pending: 'Ausstehend',
-    suspended: 'Ausgesetzt',
-    expired: 'Abgelaufen',
+    paused: 'Pausiert',
     cancelled: 'Gekündigt',
+    defaulted: 'Zahlungsausfall',
+
+    // Status descriptions
+    newDescription: 'Mitgliedschaft erstellt, Onboarding ausstehend',
+    onboardingStartedDescription: 'Onboarding läuft',
+    activeDescription: 'Aktive Mitgliedschaft',
+    pausedDescription: 'Mitgliedschaft vorübergehend pausiert',
+    cancelledDescription: 'Mitgliedschaft gekündigt',
+    defaultedDescription: 'Zahlungsausfall - bitte Support kontaktieren',
+
+    // Document requests
+    documentRequests: 'Dokumentenanfragen',
+    pendingDocuments: 'Ausstehende Dokumente',
+    documentRequired: 'Dokument erforderlich',
+    uploadDocument: 'Dokument hochladen',
+    uploading: 'Wird hochgeladen...',
+    uploadSuccess: 'Dokument erfolgreich hochgeladen',
+    uploadError: 'Fehler beim Hochladen des Dokuments',
+    selectFile: 'Datei auswählen',
+    takePhoto: 'Foto aufnehmen',
+    chooseFromLibrary: 'Aus Galerie wählen',
+
+    // Document types
+    documentTypes: {
+      studentProof: 'Studentenausweis',
+      idCard: 'Personalausweis',
+      passport: 'Reisepass',
+      proofOfAddress: 'Adressnachweis',
+      medicalCertificate: 'Ärztliches Attest',
+      other: 'Sonstiges Dokument',
+    },
   },
 
   // Abrechnungsseite
@@ -225,6 +257,26 @@ export default {
     paid: 'Bezahlt',
     pending: 'Ausstehend',
     overdue: 'Überfällig',
+  },
+
+  // SEPA-Formular
+  sepaForm: {
+    title: 'Lastschrift einrichten',
+    subtitle: 'Füge deine Bankdaten hinzu, um automatische Zahlungen zu aktivieren',
+    accountHolder: 'Kontoinhaber',
+    accountHolderPlaceholder: 'Vollständiger Name wie auf dem Konto',
+    iban: 'IBAN',
+    ibanPlaceholder: 'DE89 3704 0044 0532 0130 00',
+    bic: 'BIC/SWIFT (optional)',
+    bicPlaceholder: 'COBADEFFXXX',
+    mandateText:
+      'Mit der Angabe deiner IBAN ermächtigst du uns, Anweisungen an deine Bank zu senden, um dein Konto gemäß diesen Anweisungen zu belasten.',
+    submitButton: 'Lastschrift einrichten',
+    submitting: 'Wird eingerichtet...',
+    successMessage: 'Lastschrift erfolgreich eingerichtet',
+    errorMessage: 'Lastschrift konnte nicht eingerichtet werden. Bitte versuche es erneut.',
+    invalidIban: 'Bitte gib eine gültige IBAN ein',
+    invalidAccountHolder: 'Bitte gib den Namen des Kontoinhabers ein',
   },
 
   // Kursseite
@@ -253,6 +305,48 @@ export default {
     classCount: {
       one: 'Kurs',
       other: 'Kurse',
+    },
+  },
+
+  // Club nicht gefunden
+  clubNotFound: {
+    title: 'Club nicht gefunden',
+    message:
+      'Wir konnten diesen Club nicht finden. Der Club wurde möglicherweise entfernt oder der verwendete Link ist falsch.',
+    suggestions: 'Was Sie versuchen können:',
+    checkUrl: 'Prüfen Sie, ob die Club-URL oder der Code korrekt ist',
+    contactClub: 'Kontaktieren Sie Ihren Club direkt, um die Daten zu überprüfen',
+    tryLater: 'Versuchen Sie es später erneut, falls ein vorübergehendes Problem vorliegt',
+    selectDifferentClub: 'Anderen Club auswählen',
+  },
+
+  // Frequenzen / Dauern (ISO 8601)
+  frequency: {
+    // Wiederkehrende Intervalle (für charge_interval)
+    recurring: {
+      P1D: 'täglich',
+      P1W: 'wöchentlich',
+      P2W: 'alle 2 Wochen',
+      P1M: 'monatlich',
+      P3M: 'alle 3 Monate',
+      P6M: 'alle 6 Monate',
+      P12M: 'alle 12 Monate',
+      P18M: 'alle 18 Monate',
+      P24M: 'alle 24 Monate',
+      P1Y: 'jährlich',
+    },
+    // Einmalige Dauern (für contract_duration)
+    once: {
+      P1W: '1 Woche',
+      P1M: '1 Monat',
+      P2M: '2 Monate',
+      P3M: '3 Monate',
+      P6M: '6 Monate',
+      P12M: '12 Monate',
+      P18M: '18 Monate',
+      P24M: '24 Monate',
+      P1Y: '1 Jahr',
+      P2Y: '2 Jahre',
     },
   },
 

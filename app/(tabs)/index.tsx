@@ -1,19 +1,23 @@
 import { router } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
+import React, { useState } from 'react';
+import { View, Pressable, RefreshControl } from 'react-native';
 
-import { getUpcomingClasses, confirmAttendance, denyAttendance, Class } from '@/api/classes';
+import { confirmAttendance, denyAttendance } from '@/api/classes';
+import { getStatusTranslationKey, Membership } from '@/api/membership';
+import { isSepaAvailable, PaymentMethod } from '@/api/payment-methods';
 import Avatar from '@/components/Avatar';
 import ClassCard from '@/components/ClassCard';
 import Header, { HeaderIcon } from '@/components/Header';
 import Icon from '@/components/Icon';
 import Section from '@/components/Section';
+import SepaForm from '@/components/SepaForm';
 import { SmallChartCard } from '@/components/SmallChartCard';
 import { SmallCircleCard } from '@/components/SmallCircleCard';
 import { SmallProgressBarCard } from '@/components/SmallProgressBarCard';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
@@ -21,9 +25,16 @@ export default function HomeScreen() {
   const t = useT();
   const colors = useThemeColors();
   const { user } = useAuth();
-  const [classes, setClasses] = useState<Class[]>([]);
-  const [loadingClasses, setLoadingClasses] = useState(true);
-  const [classesError, setClassesError] = useState<string | null>(null);
+  const {
+    classes,
+    classesError,
+    membership,
+    paymentMethods,
+    availablePaymentMethods,
+    refreshData,
+    setClasses,
+    setPaymentMethods,
+  } = useAppData();
   const [refreshing, setRefreshing] = useState(false);
 
   const userName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';
@@ -35,26 +46,11 @@ export default function HomeScreen() {
     day: 'numeric',
   });
 
-  useEffect(() => {
-    loadClasses();
-  }, []);
+  // Show SEPA form if no payment methods exist and SEPA is available
+  const showSepaForm = paymentMethods.length === 0 && isSepaAvailable(availablePaymentMethods);
 
-  const loadClasses = async () => {
-    try {
-      setLoadingClasses(true);
-      setClassesError(null);
-      const data = await getUpcomingClasses();
-      setClasses(data);
-    } catch (error) {
-      console.error('Error loading classes:', error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Failed to load classes. Please check your connection and try again.';
-      setClassesError(errorMessage);
-    } finally {
-      setLoadingClasses(false);
-    }
+  const handleSepaSuccess = (newPaymentMethod: PaymentMethod) => {
+    setPaymentMethods((prev) => [...prev, newPaymentMethod]);
   };
 
   const handleConfirm = async (classId: string) => {
@@ -84,8 +80,7 @@ export default function HomeScreen() {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      await loadClasses();
-      // TODO: Reload other data like analytics, membership info, etc.
+      await refreshData();
     } finally {
       setRefreshing(false);
     }
@@ -118,8 +113,13 @@ export default function HomeScreen() {
             subtitle={today}
             className="mb-8 mt-8"
           />
-          <MembershipOverview />
+          <MembershipOverview membership={membership} />
         </View>
+        {showSepaForm && (
+          <View className="bg-background p-5">
+            <SepaForm onSuccess={handleSepaSuccess} />
+          </View>
+        )}
         <View className="bg-background p-5">
           <ActivityStats />
         </View>
@@ -147,11 +147,7 @@ export default function HomeScreen() {
               )}
             </View>
           </View>
-          {loadingClasses ? (
-            <View className="items-center justify-center py-8">
-              <ActivityIndicator size="large" testID="activity-indicator" />
-            </View>
-          ) : classesError ? (
+          {classesError ? (
             <View className="items-center justify-center rounded-2xl bg-secondary py-12">
               <View
                 className="mb-4 h-16 w-16 items-center justify-center rounded-full"
@@ -165,7 +161,7 @@ export default function HomeScreen() {
                 {classesError}
               </ThemedText>
               <Pressable
-                onPress={loadClasses}
+                onPress={refreshData}
                 className="rounded-full px-6 py-3"
                 style={{ backgroundColor: colors.highlight }}>
                 <View className="flex-row items-center">
@@ -252,16 +248,44 @@ const ActivityStats = () => {
   );
 };
 
-const MembershipOverview = () => {
+interface MembershipOverviewProps {
+  membership: Membership | null;
+}
+
+const MembershipOverview = ({ membership }: MembershipOverviewProps) => {
   const t = useT();
+
+  // Format the next billing date
+  const formatNextBilling = (dateString: string | null) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  // Get the year from starts_at
+  const getMemberSinceYear = (dateString: string) => {
+    return new Date(dateString).getFullYear().toString();
+  };
+
+  // Get status translation key
+  const getStatusLabel = (status: string) => {
+    const key = getStatusTranslationKey(status as Membership['status']);
+    return t(`membership.${key}`);
+  };
+
+  if (!membership) {
+    return null;
+  }
 
   return (
     <View className="dark:bg-dark-secondary mb-6 rounded-xl bg-secondary pt-14">
       <View className="mb-12 items-center">
         <View className="relative h-32 w-32 items-center justify-center rounded-full bg-background">
           <View className="items-center">
-            <ThemedText className="text-3xl font-bold">Premium</ThemedText>
-            <ThemedText className="text-sm opacity-50">{t('home.activeMember')}</ThemedText>
+            <ThemedText className="text-3xl font-bold">{membership.plan.name}</ThemedText>
+            <ThemedText className="text-sm opacity-50">
+              {getStatusLabel(membership.status)}
+            </ThemedText>
           </View>
         </View>
       </View>
@@ -286,7 +310,9 @@ const MembershipOverview = () => {
           </ThemedText>
           <View className="flex-row items-center">
             <Icon name="CreditCard" size={14} className="mr-2" />
-            <ThemedText className="text-lg font-bold">Dec 25</ThemedText>
+            <ThemedText className="text-lg font-bold">
+              {formatNextBilling(membership.chargeStartsAt)}
+            </ThemedText>
           </View>
         </View>
         <View className="items-center">
@@ -295,7 +321,9 @@ const MembershipOverview = () => {
           </ThemedText>
           <View className="flex-row items-center">
             <Icon name="Award" size={14} className="mr-2" />
-            <ThemedText className="text-lg font-bold">2023</ThemedText>
+            <ThemedText className="text-lg font-bold">
+              {getMemberSinceYear(membership.startsAt)}
+            </ThemedText>
           </View>
         </View>
       </View>

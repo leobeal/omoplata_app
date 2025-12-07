@@ -10,10 +10,30 @@ import {
   clearConfigCache,
   refreshAppConfig,
   defaultConfig,
+  AppConfig,
 } from '../../api/app-config';
+import api from '../../api/client';
 
 // Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage');
+
+// Mock API client
+jest.mock('../../api/client', () => ({
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+}));
+
+const mockApiResponse: AppConfig = {
+  version: '1.0.0',
+  lastUpdated: new Date().toISOString(),
+  navigation: { tabs: ['index', 'membership', 'billing', 'settings'] },
+  membership: defaultConfig.membership!,
+  billing: defaultConfig.billing!,
+  features: defaultConfig.features!,
+  analytics: defaultConfig.analytics!,
+};
 
 describe('App Config API', () => {
   beforeEach(() => {
@@ -21,17 +41,24 @@ describe('App Config API', () => {
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
     (AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined);
     (AsyncStorage.removeItem as jest.Mock).mockResolvedValue(undefined);
+    // Default mock for successful API response
+    (api.get as jest.Mock).mockResolvedValue({
+      data: mockApiResponse,
+      error: null,
+      status: 200,
+    });
   });
 
   describe('getAppConfig', () => {
     it('should fetch config from API when no cache exists', async () => {
-      const config = await getAppConfig();
+      const result = await getAppConfig();
 
-      expect(config).toBeDefined();
-      expect(config?.navigation).toBeDefined();
-      expect(config?.membership).toBeDefined();
-      expect(config?.billing).toBeDefined();
-      expect(config?.features).toBeDefined();
+      expect(result.config).toBeDefined();
+      expect(result.config?.navigation).toBeDefined();
+      expect(result.config?.membership).toBeDefined();
+      expect(result.config?.billing).toBeDefined();
+      expect(result.config?.features).toBeDefined();
+      expect(result.error).toBeNull();
       expect(AsyncStorage.setItem).toHaveBeenCalled();
     });
 
@@ -50,9 +77,10 @@ describe('App Config API', () => {
 
       (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(cachedConfig));
 
-      const config = await getAppConfig();
+      const result = await getAppConfig();
 
-      expect(config).toEqual(cachedConfig);
+      expect(result.config).toEqual(cachedConfig);
+      expect(result.error).toBeNull();
       expect(AsyncStorage.getItem).toHaveBeenCalledWith('app_config');
     });
 
@@ -68,23 +96,38 @@ describe('App Config API', () => {
 
       (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(expiredConfig));
 
-      const config = await getAppConfig();
+      const result = await getAppConfig();
 
-      expect(config).toBeDefined();
+      expect(result.config).toBeDefined();
       expect(AsyncStorage.removeItem).toHaveBeenCalledWith('app_config');
       expect(AsyncStorage.setItem).toHaveBeenCalled();
     });
 
     it('should handle errors gracefully', async () => {
       (AsyncStorage.getItem as jest.Mock).mockRejectedValue(new Error('Storage error'));
+      // Also mock API to fail so we can test the error path
+      (api.get as jest.Mock).mockRejectedValue(new Error('API error'));
       const consoleError = jest.spyOn(console, 'error').mockImplementation();
 
-      const config = await getAppConfig();
+      const result = await getAppConfig();
 
-      expect(config).toBeDefined();
+      expect(result.error).toBe('network_error');
       expect(consoleError).toHaveBeenCalled();
 
       consoleError.mockRestore();
+    });
+
+    it('should return club_not_found error on 404', async () => {
+      (api.get as jest.Mock).mockResolvedValue({
+        data: null,
+        error: 'Not found',
+        status: 404,
+      });
+
+      const result = await getAppConfig();
+
+      expect(result.config).toBeNull();
+      expect(result.error).toBe('club_not_found');
     });
   });
 
@@ -94,7 +137,6 @@ describe('App Config API', () => {
 
       expect(settings).toBeDefined();
       expect(settings.allowPause).toBeDefined();
-      expect(settings.allowFreeze).toBeDefined();
       expect(settings.allowPlanChange).toBeDefined();
       expect(settings.allowGuestPasses).toBeDefined();
       expect(settings.showContractDownload).toBeDefined();
@@ -112,12 +154,10 @@ describe('App Config API', () => {
       const settings = await getMembershipSettings();
 
       expect(settings.allowPause).toBe(true);
-      expect(settings.allowFreeze).toBe(true);
       expect(settings.allowPlanChange).toBe(true);
       expect(settings.allowGuestPasses).toBe(true);
       expect(settings.showContractDownload).toBe(true);
       expect(settings.cancellationNoticeDays).toBe(30);
-      expect(settings.maxFreezeDaysPerYear).toBe(90);
     });
   });
 
@@ -156,11 +196,11 @@ describe('App Config API', () => {
 
       expect(flags).toBeDefined();
       expect(flags.checkInEnabled).toBeDefined();
-      expect(flags.qrCheckInEnabled).toBeDefined();
       expect(flags.notificationsEnabled).toBeDefined();
       expect(flags.classBookingEnabled).toBeDefined();
       expect(flags.socialSharingEnabled).toBeDefined();
       expect(flags.referralProgramEnabled).toBeDefined();
+      expect(flags.membershipCancellationEnabled).toBeDefined();
     });
 
     it('should return default flags on error', async () => {
@@ -175,11 +215,11 @@ describe('App Config API', () => {
       const flags = await getFeatureFlags();
 
       expect(flags.checkInEnabled).toBe(true);
-      expect(flags.qrCheckInEnabled).toBe(true);
       expect(flags.notificationsEnabled).toBe(true);
       expect(flags.classBookingEnabled).toBe(true);
       expect(flags.socialSharingEnabled).toBe(false);
       expect(flags.referralProgramEnabled).toBe(false);
+      expect(flags.membershipCancellationEnabled).toBe(true);
     });
   });
 
@@ -197,10 +237,10 @@ describe('App Config API', () => {
     });
 
     it('should refresh config by clearing cache and fetching new', async () => {
-      const config = await refreshAppConfig();
+      const result = await refreshAppConfig();
 
       expect(AsyncStorage.removeItem).toHaveBeenCalledWith('app_config');
-      expect(config).toBeDefined();
+      expect(result.config).toBeDefined();
       expect(AsyncStorage.setItem).toHaveBeenCalled();
     });
 
@@ -208,13 +248,14 @@ describe('App Config API', () => {
       (AsyncStorage.setItem as jest.Mock).mockRejectedValue(new Error('Cache error'));
       const consoleError = jest.spyOn(console, 'error').mockImplementation();
 
-      const config = await cacheConfig({
+      await cacheConfig({
         version: '1.0.0',
         lastUpdated: new Date().toISOString(),
-        navigation: { tabs: [], showCheckInButton: true },
+        navigation: { tabs: [] },
         membership: defaultConfig.membership!,
         billing: defaultConfig.billing!,
         features: defaultConfig.features!,
+        analytics: defaultConfig.analytics!,
       });
 
       expect(consoleError).toHaveBeenCalled();
@@ -225,22 +266,21 @@ describe('App Config API', () => {
 
   describe('Config Structure', () => {
     it('should return config with all required sections', async () => {
-      const config = await getAppConfig();
+      const result = await getAppConfig();
 
-      expect(config).toHaveProperty('navigation');
-      expect(config).toHaveProperty('membership');
-      expect(config).toHaveProperty('billing');
-      expect(config).toHaveProperty('features');
-      expect(config).toHaveProperty('version');
-      expect(config).toHaveProperty('lastUpdated');
+      expect(result.config).toHaveProperty('navigation');
+      expect(result.config).toHaveProperty('membership');
+      expect(result.config).toHaveProperty('billing');
+      expect(result.config).toHaveProperty('features');
+      expect(result.config).toHaveProperty('version');
+      expect(result.config).toHaveProperty('lastUpdated');
     });
 
     it('should have valid navigation config', async () => {
-      const config = await getAppConfig();
+      const result = await getAppConfig();
 
-      expect(config?.navigation.tabs).toBeDefined();
-      expect(Array.isArray(config?.navigation.tabs)).toBe(true);
-      expect(config?.navigation.showCheckInButton).toBeDefined();
+      expect(result.config?.navigation.tabs).toBeDefined();
+      expect(Array.isArray(result.config?.navigation.tabs)).toBe(true);
     });
   });
 });

@@ -6,28 +6,37 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "development"
+      "channel": "development",
+      "env": {
+        "TENANT": "main"
+      }
     },
     "ios-simulator": {
       "ios": {
-        "simulator": true,
-        "env": {
-          "TENANT": "main"
-        }
+        "simulator": true
+      },
+      "env": {
+        "TENANT": "main"
       },
       "channel": "ios-simulator"
     },
     "android-simulator": {
-      "android": {
-        "env": {
-          "TENANT": "main"
-        }
+      "env": {
+        "TENANT": "main"
       },
       "channel": "android-simulator"
     },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview",
+      "env": {
+        "TENANT": "main"
+      }
+    },
     "production": {
       "env": {
-        "APP_ENV": "production"
+        "APP_ENV": "production",
+        "TENANT": "main"
       },
       "channel": "production"
     },
@@ -36,6 +45,12 @@
         "TENANT": "evolve-grappling"
       },
       "channel": "evolve-grappling"
+    },
+    "sparta-aachen": {
+      "env": {
+        "TENANT": "sparta-aachen"
+      },
+      "channel": "sparta-aachen"
     }
   },
   "submit": {
@@ -46,7 +61,7 @@
         "appleTeamId": "ABCDE12345"
       },
       "android": {
-        "serviceAccountKeyPath": "./path/to/api-key.json",
+        "serviceAccountKeyPath": "./secrets/google-service-account.json",
         "track": "internal"
       }
     }

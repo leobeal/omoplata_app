@@ -192,7 +192,7 @@ describe('Auth API', () => {
     });
 
     it('should have correct class endpoints', () => {
-      expect(ENDPOINTS.CLASSES.NEXT).toBe('/classes/next');
+      expect(ENDPOINTS.CLASSES.LIST).toBe('/classes');
       expect(ENDPOINTS.CLASSES.DETAILS('456')).toBe('/classes/456');
     });
 

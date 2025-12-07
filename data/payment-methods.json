@@ -1,0 +1,11 @@
+{
+  "payment_methods": [],
+  "available_payment_methods": [
+    {
+      "id": 1,
+      "code": "sepa",
+      "type": "sepa",
+      "requires_onboarding": true
+    }
+  ]
+}

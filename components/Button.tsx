@@ -20,6 +20,7 @@ interface ButtonProps {
   className?: string;
   textClassName?: string;
   disabled?: boolean;
+  icon?: IconName; // Alias for iconStart
   iconStart?: IconName;
   iconEnd?: IconName;
   iconSize?: number;
@@ -38,6 +39,7 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   textClassName = '',
   disabled = false,
+  icon,
   iconStart,
   iconEnd,
   iconSize,
@@ -45,6 +47,8 @@ export const Button: React.FC<ButtonProps> = ({
   iconClassName = '',
   ...props
 }) => {
+  // icon is an alias for iconStart
+  const startIcon = icon || iconStart;
   const colors = useThemeColors();
 
   const buttonStyles = {
@@ -55,9 +59,9 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const buttonSize = {
-    small: 'py-2',
-    medium: 'py-3',
-    large: 'py-5',
+    small: 'py-2 min-h-[36px]',
+    medium: 'py-3 min-h-[44px]',
+    large: 'py-4 min-h-[52px]',
   };
 
   const roundedStyles = {
@@ -70,10 +74,13 @@ export const Button: React.FC<ButtonProps> = ({
     full: 'rounded-full',
   };
 
-  const textColor =
-    variant === 'outline' || variant === 'secondary' || variant === 'ghost'
-      ? 'text-text'
-      : 'text-invert';
+  const getTextColor = () => {
+    if (variant === 'outline' || variant === 'secondary' || variant === 'ghost') {
+      return colors.text;
+    }
+    return colors.invert;
+  };
+
   const disabledStyle = disabled ? 'opacity-50' : '';
 
   // Default icon sizes based on button size
@@ -101,28 +108,31 @@ export const Button: React.FC<ButtonProps> = ({
       : colors.invert;
   };
 
+  const getLoaderColor = () => {
+    if (variant === 'outline' || variant === 'secondary' || variant === 'ghost') {
+      return colors.primary;
+    }
+    return colors.invert;
+  };
+
   const ButtonContent = (
-    <>
+    <View className="flex-row items-center justify-center">
       {loading ? (
-        <ActivityIndicator
-          color={
-            variant === 'outline' || variant === 'secondary' || variant === 'ghost'
-              ? '#0EA5E9'
-              : '#fff'
-          }
-        />
+        <ActivityIndicator size="small" color={getLoaderColor()} />
       ) : (
-        <View className="flex-row items-center justify-center">
-          {iconStart && (
+        <>
+          {startIcon && (
             <Icon
-              name={iconStart}
+              name={startIcon}
               size={getIconSize()}
               color={getIconColor()}
               className={`mr-2 ${iconClassName}`}
             />
           )}
 
-          <Text className={`${textColor} font-medium ${textClassName}`}>{title}</Text>
+          <Text className={`font-medium ${textClassName}`} style={{ color: getTextColor() }}>
+            {title}
+          </Text>
 
           {iconEnd && (
             <Icon
@@ -132,9 +142,9 @@ export const Button: React.FC<ButtonProps> = ({
               className={`ml-2 ${iconClassName}`}
             />
           )}
-        </View>
+        </>
       )}
-    </>
+    </View>
   );
 
   if (href) {

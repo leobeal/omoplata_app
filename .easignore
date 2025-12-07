@@ -1,0 +1,65 @@
+# Dependencies (installed during build)
+node_modules/
+
+# Old/reference code (not needed for build)
+__old/
+
+# Tests (not needed for production build)
+__tests__/
+__mocks__/
+*.test.ts
+*.test.tsx
+jest.config.js
+jest.setup.js
+jest.setupBefore.js
+
+# Documentation
+*.md
+docs/
+backend_docs/
+backend_apis/
+
+# IDE and editor files
+.idea/
+.vscode/
+.cursor/
+*.swp
+*.swo
+
+# Git
+.git/
+.github/
+
+# Claude/AI
+.claude/
+
+# Expo cache (regenerated)
+.expo/
+.expo-shared/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Secrets (should use EAS secrets instead)
+secrets/
+
+# Build artifacts
+dist/
+web-build/
+
+# Config files not needed at runtime
+.prettierignore
+prettier.config.js
+postcss.config.js
+eslint.config.js
+cesconfig.json
+
+# Lock files (package-lock is needed, but you can exclude if using yarn)
+# package-lock.json

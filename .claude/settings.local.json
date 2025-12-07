@@ -23,7 +23,10 @@
       "Bash(TENANT=evolve npx expo-doctor:*)",
       "Bash(TENANT=main npx expo-doctor:*)",
       "Bash(npx expo install:*)",
-      "Bash(TENANT=main npx expo install:*)"
+      "Bash(TENANT=main npx expo install:*)",
+      "Bash(npm why:*)",
+      "Bash(npm ls:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

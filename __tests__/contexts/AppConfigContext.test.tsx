@@ -19,22 +19,28 @@ jest.mock('@/contexts/TenantContext', () => ({
   }),
 }));
 
+// Mock the AuthContext
+jest.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    isLoading: false,
+    isAuthenticated: true,
+    user: { id: 'test-user', email: 'test@example.com' },
+    login: jest.fn(),
+    logout: jest.fn(),
+  }),
+}));
+
 // Mock the app-config API
 jest.mock('../../api/app-config', () => ({
   clearConfigCache: jest.fn(() => Promise.resolve()),
   getAppConfig: jest.fn(() =>
     Promise.resolve({
       membership: {
-        allowCancellation: true,
         allowPause: true,
-        allowFreeze: true,
         allowPlanChange: true,
         allowGuestPasses: true,
         showContractDownload: true,
         cancellationNoticeDays: 30,
-        pauseNoticeDays: 7,
-        maxFreezeDaysPerYear: 90,
-        guestPassesPerMonth: 2,
       },
       billing: {
         allowPaymentMethodChange: true,
@@ -44,42 +50,35 @@ jest.mock('../../api/app-config', () => ({
       },
       features: {
         checkInEnabled: true,
-        qrCheckInEnabled: true,
         notificationsEnabled: true,
         classBookingEnabled: true,
         socialSharingEnabled: false,
         referralProgramEnabled: false,
+        membershipCancellationEnabled: true,
       },
     })
   ),
   defaultConfig: {
     membership: {
-      allowCancellation: true,
       allowPause: true,
-      allowFreeze: true,
       allowPlanChange: true,
       allowGuestPasses: true,
       showContractDownload: true,
       cancellationNoticeDays: 30,
-      pauseNoticeDays: 7,
-      maxFreezeDaysPerYear: 90,
-      guestPassesPerMonth: 2,
     },
     billing: {
-      autoPayEnabled: true,
-      allowManualPayments: true,
-      invoiceDeliveryMethod: 'email',
-      paymentMethods: ['card'],
-      currency: 'EUR',
-      taxRate: 0,
+      allowPaymentMethodChange: true,
+      allowAutoPay: true,
+      showInvoiceHistory: true,
+      allowOneTimePayments: true,
     },
     features: {
       checkInEnabled: true,
-      qrCheckInEnabled: true,
       notificationsEnabled: true,
       classBookingEnabled: true,
       socialSharingEnabled: false,
       referralProgramEnabled: false,
+      membershipCancellationEnabled: true,
     },
   },
 }));
@@ -155,7 +154,6 @@ describe('AppConfigContext', () => {
 
         expect(settings).toBeDefined();
         expect(settings.allowPause).toBeDefined();
-        expect(settings.allowFreeze).toBeDefined();
         expect(settings.allowPlanChange).toBeDefined();
         expect(settings.allowGuestPasses).toBeDefined();
         expect(settings.showContractDownload).toBeDefined();
@@ -174,9 +172,7 @@ describe('AppConfigContext', () => {
         const settings = JSON.parse(settingsElement.props.children);
 
         expect(settings.allowPause).toBe(true);
-        expect(settings.allowFreeze).toBe(true);
         expect(settings.cancellationNoticeDays).toBe(30);
-        expect(settings.maxFreezeDaysPerYear).toBe(90);
       });
     });
 
@@ -245,11 +241,11 @@ describe('AppConfigContext', () => {
 
         expect(flags).toBeDefined();
         expect(flags.checkInEnabled).toBeDefined();
-        expect(flags.qrCheckInEnabled).toBeDefined();
         expect(flags.notificationsEnabled).toBeDefined();
         expect(flags.classBookingEnabled).toBeDefined();
         expect(flags.socialSharingEnabled).toBeDefined();
         expect(flags.referralProgramEnabled).toBeDefined();
+        expect(flags.membershipCancellationEnabled).toBeDefined();
       });
     });
 
@@ -265,11 +261,11 @@ describe('AppConfigContext', () => {
         const flags = JSON.parse(flagsElement.props.children);
 
         expect(flags.checkInEnabled).toBe(true);
-        expect(flags.qrCheckInEnabled).toBe(true);
         expect(flags.notificationsEnabled).toBe(true);
         expect(flags.classBookingEnabled).toBe(true);
         expect(flags.socialSharingEnabled).toBe(false);
         expect(flags.referralProgramEnabled).toBe(false);
+        expect(flags.membershipCancellationEnabled).toBe(true);
       });
     });
   });

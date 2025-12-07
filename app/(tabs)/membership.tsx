@@ -1,16 +1,28 @@
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Alert, RefreshControl } from 'react-native';
+import { View, ActivityIndicator, Alert, RefreshControl, TouchableOpacity } from 'react-native';
 
 import {
   getMembership,
   downloadContract,
+  uploadDocument,
   Membership as MembershipType,
+  DocumentRequest,
   getPrimaryMember,
   getMonthlyEquivalent,
   formatCurrency,
+  getStatusTranslationKey,
+  isStatusActive,
+  isStatusWarning,
+  isKnownRecurringInterval,
+  isKnownOnceDuration,
+  parseDurationToMonths,
+  getPendingDocumentRequests,
+  getDocumentTypeTranslationKey,
 } from '@/api/membership';
-import { getPaymentMethod, PaymentMethod } from '@/api/payment-methods';
+import { getPaymentMethod, PaymentMethod, getPaymentMethodIcon } from '@/api/payment-methods';
 import { Button } from '@/components/Button';
 import Header from '@/components/Header';
 import Icon from '@/components/Icon';
@@ -32,6 +44,7 @@ export default function MembershipScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [uploadingDocumentId, setUploadingDocumentId] = useState<number | null>(null);
 
   useEffect(() => {
     loadData();
@@ -86,32 +99,117 @@ export default function MembershipScreen() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return '#10B981';
-      case 'suspended':
-      case 'pending':
-        return '#F59E0B';
-      case 'expired':
-      case 'cancelled':
-        return '#EF4444';
-      default:
-        return colors.text;
+  const getDocumentTypeLabel = (documentTypeName: string) => {
+    const key = getDocumentTypeTranslationKey(documentTypeName);
+    const translationKey = `membership.documentTypes.${key}`;
+    const translated = t(translationKey);
+    // If translation not found, return original name formatted
+    return translated === translationKey
+      ? documentTypeName.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+      : translated;
+  };
+
+  const handleUploadDocument = (documentRequest: DocumentRequest) => {
+    Alert.alert(t('membership.uploadDocument'), t('membership.selectFile'), [
+      {
+        text: t('membership.takePhoto'),
+        onPress: () => handleTakePhoto(documentRequest),
+      },
+      {
+        text: t('membership.chooseFromLibrary'),
+        onPress: () => handleChooseFromLibrary(documentRequest),
+      },
+      {
+        text: t('common.cancel'),
+        style: 'cancel',
+      },
+    ]);
+  };
+
+  const handleTakePhoto = async (documentRequest: DocumentRequest) => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      Alert.alert(t('common.error'), t('checkin.permissionRequired'));
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      await processUpload(documentRequest, {
+        uri: result.assets[0].uri,
+        name: `photo_${Date.now()}.jpg`,
+        type: 'image/jpeg',
+      });
     }
   };
 
-  const getBillingCycleLabel = (chargeInterval: string) => {
-    switch (chargeInterval) {
-      case 'yearly':
-        return t('membership.billedAnnually');
-      case 'monthly':
-        return t('membership.billedMonthly');
-      case 'weekly':
-        return t('membership.billedWeekly');
-      default:
-        return chargeInterval;
+  const handleChooseFromLibrary = async (documentRequest: DocumentRequest) => {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: ['image/*', 'application/pdf'],
+      copyToCacheDirectory: true,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      await processUpload(documentRequest, {
+        uri: result.assets[0].uri,
+        name: result.assets[0].name,
+        type: result.assets[0].mimeType || 'application/octet-stream',
+      });
     }
+  };
+
+  const processUpload = async (
+    documentRequest: DocumentRequest,
+    file: { uri: string; name: string; type: string }
+  ) => {
+    setUploadingDocumentId(documentRequest.id);
+    try {
+      const result = await uploadDocument(documentRequest.id, file);
+      if (result.success) {
+        Alert.alert(t('common.success'), t('membership.uploadSuccess'));
+        // Refresh data to update the document request status
+        await loadData();
+      } else {
+        Alert.alert(t('common.error'), t('membership.uploadError'));
+      }
+    } catch (error) {
+      console.error('Error uploading document:', error);
+      Alert.alert(t('common.error'), t('membership.uploadError'));
+    } finally {
+      setUploadingDocumentId(null);
+    }
+  };
+
+  const getStatusColor = (status: MembershipType['status']) => {
+    if (isStatusActive(status)) return '#10B981';
+    if (isStatusWarning(status)) return '#F59E0B';
+    if (status === 'cancelled') return '#EF4444';
+    return colors.text;
+  };
+
+  const getChargeIntervalLabel = (chargeInterval: string) => {
+    if (isKnownRecurringInterval(chargeInterval)) {
+      return t(`frequency.recurring.${chargeInterval}`);
+    }
+    return chargeInterval;
+  };
+
+  const getContractDurationLabel = (contractDuration: string) => {
+    if (isKnownOnceDuration(contractDuration)) {
+      return t(`frequency.once.${contractDuration}`);
+    }
+    return contractDuration;
+  };
+
+  const isYearlyOrLonger = (chargeInterval: string) => {
+    const months = parseDurationToMonths(chargeInterval);
+    return months >= 12;
   };
 
   if (loading) {
@@ -139,6 +237,7 @@ export default function MembershipScreen() {
 
   const primaryMember = getPrimaryMember(membership);
   const monthlyEquivalent = getMonthlyEquivalent(membership.plan);
+  const pendingDocuments = getPendingDocumentRequests(membership);
 
   return (
     <View className="flex-1 bg-background">
@@ -167,9 +266,9 @@ export default function MembershipScreen() {
                   className="rounded-full px-3 py-1"
                   style={{ backgroundColor: `${getStatusColor(membership.status)}20` }}>
                   <ThemedText
-                    className="text-xs font-semibold capitalize"
+                    className="text-xs font-semibold"
                     style={{ color: getStatusColor(membership.status) }}>
-                    {t(`membership.${membership.status}`)}
+                    {t(`membership.${getStatusTranslationKey(membership.status)}`)}
                   </ThemedText>
                 </View>
               </View>
@@ -192,6 +291,56 @@ export default function MembershipScreen() {
             </View>
           </View>
         </View>
+
+        {/* Pending Document Requests */}
+        {pendingDocuments.length > 0 && (
+          <>
+            <Section title={t('membership.pendingDocuments')} className="mb-4" />
+            <View className="mb-6 rounded-2xl bg-secondary">
+              {pendingDocuments.map((docRequest, index) => (
+                <View
+                  key={docRequest.id}
+                  className={`p-5 ${
+                    index < pendingDocuments.length - 1 ? 'border-b border-border' : ''
+                  }`}>
+                  <View className="mb-3 flex-row items-start">
+                    <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-amber-500/20">
+                      <Icon name="FileWarning" size={20} color="#F59E0B" />
+                    </View>
+                    <View className="flex-1">
+                      <ThemedText className="font-semibold">
+                        {getDocumentTypeLabel(docRequest.documentType.name)}
+                      </ThemedText>
+                      <ThemedText className="mt-1 text-sm opacity-70">
+                        {docRequest.reason}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    className="flex-row items-center justify-center rounded-xl bg-highlight py-3"
+                    onPress={() => handleUploadDocument(docRequest)}
+                    disabled={uploadingDocumentId === docRequest.id}>
+                    {uploadingDocumentId === docRequest.id ? (
+                      <>
+                        <ActivityIndicator size="small" color="white" />
+                        <ThemedText className="ml-2 font-semibold text-white">
+                          {t('membership.uploading')}
+                        </ThemedText>
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Upload" size={18} color="white" />
+                        <ThemedText className="ml-2 font-semibold text-white">
+                          {t('membership.uploadDocument')}
+                        </ThemedText>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
 
         {/* Members (if more than one) */}
         {membership.members.length > 1 && (
@@ -229,14 +378,18 @@ export default function MembershipScreen() {
             <ThemedText className="opacity-70">{t('membership.startDate')}</ThemedText>
             <ThemedText className="font-semibold">{formatDate(membership.startsAt)}</ThemedText>
           </View>
-          <View className="flex-row items-center justify-between border-b border-border p-5">
-            <ThemedText className="opacity-70">{t('membership.endDate')}</ThemedText>
-            <ThemedText className="font-semibold">{formatDate(membership.endsAt)}</ThemedText>
-          </View>
-          <View className="flex-row items-center justify-between border-b border-border p-5">
-            <ThemedText className="opacity-70">{t('membership.renewalDate')}</ThemedText>
-            <ThemedText className="font-semibold">{formatDate(membership.renewsAt)}</ThemedText>
-          </View>
+          {membership.endsAt && (
+            <View className="flex-row items-center justify-between border-b border-border p-5">
+              <ThemedText className="opacity-70">{t('membership.endDate')}</ThemedText>
+              <ThemedText className="font-semibold">{formatDate(membership.endsAt)}</ThemedText>
+            </View>
+          )}
+          {membership.renewsAt && (
+            <View className="flex-row items-center justify-between border-b border-border p-5">
+              <ThemedText className="opacity-70">{t('membership.renewalDate')}</ThemedText>
+              <ThemedText className="font-semibold">{formatDate(membership.renewsAt)}</ThemedText>
+            </View>
+          )}
           <View className="flex-row items-center justify-between p-5">
             <ThemedText className="opacity-70">{t('membership.autoRenewal')}</ThemedText>
             <View className="flex-row items-center">
@@ -265,15 +418,13 @@ export default function MembershipScreen() {
           <View className="mb-4 flex-row items-center justify-between">
             <View>
               <ThemedText className="text-sm opacity-50">
-                {membership.plan.chargeInterval === 'yearly'
-                  ? t('membership.annualFee')
-                  : t('membership.monthlyFee')}
+                {getChargeIntervalLabel(membership.plan.chargeInterval)}
               </ThemedText>
               <ThemedText className="text-3xl font-bold">
                 {formatCurrency(membership.plan.amount, membership.plan.currency)}
               </ThemedText>
             </View>
-            {membership.plan.chargeInterval === 'yearly' && (
+            {isYearlyOrLonger(membership.plan.chargeInterval) && (
               <View className="items-end">
                 <ThemedText className="text-sm opacity-50">
                   {t('membership.monthlyEquivalent')}
@@ -286,9 +437,14 @@ export default function MembershipScreen() {
             )}
           </View>
           <View className="border-t border-border pt-4">
-            <ThemedText className="text-sm opacity-70">
-              {getBillingCycleLabel(membership.plan.chargeInterval)}
-            </ThemedText>
+            <View className="flex-row justify-between">
+              <ThemedText className="text-sm opacity-70">
+                {t('membership.contractDuration')}
+              </ThemedText>
+              <ThemedText className="text-sm font-semibold">
+                {getContractDurationLabel(membership.plan.contractDuration)}
+              </ThemedText>
+            </View>
           </View>
         </View>
 
@@ -299,13 +455,25 @@ export default function MembershipScreen() {
             <View className="mb-6 rounded-2xl bg-secondary p-5">
               <View className="flex-row items-center">
                 <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-background">
-                  <Icon name="Building" size={20} />
+                  <Icon name={getPaymentMethodIcon(paymentMethod.type)} size={20} />
                 </View>
                 <View className="flex-1">
-                  <ThemedText className="font-semibold">{paymentMethod.type}</ThemedText>
-                  <ThemedText className="text-sm opacity-50">{paymentMethod.maskedIban}</ThemedText>
+                  <View className="flex-row items-center">
+                    <ThemedText className="font-semibold">{paymentMethod.name}</ThemedText>
+                    {paymentMethod.isActive && paymentMethod.isCorrectlyConfigured && (
+                      <View className="ml-2 rounded-full bg-green-500/20 px-2 py-0.5">
+                        <ThemedText className="text-xs text-green-500">
+                          {t('membership.active')}
+                        </ThemedText>
+                      </View>
+                    )}
+                  </View>
+                  <ThemedText className="text-sm opacity-50">
+                    {paymentMethod.details.maskedIban}
+                  </ThemedText>
                   <ThemedText className="mt-1 text-xs opacity-50">
-                    {paymentMethod.accountHolder}
+                    {paymentMethod.details.accountHolder}
+                    {paymentMethod.details.bankName && ` • ${paymentMethod.details.bankName}`}
                   </ThemedText>
                 </View>
               </View>

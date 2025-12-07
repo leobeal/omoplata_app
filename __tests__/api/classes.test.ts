@@ -99,7 +99,7 @@ describe('Classes API', () => {
 
       const result = await getUpcomingClasses();
 
-      expect(mockApi.get).toHaveBeenCalledWith(`${ENDPOINTS.CLASSES.NEXT}`);
+      expect(mockApi.get).toHaveBeenCalledWith(`${ENDPOINTS.CLASSES.LIST}`);
       expect(result).toHaveLength(2);
 
       // Verify first class transformation
@@ -163,7 +163,7 @@ describe('Classes API', () => {
 
       await getUpcomingClasses(5);
 
-      expect(mockApi.get).toHaveBeenCalledWith(`${ENDPOINTS.CLASSES.NEXT}?limit=5`);
+      expect(mockApi.get).toHaveBeenCalledWith(`${ENDPOINTS.CLASSES.LIST}?limit=5`);
     });
 
     it('should handle user with denied status', async () => {
@@ -268,14 +268,14 @@ describe('Classes API', () => {
 
       mockApi.get.mockResolvedValue(mockApiResponse);
 
-      const result = await getClassesPaginated(10);
+      const result = await getClassesPaginated({ limit: 10 });
 
-      expect(mockApi.get).toHaveBeenCalledWith(`${ENDPOINTS.CLASSES.NEXT}?limit=10`);
+      expect(mockApi.get).toHaveBeenCalledWith(`${ENDPOINTS.CLASSES.LIST}?limit=10`);
       expect(result.classes).toHaveLength(1);
       expect(result.total).toBe(50);
     });
 
-    it('should use default limit of 10', async () => {
+    it('should use default parameters when not provided', async () => {
       const mockApiResponse = {
         data: {
           success: true,
@@ -289,7 +289,7 @@ describe('Classes API', () => {
 
       await getClassesPaginated();
 
-      expect(mockApi.get).toHaveBeenCalledWith(`${ENDPOINTS.CLASSES.NEXT}?limit=10`);
+      expect(mockApi.get).toHaveBeenCalledWith(`${ENDPOINTS.CLASSES.LIST}`);
     });
   });
 

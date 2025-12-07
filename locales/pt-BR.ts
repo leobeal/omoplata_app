@@ -173,6 +173,7 @@ export default {
     billedAnnually: 'Faturado anualmente',
     billedMonthly: 'Faturado mensalmente',
     billedWeekly: 'Faturado semanalmente',
+    contractDuration: 'Duração do Contrato',
     perMonth: '/mês',
     planFeatures: 'Recursos do Plano',
     limit: 'Limite',
@@ -201,11 +202,42 @@ export default {
     defaultTransferPolicy: 'Assinaturas não são transferíveis',
 
     // Status
+    new: 'Novo',
+    onboardingStarted: 'Onboarding Iniciado',
     active: 'Ativo',
-    pending: 'Pendente',
-    suspended: 'Suspenso',
-    expired: 'Expirado',
+    paused: 'Pausado',
     cancelled: 'Cancelado',
+    defaulted: 'Inadimplente',
+
+    // Status descriptions
+    newDescription: 'Assinatura criada, aguardando onboarding',
+    onboardingStartedDescription: 'Onboarding em andamento',
+    activeDescription: 'Assinatura ativa',
+    pausedDescription: 'Assinatura temporariamente pausada',
+    cancelledDescription: 'Assinatura cancelada',
+    defaultedDescription: 'Inadimplência - entre em contato com o suporte',
+
+    // Document requests
+    documentRequests: 'Solicitações de Documentos',
+    pendingDocuments: 'Documentos Pendentes',
+    documentRequired: 'Documento Necessário',
+    uploadDocument: 'Enviar Documento',
+    uploading: 'Enviando...',
+    uploadSuccess: 'Documento enviado com sucesso',
+    uploadError: 'Falha ao enviar documento',
+    selectFile: 'Selecionar Arquivo',
+    takePhoto: 'Tirar Foto',
+    chooseFromLibrary: 'Escolher da Galeria',
+
+    // Document types
+    documentTypes: {
+      studentProof: 'Carteira de Estudante',
+      idCard: 'Carteira de Identidade',
+      passport: 'Passaporte',
+      proofOfAddress: 'Comprovante de Endereço',
+      medicalCertificate: 'Atestado Médico',
+      other: 'Outro Documento',
+    },
   },
 
   // Tela de Faturamento
@@ -224,6 +256,26 @@ export default {
     paid: 'Pago',
     pending: 'Pendente',
     overdue: 'Vencido',
+  },
+
+  // Formulário SEPA
+  sepaForm: {
+    title: 'Configurar Débito Direto',
+    subtitle: 'Adicione seus dados bancários para ativar pagamentos automáticos',
+    accountHolder: 'Titular da Conta',
+    accountHolderPlaceholder: 'Nome completo como aparece na conta',
+    iban: 'IBAN',
+    ibanPlaceholder: 'DE89 3704 0044 0532 0130 00',
+    bic: 'BIC/SWIFT (opcional)',
+    bicPlaceholder: 'COBADEFFXXX',
+    mandateText:
+      'Ao fornecer seu IBAN, você autoriza o envio de instruções ao seu banco para debitar sua conta de acordo com essas instruções.',
+    submitButton: 'Configurar Débito Direto',
+    submitting: 'Configurando...',
+    successMessage: 'Débito direto configurado com sucesso',
+    errorMessage: 'Falha ao configurar débito direto. Por favor, tente novamente.',
+    invalidIban: 'Por favor, insira um IBAN válido',
+    invalidAccountHolder: 'Por favor, insira o nome do titular da conta',
   },
 
   // Tela de Aulas
@@ -252,6 +304,48 @@ export default {
     classCount: {
       one: 'aula',
       other: 'aulas',
+    },
+  },
+
+  // Club não encontrado
+  clubNotFound: {
+    title: 'Academia não encontrada',
+    message:
+      'Não conseguimos encontrar esta academia. A academia pode ter sido removida ou o link utilizado pode estar incorreto.',
+    suggestions: 'O que você pode tentar:',
+    checkUrl: 'Verifique se a URL ou código da academia está correto',
+    contactClub: 'Entre em contato com sua academia diretamente para verificar os dados',
+    tryLater: 'Tente novamente mais tarde, caso seja um problema temporário',
+    selectDifferentClub: 'Selecionar outra academia',
+  },
+
+  // Frequências / Durações (ISO 8601)
+  frequency: {
+    // Intervalos recorrentes (para charge_interval)
+    recurring: {
+      P1D: 'diário',
+      P1W: 'semanal',
+      P2W: 'a cada 2 semanas',
+      P1M: 'mensal',
+      P3M: 'a cada 3 meses',
+      P6M: 'a cada 6 meses',
+      P12M: 'a cada 12 meses',
+      P18M: 'a cada 18 meses',
+      P24M: 'a cada 24 meses',
+      P1Y: 'anual',
+    },
+    // Durações únicas (para contract_duration)
+    once: {
+      P1W: '1 semana',
+      P1M: '1 mês',
+      P2M: '2 meses',
+      P3M: '3 meses',
+      P6M: '6 meses',
+      P12M: '12 meses',
+      P18M: '18 meses',
+      P24M: '24 meses',
+      P1Y: '1 ano',
+      P2Y: '2 anos',
     },
   },
 

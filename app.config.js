@@ -50,6 +50,7 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: config.bundleIdentifier,
+      associatedDomains: [`applinks:${config.universalLinkDomain}`],
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
       },
@@ -62,6 +63,20 @@ module.exports = {
       config: {
         enableOnBackInvokedCallback: false,
       },
+      intentFilters: [
+        {
+          action: 'VIEW',
+          autoVerify: true,
+          data: [
+            {
+              scheme: 'https',
+              host: config.universalLinkDomain,
+              pathPrefix: '/',
+            },
+          ],
+          category: ['BROWSABLE', 'DEFAULT'],
+        },
+      ],
     },
     extra: {
       ...config,

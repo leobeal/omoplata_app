@@ -1,66 +1,9 @@
-import { render, waitFor, fireEvent } from '@testing-library/react-native';
+import { render, waitFor, fireEvent, act } from '@testing-library/react-native';
 import React from 'react';
 
 import HomeScreen from '../../app/(tabs)/index';
 
-// Mock the contexts
-jest.mock('@/contexts/ThemeColors', () => ({
-  useThemeColors: () => ({
-    text: '#ffffff',
-    bg: '#141414',
-    border: '#404040',
-    highlight: '#4CAF50',
-  }),
-}));
-
-jest.mock('@/contexts/LocalizationContext', () => ({
-  useT: () => (key: string) => {
-    const translations: Record<string, string> = {
-      'home.welcomeBack': 'Welcome back!',
-      'home.activeMember': 'Active Member',
-      'home.classes': 'Classes',
-      'home.checkins': 'Check-ins',
-      'home.thisMonth': 'this month',
-      'home.thisWeek': 'this week',
-      'home.lastSevenDays': 'Last 7 days',
-      'home.goalProgress': 'Goal Progress',
-      'home.monthly': 'Monthly',
-      'home.weeklyActivity': 'Weekly Activity',
-      'home.pastThreeWeeks': 'Past 3 weeks',
-      'home.onTrack': 'on track',
-      'home.membershipStatus': 'Membership Status',
-      'home.classesLeft': 'Classes Left',
-      'home.unlimited': 'Unlimited',
-      'home.nextBilling': 'Next Billing',
-      'home.memberSince': 'Member Since',
-    };
-    return translations[key] || key;
-  },
-}));
-
-jest.mock('@/contexts/ScrollToTopContext', () => ({
-  useScrollToTop: () => ({
-    scrollToTop: jest.fn(),
-    registerScrollHandler: jest.fn(),
-    unregisterScrollHandler: jest.fn(),
-  }),
-}));
-
-jest.mock('@/contexts/AuthContext', () => ({
-  useAuth: () => ({
-    user: {
-      id: 'user-001',
-      email: 'john@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
-    },
-    isAuthenticated: true,
-    isLoading: false,
-    token: 'test-token',
-  }),
-}));
-
-// Mock the classes API
+// Define mock data first (before jest.mock calls which are hoisted)
 const mockClasses = [
   {
     id: 'cls-001',
@@ -122,9 +65,238 @@ jest.mock('@/api/classes', () => ({
   denyAttendance: (classId: string) => mockDenyAttendance(classId),
 }));
 
+// Mock membership data
+const mockMembership = {
+  id: 1000031,
+  status: 'new',
+  startsAt: '2025-12-03',
+  chargeStartsAt: '2026-01-01',
+  endsAt: null,
+  renewsAt: null,
+  renewsAutomatically: true,
+  amount: 89,
+  currency: 'EUR',
+  plan: {
+    id: 1000002,
+    name: 'Unbegrenzt',
+    priceId: 1000012,
+    priceName: null,
+    amount: 89,
+    currency: 'EUR',
+    chargeInterval: 'P1M',
+    contractDuration: 'P6M',
+  },
+  members: [
+    {
+      id: 1000029,
+      prefixedId: 'USER84aa2d8f26',
+      firstName: 'John',
+      lastName: 'Doe',
+      fullName: 'John Doe',
+      role: 'member',
+    },
+  ],
+  payer: {
+    id: 1000029,
+    prefixedId: 'USER84aa2d8f26',
+    fullName: 'John Doe',
+  },
+  documentRequests: [],
+};
+
+const mockGetMembership = jest.fn().mockResolvedValue(mockMembership);
+
+jest.mock('@/api/membership', () => ({
+  getMembership: () => mockGetMembership(),
+  getStatusTranslationKey: (status: string) => status,
+}));
+
+// Mock payment methods API
+const mockGetPaymentMethods = jest.fn().mockResolvedValue([]);
+const mockGetAvailablePaymentMethods = jest.fn().mockResolvedValue([]);
+
+jest.mock('@/api/payment-methods', () => ({
+  getPaymentMethods: () => mockGetPaymentMethods(),
+  getAvailablePaymentMethods: () => mockGetAvailablePaymentMethods(),
+  isSepaAvailable: () => false,
+}));
+
+// Mock contexts
+jest.mock('@/contexts/ThemeColors', () => ({
+  useThemeColors: () => ({
+    text: '#ffffff',
+    bg: '#141414',
+    border: '#404040',
+    highlight: '#4CAF50',
+    error: '#ff0000',
+  }),
+}));
+
+jest.mock('@/contexts/LocalizationContext', () => ({
+  useT: () => (key: string) => {
+    const translations: Record<string, string> = {
+      'home.welcomeBack': 'Welcome back!',
+      'home.activeMember': 'Active Member',
+      'home.classes': 'Classes',
+      'home.checkins': 'Check-ins',
+      'home.thisMonth': 'this month',
+      'home.thisWeek': 'this week',
+      'home.lastSevenDays': 'Last 7 days',
+      'home.goalProgress': 'Goal Progress',
+      'home.monthly': 'Monthly',
+      'home.weeklyActivity': 'Weekly Activity',
+      'home.pastThreeWeeks': 'Past 3 weeks',
+      'home.onTrack': 'on track',
+      'home.membershipStatus': 'Membership Status',
+      'home.classesLeft': 'Classes Left',
+      'home.unlimited': 'Unlimited',
+      'home.nextBilling': 'Next Billing',
+      'home.memberSince': 'Member Since',
+      'membership.new': 'New',
+      'membership.active': 'Active',
+    };
+    return translations[key] || key;
+  },
+}));
+
+jest.mock('@/contexts/ScrollToTopContext', () => ({
+  useScrollToTop: () => ({
+    scrollToTop: jest.fn(),
+    registerScrollHandler: jest.fn(),
+    unregisterScrollHandler: jest.fn(),
+  }),
+}));
+
+jest.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      id: 'user-001',
+      email: 'john@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
+    },
+    isAuthenticated: true,
+    isLoading: false,
+    token: 'test-token',
+  }),
+}));
+
+const mockRefreshData = jest.fn().mockResolvedValue(undefined);
+const mockSetClasses = jest.fn();
+const mockSetPaymentMethods = jest.fn();
+
+jest.mock('@/contexts/DashboardReadyContext', () => ({
+  useAppData: () => ({
+    isAppDataReady: true,
+    classes: [
+      {
+        id: 'cls-001',
+        title: 'Brazilian Jiu-Jitsu - Fundamentals',
+        instructor: 'Professor Carlos Silva',
+        instructorAvatar: '',
+        date: '2025-11-21',
+        startTime: '18:00',
+        endTime: '19:30',
+        duration: 90,
+        location: 'Mat Room A',
+        capacity: { max: 20, is_full: false, available_spots: 8 },
+        enrolled: 12,
+        status: 'confirmed',
+        description: '',
+        level: 'Beginner',
+      },
+      {
+        id: 'cls-002',
+        title: 'No-Gi Grappling',
+        instructor: 'Coach Mike Johnson',
+        instructorAvatar: '',
+        date: '2025-11-22',
+        startTime: '19:00',
+        endTime: '20:00',
+        duration: 60,
+        location: 'Mat Room B',
+        capacity: { max: 15, is_full: false, available_spots: 7 },
+        enrolled: 8,
+        status: 'pending',
+        description: '',
+        level: 'Intermediate',
+      },
+      {
+        id: 'cls-003',
+        title: 'Muay Thai - Striking Fundamentals',
+        instructor: 'Kru Sarah Martinez',
+        instructorAvatar: '',
+        date: '2025-11-23',
+        startTime: '10:00',
+        endTime: '11:00',
+        duration: 60,
+        location: 'Ring Area',
+        capacity: { max: 25, is_full: false, available_spots: 7 },
+        enrolled: 18,
+        status: 'pending',
+        description: '',
+        level: 'Beginner',
+      },
+    ],
+    classesError: null,
+    membership: {
+      id: 1000031,
+      status: 'new',
+      startsAt: '2025-12-03',
+      chargeStartsAt: '2026-01-01',
+      endsAt: null,
+      renewsAt: null,
+      renewsAutomatically: true,
+      amount: 89,
+      currency: 'EUR',
+      plan: {
+        id: 1000002,
+        name: 'Unbegrenzt',
+        priceId: 1000012,
+        priceName: null,
+        amount: 89,
+        currency: 'EUR',
+        chargeInterval: 'P1M',
+        contractDuration: 'P6M',
+      },
+      members: [
+        {
+          id: 1000029,
+          prefixedId: 'USER84aa2d8f26',
+          firstName: 'John',
+          lastName: 'Doe',
+          fullName: 'John Doe',
+          role: 'member',
+        },
+      ],
+      payer: {
+        id: 1000029,
+        prefixedId: 'USER84aa2d8f26',
+        fullName: 'John Doe',
+      },
+      documentRequests: [],
+    },
+    paymentMethods: [],
+    availablePaymentMethods: [],
+    refreshData: jest.fn().mockResolvedValue(undefined),
+    setClasses: jest.fn(),
+    setPaymentMethods: jest.fn(),
+  }),
+  useDashboardReady: () => ({
+    isDashboardReady: true,
+    setDashboardReady: jest.fn(),
+    resetDashboardReady: jest.fn(),
+  }),
+}));
+
 describe('HomeScreen (Dashboard)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Restore default mock implementations
+    mockGetUpcomingClasses.mockResolvedValue(mockClasses);
+    mockGetMembership.mockResolvedValue(mockMembership);
+    mockGetPaymentMethods.mockResolvedValue([]);
+    mockGetAvailablePaymentMethods.mockResolvedValue([]);
   });
 
   describe('Rendering', () => {
@@ -140,8 +312,8 @@ describe('HomeScreen (Dashboard)', () => {
       const { getByText } = render(<HomeScreen />);
 
       await waitFor(() => {
-        expect(getByText('Premium')).toBeTruthy();
-        expect(getByText('Active Member')).toBeTruthy();
+        expect(getByText('Unbegrenzt')).toBeTruthy(); // Plan name from mock data
+        expect(getByText('New')).toBeTruthy(); // Status from mock data (translated)
         expect(getByText('Membership Status')).toBeTruthy();
       });
     });
@@ -159,14 +331,6 @@ describe('HomeScreen (Dashboard)', () => {
   });
 
   describe('Upcoming Classes', () => {
-    it('shows loading indicator while fetching classes', () => {
-      const { getAllByTestId } = render(<HomeScreen />);
-
-      // ActivityIndicator should be present initially
-      const indicators = getAllByTestId(/activity-indicator/i);
-      expect(indicators.length).toBeGreaterThan(0);
-    });
-
     it('loads and displays upcoming classes', async () => {
       const { getByText } = render(<HomeScreen />);
 
@@ -248,23 +412,7 @@ describe('HomeScreen (Dashboard)', () => {
       });
     });
 
-    it('shows empty state when no classes available', async () => {
-      mockGetUpcomingClasses.mockResolvedValueOnce([]);
-
-      const { getByText } = render(<HomeScreen />);
-
-      await waitFor(() => {
-        expect(getByText('No upcoming classes scheduled')).toBeTruthy();
-      });
-    });
-
-    it('calls getUpcomingClasses on mount', async () => {
-      render(<HomeScreen />);
-
-      await waitFor(() => {
-        expect(mockGetUpcomingClasses).toHaveBeenCalledTimes(1);
-      });
-    });
+    // Note: Empty state and API call tests removed - data now comes from AppDataContext
   });
 
   describe('Class Interactions', () => {
@@ -333,24 +481,7 @@ describe('HomeScreen (Dashboard)', () => {
     });
   });
 
-  describe('Error Handling', () => {
-    it('handles API errors gracefully', async () => {
-      mockGetUpcomingClasses.mockRejectedValueOnce(new Error('Network error'));
-
-      const consoleError = jest.spyOn(console, 'error').mockImplementation();
-      const { getByText } = render(<HomeScreen />);
-
-      await waitFor(() => {
-        expect(consoleError).toHaveBeenCalled();
-        // The screen should not crash and should show error state
-        expect(getByText('Unable to load classes')).toBeTruthy();
-        expect(getByText('Network error')).toBeTruthy();
-        expect(getByText('Try Again')).toBeTruthy();
-      });
-
-      consoleError.mockRestore();
-    });
-  });
+  // Note: Error handling tests removed - errors are now handled in AppDataContext
 
   describe('Date Formatting', () => {
     it('displays current date', async () => {

@@ -29,6 +29,9 @@ module.exports = {
   // Localization
   language: 'de', // de, en, pt-BR
 
+  // Universal Links (production only)
+  universalLinkDomain: 'sparta-aachen.omoplata.de',
+
   // Login screen
   loginBackground:
     'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?q=80&w=2000&auto=format&fit=crop',

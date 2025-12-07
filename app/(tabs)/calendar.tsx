@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { View, Pressable, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
+import {
+  View,
+  Pressable,
+  ScrollView,
+  ActivityIndicator,
+  Dimensions,
+  RefreshControl,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getClasses, Class } from '@/api/classes';
@@ -38,6 +45,7 @@ export default function CalendarScreen() {
   const [visibleMonthYear, setVisibleMonthYear] = useState<string>('');
   const [allClasses, setAllClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -61,9 +69,13 @@ export default function CalendarScreen() {
     }
   }, [selectedDate, loading]);
 
-  const loadClasses = async () => {
+  const loadClasses = async (isRefreshing = false) => {
     try {
-      setLoading(true);
+      if (isRefreshing) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
       setError(null);
       // Fetch all classes with a higher limit for calendar view
       const data = await getClasses({ limit: 50 });
@@ -77,7 +89,12 @@ export default function CalendarScreen() {
       setError(errorMessage);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = () => {
+    loadClasses(true);
   };
 
   // Group classes by date (extract YYYY-MM-DD from ISO string)
@@ -253,7 +270,17 @@ export default function CalendarScreen() {
         </View>
 
         {/* Classes List */}
-        <ThemedScroller className="flex-1 px-6 pt-6">
+        <ThemedScroller
+          className="flex-1 px-6 pt-6"
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={colors.text}
+              colors={[colors.highlight]}
+              progressBackgroundColor={colors.bg}
+            />
+          }>
           {loading ? (
             <View className="items-center justify-center py-12">
               <ActivityIndicator size="large" color={colors.highlight} />

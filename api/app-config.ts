@@ -106,28 +106,44 @@ export const defaultConfig: Partial<AppConfig> = {
   },
 };
 
+// Error types for app config fetching
+export type AppConfigErrorType = 'club_not_found' | 'network_error' | null;
+
+export interface AppConfigResult {
+  config: AppConfig | null;
+  error: AppConfigErrorType;
+}
+
 /**
  * Fetch app configuration from the API
- * Falls back to local data if API fails
+ * Returns error type if club not found (404) or network error
  */
-export const fetchAppConfig = async (): Promise<AppConfig> => {
+export const fetchAppConfig = async (): Promise<AppConfigResult> => {
   try {
     const response = await api.get<Record<string, unknown>>(ENDPOINTS.CONFIG.APP);
 
-    if (response.data) {
-      console.log('[AppConfig] Fetched from remote API');
-      return transformToCamelCase(response.data) as AppConfig;
+    // Check for 404 - club not found
+    if (response.status === 404) {
+      console.error('[AppConfig] Club not found (404)');
+      return { config: null, error: 'club_not_found' };
     }
 
-    // API returned no data, fall back to local
-    console.warn('[AppConfig] API returned no data, using local fallback');
-    const configData = require('../data/app-config.json');
-    return transformToCamelCase(configData) as AppConfig;
+    // Check if we have data (could be empty object, so check for actual content)
+    if (response.data && Object.keys(response.data).length > 0) {
+      console.log('[AppConfig] Fetched from remote API');
+      return {
+        config: transformToCamelCase(response.data) as AppConfig,
+        error: null,
+      };
+    }
+
+    // API returned no data or empty object
+    console.warn('[AppConfig] API returned no data');
+    return { config: null, error: 'network_error' };
   } catch (error) {
-    // API failed, fall back to local data
-    console.warn('[AppConfig] API fetch failed, using local fallback:', error);
-    const configData = require('../data/app-config.json');
-    return transformToCamelCase(configData) as AppConfig;
+    // API failed - network error
+    console.error('[AppConfig] API fetch failed:', error);
+    return { config: null, error: 'network_error' };
   }
 };
 
@@ -174,28 +190,30 @@ export const cacheConfig = async (config: AppConfig): Promise<void> => {
  * 1. Try to get from cache
  * 2. If no cache or expired, fetch from API
  * 3. Cache the new config
- * 4. Return the config
+ * 4. Return the config with error type
  */
-export const getAppConfig = async (): Promise<AppConfig | null> => {
+export const getAppConfig = async (): Promise<AppConfigResult> => {
   try {
     // Try cache first
     const cached = await getCachedConfig();
     if (cached) {
       console.log('Using cached app config');
-      return cached;
+      return { config: cached, error: null };
     }
 
     // Fetch from API
     console.log('Fetching app config from API');
-    const config = await fetchAppConfig();
+    const result = await fetchAppConfig();
 
-    // Cache it
-    await cacheConfig(config);
+    // Only cache if successful
+    if (result.config) {
+      await cacheConfig(result.config);
+    }
 
-    return config;
+    return result;
   } catch (error) {
     console.error('Error getting app config:', error);
-    return null;
+    return { config: null, error: 'network_error' };
   }
 };
 
@@ -208,8 +226,8 @@ export const getAppConfig = async (): Promise<AppConfig | null> => {
  */
 export const getNavigationConfig = async (): Promise<NavigationConfig | null> => {
   try {
-    const config = await getAppConfig();
-    return config?.navigation || null;
+    const result = await getAppConfig();
+    return result.config?.navigation || null;
   } catch (error) {
     console.error('Error getting navigation config:', error);
     return null;
@@ -221,8 +239,8 @@ export const getNavigationConfig = async (): Promise<NavigationConfig | null> =>
  */
 export const getMembershipSettings = async (): Promise<MembershipSettings> => {
   try {
-    const config = await getAppConfig();
-    return config?.membership || defaultConfig.membership!;
+    const result = await getAppConfig();
+    return result.config?.membership || defaultConfig.membership!;
   } catch (error) {
     console.error('Error getting membership settings:', error);
     return defaultConfig.membership!;
@@ -234,8 +252,8 @@ export const getMembershipSettings = async (): Promise<MembershipSettings> => {
  */
 export const getBillingSettings = async (): Promise<BillingSettings> => {
   try {
-    const config = await getAppConfig();
-    return config?.billing || defaultConfig.billing!;
+    const result = await getAppConfig();
+    return result.config?.billing || defaultConfig.billing!;
   } catch (error) {
     console.error('Error getting billing settings:', error);
     return defaultConfig.billing!;
@@ -247,8 +265,8 @@ export const getBillingSettings = async (): Promise<BillingSettings> => {
  */
 export const getFeatureFlags = async (): Promise<FeatureFlags> => {
   try {
-    const config = await getAppConfig();
-    return config?.features || defaultConfig.features!;
+    const result = await getAppConfig();
+    return result.config?.features || defaultConfig.features!;
   } catch (error) {
     console.error('Error getting feature flags:', error);
     return defaultConfig.features!;
@@ -260,8 +278,8 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
  */
 export const getAnalyticsSettings = async (): Promise<AnalyticsSettings> => {
   try {
-    const config = await getAppConfig();
-    return config?.analytics || defaultConfig.analytics!;
+    const result = await getAppConfig();
+    return result.config?.analytics || defaultConfig.analytics!;
   } catch (error) {
     console.error('Error getting analytics settings:', error);
     return defaultConfig.analytics!;
@@ -283,7 +301,7 @@ export const clearConfigCache = async (): Promise<void> => {
 /**
  * Force refresh config from API
  */
-export const refreshAppConfig = async (): Promise<AppConfig | null> => {
+export const refreshAppConfig = async (): Promise<AppConfigResult> => {
   await clearConfigCache();
   return getAppConfig();
 };

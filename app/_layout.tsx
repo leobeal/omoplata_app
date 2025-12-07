@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { AppConfigProvider, useAppConfig } from '@/contexts/AppConfigContext';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { DashboardReadyProvider, useDashboardReady } from '@/contexts/DashboardReadyContext';
 import { LocalizationProvider } from '@/contexts/LocalizationContext';
 import { ScrollToTopProvider } from '@/contexts/ScrollToTopContext';
 import { TenantProvider, useTenant } from '@/contexts/TenantContext';
@@ -21,6 +22,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { tenant, isLoading: isTenantLoading, isTenantRequired, clearTenant } = useTenant();
   const { loading: isConfigLoading, error: configError } = useAppConfig();
+  const { isDashboardReady } = useDashboardReady();
   const segments = useSegments();
   const [isLoginBackgroundReady, setIsLoginBackgroundReady] = useState(false);
   const [isPreloadingBackground, setIsPreloadingBackground] = useState(false);
@@ -108,8 +110,8 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     preloadLoginBackground,
   ]);
 
-  // Determine when we're fully ready to show content
-  const isFullyReady = (() => {
+  // Determine when we can render children (auth/config ready)
+  const canRenderChildren = (() => {
     // Still loading core data
     if (isCoreLoading) return false;
 
@@ -118,9 +120,6 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
     // Config still loading
     if (isConfigLoading) return false;
-
-    // If authenticated, we're ready
-    if (isAuthenticated) return true;
 
     // If not authenticated, wait for login background to be ready
     if (shouldRedirectToLogin) {
@@ -135,20 +134,33 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     return true;
   })();
 
+  // Determine when to hide splash (children rendered + dashboard ready if authenticated)
+  const canHideSplash = (() => {
+    if (!canRenderChildren) return false;
+
+    // If authenticated, also wait for dashboard data
+    if (isAuthenticated && !isOnLoginScreen && !isOnTenantScreen) {
+      return isDashboardReady;
+    }
+
+    return true;
+  })();
+
   // Hide splash screen when fully ready
   useEffect(() => {
-    if (isFullyReady && !splashHidden) {
+    if (canHideSplash && !splashHidden) {
       SplashScreen.hideAsync();
       setSplashHidden(true);
     }
-  }, [isFullyReady, splashHidden]);
+  }, [canHideSplash, splashHidden]);
 
-  // Keep splash visible while not ready
-  if (!isFullyReady) {
+  // Keep children hidden while not ready to render
+  if (!canRenderChildren) {
     return null;
   }
 
-  // Priority 0: If config failed to load and we're on main context, redirect to tenant selection
+  // Priority 0: If config error (including club not found) and tenant is required, redirect to tenant selection
+  // The tenant-selection screen will show the appropriate error message
   if (configError && isTenantRequired && tenant && !isOnTenantScreen) {
     // Clear the invalid tenant and redirect to tenant selection
     clearTenant();
@@ -181,11 +193,13 @@ export default function RootLayout() {
           <TenantProvider>
             <AuthProvider>
               <AppConfigProvider>
-                <ScrollToTopProvider>
-                  <AuthGate>
-                    <Stack screenOptions={{ headerShown: false }} />
-                  </AuthGate>
-                </ScrollToTopProvider>
+                <DashboardReadyProvider>
+                  <ScrollToTopProvider>
+                    <AuthGate>
+                      <Stack screenOptions={{ headerShown: false }} />
+                    </AuthGate>
+                  </ScrollToTopProvider>
+                </DashboardReadyProvider>
               </AppConfigProvider>
             </AuthProvider>
           </TenantProvider>
