@@ -33,6 +33,12 @@ export default function EditProfileScreen() {
   const loadProfile = async () => {
     try {
       const data = await getProfile();
+
+      if (!data) {
+        Alert.alert('Error', 'Failed to load profile. Please try again.');
+        return;
+      }
+
       setProfile(data);
 
       // Populate form fields
@@ -81,6 +87,11 @@ export default function EditProfileScreen() {
           country: country.trim(),
         },
       });
+
+      if (!updatedProfile) {
+        Alert.alert('Error', 'Failed to update profile. Please try again.');
+        return;
+      }
 
       // Update local state with the response
       setProfile(updatedProfile);

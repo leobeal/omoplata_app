@@ -37,19 +37,14 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
   };
 
   const formatDate = (dateString: string) => {
-    // Handle ISO datetime string (e.g., "2025-11-21T18:00:00") or date-only string (e.g., "2025-11-21")
-    let classDate: Date;
-
-    if (dateString.includes('T')) {
-      // ISO datetime - extract date part and parse as local
-      const datePart = dateString.split('T')[0];
-      const [year, month, day] = datePart.split('-').map(Number);
-      classDate = new Date(year, month - 1, day);
-    } else {
-      // Date-only string
-      const [year, month, day] = dateString.split('-').map(Number);
-      classDate = new Date(year, month - 1, day);
-    }
+    // Handle datetime strings:
+    // - ISO format: "2025-11-21T18:00:00" or "2025-11-21T18:00:00.000Z"
+    // - Space format: "2025-12-08 10:00:00"
+    // - Date-only: "2025-11-21"
+    // Extract date part by splitting on T or space
+    const datePart = dateString.split(/[T ]/)[0];
+    const [year, month, day] = datePart.split('-').map(Number);
+    const classDate = new Date(year, month - 1, day);
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);

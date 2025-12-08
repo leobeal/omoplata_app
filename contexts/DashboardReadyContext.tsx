@@ -20,6 +20,7 @@ interface AppDataContextType {
   classes: Class[];
   childrenWithClasses: ChildWithClasses[];
   classesError: string | null;
+  classesFromCache: boolean;
   membership: Membership | null;
   paymentMethods: PaymentMethod[];
   availablePaymentMethods: AvailablePaymentMethod[];
@@ -35,6 +36,7 @@ const AppDataContext = createContext<AppDataContextType>({
   classes: [],
   childrenWithClasses: [],
   classesError: null,
+  classesFromCache: false,
   membership: null,
   paymentMethods: [],
   availablePaymentMethods: [],
@@ -50,6 +52,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [classes, setClasses] = useState<Class[]>([]);
   const [childrenWithClasses, setChildrenWithClasses] = useState<ChildWithClasses[]>([]);
   const [classesError, setClassesError] = useState<string | null>(null);
+  const [classesFromCache, setClassesFromCache] = useState(false);
   const [membership, setMembership] = useState<Membership | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [availablePaymentMethods, setAvailablePaymentMethods] = useState<AvailablePaymentMethod[]>(
@@ -69,7 +72,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               ? error.message
               : 'Failed to load classes. Please check your connection and try again.';
           setClassesError(errorMessage);
-          return { classes: [], children: [] };
+          return { classes: [], children: [], fromCache: false };
         }),
         getMembership().catch((error) => {
           console.error('Error loading membership:', error);
@@ -87,6 +90,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
     setClasses(classesResult.classes);
     setChildrenWithClasses(classesResult.children);
+    setClassesFromCache(classesResult.fromCache ?? false);
     setMembership(membershipData);
     setPaymentMethods(paymentMethodsData);
     setAvailablePaymentMethods(availablePaymentMethodsData);
@@ -160,6 +164,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         classes,
         childrenWithClasses,
         classesError,
+        classesFromCache,
         membership,
         paymentMethods,
         availablePaymentMethods,

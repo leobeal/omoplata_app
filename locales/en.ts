@@ -335,6 +335,7 @@ export default {
     confirm: 'Confirm',
     cancelAttendance: 'Cancel Attendance',
     confirmAttendance: 'Confirm Attendance',
+    attendanceFailed: 'Failed to update attendance. Please try again.',
     enrolled: '{{count}} enrolled',
     enrolledWithMax: '{{enrolled}}/{{max}} enrolled',
   },

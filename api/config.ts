@@ -52,7 +52,7 @@ export const API_CONFIG = {
   get baseUrl(): string {
     return getBaseUrl();
   },
-  timeout: 30000, // 30 seconds
+  timeout: 30000, // 30 seconds - allows background requests to complete after cache fallback
   get tenant(): string {
     return getTenant();
   },

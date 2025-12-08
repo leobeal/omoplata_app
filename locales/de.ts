@@ -333,6 +333,7 @@ export default {
     confirm: 'Bestätigen',
     cancelAttendance: 'Teilnahme absagen',
     confirmAttendance: 'Teilnahme bestätigen',
+    attendanceFailed: 'Teilnahme konnte nicht aktualisiert werden. Bitte erneut versuchen.',
     enrolled: '{{count}} angemeldet',
     enrolledWithMax: '{{enrolled}}/{{max}} angemeldet',
   },

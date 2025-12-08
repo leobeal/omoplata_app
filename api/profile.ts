@@ -211,8 +211,13 @@ const transformApiUser = (apiUser: ApiUserResponse): Profile => {
 /**
  * Fetch current user profile
  */
-export const getProfile = async (): Promise<Profile> => {
+export const getProfile = async (): Promise<Profile | null> => {
   const response = await api.get<{ user: ApiUserResponse }>(ENDPOINTS.USERS.ME);
+
+  if (response.error || !response.data?.user) {
+    return null;
+  }
+
   return transformApiUser(response.data.user);
 };
 
@@ -222,10 +227,15 @@ export const getProfile = async (): Promise<Profile> => {
 export const updateProfile = async (
   userId: string,
   updates: ProfileUpdateRequest
-): Promise<Profile> => {
+): Promise<Profile | null> => {
   const response = await api.put<{ user: ApiUserResponse }>(
     ENDPOINTS.USERS.UPDATE.replace(':id', userId),
     updates
   );
+
+  if (response.error || !response.data?.user) {
+    return null;
+  }
+
   return transformApiUser(response.data.user);
 };

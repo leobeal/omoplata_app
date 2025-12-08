@@ -138,11 +138,9 @@ export const fetchAppConfig = async (): Promise<AppConfigResult> => {
     }
 
     // API returned no data or empty object
-    console.warn('[AppConfig] API returned no data');
     return { config: null, error: 'network_error' };
-  } catch (error) {
+  } catch {
     // API failed - network error
-    console.error('[AppConfig] API fetch failed:', error);
     return { config: null, error: 'network_error' };
   }
 };
@@ -178,8 +176,7 @@ export const getCachedConfig = async (
     // Remove expired cache if not allowing stale
     await AsyncStorage.removeItem(CACHE_KEY);
     return { config: null, isStale: false };
-  } catch (error) {
-    console.error('Error reading cached config:', error);
+  } catch {
     return { config: null, isStale: false };
   }
 };
@@ -190,8 +187,8 @@ export const getCachedConfig = async (
 export const cacheConfig = async (config: AppConfig): Promise<void> => {
   try {
     await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(config));
-  } catch (error) {
-    console.error('Error caching config:', error);
+  } catch {
+    // Silently fail - caching is not critical
   }
 };
 
@@ -230,13 +227,10 @@ export const getAppConfig = async (): Promise<AppConfigResult & { isStale?: bool
     }
 
     return { ...result, isStale: false };
-  } catch (error) {
-    console.error('[AppConfig] Error getting app config:', error);
-
+  } catch {
     // Try stale cache as last resort
     const { config: staleCache } = await getCachedConfig(true);
     if (staleCache) {
-      console.log('[AppConfig] Exception occurred, using stale cache as offline fallback');
       return { config: staleCache, error: null, isStale: true };
     }
 
@@ -255,8 +249,7 @@ export const getNavigationConfig = async (): Promise<NavigationConfig | null> =>
   try {
     const result = await getAppConfig();
     return result.config?.navigation || null;
-  } catch (error) {
-    console.error('Error getting navigation config:', error);
+  } catch {
     return null;
   }
 };
@@ -268,8 +261,7 @@ export const getMembershipSettings = async (): Promise<MembershipSettings> => {
   try {
     const result = await getAppConfig();
     return result.config?.membership || defaultConfig.membership!;
-  } catch (error) {
-    console.error('Error getting membership settings:', error);
+  } catch {
     return defaultConfig.membership!;
   }
 };
@@ -281,8 +273,7 @@ export const getBillingSettings = async (): Promise<BillingSettings> => {
   try {
     const result = await getAppConfig();
     return result.config?.billing || defaultConfig.billing!;
-  } catch (error) {
-    console.error('Error getting billing settings:', error);
+  } catch {
     return defaultConfig.billing!;
   }
 };
@@ -294,8 +285,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
   try {
     const result = await getAppConfig();
     return result.config?.features || defaultConfig.features!;
-  } catch (error) {
-    console.error('Error getting feature flags:', error);
+  } catch {
     return defaultConfig.features!;
   }
 };
@@ -307,8 +297,7 @@ export const getAnalyticsSettings = async (): Promise<AnalyticsSettings> => {
   try {
     const result = await getAppConfig();
     return result.config?.analytics || defaultConfig.analytics!;
-  } catch (error) {
-    console.error('Error getting analytics settings:', error);
+  } catch {
     return defaultConfig.analytics!;
   }
 };
@@ -319,9 +308,8 @@ export const getAnalyticsSettings = async (): Promise<AnalyticsSettings> => {
 export const clearConfigCache = async (): Promise<void> => {
   try {
     await AsyncStorage.removeItem(CACHE_KEY);
-    console.log('Config cache cleared');
-  } catch (error) {
-    console.error('Error clearing config cache:', error);
+  } catch {
+    // Silently fail
   }
 };
 

@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Pressable, ScrollView, RefreshControl } from 'react-native';
+import {
+  View,
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  RefreshControl,
+  Alert,
+} from 'react-native';
 
 import {
   getClassesPaginated,
@@ -106,8 +113,8 @@ export default function NextClassesScreen() {
       setClasses((prev) =>
         prev.map((cls) => (cls.id === classId ? { ...cls, status: 'confirmed' as const } : cls))
       );
-    } catch (error) {
-      console.error('Error confirming attendance:', error);
+    } catch {
+      Alert.alert(t('common.error'), t('classCard.attendanceFailed'));
     }
   };
 
@@ -117,8 +124,8 @@ export default function NextClassesScreen() {
       setClasses((prev) =>
         prev.map((cls) => (cls.id === classId ? { ...cls, status: 'denied' as const } : cls))
       );
-    } catch (error) {
-      console.error('Error denying attendance:', error);
+    } catch {
+      Alert.alert(t('common.error'), t('classCard.attendanceFailed'));
     }
   };
 

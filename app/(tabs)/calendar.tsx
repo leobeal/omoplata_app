@@ -50,6 +50,7 @@ export default function CalendarScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [usingCachedData, setUsingCachedData] = useState(false);
 
   useEffect(() => {
     loadClasses();
@@ -89,8 +90,9 @@ export default function CalendarScreen() {
       const fromDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
       const toDate = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
 
-      const data = await getClasses({ fromDate, toDate });
-      setAllClasses(data);
+      const { classes, fromCache } = await getClasses({ fromDate, toDate });
+      setAllClasses(classes);
+      setUsingCachedData(fromCache);
     } catch (err) {
       console.error('Error loading classes:', err);
       const errorMessage =
@@ -108,13 +110,13 @@ export default function CalendarScreen() {
     loadClasses(true);
   };
 
-  // Group classes by date (extract YYYY-MM-DD from ISO string)
+  // Group classes by date (extract YYYY-MM-DD)
   const classesByDate = useMemo(() => {
     const grouped: { [key: string]: Class[] } = {};
     allClasses.forEach((cls) => {
-      // cls.date is ISO string like "2025-01-15T10:00:00.000Z"
-      // Extract just the date part (YYYY-MM-DD)
-      const dateKey = cls.date.split('T')[0];
+      // cls.date can be "2025-12-08 10:00:00" or "2025-12-08T10:00:00.000Z"
+      // Extract just the date part (YYYY-MM-DD) by splitting on space or T
+      const dateKey = cls.date.split(/[T ]/)[0];
       if (!grouped[dateKey]) {
         grouped[dateKey] = [];
       }
@@ -339,6 +341,18 @@ export default function CalendarScreen() {
             )}
           </View>
         </View>
+
+        {/* Cached Data Banner */}
+        {usingCachedData && !loading && (
+          <View
+            className="flex-row items-center justify-center px-4 py-2"
+            style={{ backgroundColor: colors.warning + '20' }}>
+            <Icon name="CloudOff" size={14} color={colors.warning} />
+            <ThemedText className="ml-2 text-xs" style={{ color: colors.warning }}>
+              {t('network.usingCachedData')}
+            </ThemedText>
+          </View>
+        )}
 
         {/* Horizontal Scrollable Days */}
         <View className="border-b border-border bg-secondary pb-2 pt-2">

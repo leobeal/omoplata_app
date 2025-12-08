@@ -174,18 +174,12 @@ export const downloadInvoicePdf = async (invoiceId: string): Promise<void> => {
     },
   });
 
-  console.log('[Invoice Download] Response status:', response.status);
-  console.log('[Invoice Download] Response ok:', response.ok);
-
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('[Invoice Download] Error response:', errorText);
     throw new Error(`Failed to download invoice: ${response.status} - ${errorText}`);
   }
 
-  console.log('[Invoice Download] Reading response as base64...');
   const blob = await response.blob();
-  console.log('[Invoice Download] Blob size:', blob.size);
 
   // Convert blob to base64 using FileReader (React Native compatible)
   const base64 = await new Promise<string>((resolve, reject) => {

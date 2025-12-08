@@ -145,10 +145,8 @@ export const getMembership = async (): Promise<Membership | null> => {
       CACHE_DURATIONS.MEDIUM
     );
     if (staleData) {
-      console.log('[Membership] Using stale cache data due to API error');
       return staleData;
     }
-    console.error('[Membership] API error:', response.error);
     return null;
   }
 

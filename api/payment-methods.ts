@@ -108,7 +108,6 @@ const fetchPaymentMethodsData = async (): Promise<PaymentMethodsApiResponse | nu
     const response = await api.get<PaymentMethodsApiResponse>('/payment-methods');
 
     if (response.error || !response.data) {
-      console.error('Error fetching payment methods:', response.error);
       return null;
     }
 

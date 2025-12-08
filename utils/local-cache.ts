@@ -11,6 +11,12 @@ export const CACHE_DURATIONS = {
 } as const;
 
 /**
+ * Timeout before falling back to cached data (in milliseconds)
+ * After this timeout, cached data is shown to user while API continues in background
+ */
+export const CACHE_FALLBACK_TIMEOUT = 4000; // 4 seconds
+
+/**
  * Cache keys for different data types
  */
 export const CACHE_KEYS = {
@@ -166,4 +172,72 @@ export function formatCacheAge(ageMs: number | null): string {
 
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
+}
+
+/**
+ * Result from fetchWithCacheFallback
+ */
+export interface FetchWithCacheResult<T> {
+  data: T;
+  fromCache: boolean;
+}
+
+/**
+ * Fetch data with cache fallback after timeout
+ * If the API call takes longer than the timeout, return cached data immediately
+ * The API call continues in the background and updates the cache when complete
+ * Returns both the data and whether it came from cache
+ */
+export async function fetchWithCacheFallback<T>(
+  cacheKey: string,
+  fetchFn: () => Promise<T>,
+  options: {
+    timeout?: number;
+    maxAge?: number;
+  } = {}
+): Promise<FetchWithCacheResult<T>> {
+  const { timeout = CACHE_FALLBACK_TIMEOUT, maxAge = CACHE_DURATIONS.MEDIUM } = options;
+
+  // Start fetching from API
+  const fetchPromise = fetchFn();
+
+  // Create a timeout promise that resolves to cached data
+  const timeoutPromise = new Promise<{ data: T | null; fromCache: true }>((resolve) => {
+    setTimeout(async () => {
+      const { data } = await getFromCacheWithStale<T>(cacheKey, maxAge);
+      resolve({ data, fromCache: true });
+    }, timeout);
+  });
+
+  // Race between API call and timeout
+  const result = await Promise.race([
+    fetchPromise.then((data) => ({ data, fromCache: false as const })),
+    timeoutPromise,
+  ]);
+
+  if (result.fromCache) {
+    if (result.data !== null) {
+      console.log(`[Cache] API slow, using cached data for: ${cacheKey}`);
+      // Let the API call continue in background to update cache
+      fetchPromise
+        .then((freshData) => {
+          saveToCache(cacheKey, freshData);
+          console.log(`[Cache] Background refresh complete for: ${cacheKey}`);
+        })
+        .catch((err) => {
+          console.log(`[Cache] Background refresh failed for: ${cacheKey}`, err);
+        });
+      return { data: result.data, fromCache: true };
+    } else {
+      // No cache available, wait for API
+      console.log(`[Cache] No cache available, waiting for API: ${cacheKey}`);
+      const data = await fetchPromise;
+      await saveToCache(cacheKey, data);
+      return { data, fromCache: false };
+    }
+  }
+
+  // API responded before timeout
+  await saveToCache(cacheKey, result.data);
+  return { data: result.data, fromCache: false };
 }

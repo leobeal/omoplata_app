@@ -332,6 +332,7 @@ export default {
     confirm: 'Confirmar',
     cancelAttendance: 'Cancelar Presença',
     confirmAttendance: 'Confirmar Presença',
+    attendanceFailed: 'Falha ao atualizar presença. Por favor, tente novamente.',
     enrolled: '{{count}} inscritos',
     enrolledWithMax: '{{enrolled}}/{{max}} inscritos',
   },

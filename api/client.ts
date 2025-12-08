@@ -27,6 +27,9 @@ export const setAuthToken = (token: string | null) => {
 
 export const getAuthToken = () => authToken;
 
+// Check if running in development mode
+const __DEV__ = process.env.NODE_ENV === 'development' || __DEV__;
+
 // Main API request function
 export async function apiRequest<T>(
   endpoint: string,
@@ -49,7 +52,7 @@ export async function apiRequest<T>(
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
-    console.log(`[API] ${method} ${url}`);
+    if (__DEV__) console.log(`[API] ${method} ${url}`);
     const startTime = Date.now();
 
     const response = await fetch(url, {
@@ -65,7 +68,7 @@ export async function apiRequest<T>(
     const duration = Date.now() - startTime;
 
     if (!response.ok) {
-      console.error(`[API Error] ${method} ${url} - Status: ${response.status} (${duration}ms)`);
+      if (__DEV__) console.log(`[API] ${method} ${url} - ${response.status} (${duration}ms)`);
       return {
         data: null,
         error: data?.message || `Request failed with status ${response.status}`,
@@ -73,7 +76,7 @@ export async function apiRequest<T>(
       };
     }
 
-    console.log(`[API] ${method} ${url} - ${response.status} (${duration}ms)`);
+    if (__DEV__) console.log(`[API] ${method} ${url} - ${response.status} (${duration}ms)`);
     return {
       data: data as T,
       error: null,
@@ -83,7 +86,7 @@ export async function apiRequest<T>(
     clearTimeout(timeoutId);
 
     if (error instanceof Error && error.name === 'AbortError') {
-      console.error(`[API Timeout] ${method} ${url} - Request timed out after ${timeout}ms`);
+      if (__DEV__) console.log(`[API] ${method} ${url} - Timeout after ${timeout}ms`);
       return {
         data: null,
         error: 'Request timeout',
@@ -91,9 +94,11 @@ export async function apiRequest<T>(
       };
     }
 
-    console.error(
-      `[API Error] ${method} ${url} - ${error instanceof Error ? error.message : 'Network error'}`
-    );
+    if (__DEV__) {
+      console.log(
+        `[API] ${method} ${url} - ${error instanceof Error ? error.message : 'Network error'}`
+      );
+    }
     return {
       data: null,
       error: error instanceof Error ? error.message : 'Network error',
@@ -104,20 +109,29 @@ export async function apiRequest<T>(
 
 // Convenience methods
 export const api = {
-  get: <T>(endpoint: string, headers?: Record<string, string>) =>
-    apiRequest<T>(endpoint, { method: 'GET', headers }),
+  get: <T>(endpoint: string, options?: { headers?: Record<string, string>; timeout?: number }) =>
+    apiRequest<T>(endpoint, { method: 'GET', ...options }),
 
-  post: <T>(endpoint: string, body?: Record<string, unknown>, headers?: Record<string, string>) =>
-    apiRequest<T>(endpoint, { method: 'POST', body, headers }),
+  post: <T>(
+    endpoint: string,
+    body?: Record<string, unknown>,
+    options?: { headers?: Record<string, string>; timeout?: number }
+  ) => apiRequest<T>(endpoint, { method: 'POST', body, ...options }),
 
-  put: <T>(endpoint: string, body?: Record<string, unknown>, headers?: Record<string, string>) =>
-    apiRequest<T>(endpoint, { method: 'PUT', body, headers }),
+  put: <T>(
+    endpoint: string,
+    body?: Record<string, unknown>,
+    options?: { headers?: Record<string, string>; timeout?: number }
+  ) => apiRequest<T>(endpoint, { method: 'PUT', body, ...options }),
 
-  patch: <T>(endpoint: string, body?: Record<string, unknown>, headers?: Record<string, string>) =>
-    apiRequest<T>(endpoint, { method: 'PATCH', body, headers }),
+  patch: <T>(
+    endpoint: string,
+    body?: Record<string, unknown>,
+    options?: { headers?: Record<string, string>; timeout?: number }
+  ) => apiRequest<T>(endpoint, { method: 'PATCH', body, ...options }),
 
-  delete: <T>(endpoint: string, headers?: Record<string, string>) =>
-    apiRequest<T>(endpoint, { method: 'DELETE', headers }),
+  delete: <T>(endpoint: string, options?: { headers?: Record<string, string>; timeout?: number }) =>
+    apiRequest<T>(endpoint, { method: 'DELETE', ...options }),
 };
 
 export default api;

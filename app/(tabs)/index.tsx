@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Pressable, RefreshControl, useWindowDimensions } from 'react-native';
+import { View, Pressable, RefreshControl, useWindowDimensions, Alert } from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 
 import { confirmAttendance, denyAttendance, ChildWithClasses } from '@/api/classes';
@@ -29,6 +29,7 @@ export default function HomeScreen() {
     classes,
     childrenWithClasses,
     classesError,
+    classesFromCache,
     membership,
     paymentMethods,
     availablePaymentMethods,
@@ -61,8 +62,8 @@ export default function HomeScreen() {
       setClasses((prev) =>
         prev.map((cls) => (cls.id === classId ? { ...cls, status: 'confirmed' as const } : cls))
       );
-    } catch (error) {
-      console.error('Error confirming attendance:', error);
+    } catch {
+      Alert.alert(t('common.error'), t('classCard.attendanceFailed'));
     }
   };
 
@@ -73,8 +74,8 @@ export default function HomeScreen() {
       setClasses((prev) =>
         prev.map((cls) => (cls.id === classId ? { ...cls, status: 'denied' as const } : cls))
       );
-    } catch (error) {
-      console.error('Error denying attendance:', error);
+    } catch {
+      Alert.alert(t('common.error'), t('classCard.attendanceFailed'));
     }
   };
 
@@ -107,6 +108,17 @@ export default function HomeScreen() {
             progressBackgroundColor={colors.bg}
           />
         }>
+        {/* Cached Data Banner */}
+        {classesFromCache && (
+          <View
+            className="flex-row items-center justify-center px-4 py-2"
+            style={{ backgroundColor: colors.warning + '20' }}>
+            <Icon name="CloudOff" size={14} color={colors.warning} />
+            <ThemedText className="ml-2 text-xs" style={{ color: colors.warning }}>
+              {t('network.usingCachedData')}
+            </ThemedText>
+          </View>
+        )}
         <View className="bg-secondary px-6">
           <Section
             title={t('home.welcomeBack')}

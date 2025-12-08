@@ -3,9 +3,9 @@ import { ENDPOINTS } from './config';
 
 import {
   getFromCacheWithStale,
-  saveToCache,
   CACHE_KEYS,
   CACHE_DURATIONS,
+  fetchWithCacheFallback,
 } from '@/utils/local-cache';
 
 export type AttendanceStatus = 'pending' | 'confirmed' | 'denied';
@@ -121,11 +121,29 @@ export interface ChildWithClasses {
 export interface ClassesWithChildren {
   classes: Class[];
   children: ChildWithClasses[];
+  fromCache?: boolean;
+}
+
+// Response type with cache info
+export interface ClassesResponse {
+  classes: Class[];
+  fromCache: boolean;
 }
 
 /**
  * Transform API response to internal Class format
  */
+/**
+ * Extract time (HH:MM) from date string
+ * Handles both "2025-12-08 10:00:00" and "2025-12-08T10:00:00.000Z" formats
+ */
+const extractTime = (dateString: string): string => {
+  // Split on space or T to get the time portion
+  const timePart = dateString.split(/[T ]/)[1];
+  // Return first 5 chars (HH:MM)
+  return timePart ? timePart.substring(0, 5) : '00:00';
+};
+
 const transformApiClass = (apiClass: ApiClassSession): Class => {
   const startsAt = new Date(apiClass.starts_at);
   const endsAt = new Date(apiClass.ends_at);
@@ -143,8 +161,8 @@ const transformApiClass = (apiClass: ApiClassSession): Class => {
     instructor: apiClass.trainer || 'TBA',
     instructorAvatar: '', // Not provided by API
     date: apiClass.starts_at,
-    startTime: startsAt.toISOString().split('T')[1].substring(0, 5), // HH:MM format
-    endTime: endsAt.toISOString().split('T')[1].substring(0, 5), // HH:MM format
+    startTime: extractTime(apiClass.starts_at),
+    endTime: extractTime(apiClass.ends_at),
     duration,
     location: apiClass.venue.name,
     capacity: apiClass.capacity,
@@ -182,25 +200,26 @@ const buildQueryString = (filters?: ClassFilters): string => {
 
 /**
  * Fetch classes with optional filters
- * Uses cache for offline support
+ * Uses cache fallback if API takes longer than 4 seconds
+ * Returns classes and whether data came from cache
  */
-export const getClasses = async (filters?: ClassFilters): Promise<Class[]> => {
+export const getClasses = async (filters?: ClassFilters): Promise<ClassesResponse> => {
   const queryString = buildQueryString(filters);
   const cacheKey = `${CACHE_KEYS.CLASSES}:${queryString || 'default'}`;
 
-  try {
+  const fetchFromApi = async (): Promise<Class[]> => {
     const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.LIST}${queryString}`);
 
     if (response.error || !response.data) {
       throw new Error(response.error || 'Failed to fetch classes');
     }
 
-    const classes = response.data.data.map(transformApiClass);
+    return response.data.data.map(transformApiClass);
+  };
 
-    // Cache successful response
-    await saveToCache(cacheKey, classes);
-
-    return classes;
+  try {
+    const result = await fetchWithCacheFallback(cacheKey, fetchFromApi);
+    return { classes: result.data, fromCache: result.fromCache };
   } catch (error) {
     // Try to get cached data as fallback (allow stale for offline)
     const { data: cachedClasses } = await getFromCacheWithStale<Class[]>(
@@ -210,7 +229,7 @@ export const getClasses = async (filters?: ClassFilters): Promise<Class[]> => {
 
     if (cachedClasses) {
       console.log('[Classes] Using cached data as offline fallback');
-      return cachedClasses;
+      return { classes: cachedClasses, fromCache: true };
     }
 
     // No cache available, re-throw original error
@@ -247,27 +266,28 @@ const transformApiChild = (apiChild: ApiChildWithClasses): ChildWithClasses => (
 /**
  * Fetch user's classes and children's classes
  * Returns both the user's own classes and their children's classes (for responsible users)
+ * Uses cache fallback if API takes longer than 4 seconds
  */
 export const getMyClassesWithChildren = async (limit?: number): Promise<ClassesWithChildren> => {
   const queryString = buildQueryString({ onlyMe: true, limit });
   const cacheKey = `${CACHE_KEYS.CLASSES}:with_children:${queryString || 'default'}`;
 
-  try {
+  const fetchFromApi = async (): Promise<ClassesWithChildren> => {
     const response = await api.get<ApiClassesResponse>(`${ENDPOINTS.CLASSES.LIST}${queryString}`);
 
     if (response.error || !response.data) {
       throw new Error(response.error || 'Failed to fetch classes');
     }
 
-    const result: ClassesWithChildren = {
+    return {
       classes: response.data.data.map(transformApiClass),
       children: (response.data.children || []).map(transformApiChild),
     };
+  };
 
-    // Cache successful response
-    await saveToCache(cacheKey, result);
-
-    return result;
+  try {
+    const result = await fetchWithCacheFallback(cacheKey, fetchFromApi);
+    return { ...result.data, fromCache: result.fromCache };
   } catch (error) {
     // Try to get cached data as fallback (allow stale for offline)
     const { data: cachedData } = await getFromCacheWithStale<ClassesWithChildren>(
@@ -277,7 +297,7 @@ export const getMyClassesWithChildren = async (limit?: number): Promise<ClassesW
 
     if (cachedData) {
       console.log('[Classes] Using cached data as offline fallback');
-      return cachedData;
+      return { ...cachedData, fromCache: true };
     }
 
     // No cache available, re-throw original error
@@ -325,7 +345,7 @@ export const setAttendanceIntention = async (
     payload.child_id = parseInt(options.childId, 10);
   }
 
-  const response = await api.post(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, payload);
+  const response = await api.post(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, payload, { timeout: 4000 });
 
   if (response.error) {
     throw new Error(response.error || 'Failed to set attendance intention');

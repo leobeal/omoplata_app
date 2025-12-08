@@ -252,6 +252,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
     try {
       setChildrenLoading(true);
       const profile = await getProfile();
+
+      // Handle null profile (API error/timeout)
+      if (!profile) {
+        console.log('[Auth] Could not fetch profile, keeping existing children');
+        return;
+      }
+
       setChildren(profile.children || []);
 
       // Update user roles from profile if they changed
@@ -271,7 +278,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
       }
     } catch (error) {
       console.error('Failed to fetch children:', error);
-      setChildren([]);
+      // Keep existing children on error
     } finally {
       setChildrenLoading(false);
     }
