@@ -162,11 +162,7 @@ export default function InvoiceDetailScreen() {
         title="Invoice Details"
         rightComponents={[
           <Pressable key="share" onPress={handleShare} disabled={sharing} className="p-2">
-            {sharing ? (
-              <ActivityIndicator size="small" />
-            ) : (
-              <Icon name="Share2" size={20} />
-            )}
+            {sharing ? <ActivityIndicator size="small" /> : <Icon name="Share2" size={20} />}
           </Pressable>,
         ]}
       />

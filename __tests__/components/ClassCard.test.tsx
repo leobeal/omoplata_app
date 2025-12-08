@@ -4,6 +4,7 @@ import React from 'react';
 import ClassCard from '../../components/ClassCard';
 
 import { Class } from '@/api/classes';
+import { LocalizationProvider } from '@/contexts/LocalizationContext';
 
 // Mock the contexts
 jest.mock('@/contexts/ThemeColors', () => ({
@@ -13,6 +14,11 @@ jest.mock('@/contexts/ThemeColors', () => ({
     border: '#404040',
   }),
 }));
+
+// Wrapper component with LocalizationProvider
+const renderWithProviders = (component: React.ReactElement) => {
+  return render(<LocalizationProvider>{component}</LocalizationProvider>);
+};
 
 describe('ClassCard', () => {
   const mockOnConfirm = jest.fn();
@@ -46,7 +52,7 @@ describe('ClassCard', () => {
 
   describe('Rendering', () => {
     it('renders class information correctly', () => {
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={mockClassData} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -58,7 +64,7 @@ describe('ClassCard', () => {
 
     it('formats time correctly for AM times', () => {
       const morningClass = { ...mockClassData, startTime: '09:00', endTime: '10:30' };
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={morningClass} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -67,7 +73,7 @@ describe('ClassCard', () => {
 
     it('formats time correctly for PM times', () => {
       const eveningClass = { ...mockClassData, startTime: '18:00', endTime: '19:30' };
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={eveningClass} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -79,7 +85,7 @@ describe('ClassCard', () => {
       const today = new Date();
       const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
       const todayClass = { ...mockClassData, date: todayStr };
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={todayClass} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -92,7 +98,7 @@ describe('ClassCard', () => {
       tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
       const tomorrowClass = { ...mockClassData, date: tomorrowStr };
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={tomorrowClass} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -100,7 +106,7 @@ describe('ClassCard', () => {
     });
 
     it('shows Confirm and Decline buttons for pending status', () => {
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={mockClassData} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -110,7 +116,7 @@ describe('ClassCard', () => {
 
     it('shows Confirmed badge when status is confirmed', () => {
       const confirmedClass = { ...mockClassData, status: 'confirmed' as const };
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={confirmedClass} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -119,7 +125,7 @@ describe('ClassCard', () => {
 
     it('shows Declined badge when status is denied', () => {
       const deniedClass = { ...mockClassData, status: 'denied' as const };
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={deniedClass} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -128,7 +134,7 @@ describe('ClassCard', () => {
 
     it('shows Cancel Attendance button for confirmed classes', () => {
       const confirmedClass = { ...mockClassData, status: 'confirmed' as const };
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={confirmedClass} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -137,7 +143,7 @@ describe('ClassCard', () => {
 
     it('shows Confirm Attendance button for denied classes', () => {
       const deniedClass = { ...mockClassData, status: 'denied' as const };
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={deniedClass} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -147,7 +153,7 @@ describe('ClassCard', () => {
 
   describe('Interactions', () => {
     it('calls onConfirm when Confirm button is pressed', async () => {
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={mockClassData} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -161,7 +167,7 @@ describe('ClassCard', () => {
     });
 
     it('calls onDeny when Decline button is pressed', async () => {
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={mockClassData} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -175,7 +181,7 @@ describe('ClassCard', () => {
     });
 
     it('updates status to confirmed after confirming', async () => {
-      const { getByText, queryByText } = render(
+      const { getByText, queryByText } = renderWithProviders(
         <ClassCard classData={mockClassData} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -190,7 +196,7 @@ describe('ClassCard', () => {
     });
 
     it('updates status to denied after declining', async () => {
-      const { getByText, queryByText } = render(
+      const { getByText, queryByText } = renderWithProviders(
         <ClassCard classData={mockClassData} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
 
@@ -213,7 +219,7 @@ describe('ClassCard', () => {
           })
       );
 
-      const { getByText, queryByText, UNSAFE_getAllByType } = render(
+      const { getByText, queryByText } = renderWithProviders(
         <ClassCard classData={mockClassData} onConfirm={delayedConfirm} onDeny={mockOnDeny} />
       );
 
@@ -238,7 +244,7 @@ describe('ClassCard', () => {
           })
       );
 
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={mockClassData} onConfirm={delayedConfirm} onDeny={mockOnDeny} />
       );
 
@@ -263,7 +269,7 @@ describe('ClassCard', () => {
       const consoleError = jest.spyOn(console, 'error').mockImplementation();
       const failingConfirm = jest.fn().mockRejectedValue(new Error('Network error'));
 
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={mockClassData} onConfirm={failingConfirm} onDeny={mockOnDeny} />
       );
 
@@ -282,7 +288,7 @@ describe('ClassCard', () => {
       const consoleError = jest.spyOn(console, 'error').mockImplementation();
       const failingDeny = jest.fn().mockRejectedValue(new Error('Network error'));
 
-      const { getByText } = render(
+      const { getByText } = renderWithProviders(
         <ClassCard classData={mockClassData} onConfirm={mockOnConfirm} onDeny={failingDeny} />
       );
 

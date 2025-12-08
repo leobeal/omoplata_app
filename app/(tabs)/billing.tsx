@@ -214,7 +214,9 @@ export default function BillingScreen() {
               </View>
 
               <View className="items-end">
-                <ThemedText className="font-bold">{formatAmount(invoice.amount, invoice.currency)}</ThemedText>
+                <ThemedText className="font-bold">
+                  {formatAmount(invoice.amount, invoice.currency)}
+                </ThemedText>
                 <View
                   className="mt-1 rounded-full px-2 py-0.5"
                   style={{ backgroundColor: `${getStatusColor(invoice.status)}20` }}>

@@ -325,6 +325,20 @@ export default {
     errorTitle: 'Unable to load classes',
   },
 
+  // Class Card
+  classCard: {
+    today: 'Today',
+    tomorrow: 'Tomorrow',
+    confirmed: 'Confirmed',
+    declined: 'Declined',
+    decline: 'Decline',
+    confirm: 'Confirm',
+    cancelAttendance: 'Cancel Attendance',
+    confirmAttendance: 'Confirm Attendance',
+    enrolled: '{{count}} enrolled',
+    enrolledWithMax: '{{enrolled}}/{{max}} enrolled',
+  },
+
   // Calendar Screen
   calendar: {
     title: 'Class Calendar',

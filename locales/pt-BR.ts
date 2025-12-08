@@ -322,6 +322,20 @@ export default {
     tryDifferentFilters: 'Tente ajustar seus filtros',
   },
 
+  // Cartão de Aula
+  classCard: {
+    today: 'Hoje',
+    tomorrow: 'Amanhã',
+    confirmed: 'Confirmado',
+    declined: 'Recusado',
+    decline: 'Recusar',
+    confirm: 'Confirmar',
+    cancelAttendance: 'Cancelar Presença',
+    confirmAttendance: 'Confirmar Presença',
+    enrolled: '{{count}} inscritos',
+    enrolledWithMax: '{{enrolled}}/{{max}} inscritos',
+  },
+
   // Calendário
   calendar: {
     title: 'Calendário de Aulas',

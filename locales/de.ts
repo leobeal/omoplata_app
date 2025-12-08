@@ -323,6 +323,20 @@ export default {
     tryDifferentFilters: 'Versuchen Sie, Ihre Filter anzupassen',
   },
 
+  // Kurskarte
+  classCard: {
+    today: 'Heute',
+    tomorrow: 'Morgen',
+    confirmed: 'Bestätigt',
+    declined: 'Abgelehnt',
+    decline: 'Ablehnen',
+    confirm: 'Bestätigen',
+    cancelAttendance: 'Teilnahme absagen',
+    confirmAttendance: 'Teilnahme bestätigen',
+    enrolled: '{{count}} angemeldet',
+    enrolledWithMax: '{{enrolled}}/{{max}} angemeldet',
+  },
+
   // Kalender
   calendar: {
     title: 'Kurskalender',

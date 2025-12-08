@@ -133,7 +133,7 @@ jest.mock('@/contexts/ThemeColors', () => ({
 }));
 
 jest.mock('@/contexts/LocalizationContext', () => ({
-  useT: () => (key: string) => {
+  useT: () => (key: string, params?: Record<string, string | number>) => {
     const translations: Record<string, string> = {
       'home.welcomeBack': 'Welcome back!',
       'home.activeMember': 'Active Member',
@@ -157,8 +157,26 @@ jest.mock('@/contexts/LocalizationContext', () => ({
       'common.tryAgain': 'Try again',
       'membership.new': 'New',
       'membership.active': 'Active',
+      // ClassCard translations
+      'classCard.today': 'Today',
+      'classCard.tomorrow': 'Tomorrow',
+      'classCard.confirmed': 'Confirmed',
+      'classCard.declined': 'Declined',
+      'classCard.decline': 'Decline',
+      'classCard.confirm': 'Confirm',
+      'classCard.cancelAttendance': 'Cancel Attendance',
+      'classCard.confirmAttendance': 'Confirm Attendance',
+      'classCard.enrolled': '{{count}} enrolled',
+      'classCard.enrolledWithMax': '{{enrolled}}/{{max}} enrolled',
     };
-    return translations[key] || key;
+    let result = translations[key] || key;
+    // Handle interpolation
+    if (params) {
+      Object.entries(params).forEach(([paramKey, value]) => {
+        result = result.replace(new RegExp(`{{${paramKey}}}`, 'g'), String(value));
+      });
+    }
+    return result;
   },
 }));
 

@@ -5,6 +5,7 @@ import Icon from './Icon';
 import ThemedText from './ThemedText';
 
 import { Class } from '@/api/classes';
+import { useT } from '@/contexts/LocalizationContext';
 
 interface ClassCardProps {
   classData: Class;
@@ -14,6 +15,7 @@ interface ClassCardProps {
 }
 
 export default function ClassCard({ classData, childId, onConfirm, onDeny }: ClassCardProps) {
+  const t = useT();
   const [loading, setLoading] = useState(false);
   const [localStatus, setLocalStatus] = useState(classData.status);
 
@@ -22,8 +24,8 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
     setLocalStatus(classData.status);
   }, [classData.id, classData.status]);
 
-  const formatTime = (time: string) => {
-    if (!time) return 'Time TBA';
+  const formatTime = (time: string | null) => {
+    if (!time) return null;
 
     const [hours, minutes] = time.split(':');
     if (!hours || !minutes) return time; // Return original if format is unexpected
@@ -35,9 +37,19 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
   };
 
   const formatDate = (dateString: string) => {
-    // Parse the date string as local date (not UTC)
-    const [year, month, day] = dateString.split('-').map(Number);
-    const classDate = new Date(year, month - 1, day); // month is 0-indexed
+    // Handle ISO datetime string (e.g., "2025-11-21T18:00:00") or date-only string (e.g., "2025-11-21")
+    let classDate: Date;
+
+    if (dateString.includes('T')) {
+      // ISO datetime - extract date part and parse as local
+      const datePart = dateString.split('T')[0];
+      const [year, month, day] = datePart.split('-').map(Number);
+      classDate = new Date(year, month - 1, day);
+    } else {
+      // Date-only string
+      const [year, month, day] = dateString.split('-').map(Number);
+      classDate = new Date(year, month - 1, day);
+    }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -48,9 +60,9 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
     classDate.setHours(0, 0, 0, 0);
 
     if (classDate.getTime() === today.getTime()) {
-      return 'Today';
+      return t('classCard.today');
     } else if (classDate.getTime() === tomorrow.getTime()) {
-      return 'Tomorrow';
+      return t('classCard.tomorrow');
     } else {
       return classDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
@@ -89,7 +101,7 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
           <View className="flex-row items-center rounded-full bg-green-500/20 px-3 py-1">
             <Icon name="Check" size={14} color="#10B981" />
             <ThemedText className="ml-1 text-xs font-semibold" style={{ color: '#10B981' }}>
-              Confirmed
+              {t('classCard.confirmed')}
             </ThemedText>
           </View>
         );
@@ -98,7 +110,7 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
           <View className="flex-row items-center rounded-full bg-red-500/20 px-3 py-1">
             <Icon name="X" size={14} color="#EF4444" />
             <ThemedText className="ml-1 text-xs font-semibold" style={{ color: '#EF4444' }}>
-              Declined
+              {t('classCard.declined')}
             </ThemedText>
           </View>
         );
@@ -107,16 +119,33 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
     }
   };
 
+  // Check if we have time info to display
+  const startTimeFormatted = formatTime(classData.startTime);
+  const endTimeFormatted = formatTime(classData.endTime);
+  const hasTimeInfo = startTimeFormatted && endTimeFormatted;
+
+  // Check if instructor is available and not a placeholder
+  const hasInstructor =
+    classData.instructor && classData.instructor !== 'TBA' && classData.instructor.trim() !== '';
+
+  // Check if location is available
+  const hasLocation = classData.location && classData.location.trim() !== '';
+
+  // Check if we should show enrollment info
+  const hasEnrollmentInfo = classData.capacity.max !== null || classData.enrolled > 0;
+
   return (
     <View className="mb-4 rounded-2xl bg-secondary p-5">
       {/* Header */}
       <View className="mb-4 flex-row items-start justify-between">
         <View className="flex-1 pr-4">
           <ThemedText className="mb-1 text-lg font-bold">{classData.title}</ThemedText>
-          <View className="flex-row items-center">
-            <Icon name="User" size={14} className="mr-1 opacity-50" />
-            <ThemedText className="text-sm opacity-70">{classData.instructor}</ThemedText>
-          </View>
+          {hasInstructor && (
+            <View className="flex-row items-center">
+              <Icon name="User" size={14} className="mr-1 opacity-50" />
+              <ThemedText className="text-sm opacity-70">{classData.instructor}</ThemedText>
+            </View>
+          )}
         </View>
         {getStatusBadge()}
       </View>
@@ -127,28 +156,39 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
           <Icon name="Calendar" size={16} className="mr-2 opacity-50" />
           <ThemedText className="text-sm opacity-70">{formatDate(classData.date)}</ThemedText>
         </View>
-        <View className="flex-row items-center">
-          <Icon name="Clock" size={16} className="mr-2 opacity-50" />
-          <ThemedText className="text-sm opacity-70">
-            {formatTime(classData.startTime)} - {formatTime(classData.endTime)}
-          </ThemedText>
-        </View>
+        {hasTimeInfo && (
+          <View className="flex-row items-center">
+            <Icon name="Clock" size={16} className="mr-2 opacity-50" />
+            <ThemedText className="text-sm opacity-70">
+              {startTimeFormatted} - {endTimeFormatted}
+            </ThemedText>
+          </View>
+        )}
       </View>
 
-      <View className="mb-4 flex-row items-center justify-between">
-        <View className="flex-row items-center">
-          <Icon name="MapPin" size={16} className="mr-2 opacity-50" />
-          <ThemedText className="text-sm opacity-70">{classData.location}</ThemedText>
+      {(hasLocation || hasEnrollmentInfo) && (
+        <View className="mb-4 flex-row items-center justify-between">
+          {hasLocation && (
+            <View className="flex-row items-center">
+              <Icon name="MapPin" size={16} className="mr-2 opacity-50" />
+              <ThemedText className="text-sm opacity-70">{classData.location}</ThemedText>
+            </View>
+          )}
+          {hasEnrollmentInfo && (
+            <View className="flex-row items-center">
+              <Icon name="Users" size={16} className="mr-2 opacity-50" />
+              <ThemedText className="text-sm opacity-70">
+                {classData.capacity.max !== null
+                  ? t('classCard.enrolledWithMax', {
+                      enrolled: classData.enrolled,
+                      max: classData.capacity.max,
+                    })
+                  : t('classCard.enrolled', { count: classData.enrolled })}
+              </ThemedText>
+            </View>
+          )}
         </View>
-        <View className="flex-row items-center">
-          <Icon name="Users" size={16} className="mr-2 opacity-50" />
-          <ThemedText className="text-sm opacity-70">
-            {classData.capacity.max !== null
-              ? `${classData.enrolled}/${classData.capacity.max} enrolled`
-              : `${classData.enrolled} enrolled`}
-          </ThemedText>
-        </View>
-      </View>
+      )}
 
       {/* Action Buttons */}
       {onConfirm && onDeny && localStatus === 'pending' && (
@@ -164,7 +204,7 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
               <>
                 <Icon name="X" size={18} color="#EF4444" />
                 <ThemedText className="ml-2 font-semibold" style={{ color: '#EF4444' }}>
-                  Decline
+                  {t('classCard.decline')}
                 </ThemedText>
               </>
             )}
@@ -181,7 +221,7 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
               <>
                 <Icon name="Check" size={18} color="#10B981" />
                 <ThemedText className="ml-2 font-semibold" style={{ color: '#10B981' }}>
-                  Confirm
+                  {t('classCard.confirm')}
                 </ThemedText>
               </>
             )}
@@ -201,7 +241,9 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
             ) : (
               <>
                 <Icon name="X" size={18} />
-                <ThemedText className="ml-2 font-semibold">Cancel Attendance</ThemedText>
+                <ThemedText className="ml-2 font-semibold">
+                  {t('classCard.cancelAttendance')}
+                </ThemedText>
               </>
             )}
           </Pressable>
@@ -220,7 +262,9 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
             ) : (
               <>
                 <Icon name="Check" size={18} />
-                <ThemedText className="ml-2 font-semibold">Confirm Attendance</ThemedText>
+                <ThemedText className="ml-2 font-semibold">
+                  {t('classCard.confirmAttendance')}
+                </ThemedText>
               </>
             )}
           </Pressable>
