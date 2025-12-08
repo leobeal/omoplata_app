@@ -1,8 +1,9 @@
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Pressable, Share } from 'react-native';
+import { View, ActivityIndicator, Pressable, Alert } from 'react-native';
 
-import { getInvoiceById, Invoice } from '@/api/invoices';
+import { getInvoiceById, Invoice, downloadInvoicePdf } from '@/api/invoices';
+import { formatCurrency } from '@/api/membership';
 import { Button } from '@/components/Button';
 import ErrorState from '@/components/ErrorState';
 import Header from '@/components/Header';
@@ -18,6 +19,8 @@ export default function InvoiceDetailScreen() {
   const { user } = useAuth();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,7 +52,7 @@ export default function InvoiceDetailScreen() {
   };
 
   const formatAmount = (amount: number) => {
-    return `$${amount.toFixed(2)}`;
+    return formatCurrency(amount, invoice!.currency);
   };
 
   const getStatusColor = (status: string) => {
@@ -81,13 +84,34 @@ export default function InvoiceDetailScreen() {
   const handleShare = async () => {
     if (!invoice) return;
 
+    setSharing(true);
     try {
-      await Share.share({
-        message: `Invoice ${invoice.id}\nAmount: ${formatAmount(invoice.total)}\nDate: ${formatDate(invoice.date)}`,
-        title: `Invoice ${invoice.id}`,
-      });
+      await downloadInvoicePdf(invoice.id);
     } catch (error) {
       console.error('Error sharing invoice:', error);
+      Alert.alert(
+        'Share Failed',
+        error instanceof Error ? error.message : 'Failed to share invoice. Please try again.'
+      );
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!invoice) return;
+
+    setDownloading(true);
+    try {
+      await downloadInvoicePdf(invoice.id);
+    } catch (error) {
+      console.error('Error downloading invoice:', error);
+      Alert.alert(
+        'Download Failed',
+        error instanceof Error ? error.message : 'Failed to download invoice. Please try again.'
+      );
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -137,8 +161,12 @@ export default function InvoiceDetailScreen() {
         showBackButton
         title="Invoice Details"
         rightComponents={[
-          <Pressable key="share" onPress={handleShare} className="p-2">
-            <Icon name="Share2" size={20} />
+          <Pressable key="share" onPress={handleShare} disabled={sharing} className="p-2">
+            {sharing ? (
+              <ActivityIndicator size="small" />
+            ) : (
+              <Icon name="Share2" size={20} />
+            )}
           </Pressable>,
         ]}
       />
@@ -240,13 +268,14 @@ export default function InvoiceDetailScreen() {
         {/* Actions */}
         {invoice.status === 'paid' && (
           <View className="mb-8">
-            <Button title="Download PDF" icon="Download" variant="outline" onPress={() => {}} />
-          </View>
-        )}
-
-        {invoice.status === 'pending' && (
-          <View className="mb-8">
-            <Button title="Pay Now" icon="Building" onPress={() => {}} />
+            <Button
+              title="Download PDF"
+              icon="Download"
+              variant="outline"
+              onPress={handleDownloadPdf}
+              loading={downloading}
+              disabled={downloading}
+            />
           </View>
         )}
 

@@ -1,5 +1,8 @@
-import { api } from './client';
-import { ENDPOINTS } from './config';
+import { File, Paths } from 'expo-file-system/next';
+import * as Sharing from 'expo-sharing';
+
+import { api, getAuthToken } from './client';
+import { ENDPOINTS, getBaseUrl } from './config';
 
 import {
   getFromCacheWithStale,
@@ -34,6 +37,7 @@ export interface Invoice {
   date: string;
   dueDate: string;
   status: InvoiceStatus;
+  currency: string;
   amount: number;
   paymentMethod: string;
   paymentDetails?: string;
@@ -144,4 +148,73 @@ export const getNextInvoice = async (): Promise<Invoice | null> => {
   }
 
   return response.data[0];
+};
+
+/**
+ * Download invoice PDF and open share dialog
+ */
+export const downloadInvoicePdf = async (invoiceId: string): Promise<void> => {
+  const token = getAuthToken();
+  console.log('[Invoice Download] Starting download for invoice:', invoiceId);
+  console.log('[Invoice Download] Auth token present:', !!token);
+
+  if (!token) {
+    throw new Error('Not authenticated');
+  }
+
+  const downloadUrl = `${getBaseUrl()}${ENDPOINTS.INVOICES.DOWNLOAD(invoiceId)}`;
+  console.log('[Invoice Download] Download URL:', downloadUrl);
+
+  const file = new File(Paths.cache, `invoice-${invoiceId}.pdf`);
+  console.log('[Invoice Download] Target file path:', file.uri);
+
+  const response = await fetch(downloadUrl, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  console.log('[Invoice Download] Response status:', response.status);
+  console.log('[Invoice Download] Response ok:', response.ok);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('[Invoice Download] Error response:', errorText);
+    throw new Error(`Failed to download invoice: ${response.status} - ${errorText}`);
+  }
+
+  console.log('[Invoice Download] Reading response as base64...');
+  const blob = await response.blob();
+  console.log('[Invoice Download] Blob size:', blob.size);
+
+  // Convert blob to base64 using FileReader (React Native compatible)
+  const base64 = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
+      const base64Data = result.split(',')[1];
+      resolve(base64Data);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+
+  console.log('[Invoice Download] Writing file...');
+  await file.write(base64, { encoding: 'base64' });
+  console.log('[Invoice Download] File written successfully');
+
+  const canShare = await Sharing.isAvailableAsync();
+  console.log('[Invoice Download] Sharing available:', canShare);
+
+  if (!canShare) {
+    throw new Error('Sharing is not available on this device');
+  }
+
+  console.log('[Invoice Download] Opening share dialog...');
+  await Sharing.shareAsync(file.uri, {
+    mimeType: 'application/pdf',
+    dialogTitle: `Invoice ${invoiceId}`,
+  });
+  console.log('[Invoice Download] Share dialog closed');
 };

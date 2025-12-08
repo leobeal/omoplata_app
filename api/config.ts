@@ -121,6 +121,7 @@ export const ENDPOINTS = {
   // Invoices
   INVOICES: {
     LIST: '/invoices',
+    DOWNLOAD: (id: string) => `/invoices/${id}/download`,
   },
   // App Config
   CONFIG: {

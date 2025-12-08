@@ -75,8 +75,10 @@ describe('ClassCard', () => {
     });
 
     it('formats date as "Today" for today\'s classes', () => {
-      const today = new Date().toISOString().split('T')[0];
-      const todayClass = { ...mockClassData, date: today };
+      // Format as YYYY-MM-DD in local time
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      const todayClass = { ...mockClassData, date: todayStr };
       const { getByText } = render(
         <ClassCard classData={todayClass} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
@@ -85,10 +87,11 @@ describe('ClassCard', () => {
     });
 
     it('formats date as "Tomorrow" for tomorrow\'s classes', () => {
+      // Format as YYYY-MM-DD in local time
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      const tomorrowDate = tomorrow.toISOString().split('T')[0];
-      const tomorrowClass = { ...mockClassData, date: tomorrowDate };
+      const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+      const tomorrowClass = { ...mockClassData, date: tomorrowStr };
       const { getByText } = render(
         <ClassCard classData={tomorrowClass} onConfirm={mockOnConfirm} onDeny={mockOnDeny} />
       );
@@ -152,7 +155,7 @@ describe('ClassCard', () => {
       fireEvent.press(confirmButton);
 
       await waitFor(() => {
-        expect(mockOnConfirm).toHaveBeenCalledWith('class-001');
+        expect(mockOnConfirm).toHaveBeenCalledWith('class-001', undefined);
         expect(mockOnConfirm).toHaveBeenCalledTimes(1);
       });
     });
@@ -166,7 +169,7 @@ describe('ClassCard', () => {
       fireEvent.press(declineButton);
 
       await waitFor(() => {
-        expect(mockOnDeny).toHaveBeenCalledWith('class-001');
+        expect(mockOnDeny).toHaveBeenCalledWith('class-001', undefined);
         expect(mockOnDeny).toHaveBeenCalledTimes(1);
       });
     });

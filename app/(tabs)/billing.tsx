@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
 
 import { getInvoicesPaginated, getNextInvoice, Invoice } from '@/api/invoices';
+import { formatCurrency } from '@/api/membership';
 import { getPaymentMethodIcon, getPaymentMethodTypeName } from '@/api/payment-methods';
 import ErrorState from '@/components/ErrorState';
 import Header from '@/components/Header';
@@ -84,8 +85,8 @@ export default function BillingScreen() {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const formatAmount = (amount: number) => {
-    return `$${amount.toFixed(2)}`;
+  const formatAmount = (amount: number, currency: string) => {
+    return formatCurrency(amount, currency);
   };
 
   const getStatusColor = (status: string) => {
@@ -165,7 +166,7 @@ export default function BillingScreen() {
               <View className="flex-1">
                 <ThemedText className="text-sm opacity-50">{t('billing.nextInvoice')}</ThemedText>
                 <ThemedText className="text-3xl font-bold">
-                  {formatAmount(nextInvoice.amount)}
+                  {formatAmount(nextInvoice.amount, nextInvoice.currency)}
                 </ThemedText>
                 <ThemedText className="mt-1 text-sm opacity-70">
                   {t('billing.due')} {formatDate(nextInvoice.dueDate)}
@@ -213,7 +214,7 @@ export default function BillingScreen() {
               </View>
 
               <View className="items-end">
-                <ThemedText className="font-bold">{formatAmount(invoice.amount)}</ThemedText>
+                <ThemedText className="font-bold">{formatAmount(invoice.amount, invoice.currency)}</ThemedText>
                 <View
                   className="mt-1 rounded-full px-2 py-0.5"
                   style={{ backgroundColor: `${getStatusColor(invoice.status)}20` }}>

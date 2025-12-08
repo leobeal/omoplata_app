@@ -152,6 +152,9 @@ jest.mock('@/contexts/LocalizationContext', () => ({
       'home.unlimited': 'Unlimited',
       'home.nextBilling': 'Next Billing',
       'home.memberSince': 'Member Since',
+      'home.upcomingClasses': 'Upcoming Classes',
+      'home.unableToLoadClasses': 'Unable to load classes',
+      'common.tryAgain': 'Try again',
       'membership.new': 'New',
       'membership.active': 'Active',
     };
@@ -177,6 +180,7 @@ jest.mock('@/contexts/AuthContext', () => ({
     },
     isAuthenticated: true,
     isLoading: false,
+    isMember: true,
     token: 'test-token',
   }),
 }));
@@ -238,6 +242,7 @@ jest.mock('@/contexts/DashboardReadyContext', () => ({
         level: 'Beginner',
       },
     ],
+    childrenWithClasses: [],
     classesError: null,
     membership: {
       id: 1000031,

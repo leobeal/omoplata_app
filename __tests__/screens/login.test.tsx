@@ -159,6 +159,15 @@ describe('LoginScreen', () => {
 
   describe('Form Submission', () => {
     it('calls login when form is valid', async () => {
+      const mockLogin = jest.fn().mockResolvedValue({ success: true });
+
+      // Override the mock for this test
+      jest.spyOn(require('@/contexts/AuthContext'), 'useAuth').mockReturnValue({
+        login: mockLogin,
+        isLoading: false,
+        isAuthenticated: false,
+      });
+
       const { getAllByText, getByPlaceholderText } = render(<LoginScreen />);
 
       const emailInput = getByPlaceholderText('Email');
@@ -169,12 +178,10 @@ describe('LoginScreen', () => {
       fireEvent.changeText(passwordInput, 'password123');
       fireEvent.press(loginButton);
 
-      // Wait for the simulated login delay
-      await act(async () => {
-        jest.advanceTimersByTime(1500);
+      // Wait for the login function to be called
+      await waitFor(() => {
+        expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123');
       });
-
-      expect(router.replace).toHaveBeenCalledWith('/');
     });
 
     it('does not submit when email is invalid', () => {

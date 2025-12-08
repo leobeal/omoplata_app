@@ -6,7 +6,56 @@ import {
   formatCurrency,
   parseDurationToMonths,
   getIntervalLabel,
+  Membership,
 } from '../../api/membership';
+import api from '../../api/client';
+import { ENDPOINTS } from '../../api/config';
+
+// Mock API client
+jest.mock('../../api/client');
+
+const mockApi = api as jest.Mocked<typeof api>;
+
+// Mock membership data matching the expected API response
+const mockMembershipData = {
+  membership: {
+    id: 1000031,
+    status: 'new',
+    starts_at: '2025-12-03',
+    charge_starts_at: '2026-01-01',
+    ends_at: null,
+    renews_at: null,
+    renews_automatically: true,
+    amount: 89,
+    currency: 'EUR',
+    plan: {
+      id: 1000002,
+      name: 'Unbegrenzt',
+      price_id: 1000012,
+      price_name: null,
+      amount: 89,
+      currency: 'EUR',
+      charge_interval: 'P1M',
+      contract_duration: 'P6M',
+    },
+    members: [
+      {
+        id: 1000029,
+        prefixed_id: 'USER84aa2d8f26',
+        first_name: 'John',
+        last_name: 'Doe',
+        full_name: 'John Doe',
+        role: 'member',
+      },
+    ],
+    payer: {
+      id: 1000029,
+      prefixed_id: 'USER84aa2d8f26',
+      full_name: 'John Doe',
+    },
+    document_requests: [],
+  },
+};
 
 describe('Membership API', () => {
   beforeEach(() => {
@@ -15,39 +64,59 @@ describe('Membership API', () => {
 
   describe('getMembership', () => {
     it('should return membership data', async () => {
+      mockApi.get.mockResolvedValue({
+        data: mockMembershipData,
+        error: null,
+      });
+
       const membership = await getMembership();
 
       expect(membership).toBeDefined();
-      expect(typeof membership.id).toBe('number');
-      expect(membership.status).toBe('new');
+      expect(typeof membership!.id).toBe('number');
+      expect(membership!.status).toBe('new');
     });
 
     it('should have valid plan details', async () => {
+      mockApi.get.mockResolvedValue({
+        data: mockMembershipData,
+        error: null,
+      });
+
       const membership = await getMembership();
 
-      expect(membership.plan).toBeDefined();
-      expect(typeof membership.plan.id).toBe('number');
-      expect(membership.plan.name).toBe('Unbegrenzt');
-      expect(membership.plan.chargeInterval).toBe('P1M');
-      expect(membership.plan.contractDuration).toBe('P6M');
+      expect(membership!.plan).toBeDefined();
+      expect(typeof membership!.plan.id).toBe('number');
+      expect(membership!.plan.name).toBe('Unbegrenzt');
+      expect(membership!.plan.chargeInterval).toBe('P1M');
+      expect(membership!.plan.contractDuration).toBe('P6M');
     });
 
     it('should have pricing information', async () => {
+      mockApi.get.mockResolvedValue({
+        data: mockMembershipData,
+        error: null,
+      });
+
       const membership = await getMembership();
 
-      expect(membership.plan.amount).toBe(89);
-      expect(membership.plan.currency).toBe('EUR');
-      expect(membership.amount).toBe(89);
+      expect(membership!.plan.amount).toBe(89);
+      expect(membership!.plan.currency).toBe('EUR');
+      expect(membership!.amount).toBe(89);
     });
 
     it('should have members array', async () => {
+      mockApi.get.mockResolvedValue({
+        data: mockMembershipData,
+        error: null,
+      });
+
       const membership = await getMembership();
 
-      expect(membership.members).toBeDefined();
-      expect(Array.isArray(membership.members)).toBe(true);
-      expect(membership.members.length).toBeGreaterThan(0);
+      expect(membership!.members).toBeDefined();
+      expect(Array.isArray(membership!.members)).toBe(true);
+      expect(membership!.members.length).toBeGreaterThan(0);
 
-      const member = membership.members[0];
+      const member = membership!.members[0];
       expect(typeof member.id).toBe('number');
       expect(member.prefixedId).toBe('USER84aa2d8f26');
       expect(member.fullName).toBe('John Doe');
@@ -55,31 +124,43 @@ describe('Membership API', () => {
     });
 
     it('should have payer information', async () => {
+      mockApi.get.mockResolvedValue({
+        data: mockMembershipData,
+        error: null,
+      });
+
       const membership = await getMembership();
 
-      expect(membership.payer).toBeDefined();
-      expect(typeof membership.payer.id).toBe('number');
-      expect(membership.payer.fullName).toBe('John Doe');
+      expect(membership!.payer).toBeDefined();
+      expect(typeof membership!.payer.id).toBe('number');
+      expect(membership!.payer.fullName).toBe('John Doe');
     });
 
     it('should handle nullable date fields', async () => {
+      mockApi.get.mockResolvedValue({
+        data: mockMembershipData,
+        error: null,
+      });
+
       const membership = await getMembership();
 
-      expect(membership.startsAt).toBeDefined();
-      expect(membership.chargeStartsAt).toBeDefined();
+      expect(membership!.startsAt).toBeDefined();
+      expect(membership!.chargeStartsAt).toBeDefined();
       // These can be null
-      expect(membership.endsAt).toBeNull();
-      expect(membership.renewsAt).toBeNull();
-      expect(membership.renewsAutomatically).toBe(true);
+      expect(membership!.endsAt).toBeNull();
+      expect(membership!.renewsAt).toBeNull();
+      expect(membership!.renewsAutomatically).toBe(true);
     });
 
-    it('should simulate API delay', async () => {
-      const startTime = Date.now();
-      await getMembership();
-      const endTime = Date.now();
+    it('should return null when API returns error', async () => {
+      mockApi.get.mockResolvedValue({
+        data: null,
+        error: 'Failed to fetch membership',
+      });
 
-      const delay = endTime - startTime;
-      expect(delay).toBeGreaterThanOrEqual(300);
+      const membership = await getMembership();
+
+      expect(membership).toBeNull();
     });
   });
 
@@ -113,8 +194,13 @@ describe('Membership API', () => {
 
   describe('getPrimaryMember', () => {
     it('should return the first member', async () => {
+      mockApi.get.mockResolvedValue({
+        data: mockMembershipData,
+        error: null,
+      });
+
       const membership = await getMembership();
-      const primaryMember = getPrimaryMember(membership);
+      const primaryMember = getPrimaryMember(membership!);
 
       expect(primaryMember).toBeDefined();
       expect(primaryMember?.role).toBe('member');
@@ -122,7 +208,7 @@ describe('Membership API', () => {
     });
 
     it('should return undefined if no members exist', () => {
-      const membershipWithNoMembers = {
+      const membershipWithNoMembers: Membership = {
         id: 123,
         status: 'active' as const,
         startsAt: '',
@@ -144,6 +230,7 @@ describe('Membership API', () => {
         },
         members: [],
         payer: { id: 1, prefixedId: 'TEST', fullName: 'Test' },
+        documentRequests: [],
       };
 
       const primaryMember = getPrimaryMember(membershipWithNoMembers);

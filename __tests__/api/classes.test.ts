@@ -319,7 +319,7 @@ describe('Classes API', () => {
 
       mockApi.post.mockResolvedValue(mockResponse);
 
-      await confirmAttendance('1000032', 'See you there!');
+      await confirmAttendance('1000032', { notes: 'See you there!' });
 
       expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
         occurrence_id: 1000032,
@@ -364,7 +364,7 @@ describe('Classes API', () => {
 
       mockApi.post.mockResolvedValue(mockResponse);
 
-      await denyAttendance('1000032', 'Cannot make it');
+      await denyAttendance('1000032', { notes: 'Cannot make it' });
 
       expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
         occurrence_id: 1000032,
