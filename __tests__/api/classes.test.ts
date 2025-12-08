@@ -11,6 +11,13 @@ import { ENDPOINTS } from '../../api/config';
 // Mock API client
 jest.mock('../../api/client');
 
+// Mock AsyncStorage to prevent caching interference in tests
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn().mockResolvedValue(null),
+  setItem: jest.fn().mockResolvedValue(undefined),
+  removeItem: jest.fn().mockResolvedValue(undefined),
+}));
+
 const mockApi = api as jest.Mocked<typeof api>;
 
 describe('Classes API', () => {
@@ -304,11 +311,15 @@ describe('Classes API', () => {
 
       await confirmAttendance('1000032');
 
-      expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
-        occurrence_id: 1000032,
-        decision: 'confirm',
-        notes: '',
-      });
+      expect(mockApi.post).toHaveBeenCalledWith(
+        ENDPOINTS.ATTENDANCE.CREATE_INTENTION,
+        {
+          occurrence_id: 1000032,
+          decision: 'confirm',
+          notes: '',
+        },
+        { timeout: 4000 }
+      );
     });
 
     it('should confirm attendance with notes', async () => {
@@ -321,11 +332,15 @@ describe('Classes API', () => {
 
       await confirmAttendance('1000032', { notes: 'See you there!' });
 
-      expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
-        occurrence_id: 1000032,
-        decision: 'confirm',
-        notes: 'See you there!',
-      });
+      expect(mockApi.post).toHaveBeenCalledWith(
+        ENDPOINTS.ATTENDANCE.CREATE_INTENTION,
+        {
+          occurrence_id: 1000032,
+          decision: 'confirm',
+          notes: 'See you there!',
+        },
+        { timeout: 4000 }
+      );
     });
 
     it('should throw error when confirmation fails', async () => {
@@ -349,11 +364,15 @@ describe('Classes API', () => {
 
       await denyAttendance('1000032');
 
-      expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
-        occurrence_id: 1000032,
-        decision: 'decline',
-        notes: '',
-      });
+      expect(mockApi.post).toHaveBeenCalledWith(
+        ENDPOINTS.ATTENDANCE.CREATE_INTENTION,
+        {
+          occurrence_id: 1000032,
+          decision: 'decline',
+          notes: '',
+        },
+        { timeout: 4000 }
+      );
     });
 
     it('should deny attendance with notes', async () => {
@@ -366,11 +385,15 @@ describe('Classes API', () => {
 
       await denyAttendance('1000032', { notes: 'Cannot make it' });
 
-      expect(mockApi.post).toHaveBeenCalledWith(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, {
-        occurrence_id: 1000032,
-        decision: 'decline',
-        notes: 'Cannot make it',
-      });
+      expect(mockApi.post).toHaveBeenCalledWith(
+        ENDPOINTS.ATTENDANCE.CREATE_INTENTION,
+        {
+          occurrence_id: 1000032,
+          decision: 'decline',
+          notes: 'Cannot make it',
+        },
+        { timeout: 4000 }
+      );
     });
 
     it('should throw error when denial fails', async () => {

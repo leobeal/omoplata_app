@@ -241,14 +241,16 @@ export const getClasses = async (filters?: ClassFilters): Promise<ClassesRespons
  * Fetch upcoming classes (convenience wrapper)
  */
 export const getUpcomingClasses = async (limit?: number): Promise<Class[]> => {
-  return getClasses(limit ? { limit } : undefined);
+  const result = await getClasses(limit ? { limit } : undefined);
+  return result.classes;
 };
 
 /**
  * Fetch only user's classes
  */
 export const getMyClasses = async (limit?: number): Promise<Class[]> => {
-  return getClasses({ onlyMe: true, limit });
+  const result = await getClasses({ onlyMe: true, limit });
+  return result.classes;
 };
 
 /**

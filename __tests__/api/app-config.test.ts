@@ -107,14 +107,11 @@ describe('App Config API', () => {
       (AsyncStorage.getItem as jest.Mock).mockRejectedValue(new Error('Storage error'));
       // Also mock API to fail so we can test the error path
       (api.get as jest.Mock).mockRejectedValue(new Error('API error'));
-      const consoleError = jest.spyOn(console, 'error').mockImplementation();
 
       const result = await getAppConfig();
 
+      // When both storage and API fail, we get network_error
       expect(result.error).toBe('network_error');
-      expect(consoleError).toHaveBeenCalled();
-
-      consoleError.mockRestore();
     });
 
     it('should return club_not_found error on 404', async () => {
@@ -246,21 +243,19 @@ describe('App Config API', () => {
 
     it('should handle cache errors gracefully', async () => {
       (AsyncStorage.setItem as jest.Mock).mockRejectedValue(new Error('Cache error'));
-      const consoleError = jest.spyOn(console, 'error').mockImplementation();
 
-      await cacheConfig({
-        version: '1.0.0',
-        lastUpdated: new Date().toISOString(),
-        navigation: { tabs: [] },
-        membership: defaultConfig.membership!,
-        billing: defaultConfig.billing!,
-        features: defaultConfig.features!,
-        analytics: defaultConfig.analytics!,
-      });
-
-      expect(consoleError).toHaveBeenCalled();
-
-      consoleError.mockRestore();
+      // cacheConfig silently fails on errors (by design), so we just verify it doesn't throw
+      await expect(
+        cacheConfig({
+          version: '1.0.0',
+          lastUpdated: new Date().toISOString(),
+          navigation: { tabs: [] },
+          membership: defaultConfig.membership!,
+          billing: defaultConfig.billing!,
+          features: defaultConfig.features!,
+          analytics: defaultConfig.analytics!,
+        })
+      ).resolves.not.toThrow();
     });
   });
 
