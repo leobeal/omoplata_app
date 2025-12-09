@@ -8,6 +8,8 @@ import {
   RefreshControl,
   FlatList,
   ListRenderItem,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -37,7 +39,7 @@ interface DayData {
 export default function CalendarScreen() {
   const t = useT();
   const colors = useThemeColors();
-  const scrollViewRef = useRef<ScrollView>(null);
+  const daysListRef = useRef<FlatList<DayData>>(null);
   const classesListRef = useRef<FlatList<DayData>>(null);
   const isScrollingFromSwipe = useRef(false);
 
@@ -58,19 +60,26 @@ export default function CalendarScreen() {
 
   // Scroll to selected date when it changes
   useEffect(() => {
-    if (!loading && scrollViewRef.current) {
+    let timeoutId: NodeJS.Timeout | undefined;
+
+    if (!loading && daysListRef.current) {
       const selectedIndex = days.findIndex((day) => day.dateString === selectedDate);
       if (selectedIndex !== -1) {
-        // Calculate item center: padding + margin + (index * totalWidth) + (itemWidth / 2)
-        const itemCenter =
-          SCROLL_PADDING + DAY_MARGIN + selectedIndex * DAY_TOTAL_WIDTH + DAY_ITEM_WIDTH / 2;
-        // Center on screen
-        const scrollToX = Math.max(0, itemCenter - SCREEN_WIDTH / 2);
-        setTimeout(() => {
-          scrollViewRef.current?.scrollTo({ x: scrollToX, animated: true });
+        timeoutId = setTimeout(() => {
+          daysListRef.current?.scrollToIndex({
+            index: selectedIndex,
+            animated: true,
+            viewPosition: 0.5, // Center the item
+          });
         }, 100);
       }
     }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [selectedDate, loading]);
 
   const loadClasses = async (isRefreshing = false) => {
@@ -162,7 +171,7 @@ export default function CalendarScreen() {
   }, [days, visibleMonthYear]);
 
   // Handle scroll to update visible month
-  const handleScroll = (event: any) => {
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const scrollX = event.nativeEvent.contentOffset.x;
     const centerX = scrollX + SCREEN_WIDTH / 2;
     // Calculate which item is at the center of the screen
@@ -193,6 +202,65 @@ export default function CalendarScreen() {
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     setSelectedDate(todayString);
   };
+
+  // Render day item for horizontal FlatList
+  const renderDayItem: ListRenderItem<DayData> = useCallback(
+    ({ item: day }) => {
+      const isSelected = day.dateString === selectedDate;
+
+      return (
+        <Pressable
+          onPress={() => setSelectedDate(day.dateString)}
+          className="mx-1"
+          style={{ width: DAY_ITEM_WIDTH }}>
+          <View
+            className="items-center rounded-xl px-2 py-2"
+            style={{
+              backgroundColor: isSelected
+                ? colors.highlight
+                : day.isToday
+                  ? colors.isDark
+                    ? '#2A2A2A'
+                    : '#E5E5E5'
+                  : 'transparent',
+            }}>
+            {/* Day name */}
+            <ThemedText
+              className="mb-0.5 text-[10px] font-semibold uppercase"
+              style={{
+                color: isSelected ? '#FFFFFF' : colors.text,
+                opacity: isSelected ? 1 : 0.5,
+              }}>
+              {day.dayName}
+            </ThemedText>
+
+            {/* Day number */}
+            <ThemedText
+              className="text-lg font-bold"
+              style={{
+                color: isSelected ? '#FFFFFF' : colors.text,
+              }}>
+              {day.dayNumber}
+            </ThemedText>
+          </View>
+        </Pressable>
+      );
+    },
+    [selectedDate, colors]
+  );
+
+  // Key extractor for days
+  const dayKeyExtractor = useCallback((item: DayData) => item.dateString, []);
+
+  // Get item layout for days FlatList (for better scroll performance)
+  const getDayItemLayout = useCallback(
+    (_: ArrayLike<DayData> | null | undefined, index: number) => ({
+      length: DAY_TOTAL_WIDTH,
+      offset: DAY_TOTAL_WIDTH * index,
+      index,
+    }),
+    []
+  );
 
   // Get selected date index
   const selectedDateIndex = useMemo(() => {
@@ -356,56 +424,19 @@ export default function CalendarScreen() {
 
         {/* Horizontal Scrollable Days */}
         <View className="border-b border-border bg-secondary pb-2 pt-2">
-          <ScrollView
-            ref={scrollViewRef}
+          <FlatList
+            ref={daysListRef}
+            data={days}
+            renderItem={renderDayItem}
+            keyExtractor={dayKeyExtractor}
             horizontal
             showsHorizontalScrollIndicator={false}
             onScroll={handleScroll}
             scrollEventThrottle={16}
-            contentContainerStyle={{ paddingHorizontal: 8 }}>
-            {days.map((day) => {
-              const isSelected = day.dateString === selectedDate;
-
-              return (
-                <Pressable
-                  key={day.dateString}
-                  onPress={() => setSelectedDate(day.dateString)}
-                  className="mx-1"
-                  style={{ width: DAY_ITEM_WIDTH }}>
-                  <View
-                    className="items-center rounded-xl px-2 py-2"
-                    style={{
-                      backgroundColor: isSelected
-                        ? colors.highlight
-                        : day.isToday
-                          ? colors.isDark
-                            ? '#2A2A2A'
-                            : '#E5E5E5'
-                          : 'transparent',
-                    }}>
-                    {/* Day name */}
-                    <ThemedText
-                      className="mb-0.5 text-[10px] font-semibold uppercase"
-                      style={{
-                        color: isSelected ? '#FFFFFF' : colors.text,
-                        opacity: isSelected ? 1 : 0.5,
-                      }}>
-                      {day.dayName}
-                    </ThemedText>
-
-                    {/* Day number */}
-                    <ThemedText
-                      className="text-lg font-bold"
-                      style={{
-                        color: isSelected ? '#FFFFFF' : colors.text,
-                      }}>
-                      {day.dayNumber}
-                    </ThemedText>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
+            contentContainerStyle={{ paddingHorizontal: 8 }}
+            getItemLayout={getDayItemLayout}
+            extraData={selectedDate}
+          />
         </View>
 
         {/* Classes List - Horizontal Swipeable */}

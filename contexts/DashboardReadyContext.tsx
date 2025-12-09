@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+} from 'react';
 
 import { useAuth } from './AuthContext';
 import { useTenant } from './TenantContext';
@@ -157,24 +165,36 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticated, isAuthLoading]);
 
-  return (
-    <AppDataContext.Provider
-      value={{
-        isAppDataReady,
-        classes,
-        childrenWithClasses,
-        classesError,
-        classesFromCache,
-        membership,
-        paymentMethods,
-        availablePaymentMethods,
-        refreshData,
-        setClasses,
-        setPaymentMethods,
-      }}>
-      {children}
-    </AppDataContext.Provider>
+  const contextValue = useMemo(
+    () => ({
+      isAppDataReady,
+      classes,
+      childrenWithClasses,
+      classesError,
+      classesFromCache,
+      membership,
+      paymentMethods,
+      availablePaymentMethods,
+      refreshData,
+      setClasses,
+      setPaymentMethods,
+    }),
+    [
+      isAppDataReady,
+      classes,
+      childrenWithClasses,
+      classesError,
+      classesFromCache,
+      membership,
+      paymentMethods,
+      availablePaymentMethods,
+      refreshData,
+      setClasses,
+      setPaymentMethods,
+    ]
   );
+
+  return <AppDataContext.Provider value={contextValue}>{children}</AppDataContext.Provider>;
 }
 
 export function useAppData() {

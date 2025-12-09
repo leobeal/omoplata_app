@@ -1,5 +1,5 @@
-import * as DocumentPicker from 'expo-document-picker';
-import * as ImagePicker from 'expo-image-picker';
+import { getDocumentAsync } from 'expo-document-picker';
+import { requestCameraPermissionsAsync, launchCameraAsync } from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, Alert, RefreshControl, TouchableOpacity } from 'react-native';
@@ -127,14 +127,14 @@ export default function MembershipScreen() {
   };
 
   const handleTakePhoto = async (documentRequest: DocumentRequest) => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    const permissionResult = await requestCameraPermissionsAsync();
 
     if (!permissionResult.granted) {
       Alert.alert(t('common.error'), t('checkin.permissionRequired'));
       return;
     }
 
-    const result = await ImagePicker.launchCameraAsync({
+    const result = await launchCameraAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       quality: 0.8,
@@ -150,7 +150,7 @@ export default function MembershipScreen() {
   };
 
   const handleChooseFromLibrary = async (documentRequest: DocumentRequest) => {
-    const result = await DocumentPicker.getDocumentAsync({
+    const result = await getDocumentAsync({
       type: ['image/*', 'application/pdf'],
       copyToCacheDirectory: true,
     });

@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { View, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Pressable, ActivityIndicator, RefreshControl, ScrollView } from 'react-native';
 
 import { getInvoicesPaginated, getNextInvoice, Invoice } from '@/api/invoices';
 import { formatCurrency } from '@/api/membership';
@@ -8,7 +8,6 @@ import { getPaymentMethodIcon, getPaymentMethodTypeName } from '@/api/payment-me
 import ErrorState from '@/components/ErrorState';
 import Header from '@/components/Header';
 import Icon from '@/components/Icon';
-import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useT } from '@/contexts/LocalizationContext';
@@ -146,8 +145,9 @@ export default function BillingScreen() {
   return (
     <View className="flex-1 bg-background">
       <Header title={t('billing.title')} />
-      <ThemedScroller
-        className="px-6 pt-4"
+      <ScrollView
+        className="flex-1 px-6 pt-4"
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -289,7 +289,7 @@ export default function BillingScreen() {
             </View>
           </>
         )}
-      </ThemedScroller>
+      </ScrollView>
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 
@@ -29,44 +29,50 @@ export const SmallChartCard = ({
   const colors = useThemeColors();
   const [containerWidth, setContainerWidth] = useState(200);
 
-  const chartData = {
-    labels: data.map(() => ''),
-    datasets: [
-      {
-        data,
-        color: () => lineColor || colors.highlight,
-        strokeWidth: 4,
-      },
-    ],
-  };
+  const chartData = useMemo(
+    () => ({
+      labels: data.map(() => ''),
+      datasets: [
+        {
+          data,
+          color: () => lineColor || colors.highlight,
+          strokeWidth: 4,
+        },
+      ],
+    }),
+    [data, lineColor, colors.highlight]
+  );
 
-  const chartConfig = {
-    backgroundColor: 'transparent',
-    backgroundGradientFrom: 'transparent',
-    backgroundGradientTo: 'transparent',
-    backgroundGradientFromOpacity: 0,
-    backgroundGradientToOpacity: 0,
-    decimalPlaces: 0,
-    color: () => lineColor || colors.highlight,
-    labelColor: () => 'transparent',
-    style: {
-      borderRadius: 0,
-    },
-    propsForDots: {
-      r: '4',
-      strokeWidth: '1.4',
-      fill: colors.bg,
-      stroke: lineColor || colors.highlight,
-      strokeOpacity: 1,
-    },
-    propsForBackgroundLines: {
-      strokeWidth: 0,
-    },
-    withHorizontalLabels: false,
-    withVerticalLabels: false,
-    withInnerLines: false,
-    withOuterLines: false,
-  };
+  const chartConfig = useMemo(
+    () => ({
+      backgroundColor: 'transparent',
+      backgroundGradientFrom: 'transparent',
+      backgroundGradientTo: 'transparent',
+      backgroundGradientFromOpacity: 0,
+      backgroundGradientToOpacity: 0,
+      decimalPlaces: 0,
+      color: () => lineColor || colors.highlight,
+      labelColor: () => 'transparent',
+      style: {
+        borderRadius: 0,
+      },
+      propsForDots: {
+        r: '4',
+        strokeWidth: '1.4',
+        fill: colors.bg,
+        stroke: lineColor || colors.highlight,
+        strokeOpacity: 1,
+      },
+      propsForBackgroundLines: {
+        strokeWidth: 0,
+      },
+      withHorizontalLabels: false,
+      withVerticalLabels: false,
+      withInnerLines: false,
+      withOuterLines: false,
+    }),
+    [lineColor, colors.highlight, colors.bg]
+  );
 
   return (
     <View

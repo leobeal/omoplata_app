@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useState, useCallback, useMemo } from 'react';
 import { View, Pressable, RefreshControl, useWindowDimensions, Alert } from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 
@@ -55,38 +55,44 @@ export default function HomeScreen() {
     setPaymentMethods((prev) => [...prev, newPaymentMethod]);
   };
 
-  const handleConfirm = async (classId: string, childId?: string) => {
-    try {
-      await confirmAttendance(classId, childId ? { childId } : undefined);
-      // Update local state
-      setClasses((prev) =>
-        prev.map((cls) => (cls.id === classId ? { ...cls, status: 'confirmed' as const } : cls))
-      );
-    } catch {
-      Alert.alert(t('common.error'), t('classCard.attendanceFailed'));
-    }
-  };
+  const handleConfirm = useCallback(
+    async (classId: string, childId?: string) => {
+      try {
+        await confirmAttendance(classId, childId ? { childId } : undefined);
+        // Update local state
+        setClasses((prev) =>
+          prev.map((cls) => (cls.id === classId ? { ...cls, status: 'confirmed' as const } : cls))
+        );
+      } catch {
+        Alert.alert(t('common.error'), t('classCard.attendanceFailed'));
+      }
+    },
+    [t, setClasses]
+  );
 
-  const handleDeny = async (classId: string, childId?: string) => {
-    try {
-      await denyAttendance(classId, childId ? { childId } : undefined);
-      // Update local state
-      setClasses((prev) =>
-        prev.map((cls) => (cls.id === classId ? { ...cls, status: 'denied' as const } : cls))
-      );
-    } catch {
-      Alert.alert(t('common.error'), t('classCard.attendanceFailed'));
-    }
-  };
+  const handleDeny = useCallback(
+    async (classId: string, childId?: string) => {
+      try {
+        await denyAttendance(classId, childId ? { childId } : undefined);
+        // Update local state
+        setClasses((prev) =>
+          prev.map((cls) => (cls.id === classId ? { ...cls, status: 'denied' as const } : cls))
+        );
+      } catch {
+        Alert.alert(t('common.error'), t('classCard.attendanceFailed'));
+      }
+    },
+    [t, setClasses]
+  );
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
       await refreshData();
     } finally {
       setRefreshing(false);
     }
-  };
+  }, [refreshData]);
 
   return (
     <>
@@ -196,7 +202,7 @@ export default function HomeScreen() {
   );
 }
 
-const ActivityStats = () => {
+const ActivityStats = memo(() => {
   const t = useT();
   return (
     <>
@@ -245,13 +251,13 @@ const ActivityStats = () => {
       </View>
     </>
   );
-};
+});
 
 interface MembershipOverviewProps {
   membership: Membership | null;
 }
 
-const MembershipOverview = ({ membership }: MembershipOverviewProps) => {
+const MembershipOverview = memo(({ membership }: MembershipOverviewProps) => {
   const t = useT();
 
   // Format the next billing date
@@ -328,7 +334,7 @@ const MembershipOverview = ({ membership }: MembershipOverviewProps) => {
       </View>
     </View>
   );
-};
+});
 
 interface ChildrenClassesTabsProps {
   children: ChildWithClasses[];
@@ -342,7 +348,7 @@ interface ChildClassesScrollProps {
   onDeny: (classId: string, childId?: string) => Promise<void>;
 }
 
-const ChildClassesScroll = ({ child, onConfirm, onDeny }: ChildClassesScrollProps) => {
+const ChildClassesScroll = memo(({ child, onConfirm, onDeny }: ChildClassesScrollProps) => {
   const { width } = useWindowDimensions();
   const cardWidth = width - 40; // Full width minus padding (20 on each side)
 
@@ -367,13 +373,16 @@ const ChildClassesScroll = ({ child, onConfirm, onDeny }: ChildClassesScrollProp
       <View style={{ width: 8 }} />
     </GHScrollView>
   );
-};
+});
 
-const ChildrenClassesTabs = ({ children, onConfirm, onDeny }: ChildrenClassesTabsProps) => {
+const ChildrenClassesTabs = memo(({ children, onConfirm, onDeny }: ChildrenClassesTabsProps) => {
   const t = useT();
 
   // Filter children with classes
-  const childrenWithClassesFiltered = children.filter((child) => child.classes.length > 0);
+  const childrenWithClassesFiltered = useMemo(
+    () => children.filter((child) => child.classes.length > 0),
+    [children]
+  );
 
   if (childrenWithClassesFiltered.length === 0) {
     return null;
@@ -395,4 +404,4 @@ const ChildrenClassesTabs = ({ children, onConfirm, onDeny }: ChildrenClassesTab
       ))}
     </>
   );
-};
+});

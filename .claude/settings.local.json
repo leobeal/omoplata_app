@@ -26,7 +26,8 @@
       "Bash(TENANT=main npx expo install:*)",
       "Bash(npm why:*)",
       "Bash(npm ls:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "mcp__mcp-react-native-expo__analyze_codebase_performance"
     ],
     "deny": [],
     "ask": []

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   ActivityIndicator,
@@ -6,6 +6,8 @@ import {
   ScrollView,
   RefreshControl,
   Alert,
+  FlatList,
+  ListRenderItem,
 } from 'react-native';
 
 import {
@@ -22,7 +24,6 @@ import ClassCard from '@/components/ClassCard';
 import ErrorState from '@/components/ErrorState';
 import Header from '@/components/Header';
 import Icon from '@/components/Icon';
-import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -145,6 +146,56 @@ export default function NextClassesScreen() {
 
   const hasActiveFilters = selectedCategory || selectedLevel;
 
+  // Render class item for FlatList
+  const renderClassItem: ListRenderItem<Class> = useCallback(
+    ({ item: classItem }) => (
+      <ClassCard classData={classItem} onConfirm={handleConfirm} onDeny={handleDeny} />
+    ),
+    [handleConfirm, handleDeny]
+  );
+
+  // Key extractor for classes
+  const classKeyExtractor = useCallback((item: Class) => item.id, []);
+
+  // Empty component for FlatList
+  const ListEmptyComponent = useCallback(
+    () => (
+      <View className="items-center justify-center rounded-2xl bg-secondary py-12">
+        <Icon name="Calendar" size={48} className="mb-4 opacity-30" />
+        <ThemedText className="text-center text-lg font-semibold">
+          {t('classes.noClassesFound')}
+        </ThemedText>
+        <ThemedText className="mt-2 text-center opacity-70">
+          {t('classes.tryDifferentFilters')}
+        </ThemedText>
+      </View>
+    ),
+    [t]
+  );
+
+  // Footer component with Load More button
+  const ListFooterComponent = useCallback(
+    () =>
+      hasMore ? (
+        <Pressable
+          className="mb-8 flex-row items-center justify-center rounded-2xl bg-secondary p-4"
+          onPress={loadMore}
+          disabled={loadingMore}>
+          {loadingMore ? (
+            <ActivityIndicator size="small" color={colors.highlight} />
+          ) : (
+            <>
+              <ThemedText className="mr-2 font-semibold text-highlight">
+                {t('classes.loadMore')}
+              </ThemedText>
+              <Icon name="ChevronDown" size={20} color={colors.highlight} />
+            </>
+          )}
+        </Pressable>
+      ) : null,
+    [hasMore, loadMore, loadingMore, colors.highlight, t]
+  );
+
   return (
     <View className="flex-1 bg-background">
       <Header title={t('classes.title')} showBack />
@@ -211,70 +262,39 @@ export default function NextClassesScreen() {
       </View>
 
       {/* Classes list */}
-      <ThemedScroller
-        className="flex-1 px-6 pt-4"
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            tintColor="#FFFFFF"
-            colors={['#FFFFFF', colors.highlight]}
-            progressBackgroundColor={colors.bg}
-          />
-        }>
-        {loading ? (
-          <View className="items-center justify-center py-12">
-            <ActivityIndicator size="large" />
-          </View>
-        ) : error ? (
+      {loading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" />
+        </View>
+      ) : error ? (
+        <View className="flex-1 px-6 pt-4">
           <ErrorState
             title={t('classes.errorTitle') || 'Unable to load classes'}
             message={error}
             onRetry={() => loadClasses(true)}
             retryButtonText={t('common.tryAgain') || 'Try Again'}
           />
-        ) : classes.length > 0 ? (
-          <>
-            {classes.map((classItem) => (
-              <ClassCard
-                key={classItem.id}
-                classData={classItem}
-                onConfirm={handleConfirm}
-                onDeny={handleDeny}
-              />
-            ))}
-
-            {/* Load More Button */}
-            {hasMore && (
-              <Pressable
-                className="mb-8 flex-row items-center justify-center rounded-2xl bg-secondary p-4"
-                onPress={loadMore}
-                disabled={loadingMore}>
-                {loadingMore ? (
-                  <ActivityIndicator size="small" color={colors.highlight} />
-                ) : (
-                  <>
-                    <ThemedText className="mr-2 font-semibold text-highlight">
-                      {t('classes.loadMore')}
-                    </ThemedText>
-                    <Icon name="ChevronDown" size={20} color={colors.highlight} />
-                  </>
-                )}
-              </Pressable>
-            )}
-          </>
-        ) : (
-          <View className="items-center justify-center rounded-2xl bg-secondary py-12">
-            <Icon name="Calendar" size={48} className="mb-4 opacity-30" />
-            <ThemedText className="text-center text-lg font-semibold">
-              {t('classes.noClassesFound')}
-            </ThemedText>
-            <ThemedText className="mt-2 text-center opacity-70">
-              {t('classes.tryDifferentFilters')}
-            </ThemedText>
-          </View>
-        )}
-      </ThemedScroller>
+        </View>
+      ) : (
+        <FlatList
+          data={classes}
+          renderItem={renderClassItem}
+          keyExtractor={classKeyExtractor}
+          contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 16 }}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={ListEmptyComponent}
+          ListFooterComponent={ListFooterComponent}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor="#FFFFFF"
+              colors={['#FFFFFF', colors.highlight]}
+              progressBackgroundColor={colors.bg}
+            />
+          }
+        />
+      )}
     </View>
   );
 }

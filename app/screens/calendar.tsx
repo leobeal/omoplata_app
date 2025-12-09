@@ -1,12 +1,21 @@
 import { router } from 'expo-router';
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { View, Pressable, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import {
+  View,
+  Pressable,
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  ListRenderItem,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  RefreshControl,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getUpcomingClasses, Class } from '@/api/classes';
 import CalendarClassCard from '@/components/CalendarClassCard';
 import Icon from '@/components/Icon';
-import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -30,7 +39,7 @@ interface DayData {
 export default function CalendarScreen() {
   const t = useT();
   const colors = useThemeColors();
-  const scrollViewRef = useRef<ScrollView>(null);
+  const daysListRef = useRef<FlatList<DayData>>(null);
 
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
@@ -39,6 +48,7 @@ export default function CalendarScreen() {
   const [visibleMonthYear, setVisibleMonthYear] = useState<string>('');
   const [allClasses, setAllClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,24 +57,35 @@ export default function CalendarScreen() {
 
   // Scroll to selected date when it changes
   useEffect(() => {
-    if (!loading && scrollViewRef.current) {
+    let timeoutId: NodeJS.Timeout | undefined;
+
+    if (!loading && daysListRef.current) {
       const selectedIndex = days.findIndex((day) => day.dateString === selectedDate);
       if (selectedIndex !== -1) {
-        // Calculate item center: padding + margin + (index * totalWidth) + (itemWidth / 2)
-        const itemCenter =
-          SCROLL_PADDING + DAY_MARGIN + selectedIndex * DAY_TOTAL_WIDTH + DAY_ITEM_WIDTH / 2;
-        // Center on screen
-        const scrollToX = Math.max(0, itemCenter - SCREEN_WIDTH / 2);
-        setTimeout(() => {
-          scrollViewRef.current?.scrollTo({ x: scrollToX, animated: true });
+        timeoutId = setTimeout(() => {
+          daysListRef.current?.scrollToIndex({
+            index: selectedIndex,
+            animated: true,
+            viewPosition: 0.5, // Center the item
+          });
         }, 100);
       }
     }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [selectedDate, loading]);
 
-  const loadClasses = async () => {
+  const loadClasses = async (isRefreshing = false) => {
     try {
-      setLoading(true);
+      if (isRefreshing) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
       setError(null);
       const data = await getUpcomingClasses();
       setAllClasses(data);
@@ -77,7 +98,12 @@ export default function CalendarScreen() {
       setError(errorMessage);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = () => {
+    loadClasses(true);
   };
 
   // Group classes by date
@@ -135,7 +161,7 @@ export default function CalendarScreen() {
   }, [days, visibleMonthYear]);
 
   // Handle scroll to update visible month
-  const handleScroll = (event: any) => {
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const scrollX = event.nativeEvent.contentOffset.x;
     const centerX = scrollX + SCREEN_WIDTH / 2;
     // Calculate which item is at the center of the screen
@@ -166,6 +192,94 @@ export default function CalendarScreen() {
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     setSelectedDate(todayString);
   };
+
+  // Render day item for horizontal FlatList
+  const renderDayItem: ListRenderItem<DayData> = useCallback(
+    ({ item: day }) => {
+      const isSelected = day.dateString === selectedDate;
+
+      return (
+        <Pressable
+          onPress={() => setSelectedDate(day.dateString)}
+          className="mx-1"
+          style={{ width: DAY_ITEM_WIDTH }}>
+          <View
+            className="items-center rounded-xl px-2 py-2"
+            style={{
+              backgroundColor: isSelected
+                ? colors.highlight
+                : day.isToday
+                  ? colors.isDark
+                    ? '#2A2A2A'
+                    : '#E5E5E5'
+                  : 'transparent',
+            }}>
+            {/* Day name */}
+            <ThemedText
+              className="mb-0.5 text-[10px] font-semibold uppercase"
+              style={{
+                color: isSelected ? '#FFFFFF' : colors.text,
+                opacity: isSelected ? 1 : 0.5,
+              }}>
+              {day.dayName}
+            </ThemedText>
+
+            {/* Day number */}
+            <ThemedText
+              className="text-lg font-bold"
+              style={{
+                color: isSelected ? '#FFFFFF' : colors.text,
+              }}>
+              {day.dayNumber}
+            </ThemedText>
+          </View>
+        </Pressable>
+      );
+    },
+    [selectedDate, colors]
+  );
+
+  // Render class item for vertical FlatList
+  const renderClassItem: ListRenderItem<Class> = useCallback(
+    ({ item: classItem }) => <CalendarClassCard key={classItem.id} classData={classItem} />,
+    []
+  );
+
+  // Key extractor for days
+  const dayKeyExtractor = useCallback((item: DayData) => item.dateString, []);
+
+  // Key extractor for classes
+  const classKeyExtractor = useCallback((item: Class) => item.id, []);
+
+  // Get item layout for days FlatList (for better scroll performance)
+  const getDayItemLayout = useCallback(
+    (_: ArrayLike<DayData> | null | undefined, index: number) => ({
+      length: DAY_TOTAL_WIDTH,
+      offset: DAY_TOTAL_WIDTH * index,
+      index,
+    }),
+    []
+  );
+
+  // Header component for classes FlatList
+  const ClassesListHeader = useCallback(
+    () => (
+      <View className="mb-4">
+        <ThemedText className="text-2xl font-bold">
+          {selectedDayData?.date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </ThemedText>
+        <ThemedText className="mt-1 text-sm opacity-60">
+          {selectedDateClasses.length} {selectedDateClasses.length === 1 ? 'class' : 'classes'}{' '}
+          scheduled
+        </ThemedText>
+      </View>
+    ),
+    [selectedDayData, selectedDateClasses.length]
+  );
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-secondary">
@@ -202,131 +316,88 @@ export default function CalendarScreen() {
 
         {/* Horizontal Scrollable Days */}
         <View className="border-b border-border bg-secondary pb-2 pt-2">
-          <ScrollView
-            ref={scrollViewRef}
+          <FlatList
+            ref={daysListRef}
+            data={days}
+            renderItem={renderDayItem}
+            keyExtractor={dayKeyExtractor}
             horizontal
             showsHorizontalScrollIndicator={false}
             onScroll={handleScroll}
             scrollEventThrottle={16}
-            contentContainerStyle={{ paddingHorizontal: 8 }}>
-            {days.map((day, index) => {
-              const isSelected = day.dateString === selectedDate;
-
-              return (
-                <Pressable
-                  key={day.dateString}
-                  onPress={() => setSelectedDate(day.dateString)}
-                  className="mx-1"
-                  style={{ width: DAY_ITEM_WIDTH }}>
-                  <View
-                    className="items-center rounded-xl px-2 py-2"
-                    style={{
-                      backgroundColor: isSelected
-                        ? colors.highlight
-                        : day.isToday
-                          ? colors.isDark
-                            ? '#2A2A2A'
-                            : '#E5E5E5'
-                          : 'transparent',
-                    }}>
-                    {/* Day name */}
-                    <ThemedText
-                      className="mb-0.5 text-[10px] font-semibold uppercase"
-                      style={{
-                        color: isSelected ? '#FFFFFF' : colors.text,
-                        opacity: isSelected ? 1 : 0.5,
-                      }}>
-                      {day.dayName}
-                    </ThemedText>
-
-                    {/* Day number */}
-                    <ThemedText
-                      className="text-lg font-bold"
-                      style={{
-                        color: isSelected ? '#FFFFFF' : colors.text,
-                      }}>
-                      {day.dayNumber}
-                    </ThemedText>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
+            contentContainerStyle={{ paddingHorizontal: 8 }}
+            getItemLayout={getDayItemLayout}
+            extraData={selectedDate}
+          />
         </View>
 
         {/* Classes List */}
-        <ThemedScroller className="flex-1 px-6 pt-6">
-          {loading ? (
-            <View className="items-center justify-center py-12">
-              <ActivityIndicator size="large" color={colors.highlight} />
+        {loading ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color={colors.highlight} />
+          </View>
+        ) : error ? (
+          <View className="flex-1 items-center justify-center px-6">
+            <View
+              className="mb-4 h-16 w-16 items-center justify-center rounded-full"
+              style={{ backgroundColor: colors.error + '20' }}>
+              <Icon name="AlertCircle" size={32} color={colors.error} />
             </View>
-          ) : error ? (
-            <View className="items-center justify-center py-16">
-              <View
-                className="mb-4 h-16 w-16 items-center justify-center rounded-full"
-                style={{ backgroundColor: colors.error + '20' }}>
-                <Icon name="AlertCircle" size={32} color={colors.error} />
-              </View>
-              <ThemedText className="mb-2 text-center text-lg font-bold">
-                {t('calendar.errorTitle') || 'Unable to load classes'}
-              </ThemedText>
-              <ThemedText className="mb-6 max-w-sm text-center text-sm opacity-70">
-                {error}
-              </ThemedText>
-              <Pressable
-                onPress={loadClasses}
-                className="rounded-full px-6 py-3"
-                style={{ backgroundColor: colors.highlight }}>
-                <View className="flex-row items-center">
-                  <Icon name="RefreshCw" size={16} color="#FFFFFF" />
-                  <ThemedText className="ml-2 font-semibold" style={{ color: '#FFFFFF' }}>
-                    {t('common.tryAgain') || 'Try Again'}
-                  </ThemedText>
-                </View>
-              </Pressable>
-            </View>
-          ) : selectedDateClasses.length > 0 ? (
-            <>
-              {/* Selected Date Header */}
-              <View className="mb-4">
-                <ThemedText className="text-2xl font-bold">
-                  {selectedDayData?.date.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </ThemedText>
-                <ThemedText className="mt-1 text-sm opacity-60">
-                  {selectedDateClasses.length}{' '}
-                  {selectedDateClasses.length === 1 ? 'class' : 'classes'} scheduled
+            <ThemedText className="mb-2 text-center text-lg font-bold">
+              {t('calendar.errorTitle') || 'Unable to load classes'}
+            </ThemedText>
+            <ThemedText className="mb-6 max-w-sm text-center text-sm opacity-70">
+              {error}
+            </ThemedText>
+            <Pressable
+              onPress={loadClasses}
+              className="rounded-full px-6 py-3"
+              style={{ backgroundColor: colors.highlight }}>
+              <View className="flex-row items-center">
+                <Icon name="RefreshCw" size={16} color="#FFFFFF" />
+                <ThemedText className="ml-2 font-semibold" style={{ color: '#FFFFFF' }}>
+                  {t('common.tryAgain') || 'Try Again'}
                 </ThemedText>
               </View>
-
-              {/* Classes */}
-              {selectedDateClasses.map((classItem) => (
-                <CalendarClassCard key={classItem.id} classData={classItem} />
-              ))}
-            </>
-          ) : (
-            <View className="items-center justify-center py-16">
-              <View
-                className="mb-4 rounded-full p-6"
-                style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
-                <Icon name="Calendar" size={48} color={colors.text} className="opacity-30" />
-              </View>
-              <ThemedText className="text-center text-xl font-bold opacity-80">
-                {t('calendar.noClasses')}
-              </ThemedText>
-              <ThemedText className="mt-2 text-center opacity-50">
-                {selectedDayData?.date.toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </ThemedText>
+            </Pressable>
+          </View>
+        ) : selectedDateClasses.length > 0 ? (
+          <FlatList
+            data={selectedDateClasses}
+            renderItem={renderClassItem}
+            keyExtractor={classKeyExtractor}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24 }}
+            ListHeaderComponent={ClassesListHeader}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor={colors.text}
+                colors={[colors.highlight]}
+                progressBackgroundColor={colors.bg}
+              />
+            }
+          />
+        ) : (
+          <View className="flex-1 items-center justify-center px-6">
+            <View
+              className="mb-4 rounded-full p-6"
+              style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+              <Icon name="Calendar" size={48} color={colors.text} className="opacity-30" />
             </View>
-          )}
-        </ThemedScroller>
+            <ThemedText className="text-center text-xl font-bold opacity-80">
+              {t('calendar.noClasses')}
+            </ThemedText>
+            <ThemedText className="mt-2 text-center opacity-50">
+              {selectedDayData?.date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </ThemedText>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );

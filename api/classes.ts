@@ -347,7 +347,9 @@ export const setAttendanceIntention = async (
     payload.child_id = parseInt(options.childId, 10);
   }
 
-  const response = await api.post(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, payload, { timeout: 4000 });
+  const response = await api.post(ENDPOINTS.ATTENDANCE.CREATE_INTENTION, payload, {
+    timeout: 4000,
+  });
 
   if (response.error) {
     throw new Error(response.error || 'Failed to set attendance intention');

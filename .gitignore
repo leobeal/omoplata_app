@@ -28,6 +28,7 @@ google-services.json
 google-service-account*.json
 
 # Logs
+logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
