@@ -41,6 +41,17 @@ module.exports = {
           cameraPermission: 'Allow $(PRODUCT_NAME) to access your camera for check-in',
         },
       ],
+      [
+        'expo-notifications',
+        {
+          // Android notification icon (96x96 white-on-transparent PNG)
+          // Tenant-specific: assets/<tenant>/notification-icon.png
+          // Fallback: assets/_global/notification-icon.png
+          icon: config.notificationIcon || './assets/_global/notification-icon.png',
+          // Android notification color (uses tenant primary color)
+          color: config.theme?.primary || '#2196F3',
+        },
+      ],
     ],
     orientation: 'portrait',
     icon: config.icon,

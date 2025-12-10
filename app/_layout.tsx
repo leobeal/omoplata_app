@@ -13,6 +13,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { DashboardReadyProvider, useDashboardReady } from '@/contexts/DashboardReadyContext';
 import { LocalizationProvider } from '@/contexts/LocalizationContext';
 import { NetworkProvider } from '@/contexts/NetworkContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 import { ScrollToTopProvider } from '@/contexts/ScrollToTopContext';
 import { TenantProvider, useTenant } from '@/contexts/TenantContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
@@ -202,15 +203,17 @@ export default function RootLayout() {
           <ThemeProvider>
             <TenantProvider>
               <AuthProvider>
-                <AppConfigProvider>
-                  <DashboardReadyProvider>
-                    <ScrollToTopProvider>
-                      <AuthGate>
-                        <Stack screenOptions={{ headerShown: false }} />
-                      </AuthGate>
-                    </ScrollToTopProvider>
-                  </DashboardReadyProvider>
-                </AppConfigProvider>
+                <NotificationProvider>
+                  <AppConfigProvider>
+                    <DashboardReadyProvider>
+                      <ScrollToTopProvider>
+                        <AuthGate>
+                          <Stack screenOptions={{ headerShown: false }} />
+                        </AuthGate>
+                      </ScrollToTopProvider>
+                    </DashboardReadyProvider>
+                  </AppConfigProvider>
+                </NotificationProvider>
               </AuthProvider>
             </TenantProvider>
           </ThemeProvider>

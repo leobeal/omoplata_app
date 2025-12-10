@@ -138,6 +138,11 @@ export const ENDPOINTS = {
     MARK_ALL_READ: '/notifications/read-all',
     SETTINGS: '/notifications/settings',
   },
+  // Push Notifications
+  PUSH: {
+    REGISTER_TOKEN: '/push/register',
+    UNREGISTER_TOKEN: '/push/unregister',
+  },
 } as const;
 
 export default API_CONFIG;

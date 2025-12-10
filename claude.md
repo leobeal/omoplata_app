@@ -82,8 +82,11 @@ omoplata_app/
 │   └── sparta-aachen.js         # Sparta gym config
 ├── contexts/             # React contexts
 │   ├── AppConfigContext.tsx      # App configuration
+│   ├── AuthContext.tsx           # Authentication state
 │   ├── LocalizationContext.tsx   # i18n
+│   ├── NotificationContext.tsx   # Push notifications (tenant-aware)
 │   ├── ScrollToTopContext.tsx    # Scroll management
+│   ├── TenantContext.tsx         # Tenant state
 │   ├── ThemeContext.tsx          # Theme state
 │   └── ThemeColors.tsx           # Theme colors
 ├── data/                 # Mock JSON data
@@ -200,6 +203,14 @@ module.exports = {
 TENANT=evolve npx expo start
 TENANT=sparta npx expo start
 ```
+
+### Multi-Tenant Architecture Notes
+
+- **Each tenant = separate app** built with `TENANT=<slug> eas build`
+- **Tenant config** in `configs/<tenant>.js` defines: name, slug, bundleIdentifier, easProjectId, theme, icons
+- **Push notifications** are tenant-aware: tokens registered per-tenant via `X-Tenant` header
+- **Auth tokens** are stored per-tenant in AsyncStorage
+- **API base URL** changes based on tenant: `https://<tenant>.omoplata.de/api`
 
 ## Key Features
 
@@ -554,6 +565,15 @@ git push -u origin <branch-name>
 10. **Run tests to verify changes** - Always run `npm test` to ensure nothing broke
 
 > **Note:** The `lint:fix` and `lint` commands automatically exclude the `__old/` reference folder and `__tests__/` directory, focusing only on the active codebase.
+
+## Push Notifications
+
+See `docs/PUSH_NOTIFICATIONS.md` for details.
+
+- Uses Expo Push Notifications with EAS Build
+- Tenant-aware: each app gets its own push credentials
+- Auto-registers token on login, unregisters on logout
+- Backend endpoints: `POST /api/push/register` and `POST /api/push/unregister`
 
 ## Resources
 

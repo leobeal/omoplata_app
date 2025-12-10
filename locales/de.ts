@@ -215,8 +215,7 @@ export default {
     downloadContract: 'Vertrag PDF herunterladen',
     cancelMembership: 'Mitgliedschaft kündigen',
     noMembership: 'Keine Mitgliedschaft gefunden',
-    supportMessage:
-      'Bei Fragen zu deiner Mitgliedschaft wende dich bitte an support@omoplata.com',
+    supportMessage: 'Bei Fragen zu deiner Mitgliedschaft wende dich bitte an support@omoplata.com',
 
     // Download messages
     contractPdfTitle: 'Vertrag PDF',
