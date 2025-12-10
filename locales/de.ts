@@ -28,7 +28,7 @@ export default {
 
   // Netzwerk
   network: {
-    offline: 'Sie sind offline',
+    offline: 'Du bist offline',
     offlineMessage: 'Änderungen werden synchronisiert, wenn die Verbindung wiederhergestellt ist',
     backOnline: 'Wieder online',
     usingCachedData: 'Zeige gespeicherte Daten',
@@ -39,13 +39,13 @@ export default {
     title: 'Familienmitglieder',
     viewingAs: 'Ansicht als {{name}}s Konto',
     switchBack: 'Zurückwechseln',
-    switchBackTo: 'Zurück zu Ihrem Konto',
+    switchBackTo: 'Zurück zu deinem Konto',
     switchAccount: 'Konto wechseln',
     tapToView: 'Tippen, um das Konto anzuzeigen',
     view: 'Anzeigen',
     switch: 'Wechseln',
     switchError: 'Kontowechsel fehlgeschlagen',
-    switchBackError: 'Rückwechsel zu Ihrem Konto fehlgeschlagen',
+    switchBackError: 'Rückwechsel zu deinem Konto fehlgeschlagen',
   },
 
   // Startseite/Dashboard
@@ -92,18 +92,18 @@ export default {
     notifications: 'Benachrichtigungen',
     classRemindersAndUpdates: 'Kurserinnerungen & Updates',
     helpAndSupport: 'Hilfe & Support',
-    getHelp: 'Hilfe zu Ihrem Konto',
+    getHelp: 'Hilfe zu deinem Konto',
     logout: 'Abmelden',
-    signOut: 'Von Ihrem Konto abmelden',
-    logoutConfirm: 'Möchten Sie sich wirklich abmelden?',
-    logoutError: 'Abmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.',
+    signOut: 'Von deinem Konto abmelden',
+    logoutConfirm: 'Möchtest du dich wirklich abmelden?',
+    logoutError: 'Abmeldung fehlgeschlagen. Bitte versuche es erneut.',
   },
 
   // Mitgliedschaften
   memberships: {
     title: 'Mitgliedschaftspläne',
-    chooseYourPlan: 'Wählen Sie Ihren Plan',
-    flexibleOptions: 'Flexible Mitgliedschaftsoptionen für Ihre Fitness-Reise',
+    chooseYourPlan: 'Wähle deinen Plan',
+    flexibleOptions: 'Flexible Mitgliedschaftsoptionen für deine Fitness-Reise',
     allPlansInclude: 'Alle Pläne beinhalten Zugang zu unseren hochmodernen Einrichtungen',
     selectPlan: '{{plan}}-Plan auswählen',
     whatsIncluded: 'WAS IST ENTHALTEN',
@@ -142,11 +142,11 @@ export default {
     title: 'QR-Code scannen',
     permissionRequired: 'Kameraberechtigung erforderlich',
     grantPermission: 'Berechtigung erteilen',
-    permissionMessage: 'Bitte gewähren Sie Kamerazugriff zum Scannen von QR-Codes beim Check-in',
+    permissionMessage: 'Bitte gewähre Kamerazugriff zum Scannen von QR-Codes beim Check-in',
     requestingPermission: 'Kameraberechtigung wird angefordert...',
     goBack: 'Zurück',
     pointCameraAtQR: 'Kamera auf QR-Code richten',
-    alignQRCode: 'Richten Sie den QR-Code im Rahmen aus',
+    alignQRCode: 'Richte den QR-Code im Rahmen aus',
     checkingIn: 'Check-in läuft...',
     checkInSuccess: 'Check-in erfolgreich!',
     welcomeBack: 'Willkommen zurück, {{name}}!',
@@ -155,10 +155,10 @@ export default {
 
     // Fehler
     invalidQRCode: 'Ungültiger QR-Code',
-    alreadyCheckedIn: 'Sie haben bereits eingecheckt',
-    membershipInactive: 'Ihre Mitgliedschaft ist inaktiv.\nBitte wenden Sie sich an die Rezeption.',
+    alreadyCheckedIn: 'Du hast bereits eingecheckt',
+    membershipInactive: 'Deine Mitgliedschaft ist inaktiv.\nBitte wende dich an die Rezeption.',
     checkInFailed: 'Check-in fehlgeschlagen',
-    networkError: 'Netzwerkfehler. Bitte versuchen Sie es erneut.',
+    networkError: 'Netzwerkfehler. Bitte versuche es erneut.',
   },
 
   // Anmeldung
@@ -173,10 +173,10 @@ export default {
 
     // Validierung
     emailRequired: 'E-Mail ist erforderlich',
-    invalidEmail: 'Bitte geben Sie eine gültige E-Mail ein',
+    invalidEmail: 'Bitte gib eine gültige E-Mail ein',
     passwordRequired: 'Passwort ist erforderlich',
     passwordTooShort: 'Passwort muss mindestens 6 Zeichen lang sein',
-    loginFailed: 'Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.',
+    loginFailed: 'Anmeldung fehlgeschlagen. Bitte überprüfe deine Anmeldedaten.',
   },
 
   // Mitgliedschaftsseite
@@ -216,7 +216,7 @@ export default {
     cancelMembership: 'Mitgliedschaft kündigen',
     noMembership: 'Keine Mitgliedschaft gefunden',
     supportMessage:
-      'Bei Fragen zu Ihrer Mitgliedschaft wenden Sie sich bitte an support@omoplata.com',
+      'Bei Fragen zu deiner Mitgliedschaft wende dich bitte an support@omoplata.com',
 
     // Download messages
     contractPdfTitle: 'Vertrag PDF',
@@ -227,7 +227,7 @@ export default {
     daysNoticeRequired: '{{count}} Tage Kündigungsfrist erforderlich',
     upTo: 'Bis zu',
     daysPerYear: '{{count}} Tage pro Jahr',
-    defaultCancellationPolicy: 'Kontaktieren Sie den Support für Kündigungsdetails',
+    defaultCancellationPolicy: 'Kontaktiere den Support für Kündigungsdetails',
     defaultFreezePolicy: 'Einfrieren auf Anfrage möglich',
     defaultTransferPolicy: 'Mitgliedschaften sind nicht übertragbar',
 
@@ -320,7 +320,7 @@ export default {
     showingResults: '{{count}} von {{total}} Kursen anzeigen',
     loadMore: 'Mehr Kurse laden',
     noClassesFound: 'Keine Kurse gefunden',
-    tryDifferentFilters: 'Versuchen Sie, Ihre Filter anzupassen',
+    tryDifferentFilters: 'Versuche, deine Filter anzupassen',
   },
 
   // Kurskarte
@@ -357,10 +357,10 @@ export default {
     title: 'Club nicht gefunden',
     message:
       'Wir konnten diesen Club nicht finden. Der Club wurde möglicherweise entfernt oder der verwendete Link ist falsch.',
-    suggestions: 'Was Sie versuchen können:',
-    checkUrl: 'Prüfen Sie, ob die Club-URL oder der Code korrekt ist',
-    contactClub: 'Kontaktieren Sie Ihren Club direkt, um die Daten zu überprüfen',
-    tryLater: 'Versuchen Sie es später erneut, falls ein vorübergehendes Problem vorliegt',
+    suggestions: 'Was du versuchen kannst:',
+    checkUrl: 'Prüfe, ob die Club-URL oder der Code korrekt ist',
+    contactClub: 'Kontaktiere deinen Club direkt, um die Daten zu überprüfen',
+    tryLater: 'Versuche es später erneut, falls ein vorübergehendes Problem vorliegt',
     selectDifferentClub: 'Anderen Club auswählen',
   },
 
