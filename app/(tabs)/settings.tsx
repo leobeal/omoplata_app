@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Alert, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
 
+import { AttendanceGraph } from '@/components/AttendanceGraph';
 import Avatar from '@/components/Avatar';
 import Header from '@/components/Header';
 import ListLink from '@/components/ListLink';
@@ -126,6 +127,11 @@ export default function SettingsScreen() {
               </View>
             </View>
           )}
+        </View>
+
+        {/* Attendance Graph */}
+        <View className="mt-4">
+          <AttendanceGraph title={t('settings.attendance')} subtitle={t('settings.lastYear')} />
         </View>
 
         {/* Family Section - Show if parent has children */}

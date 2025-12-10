@@ -91,10 +91,10 @@ export default function CalendarScreen() {
       }
       setError(null);
 
-      // Fetch classes for the next 90 days using date range
+      // Fetch classes for the next 30 days using date range
       const today = new Date();
       const endDate = new Date(today);
-      endDate.setDate(today.getDate() + 90);
+      endDate.setDate(today.getDate() + 30);
 
       const fromDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
       const toDate = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
@@ -134,13 +134,13 @@ export default function CalendarScreen() {
     return grouped;
   }, [allClasses]);
 
-  // Generate days for horizontal scroll (90 days from now)
+  // Generate days for horizontal scroll (30 days from now)
   const days = useMemo(() => {
     const today = new Date();
     const daysArray: DayData[] = [];
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < 30; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
 
@@ -395,18 +395,18 @@ export default function CalendarScreen() {
             <ThemedText className="text-base opacity-70">{visibleMonthYear}</ThemedText>
 
             {/* Today Button */}
-            {!isSelectedToday ? (
-              <Pressable
-                onPress={goToToday}
-                className="rounded-full px-3 py-2"
-                style={{ backgroundColor: colors.highlight }}>
-                <ThemedText className="text-xs font-semibold" style={{ color: '#FFFFFF' }}>
-                  {t('calendar.today')}
-                </ThemedText>
-              </Pressable>
-            ) : (
-              <View style={{ width: 60 }} />
-            )}
+            <Pressable
+              onPress={goToToday}
+              className="rounded-full px-3 py-2"
+              style={{
+                backgroundColor: isSelectedToday ? 'transparent' : colors.highlight,
+                opacity: isSelectedToday ? 0 : 1,
+              }}
+              disabled={isSelectedToday}>
+              <ThemedText className="text-xs font-semibold" style={{ color: '#FFFFFF' }}>
+                {t('calendar.today')}
+              </ThemedText>
+            </Pressable>
           </View>
         </View>
 

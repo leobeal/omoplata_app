@@ -15,6 +15,7 @@ export default {
     back: 'Back',
     cancel: 'Cancel',
     confirm: 'Confirm',
+    continue: 'Continue',
     save: 'Save',
     delete: 'Delete',
     edit: 'Edit',
@@ -25,6 +26,37 @@ export default {
     tryAgain: 'Try Again',
     viewPlans: 'View Plans',
     logout: 'Logout',
+  },
+
+  // Onboarding Slides
+  onboarding: {
+    slide1: {
+      title: 'Train Smarter',
+      description: 'Book classes, track attendance, and stay on top of your training schedule',
+    },
+    slide2: {
+      title: 'Stay Connected',
+      description: 'Get notified about upcoming classes and never miss a session',
+    },
+    slide3: {
+      title: 'Reach Your Goals',
+      description: 'Monitor your progress and achieve your fitness targets',
+    },
+  },
+
+  // Tenant Selection
+  tenantSelection: {
+    title: 'Find Your Gym',
+    subtitle: 'Enter your gym identifier to get started',
+    label: 'Gym Identifier',
+    placeholder: 'e.g., evolve',
+    help: 'Ask your gym for the identifier',
+    errors: {
+      required: 'Please enter your gym identifier',
+      invalid: 'Only lowercase letters, numbers, and hyphens allowed',
+      tooShort: 'Identifier must be at least 2 characters',
+      failed: 'Failed to connect. Please try again.',
+    },
   },
 
   // Network
@@ -71,6 +103,12 @@ export default {
     weeklyActivity: 'Weekly Activity',
     pastThreeWeeks: 'Past 3 weeks',
     onTrack: 'on track',
+    total: 'total',
+    streak: 'Streak',
+    currentStreak: 'Current streak',
+    weeks: 'weeks',
+    week: 'week',
+    best: 'Best',
     upcomingClasses: 'Upcoming Classes',
     unableToLoadClasses: 'Unable to load classes',
     noUpcomingClasses: 'No upcoming classes scheduled',
@@ -84,6 +122,13 @@ export default {
     profile: 'Profile',
     currentPlan: 'Current plan',
     classesThisMonth: 'Classes this month',
+    attendance: 'Attendance',
+    lastYear: 'Last 12 months',
+    tapToSeeDetails: 'Tap a bar to see details',
+    day: 'day',
+    days: 'days',
+    weeksAgo: 'weeks ago',
+    now: 'Now',
     upgradeMembership: 'Upgrade Membership',
     unlockUnlimitedClasses: 'Unlock unlimited classes',
     editProfile: 'Edit Profile',

@@ -123,11 +123,10 @@ export default function LoginScreen() {
     <ImageBackground source={backgroundSource} style={{ flex: 1 }}>
       <LinearGradient colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.5)']} style={{ flex: 1 }}>
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flex: 1 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           bounces
-          alwaysBounceVertical
           className="flex-1">
           <StatusBar style="light" />
 

@@ -13,7 +13,9 @@ import Section from '@/components/Section';
 import SepaForm from '@/components/SepaForm';
 import { SmallChartCard } from '@/components/SmallChartCard';
 import { SmallCircleCard } from '@/components/SmallCircleCard';
+import { SmallDonutCard } from '@/components/SmallDonutCard';
 import { SmallProgressBarCard } from '@/components/SmallProgressBarCard';
+import { SmallStreakCard } from '@/components/SmallStreakCard';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
@@ -204,17 +206,29 @@ export default function HomeScreen() {
 
 const ActivityStats = memo(() => {
   const t = useT();
+
+  // Dummy data for courses attended by type
+  const courseSegments = [
+    { label: 'BJJ', value: 8, color: '#3b82f6' },
+    { label: 'No-Gi', value: 5, color: '#8b5cf6' },
+    { label: 'MMA', value: 3, color: '#ef4444' },
+    { label: 'Wrestling', value: 2, color: '#f59e0b' },
+  ];
+
+  const totalClasses = courseSegments.reduce((sum, seg) => sum + seg.value, 0);
+
   return (
-    <>
-      <View className="mb-6 w-full flex-row items-center justify-between gap-4">
+    <View className="mb-6">
+      <View className="mb-4 flex-row items-stretch gap-4">
         <View className="flex-1">
-          <SmallChartCard
+          <SmallDonutCard
             title={t('home.classes')}
-            value="12"
-            unit={t('home.thisMonth')}
-            subtitle={t('home.lastSevenDays')}
-            data={[2, 3, 1, 4, 2, 3, 4]}
-            lineColor="#00A6F4"
+            animate
+            subtitle={t('home.thisMonth')}
+            segments={courseSegments}
+            centerValue={totalClasses.toString()}
+            centerLabel={t('home.total')}
+            size={90}
           />
         </View>
         <View className="flex-1">
@@ -228,7 +242,7 @@ const ActivityStats = memo(() => {
           />
         </View>
       </View>
-      <View className="mb-6 w-full flex-row items-center justify-between gap-4">
+      <View className="mb-4 flex-row items-stretch gap-4">
         <View className="flex-1">
           <SmallCircleCard
             title={t('home.goalProgress')}
@@ -249,7 +263,17 @@ const ActivityStats = memo(() => {
           />
         </View>
       </View>
-    </>
+      <View className="flex-row items-stretch gap-4">
+        <View className="flex-1">
+          <SmallStreakCard
+            title={t('home.streak')}
+            subtitle={t('home.currentStreak')}
+            streakWeeks={6}
+            goalWeeks={12}
+          />
+        </View>
+      </View>
+    </View>
   );
 });
 
@@ -299,34 +323,34 @@ const MembershipOverview = memo(({ membership }: MembershipOverviewProps) => {
         <ThemedText className="text-lg font-bold">{t('home.membershipStatus')}</ThemedText>
       </View>
 
-      <View className="mt-4 flex-row justify-between rounded-2xl border-t border-border px-6 pt-4">
-        <View className="items-center">
-          <ThemedText className="text-light-subtext dark:text-dark-subtext text-sm">
+      <View className="mt-4 flex-row justify-between gap-4 rounded-2xl border-t border-border px-6 pt-4">
+        <View className="flex-1 items-center">
+          <ThemedText className="text-light-subtext dark:text-dark-subtext text-center text-sm">
             {t('home.classesLeft')}
           </ThemedText>
           <View className="flex-row items-center">
             <Icon name="Calendar" size={14} className="mr-2" />
-            <ThemedText className="text-lg font-bold">{t('home.unlimited')}</ThemedText>
+            <ThemedText className="text-center text-lg font-bold">{t('home.unlimited')}</ThemedText>
           </View>
         </View>
-        <View className="items-center">
-          <ThemedText className="text-light-subtext dark:text-dark-subtext text-sm">
+        <View className="flex-1 items-center">
+          <ThemedText className="text-light-subtext dark:text-dark-subtext text-center text-sm">
             {t('home.nextBilling')}
           </ThemedText>
           <View className="flex-row items-center">
             <Icon name="CreditCard" size={14} className="mr-2" />
-            <ThemedText className="text-lg font-bold">
+            <ThemedText className="text-center text-lg font-bold">
               {formatNextBilling(membership.chargeStartsAt)}
             </ThemedText>
           </View>
         </View>
-        <View className="items-center">
-          <ThemedText className="text-light-subtext dark:text-dark-subtext text-sm">
+        <View className="flex-1 items-center">
+          <ThemedText className="text-light-subtext dark:text-dark-subtext text-center text-sm">
             {t('home.memberSince')}
           </ThemedText>
           <View className="flex-row items-center">
             <Icon name="Award" size={14} className="mr-2" />
-            <ThemedText className="text-lg font-bold">
+            <ThemedText className="text-center text-lg font-bold">
               {getMemberSinceYear(membership.startsAt)}
             </ThemedText>
           </View>

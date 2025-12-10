@@ -1,43 +1,94 @@
 import Constants from 'expo-constants';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { View, ScrollView, TextInput } from 'react-native';
+import {
+  View,
+  FlatList,
+  Dimensions,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  ScrollView,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import api from '@/api/client';
 import { ENDPOINTS, setTenant as setApiTenant } from '@/api/config';
 import AnimatedView from '@/components/AnimatedView';
 import { Button } from '@/components/Button';
-import Icon from '@/components/Icon';
+import Icon, { IconName } from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
+import Input from '@/components/forms/Input';
 import { getTenantConfig } from '@/configs/tenant-registry';
 import { useT } from '@/contexts/LocalizationContext';
 import { useTenant } from '@/contexts/TenantContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
+
+const { width } = Dimensions.get('window');
+
+interface SlideData {
+  id: string;
+  titleKey: string;
+  image: ReturnType<typeof require>;
+  descriptionKey: string;
+  icon: IconName;
+}
+
+const slides: SlideData[] = [
+  {
+    id: '1',
+    titleKey: 'onboarding.slide1.title',
+    image: require('@/assets/_global/img/onboarding-1.jpg'),
+    descriptionKey: 'onboarding.slide1.description',
+    icon: 'Dumbbell',
+  },
+  {
+    id: '2',
+    titleKey: 'onboarding.slide2.title',
+    image: require('@/assets/_global/img/onboarding-2.jpg'),
+    descriptionKey: 'onboarding.slide2.description',
+    icon: 'Bell',
+  },
+  {
+    id: '3',
+    titleKey: 'onboarding.slide3.title',
+    image: require('@/assets/_global/img/wallpaper-3.jpg'),
+    descriptionKey: 'onboarding.slide3.description',
+    icon: 'Target',
+  },
+];
 
 export default function TenantSelectionScreen() {
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
   const t = useT();
   const { setTenant } = useTenant();
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [tenantSlug, setTenantSlug] = useState('');
   const [error, setError] = useState('');
   const [clubNotFound, setClubNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(offsetX / width);
+    setCurrentIndex(index);
+  };
+
   const validateTenantSlug = (slug: string): boolean => {
-    // Tenant slug should be alphanumeric and lowercase, may contain hyphens
     const slugRegex = /^[a-z0-9-]+$/;
     if (!slug) {
-      setError('Please enter your gym identifier');
+      setError(t('tenantSelection.errors.required'));
       return false;
     }
     if (!slugRegex.test(slug)) {
-      setError('Gym identifier can only contain lowercase letters, numbers, and hyphens');
+      setError(t('tenantSelection.errors.invalid'));
       return false;
     }
     if (slug.length < 2) {
-      setError('Gym identifier must be at least 2 characters');
+      setError(t('tenantSelection.errors.tooShort'));
       return false;
     }
     setError('');
@@ -69,10 +120,7 @@ export default function TenantSelectionScreen() {
     setClubNotFound(false);
 
     try {
-      // Set the API tenant temporarily to make the check call
       setApiTenant(slug);
-
-      // Check if tenant exists via unauthenticated endpoint
       const checkResponse = await api.get(ENDPOINTS.TENANT.CHECK);
 
       if (checkResponse.status === 404) {
@@ -87,7 +135,6 @@ export default function TenantSelectionScreen() {
         return;
       }
 
-      // Look up tenant config from registry
       const tenantConfig = getTenantConfig(slug);
 
       const tenantInfo = {
@@ -98,11 +145,9 @@ export default function TenantSelectionScreen() {
       };
 
       await setTenant(tenantInfo);
-
-      // Navigate to login screen
       router.replace('/screens/login');
     } catch (err) {
-      setError('Failed to save gym selection. Please try again.');
+      setError(t('tenantSelection.errors.failed'));
       console.error('Failed to set tenant:', err);
       setIsLoading(false);
     }
@@ -110,141 +155,181 @@ export default function TenantSelectionScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        bounces
-        alwaysBounceVertical
-        className="flex-1">
-        {/* Header */}
-        <View
-          className="w-full flex-row items-center justify-between px-global"
-          style={{ paddingTop: insets.top + 16 }}>
-          <View style={{ width: 24 }} />
-          <ThemedText className="text-lg font-semibold">Omoplata</ThemedText>
-          <View style={{ width: 24 }} />
-        </View>
-
-        {/* Spacer */}
-        <View style={{ flex: 0.2 }} />
-
-        {/* Content */}
-        <AnimatedView className="flex-1 px-global">
-          {/* Logo/Icon Area */}
-          <View className="mb-8 items-center">
-            <View
-              className="h-20 w-20 items-center justify-center rounded-full"
-              style={{ backgroundColor: colors.primary + '20' }}>
-              <Icon name="Building2" size={40} color={colors.primary} />
-            </View>
+      {/* Full-screen Slider */}
+      <FlatList
+        className="flex-1"
+        data={slides}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        snapToAlignment="start"
+        decelerationRate="fast"
+        snapToInterval={width}
+        renderItem={({ item }) => (
+          <View style={{ width, flex: 1 }}>
+            <ImageBackground source={item.image} style={{ flex: 1 }}>
+              <LinearGradient colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.75)']} style={{ flex: 1 }}>
+                {/* Slide Content */}
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingHorizontal: 32,
+                    paddingBottom: 380,
+                    paddingTop: 60,
+                  }}>
+                  <View
+                    style={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: 32,
+                      borderWidth: 1,
+                      borderColor: 'rgba(255,255,255,0.3)',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 16,
+                    }}>
+                    <Icon name={item.icon} size={28} strokeWidth={1.5} color="white" />
+                  </View>
+                  <Text
+                    style={{
+                      color: '#FFFFFF',
+                      fontSize: 30,
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                      marginBottom: 12,
+                    }}>
+                    {t(item.titleKey)}
+                  </Text>
+                  <Text
+                    style={{
+                      color: 'rgba(255,255,255,0.8)',
+                      fontSize: 16,
+                      textAlign: 'center',
+                    }}>
+                    {t(item.descriptionKey)}
+                  </Text>
+                </View>
+              </LinearGradient>
+            </ImageBackground>
           </View>
+        )}
+        keyExtractor={(item) => item.id}
+      />
 
-          {/* Title */}
-          <ThemedText className="mb-2 text-3xl font-bold">Welcome to Omoplata</ThemedText>
-          <ThemedText className="text-text-muted mb-8 text-base">
-            Enter your gym identifier to get started
-          </ThemedText>
+      {/* Pagination Dots - Fixed at top */}
+      <View
+        style={{
+          position: 'absolute',
+          top: insets.top + 16,
+          left: 0,
+          right: 0,
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}>
+        {slides.map((_, index) => (
+          <View
+            key={index}
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              marginHorizontal: 4,
+              backgroundColor: index === currentIndex ? '#FFFFFF' : 'rgba(255,255,255,0.4)',
+            }}
+          />
+        ))}
+      </View>
 
-          {/* Input */}
-          <View className="mb-4">
-            <ThemedText className="mb-2 text-sm font-medium">Gym Identifier</ThemedText>
+      {/* Bottom Form - Fixed at bottom with ScrollView for bounce */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        className="absolute bottom-0 left-0 right-0">
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bounces>
+          <AnimatedView animation="bounceIn" duration={600} delay={200} className="p-4">
             <View
-              className="flex-row items-center rounded-xl px-4 py-3"
-              style={{
-                backgroundColor: colors.card,
-                borderWidth: 1,
-                borderColor: error ? colors.error : colors.border,
-              }}>
-              <TextInput
+              className="rounded-3xl border border-border bg-background p-6"
+              style={{ marginBottom: insets.bottom }}>
+              <ThemedText className="mb-2 text-center text-xl font-bold">
+                {t('tenantSelection.title')}
+              </ThemedText>
+              <ThemedText className="mb-6 text-center text-sm opacity-60">
+                {t('tenantSelection.subtitle')}
+              </ThemedText>
+
+              {/* Input */}
+              <Input
+                label={t('tenantSelection.label')}
                 value={tenantSlug}
                 onChangeText={(text) => {
                   setTenantSlug(text.toLowerCase());
                   setError('');
                   setClubNotFound(false);
                 }}
-                placeholder="e.g., evolve"
-                placeholderTextColor={colors.textMuted}
+                placeholder={t('tenantSelection.placeholder')}
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!isLoading}
-                style={{
-                  flex: 1,
-                  color: colors.text,
-                  fontSize: 16,
-                }}
+                error={error || (clubNotFound ? ' ' : undefined)}
+                variant="inline"
+                containerClassName="mb-6"
               />
-            </View>
-            {error ? <ThemedText className="text-error mt-1 text-sm">{error}</ThemedText> : null}
-          </View>
 
-          {/* Club Not Found Error */}
-          {clubNotFound ? (
-            <View className="mb-6 rounded-xl p-4" style={{ backgroundColor: colors.error + '15' }}>
-              <View className="mb-2 flex-row items-center">
-                <Icon
-                  name="AlertCircle"
-                  size={20}
-                  color={colors.error}
-                  style={{ marginRight: 8 }}
-                />
-                <ThemedText className="text-base font-semibold" style={{ color: colors.error }}>
-                  {t('clubNotFound.title')}
-                </ThemedText>
-              </View>
-              <ThemedText className="text-text-muted mb-3 text-sm">
-                {t('clubNotFound.message')}
-              </ThemedText>
-              <ThemedText className="text-text-muted mb-2 text-sm font-medium">
-                {t('clubNotFound.suggestions')}
-              </ThemedText>
-              <View className="ml-2">
-                <ThemedText className="text-text-muted mb-1 text-sm">
-                  • {t('clubNotFound.checkUrl')}
-                </ThemedText>
-                <ThemedText className="text-text-muted mb-1 text-sm">
-                  • {t('clubNotFound.contactClub')}
-                </ThemedText>
-                <ThemedText className="text-text-muted text-sm">
-                  • {t('clubNotFound.tryLater')}
-                </ThemedText>
-              </View>
-            </View>
-          ) : (
-            /* Info Box */
-            <View
-              className="mb-6 rounded-xl p-4"
-              style={{ backgroundColor: colors.primary + '10' }}>
-              <View className="flex-row items-start">
-                <Icon
-                  name="Info"
-                  size={20}
-                  color={colors.primary}
-                  style={{ marginTop: 2, marginRight: 8 }}
-                />
-                <View className="flex-1">
-                  <ThemedText className="text-text-muted text-sm">
-                    Not sure what your gym identifier is? Contact your gym or check the welcome
-                    email you received.
+              {/* Club Not Found Error */}
+              {clubNotFound ? (
+                <View
+                  className="mb-3 rounded-xl p-3"
+                  style={{ backgroundColor: colors.error + '15' }}>
+                  <View className="flex-row items-center justify-center">
+                    <Icon
+                      name="AlertCircle"
+                      size={16}
+                      color={colors.error}
+                      style={{ marginRight: 6 }}
+                    />
+                    <ThemedText className="text-sm font-medium" style={{ color: colors.error }}>
+                      {t('clubNotFound.title')}
+                    </ThemedText>
+                  </View>
+                  <ThemedText className="mt-1 text-center text-xs opacity-70">
+                    {t('clubNotFound.message')}
                   </ThemedText>
                 </View>
+              ) : null}
+
+              {/* Continue Button */}
+              <Button
+                title={t('common.continue')}
+                onPress={handleContinue}
+                disabled={isLoading || !tenantSlug.trim()}
+                loading={isLoading}
+                className="mb-4"
+              />
+
+              {/* Help Text */}
+              <View className="flex-row items-center justify-center">
+                <Icon
+                  name="HelpCircle"
+                  size={14}
+                  color={colors.textMuted}
+                  style={{ marginRight: 6 }}
+                />
+                <ThemedText className="text-center text-xs opacity-50">
+                  {t('tenantSelection.help')}
+                </ThemedText>
               </View>
             </View>
-          )}
-
-          {/* Continue Button */}
-          <Button
-            title="Continue"
-            onPress={handleContinue}
-            disabled={isLoading || !tenantSlug.trim()}
-            loading={isLoading}
-            className="mb-4"
-          />
-
-          {/* Bottom Spacer */}
-          <View style={{ flex: 0.3 }} />
-        </AnimatedView>
-      </ScrollView>
+          </AnimatedView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }

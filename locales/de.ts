@@ -15,6 +15,7 @@ export default {
     back: 'Zurück',
     cancel: 'Abbrechen',
     confirm: 'Bestätigen',
+    continue: 'Weiter',
     save: 'Speichern',
     delete: 'Löschen',
     edit: 'Bearbeiten',
@@ -24,6 +25,38 @@ export default {
     retry: 'Erneut versuchen',
     viewPlans: 'Pläne ansehen',
     logout: 'Abmelden',
+  },
+
+  // Onboarding Slides
+  onboarding: {
+    slide1: {
+      title: 'Trainiere Smarter',
+      description:
+        'Buche Kurse, verfolge deine Teilnahme und behalte deinen Trainingsplan im Blick',
+    },
+    slide2: {
+      title: 'Bleib Verbunden',
+      description: 'Erhalte Benachrichtigungen über bevorstehende Kurse und verpasse keine Einheit',
+    },
+    slide3: {
+      title: 'Erreiche Deine Ziele',
+      description: 'Verfolge deinen Fortschritt und erreiche deine Fitnessziele',
+    },
+  },
+
+  // Gym-Auswahl
+  tenantSelection: {
+    title: 'Finde dein Gym',
+    subtitle: 'Gib die Kennung deines Gyms ein',
+    label: 'Gym-Kennung',
+    placeholder: 'z.B. evolve',
+    help: 'Frag dein Gym nach der Kennung',
+    errors: {
+      required: 'Bitte gib die Gym-Kennung ein',
+      invalid: 'Nur Kleinbuchstaben, Zahlen und Bindestriche erlaubt',
+      tooShort: 'Die Kennung muss mindestens 2 Zeichen haben',
+      failed: 'Verbindung fehlgeschlagen. Bitte erneut versuchen.',
+    },
   },
 
   // Netzwerk
@@ -70,6 +103,12 @@ export default {
     weeklyActivity: 'Wöchentliche Aktivität',
     pastThreeWeeks: 'Letzte 3 Wochen',
     onTrack: 'auf Kurs',
+    total: 'gesamt',
+    streak: 'Serie',
+    currentStreak: 'Aktuelle Serie',
+    weeks: 'Wochen',
+    week: 'Woche',
+    best: 'Beste',
     upcomingClasses: 'Kommende Kurse',
     unableToLoadClasses: 'Kurse konnten nicht geladen werden',
     noUpcomingClasses: 'Keine kommenden Kurse geplant',
@@ -83,6 +122,13 @@ export default {
     profile: 'Profil',
     currentPlan: 'Aktueller Plan',
     classesThisMonth: 'Kurse diesen Monat',
+    attendance: 'Anwesenheit',
+    lastYear: 'Letzte 12 Monate',
+    tapToSeeDetails: 'Tippe auf einen Balken für Details',
+    day: 'Tag',
+    days: 'Tage',
+    weeksAgo: 'Wochen her',
+    now: 'Jetzt',
     upgradeMembership: 'Mitgliedschaft upgraden',
     unlockUnlimitedClasses: 'Unbegrenzte Kurse freischalten',
     editProfile: 'Profil bearbeiten',

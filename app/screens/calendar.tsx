@@ -118,13 +118,13 @@ export default function CalendarScreen() {
     return grouped;
   }, [allClasses]);
 
-  // Generate days for horizontal scroll (90 days from now)
+  // Generate days for horizontal scroll (30 days from now)
   const days = useMemo(() => {
     const today = new Date();
     const daysArray: DayData[] = [];
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < 30; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
 

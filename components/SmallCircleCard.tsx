@@ -33,9 +33,9 @@ export const SmallCircleCard = ({
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <View className="min-w-0 rounded-lg bg-secondary p-4">
-      <ThemedText className="text-xl font-bold">{title}</ThemedText>
-      {subtitle && <ThemedText className="text-sm opacity-50">{subtitle}</ThemedText>}
+    <View className="min-w-0 rounded-lg bg-secondary p-1">
+      <ThemedText className="pl-3 pt-3 text-xl font-bold">{title}</ThemedText>
+      {subtitle && <ThemedText className="pl-3 text-sm opacity-50">{subtitle}</ThemedText>}
 
       <View className="mb-2 mt-4 items-center">
         <View
@@ -72,7 +72,7 @@ export const SmallCircleCard = ({
       </View>
 
       {value && (
-        <View className="mt-2 w-full flex-row justify-between border-t border-border pt-4">
+        <View className="mx-3 mb-3 mt-2 flex-row justify-between border-t border-border pt-4">
           <View className="flex-row items-end">
             <ThemedText className="text-xl font-bold">{value}</ThemedText>
             <ThemedText className="ml-1 text-sm opacity-50">{unit}</ThemedText>

@@ -4,7 +4,7 @@
   "scripts": {
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "start": "expo start",
+    "start": "expo start -c",
     "prebuild": "expo prebuild",
     "lint": "eslint . && prettier -c \"**/*.{js,jsx,ts,tsx,json}\" --ignore-path .prettierignore",
     "lint:fix": "npm run format",

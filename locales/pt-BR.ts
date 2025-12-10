@@ -15,6 +15,7 @@ export default {
     back: 'Voltar',
     cancel: 'Cancelar',
     confirm: 'Confirmar',
+    continue: 'Continuar',
     save: 'Salvar',
     delete: 'Excluir',
     edit: 'Editar',
@@ -24,6 +25,37 @@ export default {
     retry: 'Tentar novamente',
     viewPlans: 'Ver Planos',
     logout: 'Sair',
+  },
+
+  // Onboarding Slides
+  onboarding: {
+    slide1: {
+      title: 'Treine Melhor',
+      description: 'Agende aulas, acompanhe sua presença e mantenha seu treino em dia',
+    },
+    slide2: {
+      title: 'Fique Conectado',
+      description: 'Receba notificações sobre próximas aulas e não perca nenhuma sessão',
+    },
+    slide3: {
+      title: 'Alcance Seus Objetivos',
+      description: 'Acompanhe seu progresso e atinja suas metas de fitness',
+    },
+  },
+
+  // Seleção de Academia
+  tenantSelection: {
+    title: 'Encontre sua Academia',
+    subtitle: 'Digite o identificador da sua academia',
+    label: 'Identificador',
+    placeholder: 'ex: evolve',
+    help: 'Pergunte à sua academia pelo identificador',
+    errors: {
+      required: 'Por favor, digite o identificador da academia',
+      invalid: 'Apenas letras minúsculas, números e hífens são permitidos',
+      tooShort: 'O identificador deve ter pelo menos 2 caracteres',
+      failed: 'Falha na conexão. Por favor, tente novamente.',
+    },
   },
 
   // Rede
@@ -70,6 +102,12 @@ export default {
     weeklyActivity: 'Atividade Semanal',
     pastThreeWeeks: 'Últimas 3 semanas',
     onTrack: 'no caminho certo',
+    total: 'total',
+    streak: 'Sequência',
+    currentStreak: 'Sequência atual',
+    weeks: 'semanas',
+    week: 'semana',
+    best: 'Melhor',
     upcomingClasses: 'Próximas Aulas',
     unableToLoadClasses: 'Não foi possível carregar as aulas',
     noUpcomingClasses: 'Nenhuma aula agendada',
@@ -83,6 +121,13 @@ export default {
     profile: 'Perfil',
     currentPlan: 'Plano atual',
     classesThisMonth: 'Aulas este mês',
+    attendance: 'Presença',
+    lastYear: 'Últimos 12 meses',
+    tapToSeeDetails: 'Toque em uma barra para ver detalhes',
+    day: 'dia',
+    days: 'dias',
+    weeksAgo: 'semanas atrás',
+    now: 'Agora',
     upgradeMembership: 'Atualizar Assinatura',
     unlockUnlimitedClasses: 'Desbloqueie aulas ilimitadas',
     editProfile: 'Editar Perfil',
