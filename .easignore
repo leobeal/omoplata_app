@@ -1,8 +1,11 @@
 # Dependencies (installed during build)
 node_modules/
-
+android/
+ios/
 # Old/reference code (not needed for build)
 __old/
+
+logs/
 
 # Tests (not needed for production build)
 __tests__/

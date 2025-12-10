@@ -14,7 +14,8 @@
     "test:coverage": "jest --coverage",
     "eas-build": "eas build --profile $TENANT",
     "eas-simulator": "eas build --profile ios-simulator --platform ios",
-    "eas-android-simulator": "eas build --profile android-simulator --platform android"
+    "eas-android-simulator": "eas build --profile android-simulator --platform android",
+    "check": "npx expo install --check"
   },
   "dependencies": {
     "@expo-google-fonts/outfit": "^0.4.3",
@@ -50,7 +51,7 @@
     "expo-sharing": "~14.0.8",
     "expo-splash-screen": "~31.0.12",
     "expo-status-bar": "~3.0.9",
-    "expo-updates": "~29.0.14",
+    "expo-updates": "~29.0.15",
     "i18n-js": "^4.5.1",
     "lottie-react-native": "~7.3.1",
     "lucide-react-native": "^0.554.0",
