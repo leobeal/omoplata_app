@@ -1,4 +1,3 @@
-import { BlurView } from 'expo-blur';
 import React, { memo } from 'react';
 import { View } from 'react-native';
 
@@ -78,33 +77,8 @@ export const LeaderboardEntryCard = memo(
         </View>
 
         {/* Avatar */}
-        <View className="mr-3 h-12 w-12">
+        <View className="mr-3">
           <Avatar name={entry.fullName} size="md" src={entry.avatarUrl} />
-          {isAnonymous && (
-            <View
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                borderRadius: 999,
-                overflow: 'hidden',
-              }}>
-              <BlurView
-                intensity={80}
-                tint="dark"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'rgba(0,0,0,0.5)',
-                }}>
-                <Icon name="UserRound" size={24} color="#999" />
-              </BlurView>
-            </View>
-          )}
         </View>
 
         {/* User Info */}
@@ -183,47 +157,19 @@ const PodiumPlace = memo(
         <View className="items-center">
           <View
             style={{
-              width: avatarSize + 8,
-              height: avatarSize + 8,
+              width: avatarSize + 6,
+              height: avatarSize + 6,
               borderWidth: 3,
-              borderColor: isAnonymous ? colors.border : medalColor.border,
-              backgroundColor: colors.secondary,
+              borderColor: medalColor.border,
               borderRadius: 999,
-              alignItems: 'center',
-              justifyContent: 'center',
+              overflow: 'hidden',
             }}>
-            <View style={{ width: avatarSize, height: avatarSize }}>
-              <Avatar
-                name={entry.fullName}
-                size={position === 1 ? 'lg' : 'md'}
-                src={entry.avatarUrl}
-              />
-              {isAnonymous && (
-                <View
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    borderRadius: 999,
-                    overflow: 'hidden',
-                  }}>
-                  <BlurView
-                    intensity={80}
-                    tint="dark"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                    }}>
-                    <Icon name="UserRound" size={position === 1 ? 28 : 22} color="#999" />
-                  </BlurView>
-                </View>
-              )}
-            </View>
+            <Avatar
+              name={entry.fullName}
+              size={position === 1 ? 'lg' : 'md'}
+              src={entry.avatarUrl}
+              style={{ width: avatarSize, height: avatarSize }}
+            />
           </View>
           <ThemedText
             className={`text-center font-semibold ${position === 1 ? 'text-sm' : 'text-xs'}`}
@@ -269,7 +215,7 @@ export const Podium = memo(({ entries, currentUserId }: PodiumProps) => {
   const third = entries[2];
 
   return (
-    <View className="mb-4 flex-row items-end gap-1 px-2">
+    <View className="mb-4 mt-12 flex-row items-end gap-1 px-2">
       {/* 2nd Place - Left */}
       {second ? (
         <PodiumPlace entry={second} isCurrentUser={second.id === currentUserId} position={2} />

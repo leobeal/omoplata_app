@@ -127,7 +127,7 @@ export default function LeaderboardScreen() {
             <Avatar
               key="avatar"
               name={user ? `${user.firstName} ${user.lastName}` : ''}
-              size="xs"
+              size="sm"
               link="/screens/settings"
               src={user?.profilePicture}
             />,
@@ -149,7 +149,7 @@ export default function LeaderboardScreen() {
             <Avatar
               key="avatar"
               name={user ? `${user.firstName} ${user.lastName}` : ''}
-              size="xs"
+              size="sm"
               link="/screens/settings"
               src={user?.profilePicture}
             />,
@@ -171,7 +171,7 @@ export default function LeaderboardScreen() {
           <Avatar
             key="avatar"
             name={user ? `${user.firstName} ${user.lastName}` : ''}
-            size="xs"
+            size="sm"
             link="/screens/settings"
             src={user?.profilePicture}
           />,

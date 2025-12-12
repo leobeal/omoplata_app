@@ -1,9 +1,11 @@
 import { Link } from 'expo-router';
 import React from 'react';
-import { View, Pressable, ViewStyle } from 'react-native';
+import { View, Pressable, ViewStyle, ActivityIndicator } from 'react-native';
 
 import Icon, { IconName } from './Icon';
 import ThemedText from './ThemedText';
+
+import { useThemeColors } from '@/contexts/ThemeColors';
 
 interface ListLinkProps {
   icon?: IconName;
@@ -18,6 +20,7 @@ interface ListLinkProps {
   disabled?: boolean;
   style?: ViewStyle;
   hasBorder?: boolean;
+  isLoading?: boolean;
 }
 
 const ListLink: React.FC<ListLinkProps> = ({
@@ -33,10 +36,13 @@ const ListLink: React.FC<ListLinkProps> = ({
   disabled = false,
   style,
   hasBorder = false,
+  isLoading = false,
 }) => {
+  const colors = useThemeColors();
+
   const Content = () => (
     <View
-      className={`flex-row items-center py-5 ${className} ${disabled ? 'opacity-50' : ''}`}
+      className={`flex-row items-center py-5 ${className} ${disabled || isLoading ? 'opacity-50' : ''}`}
       style={style}>
       {icon && (
         <View className="mr-4">
@@ -47,11 +53,13 @@ const ListLink: React.FC<ListLinkProps> = ({
         <ThemedText className="text-lg font-semibold">{title}</ThemedText>
         {description && <ThemedText className="text-xs opacity-50">{description}</ThemedText>}
       </View>
-      {showChevron && (
+      {isLoading ? (
+        <ActivityIndicator size="small" color={colors.text} />
+      ) : showChevron ? (
         <View className="opacity-20">
           <Icon name={rightIcon} size={20} />
         </View>
-      )}
+      ) : null}
     </View>
   );
 
@@ -67,7 +75,7 @@ const ListLink: React.FC<ListLinkProps> = ({
 
   return (
     <Pressable
-      onPress={disabled ? undefined : onPress}
+      onPress={disabled || isLoading ? undefined : onPress}
       className={`${hasBorder ? 'border-b border-border' : ''}`}>
       <Content />
     </Pressable>

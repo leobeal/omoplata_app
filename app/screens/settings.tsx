@@ -10,6 +10,7 @@ import {
   NativeSyntheticEvent,
 } from 'react-native';
 
+import { clearConfigCache } from '@/api/app-config';
 import Avatar from '@/components/Avatar';
 import Header from '@/components/Header';
 import LanguageSelector from '@/components/LanguageSelector';
@@ -19,6 +20,7 @@ import Section from '@/components/Section';
 import ThemeToggle from '@/components/ThemeToggle';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
+import { useAppConfig } from '@/contexts/AppConfigContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useTranslation } from '@/contexts/LocalizationContext';
@@ -38,8 +40,11 @@ export default function SettingsScreen() {
     switchBackToParent,
     parentUser,
   } = useAuth();
-  const { membership } = useAppData();
+  const { membership, refreshData } = useAppData();
+  const { refreshConfig } = useAppConfig();
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshingCache, setRefreshingCache] = useState(false);
+  const [ratingApp, setRatingApp] = useState(false);
   const [switchingChildId, setSwitchingChildId] = useState<string | null>(null);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
 
@@ -93,8 +98,31 @@ export default function SettingsScreen() {
   };
 
   const handleRateApp = async () => {
-    if (await StoreReview.hasAction()) {
-      await StoreReview.requestReview();
+    setRatingApp(true);
+    try {
+      if (await StoreReview.hasAction()) {
+        await StoreReview.requestReview();
+      }
+    } catch (error) {
+      console.error('Error requesting review:', error);
+      Alert.alert(t('common.error'), t('settings.rateAppError'));
+    } finally {
+      setRatingApp(false);
+    }
+  };
+
+  const handleRefreshCache = async () => {
+    setRefreshingCache(true);
+    try {
+      // Clear config cache and refresh all data
+      await clearConfigCache();
+      await Promise.all([refreshConfig(), refreshData()]);
+      Alert.alert(t('settings.cacheRefreshed'), t('settings.cacheRefreshedMessage'));
+    } catch (error) {
+      console.error('Failed to refresh cache:', error);
+      Alert.alert(t('common.error'), t('settings.cacheRefreshError'));
+    } finally {
+      setRefreshingCache(false);
     }
   };
 
@@ -285,6 +313,7 @@ export default function SettingsScreen() {
             description={t('settings.rateAppDescription')}
             icon="Star"
             onPress={handleRateApp}
+            isLoading={ratingApp}
           />
           <ListLink
             className="px-5"
@@ -301,6 +330,15 @@ export default function SettingsScreen() {
             description={t('about.aboutDescription')}
             icon="Info"
             href="/screens/about"
+          />
+          <ListLink
+            className="px-5"
+            hasBorder
+            title={t('settings.refreshCache')}
+            description={t('settings.refreshCacheDescription')}
+            icon="RefreshCw"
+            onPress={handleRefreshCache}
+            isLoading={refreshingCache}
           />
           <ListLink
             className="px-5"

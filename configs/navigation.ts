@@ -46,12 +46,6 @@ export const defaultNavigation: NavigationConfig = {
       href: '/calendar',
     },
     {
-      name: 'membership',
-      icon: 'Award',
-      label: 'nav.membership',
-      href: '/membership',
-    },
-    {
       name: 'billing',
       icon: 'CreditCard',
       label: 'nav.billing',

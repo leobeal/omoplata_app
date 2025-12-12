@@ -12,6 +12,7 @@ export default {
 
   // Common
   common: {
+    ok: 'OK',
     close: 'Close',
     back: 'Back',
     cancel: 'Cancel',
@@ -155,6 +156,13 @@ export default {
     languageDescription: 'Change app language',
     rateApp: 'Rate App',
     rateAppDescription: 'Love the app? Leave us a review!',
+    rateAppNotAvailable: 'Rating is only available in the App Store version of the app.',
+    rateAppError: 'Unable to open rating. Please try again later.',
+    refreshCache: 'Refresh App Data',
+    refreshCacheDescription: 'Clear cache and reload configuration',
+    cacheRefreshed: 'Data Refreshed',
+    cacheRefreshedMessage: 'App configuration and data have been refreshed.',
+    cacheRefreshError: 'Failed to refresh data. Please try again.',
   },
 
   // Privacy Settings
@@ -464,9 +472,20 @@ export default {
     errorTitle: 'Unable to load invoices',
 
     // Invoice status
-    paid: 'Paid',
-    pending: 'Pending',
-    overdue: 'Overdue',
+    status: {
+      paid: 'Paid',
+      pending: 'Pending',
+      processing: 'Processing',
+      waitingToSend: 'Waiting to Send',
+      sentToBank: 'Sent to Bank',
+      onHold: 'On Hold',
+      canceled: 'Canceled',
+      refunded: 'Refunded',
+      pendingRetry: 'Pending Retry',
+      overdue: 'Overdue',
+      void: 'Void',
+      unknown: 'Unknown',
+    },
 
     // Invoice detail
     invoiceDetails: 'Invoice Details',

@@ -31,7 +31,8 @@
       "Bash(node -e:*)",
       "WebSearch",
       "Bash(ls:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:docs.expo.dev)"
     ],
     "deny": [],
     "ask": []

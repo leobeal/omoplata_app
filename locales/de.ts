@@ -12,6 +12,7 @@ export default {
 
   // Allgemein
   common: {
+    ok: 'OK',
     close: 'Schließen',
     back: 'Zurück',
     cancel: 'Abbrechen',
@@ -155,6 +156,13 @@ export default {
     languageDescription: 'App-Sprache ändern',
     rateApp: 'App bewerten',
     rateAppDescription: 'Gefällt dir die App? Hinterlasse eine Bewertung!',
+    rateAppNotAvailable: 'Bewertung ist nur in der App Store-Version der App verfügbar.',
+    rateAppError: 'Bewertung konnte nicht geöffnet werden. Bitte versuche es später erneut.',
+    refreshCache: 'App-Daten aktualisieren',
+    refreshCacheDescription: 'Cache leeren und Konfiguration neu laden',
+    cacheRefreshed: 'Daten aktualisiert',
+    cacheRefreshedMessage: 'App-Konfiguration und Daten wurden aktualisiert.',
+    cacheRefreshError: 'Daten konnten nicht aktualisiert werden. Bitte versuche es erneut.',
   },
 
   // Datenschutz-Einstellungen
@@ -465,9 +473,20 @@ export default {
     errorTitle: 'Rechnungen konnten nicht geladen werden',
 
     // Rechnungsstatus
-    paid: 'Bezahlt',
-    pending: 'Ausstehend',
-    overdue: 'Überfällig',
+    status: {
+      paid: 'Bezahlt',
+      pending: 'Ausstehend',
+      processing: 'In Bearbeitung',
+      waitingToSend: 'Warten auf Versand',
+      sentToBank: 'An Bank gesendet',
+      onHold: 'Zurückgestellt',
+      canceled: 'Storniert',
+      refunded: 'Erstattet',
+      pendingRetry: 'Wiederholung ausstehend',
+      overdue: 'Überfällig',
+      void: 'Ungültig',
+      unknown: 'Unbekannt',
+    },
 
     // Rechnungsdetails
     invoiceDetails: 'Rechnungsdetails',

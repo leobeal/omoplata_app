@@ -2,7 +2,13 @@ import { useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, Pressable, Alert } from 'react-native';
 
-import { getInvoiceById, Invoice, downloadInvoicePdf } from '@/api/invoices';
+import {
+  getInvoiceById,
+  Invoice,
+  downloadInvoicePdf,
+  getInvoiceStatusColor,
+  getInvoiceStatusTranslationKey,
+} from '@/api/invoices';
 import { formatCurrency } from '@/api/membership';
 import { Button } from '@/components/Button';
 import ErrorState from '@/components/ErrorState';
@@ -12,12 +18,10 @@ import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useT } from '@/contexts/LocalizationContext';
-import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function InvoiceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const t = useT();
-  const colors = useThemeColors();
   const { user } = useAuth();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,31 +61,8 @@ export default function InvoiceDetailScreen() {
     return formatCurrency(amount, invoice!.currency);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return '#10B981';
-      case 'pending':
-        return '#F59E0B';
-      case 'overdue':
-        return '#EF4444';
-      default:
-        return colors.text;
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return t('billing.paid');
-      case 'pending':
-        return t('billing.pending');
-      case 'overdue':
-        return t('billing.overdue');
-      default:
-        return status;
-    }
-  };
+  const getStatusColor = (status: string) => getInvoiceStatusColor(status);
+  const getStatusLabel = (status: string) => t(getInvoiceStatusTranslationKey(status));
 
   const handleShare = async () => {
     if (!invoice) return;

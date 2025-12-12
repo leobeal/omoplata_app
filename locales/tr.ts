@@ -12,6 +12,7 @@ export default {
 
   // Common
   common: {
+    ok: 'Tamam',
     close: 'Kapat',
     back: 'Geri',
     cancel: 'İptal',
@@ -156,6 +157,13 @@ export default {
     languageDescription: 'Uygulama dilini değiştirin',
     rateApp: 'Uygulamayı Değerlendir',
     rateAppDescription: 'Uygulamayı beğendiniz mi? Bir değerlendirme bırakın!',
+    rateAppNotAvailable: 'Değerlendirme yalnızca App Store sürümünde kullanılabilir.',
+    rateAppError: 'Değerlendirme açılamadı. Lütfen daha sonra tekrar deneyin.',
+    refreshCache: 'Uygulama Verilerini Yenile',
+    refreshCacheDescription: 'Önbelleği temizle ve yapılandırmayı yeniden yükle',
+    cacheRefreshed: 'Veriler Yenilendi',
+    cacheRefreshedMessage: 'Uygulama yapılandırması ve verileri yenilendi.',
+    cacheRefreshError: 'Veriler yenilenemedi. Lütfen tekrar deneyin.',
   },
 
   // Privacy Settings
@@ -465,9 +473,20 @@ export default {
     errorTitle: 'Faturalar yüklenemedi',
 
     // Invoice status
-    paid: 'Ödendi',
-    pending: 'Beklemede',
-    overdue: 'Vadesi Geçmiş',
+    status: {
+      paid: 'Ödendi',
+      pending: 'Beklemede',
+      processing: 'İşleniyor',
+      waitingToSend: 'Gönderim Bekliyor',
+      sentToBank: 'Bankaya Gönderildi',
+      onHold: 'Beklemede',
+      canceled: 'İptal Edildi',
+      refunded: 'İade Edildi',
+      pendingRetry: 'Yeniden Deneme Bekliyor',
+      overdue: 'Vadesi Geçmiş',
+      void: 'Geçersiz',
+      unknown: 'Bilinmiyor',
+    },
 
     // Invoice detail
     invoiceDetails: 'Fatura Detayları',

@@ -472,7 +472,7 @@ export default function CalendarScreen() {
               {/* Avatar */}
               <Avatar
                 name={user ? `${user.firstName} ${user.lastName}` : ''}
-                size="xs"
+                size="sm"
                 link="/screens/settings"
                 src={user?.profilePicture}
               />

@@ -53,6 +53,17 @@ const Avatar: React.FC<AvatarProps> = ({
     xxl: 48,
   };
 
+  // Text size map for initials
+  const textSizeMap = {
+    xxs: 'text-xs',
+    xs: 'text-xs',
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-xl',
+    xl: 'text-2xl',
+    xxl: 'text-3xl',
+  };
+
   // Component for initials or fallback icon if image is not provided
   const renderFallback = () => {
     if (name && name.trim()) {
@@ -62,7 +73,11 @@ const Avatar: React.FC<AvatarProps> = ({
         .map((part) => part[0].toUpperCase())
         .join('');
       if (initials) {
-        return <ThemedText className="text-center font-medium">{initials}</ThemedText>;
+        return (
+          <ThemedText className={`text-center font-medium ${textSizeMap[size]}`}>
+            {initials}
+          </ThemedText>
+        );
       }
     }
     // Fallback to user icon if no name

@@ -9,7 +9,13 @@ import {
   NativeSyntheticEvent,
 } from 'react-native';
 
-import { getInvoicesPaginated, getNextInvoice, Invoice } from '@/api/invoices';
+import {
+  getInvoicesPaginated,
+  getNextInvoice,
+  Invoice,
+  getInvoiceStatusColor,
+  getInvoiceStatusTranslationKey,
+} from '@/api/invoices';
 import { formatCurrency } from '@/api/membership';
 import { getPaymentMethodIcon, getPaymentMethodTypeName } from '@/api/payment-methods';
 import Avatar from '@/components/Avatar';
@@ -110,31 +116,8 @@ export default function BillingScreen() {
     return formatCurrency(amount, currency);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return '#10B981';
-      case 'pending':
-        return '#F59E0B';
-      case 'overdue':
-        return '#EF4444';
-      default:
-        return colors.text;
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return t('billing.paid');
-      case 'pending':
-        return t('billing.pending');
-      case 'overdue':
-        return t('billing.overdue');
-      default:
-        return status;
-    }
-  };
+  const getStatusColor = (status: string) => getInvoiceStatusColor(status);
+  const getStatusLabel = (status: string) => t(getInvoiceStatusTranslationKey(status));
 
   if (loading) {
     return (
@@ -145,7 +128,7 @@ export default function BillingScreen() {
             <Avatar
               key="avatar"
               name={user ? `${user.firstName} ${user.lastName}` : ''}
-              size="xs"
+              size="sm"
               link="/screens/settings"
               src={user?.profilePicture}
             />,
@@ -167,7 +150,7 @@ export default function BillingScreen() {
             <Avatar
               key="avatar"
               name={user ? `${user.firstName} ${user.lastName}` : ''}
-              size="xs"
+              size="sm"
               link="/screens/settings"
               src={user?.profilePicture}
             />,
@@ -195,7 +178,7 @@ export default function BillingScreen() {
           <Avatar
             key="avatar"
             name={user ? `${user.firstName} ${user.lastName}` : ''}
-            size="xs"
+            size="sm"
             link="/screens/settings"
             src={user?.profilePicture}
           />,

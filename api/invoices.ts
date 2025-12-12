@@ -51,6 +51,66 @@ export type InvoiceStatus =
   | 'overdue'
   | 'void';
 
+/**
+ * Get the color for an invoice status
+ */
+export const getInvoiceStatusColor = (status: InvoiceStatus | string): string => {
+  switch (status) {
+    case 'paid':
+      return '#10B981'; // Green
+    case 'pending':
+    case 'pending_retry':
+      return '#F59E0B'; // Yellow/Amber
+    case 'processing':
+    case 'waiting_to_send':
+    case 'sent_to_bank':
+      return '#3B82F6'; // Blue
+    case 'on_hold':
+      return '#8B5CF6'; // Purple
+    case 'overdue':
+      return '#EF4444'; // Red
+    case 'canceled':
+    case 'void':
+      return '#6B7280'; // Gray
+    case 'refunded':
+      return '#14B8A6'; // Teal
+    default:
+      return '#6B7280'; // Gray fallback
+  }
+};
+
+/**
+ * Get the translation key for an invoice status
+ */
+export const getInvoiceStatusTranslationKey = (status: InvoiceStatus | string): string => {
+  switch (status) {
+    case 'paid':
+      return 'billing.status.paid';
+    case 'pending':
+      return 'billing.status.pending';
+    case 'processing':
+      return 'billing.status.processing';
+    case 'waiting_to_send':
+      return 'billing.status.waitingToSend';
+    case 'sent_to_bank':
+      return 'billing.status.sentToBank';
+    case 'on_hold':
+      return 'billing.status.onHold';
+    case 'canceled':
+      return 'billing.status.canceled';
+    case 'refunded':
+      return 'billing.status.refunded';
+    case 'pending_retry':
+      return 'billing.status.pendingRetry';
+    case 'overdue':
+      return 'billing.status.overdue';
+    case 'void':
+      return 'billing.status.void';
+    default:
+      return 'billing.status.unknown';
+  }
+};
+
 export interface PayerAddress {
   street: string;
   city: string;
@@ -192,6 +252,18 @@ export const getNextInvoice = async (): Promise<Invoice | null> => {
 };
 
 /**
+ * Convert base64 string to Uint8Array
+ */
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
+/**
  * Download invoice PDF and open share dialog
  */
 export const downloadInvoicePdf = async (invoiceId: string): Promise<void> => {
@@ -235,8 +307,12 @@ export const downloadInvoicePdf = async (invoiceId: string): Promise<void> => {
     reader.readAsDataURL(blob);
   });
 
+  // Convert base64 to Uint8Array for expo-file-system/next API
+  const bytes = base64ToUint8Array(base64);
+
   console.log('[Invoice Download] Writing file...');
-  await file.write(base64, { encoding: 'base64' });
+  file.create({ overwrite: true });
+  file.write(bytes);
   console.log('[Invoice Download] File written successfully');
 
   const canShare = await Sharing.isAvailableAsync();

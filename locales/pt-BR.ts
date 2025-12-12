@@ -12,6 +12,7 @@ export default {
 
   // Comum
   common: {
+    ok: 'OK',
     close: 'Fechar',
     back: 'Voltar',
     cancel: 'Cancelar',
@@ -154,6 +155,13 @@ export default {
     languageDescription: 'Alterar idioma do aplicativo',
     rateApp: 'Avaliar App',
     rateAppDescription: 'Gostou do app? Deixe uma avaliação!',
+    rateAppNotAvailable: 'Avaliação disponível apenas na versão da App Store.',
+    rateAppError: 'Não foi possível abrir a avaliação. Tente novamente mais tarde.',
+    refreshCache: 'Atualizar Dados',
+    refreshCacheDescription: 'Limpar cache e recarregar configuração',
+    cacheRefreshed: 'Dados Atualizados',
+    cacheRefreshedMessage: 'Configuração e dados do app foram atualizados.',
+    cacheRefreshError: 'Falha ao atualizar dados. Por favor, tente novamente.',
   },
 
   // Configurações de Privacidade
@@ -463,9 +471,20 @@ export default {
     errorTitle: 'Não foi possível carregar as faturas',
 
     // Status da fatura
-    paid: 'Pago',
-    pending: 'Pendente',
-    overdue: 'Vencido',
+    status: {
+      paid: 'Pago',
+      pending: 'Pendente',
+      processing: 'Processando',
+      waitingToSend: 'Aguardando Envio',
+      sentToBank: 'Enviado ao Banco',
+      onHold: 'Em Espera',
+      canceled: 'Cancelado',
+      refunded: 'Reembolsado',
+      pendingRetry: 'Aguardando Retentativa',
+      overdue: 'Vencido',
+      void: 'Anulado',
+      unknown: 'Desconhecido',
+    },
 
     // Detalhes da fatura
     invoiceDetails: 'Detalhes da Fatura',
