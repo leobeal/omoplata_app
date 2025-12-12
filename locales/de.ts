@@ -237,6 +237,7 @@ export default {
   // Anmeldung
   login: {
     title: 'Anmelden',
+    subtitle: 'Melde dich bei deinem Konto an',
     email: 'E-Mail',
     password: 'Passwort',
     forgotPassword: 'Passwort vergessen?',
@@ -250,6 +251,65 @@ export default {
     passwordRequired: 'Passwort ist erforderlich',
     passwordTooShort: 'Passwort muss mindestens 6 Zeichen lang sein',
     loginFailed: 'Anmeldung fehlgeschlagen. Bitte überprüfe deine Anmeldedaten.',
+  },
+
+  // Passwort vergessen
+  forgotPassword: {
+    title: 'Passwort zurücksetzen',
+    subtitle: 'Gib deine E-Mail-Adresse ein, um dein Passwort wiederherzustellen',
+    email: 'E-Mail',
+    sendResetLink: 'Link zum Zurücksetzen senden',
+    successTitle: 'Link zum Zurücksetzen gesendet',
+    successMessage:
+      'Wir haben einen Link zum Zurücksetzen des Passworts an deine E-Mail-Adresse gesendet. Bitte überprüfe deinen Posteingang.',
+    errorTitle: 'Fehler',
+    errorMessage: 'Link zum Zurücksetzen konnte nicht gesendet werden. Bitte versuche es erneut.',
+  },
+
+  // Profil bearbeiten
+  editProfile: {
+    title: 'Profil bearbeiten',
+    profilePictureHint: 'Kontaktiere dein Gym, um dein Profilbild zu aktualisieren',
+    personalInformation: 'Persönliche Informationen',
+    firstName: 'Vorname',
+    firstNameRequired: 'Vorname *',
+    enterFirstName: 'Vorname eingeben',
+    lastName: 'Nachname',
+    lastNameRequired: 'Nachname *',
+    enterLastName: 'Nachname eingeben',
+    email: 'E-Mail',
+    emailPlaceholder: 'E-Mail-Adresse',
+    emailCannotChange: 'E-Mail kann nicht geändert werden. Kontaktiere den Support bei Bedarf.',
+    phone: 'Telefon',
+    enterPhone: 'Telefonnummer eingeben',
+    address: 'Adresse',
+    streetAddress: 'Straße',
+    enterStreetAddress: 'Straße eingeben',
+    city: 'Stadt',
+    enterCity: 'Stadt eingeben',
+    state: 'Bundesland',
+    statePlaceholder: 'Bundesland',
+    postalCode: 'Postleitzahl',
+    postalCodePlaceholder: 'PLZ',
+    country: 'Land',
+    enterCountry: 'Land eingeben',
+    emergencyContact: 'Notfallkontakt',
+    emergencyContactHint: 'Notfallkontakte werden von deinem Gym-Administrator verwaltet.',
+    name: 'Name',
+    relationship: 'Beziehung',
+    saving: 'Wird gespeichert...',
+    saveChanges: 'Änderungen speichern',
+    cancel: 'Abbrechen',
+    // Meldungen
+    errorLoadingProfile: 'Profil konnte nicht geladen werden. Bitte versuche es erneut.',
+    errorLoadingProfileTitle: 'Fehler',
+    validationError: 'Validierungsfehler',
+    firstLastNameRequired: 'Vorname und Nachname sind erforderlich',
+    profileNotAvailable: 'Profildaten nicht verfügbar',
+    errorUpdatingProfile: 'Profil konnte nicht aktualisiert werden. Bitte versuche es erneut.',
+    errorUpdatingProfileTitle: 'Fehler',
+    successTitle: 'Erfolg',
+    successMessage: 'Profil erfolgreich aktualisiert',
   },
 
   // Mitgliedschaftsseite
@@ -548,6 +608,11 @@ export default {
       discipline: 'Disziplin',
       demographic: 'Altersgruppe',
       sortBy: 'Sortieren nach',
+    },
+    timePeriods: {
+      week: 'Woche',
+      month: 'Monat',
+      year: 'Jahr',
     },
   },
 

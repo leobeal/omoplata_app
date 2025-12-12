@@ -237,6 +237,7 @@ export default {
   // Login Screen
   login: {
     title: 'Login',
+    subtitle: 'Sign in to your account',
     email: 'Email',
     password: 'Password',
     forgotPassword: 'Forgot password?',
@@ -250,6 +251,65 @@ export default {
     passwordRequired: 'Password is required',
     passwordTooShort: 'Password must be at least 6 characters',
     loginFailed: 'Login failed. Please check your credentials.',
+  },
+
+  // Forgot Password Screen
+  forgotPassword: {
+    title: 'Reset Password',
+    subtitle: 'Enter your email address to recover password',
+    email: 'Email',
+    sendResetLink: 'Send Reset Link',
+    successTitle: 'Password Reset Link Sent',
+    successMessage:
+      "We've sent a password reset link to your email address. Please check your inbox.",
+    errorTitle: 'Error',
+    errorMessage: 'Failed to send password reset link. Please try again.',
+  },
+
+  // Edit Profile Screen
+  editProfile: {
+    title: 'Edit Profile',
+    profilePictureHint: 'Contact your gym to update your profile picture',
+    personalInformation: 'Personal Information',
+    firstName: 'First Name',
+    firstNameRequired: 'First Name *',
+    enterFirstName: 'Enter first name',
+    lastName: 'Last Name',
+    lastNameRequired: 'Last Name *',
+    enterLastName: 'Enter last name',
+    email: 'Email',
+    emailPlaceholder: 'Email address',
+    emailCannotChange: 'Email cannot be changed. Contact support if needed.',
+    phone: 'Phone',
+    enterPhone: 'Enter phone number',
+    address: 'Address',
+    streetAddress: 'Street Address',
+    enterStreetAddress: 'Enter street address',
+    city: 'City',
+    enterCity: 'Enter city',
+    state: 'State',
+    statePlaceholder: 'State',
+    postalCode: 'Postal Code',
+    postalCodePlaceholder: 'Postal code',
+    country: 'Country',
+    enterCountry: 'Enter country',
+    emergencyContact: 'Emergency Contact',
+    emergencyContactHint: 'Emergency contacts are managed by your gym administrator.',
+    name: 'Name',
+    relationship: 'Relationship',
+    saving: 'Saving...',
+    saveChanges: 'Save Changes',
+    cancel: 'Cancel',
+    // Alerts
+    errorLoadingProfile: 'Failed to load profile. Please try again.',
+    errorLoadingProfileTitle: 'Error',
+    validationError: 'Validation Error',
+    firstLastNameRequired: 'First name and last name are required',
+    profileNotAvailable: 'Profile data not available',
+    errorUpdatingProfile: 'Failed to update profile. Please try again.',
+    errorUpdatingProfileTitle: 'Error',
+    successTitle: 'Success',
+    successMessage: 'Profile updated successfully',
   },
 
   // Membership Screen
@@ -580,6 +640,11 @@ export default {
       discipline: 'Discipline',
       demographic: 'Age Group',
       sortBy: 'Sort By',
+    },
+    timePeriods: {
+      week: 'Week',
+      month: 'Month',
+      year: 'Year',
     },
   },
 

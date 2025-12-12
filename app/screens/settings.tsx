@@ -270,7 +270,11 @@ export default function SettingsScreen() {
             className="px-5"
             hasBorder
             title={t('settings.language')}
-            description={currentLanguage ? `${currentLanguage.flag} ${currentLanguage.nativeName}` : t('settings.languageDescription')}
+            description={
+              currentLanguage
+                ? `${currentLanguage.flag} ${currentLanguage.nativeName}`
+                : t('settings.languageDescription')
+            }
             icon="Globe"
             onPress={() => setShowLanguageSelector(true)}
           />

@@ -7,15 +7,15 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import Icon from './Icon';
+import ThemedText from './ThemedText';
+
 import { updateUserLocale } from '@/api/profile';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/LocalizationContext';
 import { useTenant } from '@/contexts/TenantContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 import { LANGUAGE_OPTIONS, SupportedLanguages } from '@/locales';
-
-import Icon from './Icon';
-import ThemedText from './ThemedText';
 
 interface LanguageSelectorProps {
   visible: boolean;
@@ -90,12 +90,10 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ visible, onClose })
                       key={lang.code}
                       onPress={() => handleSelectLanguage(lang.code)}
                       disabled={isUpdating !== null}
-                      className={`flex-row items-center px-5 py-4 ${
-                        !isLast ? 'border-b' : ''
-                      }`}
+                      className={`flex-row items-center px-5 py-4 ${!isLast ? 'border-b' : ''}`}
                       style={{ borderColor: colors.border }}>
                       {/* Flag */}
-                      <View className="mr-4 h-10 w-10 items-center justify-center rounded-full bg-bg">
+                      <View className="bg-bg mr-4 h-10 w-10 items-center justify-center rounded-full">
                         <ThemedText className="text-2xl">{lang.flag}</ThemedText>
                       </View>
 
@@ -128,7 +126,8 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ visible, onClose })
               {/* Current Language Info */}
               <View className="mt-4 items-center">
                 <ThemedText className="text-sm opacity-50">
-                  {t('language.current')}: {LANGUAGE_OPTIONS.find((l) => l.code === locale)?.nativeName}
+                  {t('language.current')}:{' '}
+                  {LANGUAGE_OPTIONS.find((l) => l.code === locale)?.nativeName}
                 </ThemedText>
               </View>
             </View>

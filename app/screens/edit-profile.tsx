@@ -8,10 +8,12 @@ import { Button } from '@/components/Button';
 import Header from '@/components/Header';
 import Section from '@/components/Section';
 import ThemedText from '@/components/ThemedText';
+import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function EditProfileScreen() {
   const colors = useThemeColors();
+  const t = useT();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -35,7 +37,10 @@ export default function EditProfileScreen() {
       const data = await getProfile();
 
       if (!data) {
-        Alert.alert('Error', 'Failed to load profile. Please try again.');
+        Alert.alert(
+          t('editProfile.errorLoadingProfileTitle'),
+          t('editProfile.errorLoadingProfile')
+        );
         return;
       }
 
@@ -56,7 +61,7 @@ export default function EditProfileScreen() {
       }
     } catch (error) {
       console.error('Error loading profile:', error);
-      Alert.alert('Error', 'Failed to load profile');
+      Alert.alert(t('editProfile.errorLoadingProfileTitle'), t('editProfile.errorLoadingProfile'));
     } finally {
       setLoading(false);
     }
@@ -64,12 +69,12 @@ export default function EditProfileScreen() {
 
   const handleSave = async () => {
     if (!firstName.trim() || !lastName.trim()) {
-      Alert.alert('Validation Error', 'First name and last name are required');
+      Alert.alert(t('editProfile.validationError'), t('editProfile.firstLastNameRequired'));
       return;
     }
 
     if (!profile) {
-      Alert.alert('Error', 'Profile data not available');
+      Alert.alert(t('editProfile.errorUpdatingProfileTitle'), t('editProfile.profileNotAvailable'));
       return;
     }
 
@@ -89,19 +94,25 @@ export default function EditProfileScreen() {
       });
 
       if (!updatedProfile) {
-        Alert.alert('Error', 'Failed to update profile. Please try again.');
+        Alert.alert(
+          t('editProfile.errorUpdatingProfileTitle'),
+          t('editProfile.errorUpdatingProfile')
+        );
         return;
       }
 
       // Update local state with the response
       setProfile(updatedProfile);
 
-      Alert.alert('Success', 'Profile updated successfully', [
+      Alert.alert(t('editProfile.successTitle'), t('editProfile.successMessage'), [
         { text: 'OK', onPress: () => router.back() },
       ]);
     } catch (error) {
       console.error('Error updating profile:', error);
-      Alert.alert('Error', 'Failed to update profile');
+      Alert.alert(
+        t('editProfile.errorUpdatingProfileTitle'),
+        t('editProfile.errorUpdatingProfile')
+      );
     } finally {
       setSaving(false);
     }
@@ -110,7 +121,7 @@ export default function EditProfileScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-background">
-        <Header showBackButton title="Edit Profile" />
+        <Header showBackButton title={t('editProfile.title')} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" />
         </View>
@@ -120,7 +131,7 @@ export default function EditProfileScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header showBackButton title="Edit Profile" />
+      <Header showBackButton title={t('editProfile.title')} />
       <ScrollView
         className="flex-1 px-6 pt-4"
         bounces
@@ -135,60 +146,64 @@ export default function EditProfileScreen() {
             border
           />
           <ThemedText className="mt-3 text-xs opacity-50">
-            Contact your gym to update your profile picture
+            {t('editProfile.profilePictureHint')}
           </ThemedText>
         </View>
 
         {/* Personal Information */}
-        <Section title="Personal Information" className="mb-4" />
+        <Section title={t('editProfile.personalInformation')} className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">
           <View className="mb-4">
-            <ThemedText className="mb-2 text-sm font-semibold">First Name *</ThemedText>
+            <ThemedText className="mb-2 text-sm font-semibold">
+              {t('editProfile.firstNameRequired')}
+            </ThemedText>
             <TextInput
               className="rounded-xl border border-border bg-background px-4 py-3"
               style={{ color: colors.text }}
               value={firstName}
               onChangeText={setFirstName}
-              placeholder="Enter first name"
+              placeholder={t('editProfile.enterFirstName')}
               placeholderTextColor={colors.subtext}
             />
           </View>
 
           <View className="mb-4">
-            <ThemedText className="mb-2 text-sm font-semibold">Last Name *</ThemedText>
+            <ThemedText className="mb-2 text-sm font-semibold">
+              {t('editProfile.lastNameRequired')}
+            </ThemedText>
             <TextInput
               className="rounded-xl border border-border bg-background px-4 py-3"
               style={{ color: colors.text }}
               value={lastName}
               onChangeText={setLastName}
-              placeholder="Enter last name"
+              placeholder={t('editProfile.enterLastName')}
               placeholderTextColor={colors.subtext}
             />
           </View>
 
           <View className="mb-4">
-            <ThemedText className="mb-2 text-sm font-semibold">Email</ThemedText>
+            <ThemedText className="mb-2 text-sm font-semibold">{t('editProfile.email')}</ThemedText>
             <TextInput
               className="rounded-xl border border-border bg-background px-4 py-3 opacity-50"
               style={{ color: colors.text }}
               value={profile?.email}
               editable={false}
-              placeholder="Email address"
+              placeholder={t('editProfile.emailPlaceholder')}
               placeholderTextColor={colors.subtext}
             />
             <ThemedText className="mt-1 text-xs opacity-50">
-              Email cannot be changed. Contact support if needed.
+              {t('editProfile.emailCannotChange')}
             </ThemedText>
           </View>
 
           <View>
-            <ThemedText className="mb-2 text-sm font-semibold">Phone</ThemedText>
+            <ThemedText className="mb-2 text-sm font-semibold">{t('editProfile.phone')}</ThemedText>
             <TextInput
               className="rounded-xl border border-border bg-background px-4 py-3"
               style={{ color: colors.text }}
               value={phone}
               onChangeText={setPhone}
-              placeholder="Enter phone number"
+              placeholder={t('editProfile.enterPhone')}
               placeholderTextColor={colors.subtext}
               keyboardType="phone-pad"
             />
@@ -196,52 +211,58 @@ export default function EditProfileScreen() {
         </View>
 
         {/* Address */}
-        <Section title="Address" className="mb-4" />
+        <Section title={t('editProfile.address')} className="mb-4" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">
           <View className="mb-4">
-            <ThemedText className="mb-2 text-sm font-semibold">Street Address</ThemedText>
+            <ThemedText className="mb-2 text-sm font-semibold">
+              {t('editProfile.streetAddress')}
+            </ThemedText>
             <TextInput
               className="rounded-xl border border-border bg-background px-4 py-3"
               style={{ color: colors.text }}
               value={street}
               onChangeText={setStreet}
-              placeholder="Enter street address"
+              placeholder={t('editProfile.enterStreetAddress')}
               placeholderTextColor={colors.subtext}
             />
           </View>
 
           <View className="mb-4">
-            <ThemedText className="mb-2 text-sm font-semibold">City</ThemedText>
+            <ThemedText className="mb-2 text-sm font-semibold">{t('editProfile.city')}</ThemedText>
             <TextInput
               className="rounded-xl border border-border bg-background px-4 py-3"
               style={{ color: colors.text }}
               value={city}
               onChangeText={setCity}
-              placeholder="Enter city"
+              placeholder={t('editProfile.enterCity')}
               placeholderTextColor={colors.subtext}
             />
           </View>
 
           <View className="mb-4 flex-row gap-4">
             <View className="flex-1">
-              <ThemedText className="mb-2 text-sm font-semibold">State</ThemedText>
+              <ThemedText className="mb-2 text-sm font-semibold">
+                {t('editProfile.state')}
+              </ThemedText>
               <TextInput
                 className="rounded-xl border border-border bg-background px-4 py-3"
                 style={{ color: colors.text }}
                 value={state}
                 onChangeText={setState}
-                placeholder="State"
+                placeholder={t('editProfile.statePlaceholder')}
                 placeholderTextColor={colors.subtext}
               />
             </View>
             <View className="flex-1">
-              <ThemedText className="mb-2 text-sm font-semibold">Postal Code</ThemedText>
+              <ThemedText className="mb-2 text-sm font-semibold">
+                {t('editProfile.postalCode')}
+              </ThemedText>
               <TextInput
                 className="rounded-xl border border-border bg-background px-4 py-3"
                 style={{ color: colors.text }}
                 value={postalCode}
                 onChangeText={setPostalCode}
-                placeholder="Postal code"
+                placeholder={t('editProfile.postalCodePlaceholder')}
                 placeholderTextColor={colors.subtext}
                 keyboardType="numeric"
               />
@@ -249,13 +270,15 @@ export default function EditProfileScreen() {
           </View>
 
           <View>
-            <ThemedText className="mb-2 text-sm font-semibold">Country</ThemedText>
+            <ThemedText className="mb-2 text-sm font-semibold">
+              {t('editProfile.country')}
+            </ThemedText>
             <TextInput
               className="rounded-xl border border-border bg-background px-4 py-3"
               style={{ color: colors.text }}
               value={country}
               onChangeText={setCountry}
-              placeholder="Enter country"
+              placeholder={t('editProfile.enterCountry')}
               placeholderTextColor={colors.subtext}
             />
           </View>
@@ -265,27 +288,33 @@ export default function EditProfileScreen() {
         {(profile?.primaryResponsible ||
           (profile?.responsibles && profile.responsibles.length > 0)) && (
           <>
-            <Section title="Emergency Contact" className="mb-4" />
+            <Section title={t('editProfile.emergencyContact')} className="mb-4" />
             <View className="mb-6 rounded-2xl bg-secondary p-5">
               <ThemedText className="mb-3 text-xs opacity-50">
-                Emergency contacts are managed by your gym administrator.
+                {t('editProfile.emergencyContactHint')}
               </ThemedText>
               {(() => {
                 const emergencyContact = profile.primaryResponsible || profile.responsibles[0];
                 return (
                   <>
                     <View className="mb-3">
-                      <ThemedText className="text-sm opacity-70">Name</ThemedText>
+                      <ThemedText className="text-sm opacity-70">
+                        {t('editProfile.name')}
+                      </ThemedText>
                       <ThemedText className="font-semibold">
                         {emergencyContact.firstName} {emergencyContact.lastName}
                       </ThemedText>
                     </View>
                     <View className="mb-3">
-                      <ThemedText className="text-sm opacity-70">Email</ThemedText>
+                      <ThemedText className="text-sm opacity-70">
+                        {t('editProfile.email')}
+                      </ThemedText>
                       <ThemedText className="font-semibold">{emergencyContact.email}</ThemedText>
                     </View>
                     <View>
-                      <ThemedText className="text-sm opacity-70">Relationship</ThemedText>
+                      <ThemedText className="text-sm opacity-70">
+                        {t('editProfile.relationship')}
+                      </ThemedText>
                       <ThemedText className="font-semibold">
                         {emergencyContact.relationship}
                       </ThemedText>
@@ -300,7 +329,7 @@ export default function EditProfileScreen() {
         {/* Save Button */}
         <View className="mb-8">
           <Button
-            title={saving ? 'Saving...' : 'Save Changes'}
+            title={saving ? t('editProfile.saving') : t('editProfile.saveChanges')}
             onPress={handleSave}
             disabled={saving}
           />
@@ -309,7 +338,7 @@ export default function EditProfileScreen() {
         {/* Cancel Button */}
         <View className="mb-8">
           <Button
-            title="Cancel"
+            title={t('editProfile.cancel')}
             variant="outline"
             onPress={() => router.back()}
             disabled={saving}

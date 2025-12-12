@@ -17,9 +17,11 @@ import { Button } from '@/components/Button';
 import Icon from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
 import Input from '@/components/forms/Input';
+import { useT } from '@/contexts/LocalizationContext';
 
 export default function ForgotPasswordScreen() {
   const insets = useSafeAreaInsets();
+  const t = useT();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,10 +29,10 @@ export default function ForgotPasswordScreen() {
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) {
-      setEmailError('Email is required');
+      setEmailError(t('login.emailRequired'));
       return false;
     } else if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email');
+      setEmailError(t('login.invalidEmail'));
       return false;
     }
     setEmailError('');
@@ -53,14 +55,12 @@ export default function ForgotPasswordScreen() {
         setIsLoading(false);
 
         // Show success message
-        Alert.alert(
-          'Password Reset Link Sent',
-          "We've sent a password reset link to your email address. Please check your inbox.",
-          [{ text: 'OK', onPress: () => router.back() }]
-        );
+        Alert.alert(t('forgotPassword.successTitle'), t('forgotPassword.successMessage'), [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
       } catch {
         setIsLoading(false);
-        Alert.alert('Error', 'Failed to send password reset link. Please try again.', [
+        Alert.alert(t('forgotPassword.errorTitle'), t('forgotPassword.errorMessage'), [
           { text: 'OK' },
         ]);
       }
@@ -97,14 +97,16 @@ export default function ForgotPasswordScreen() {
             <AnimatedView duration={500} delay={200} animation="slideInBottom" className="p-4">
               <View className="rounded-3xl border border-border bg-background p-6">
                 <View className="mb-6 items-center justify-center">
-                  <ThemedText className="font-outfit-bold text-3xl">Reset Password</ThemedText>
+                  <ThemedText className="font-outfit-bold text-3xl">
+                    {t('forgotPassword.title')}
+                  </ThemedText>
                   <ThemedText className="text-center text-sm opacity-60">
-                    Enter your email address to recover password
+                    {t('forgotPassword.subtitle')}
                   </ThemedText>
                 </View>
 
                 <Input
-                  label="Email"
+                  label={t('forgotPassword.email')}
                   value={email}
                   onChangeText={(text) => {
                     setEmail(text);
@@ -118,7 +120,7 @@ export default function ForgotPasswordScreen() {
                 />
 
                 <Button
-                  title="Send Reset Link"
+                  title={t('forgotPassword.sendResetLink')}
                   onPress={handleResetPassword}
                   loading={isLoading}
                   size="large"

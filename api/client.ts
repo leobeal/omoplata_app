@@ -1,9 +1,9 @@
 // API Client
 // Centralized HTTP client for making API requests
 
-import { getCurrentLocale } from '@/contexts/LocalizationContext';
-
 import { API_CONFIG } from './config';
+
+import { getCurrentLocale } from '@/contexts/LocalizationContext';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 

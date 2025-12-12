@@ -22,11 +22,11 @@ import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/contexts/DashboardReadyContext';
-import { useT } from '@/contexts/LocalizationContext';
+import { useTranslation } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function HomeScreen() {
-  const t = useT();
+  const { t, locale } = useTranslation();
   const colors = useThemeColors();
   const { user, isMember } = useAuth();
   const {
@@ -70,7 +70,10 @@ export default function HomeScreen() {
     }
   }, [isMember, isResponsible]);
 
-  const today = new Date().toLocaleDateString('en-US', {
+  // Map locale to proper locale string for date formatting
+  const dateLocale =
+    locale === 'pt-BR' ? 'pt-BR' : locale === 'de' ? 'de-DE' : locale === 'tr' ? 'tr-TR' : 'en-US';
+  const today = new Date().toLocaleDateString(dateLocale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -238,7 +241,7 @@ export default function HomeScreen() {
 }
 
 const ActivityStats = memo(() => {
-  const t = useT();
+  const { t } = useTranslation();
 
   // Dummy data for courses attended by type
   const courseSegments = [
@@ -315,13 +318,17 @@ interface MembershipOverviewProps {
 }
 
 const MembershipOverview = memo(({ membership }: MembershipOverviewProps) => {
-  const t = useT();
+  const { t, locale } = useTranslation();
+
+  // Map locale to proper locale string for date formatting
+  const dateLocale =
+    locale === 'pt-BR' ? 'pt-BR' : locale === 'de' ? 'de-DE' : locale === 'tr' ? 'tr-TR' : 'en-US';
 
   // Format the next billing date
   const formatNextBilling = (dateString: string | null) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString(dateLocale, { month: 'short', day: 'numeric' });
   };
 
   // Get the year from starts_at
@@ -433,7 +440,7 @@ const ChildClassesScroll = memo(({ child, onConfirm, onDeny }: ChildClassesScrol
 });
 
 const ChildrenClassesTabs = memo(({ children, onConfirm, onDeny }: ChildrenClassesTabsProps) => {
-  const t = useT();
+  const { t } = useTranslation();
 
   // Filter children with classes
   const childrenWithClassesFiltered = useMemo(

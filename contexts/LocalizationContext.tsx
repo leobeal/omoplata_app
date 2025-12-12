@@ -34,19 +34,19 @@ export const LocalizationProvider: React.FC<LocalizationProviderProps> = ({
   const [locale, setLocaleState] = useState<SupportedLanguages>(tenantLanguage);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Create i18n instance
+  // Create i18n instance - recreate when locale changes to ensure proper updates
   const i18n = useMemo(() => {
     const i18nInstance = new I18n(translations);
     i18nInstance.enableFallback = true;
     i18nInstance.defaultLocale = 'en';
+    i18nInstance.locale = locale;
     return i18nInstance;
-  }, []);
+  }, [locale]);
 
-  // Update i18n locale when state changes
+  // Update global locale state for API client access
   useEffect(() => {
-    i18n.locale = locale;
     currentLocale = locale;
-  }, [locale, i18n]);
+  }, [locale]);
 
   // Load saved language preference on mount
   useEffect(() => {

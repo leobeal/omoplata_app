@@ -34,7 +34,8 @@ export default {
   onboarding: {
     slide1: {
       title: 'Daha Akıllı Antrenman Yap',
-      description: 'Ders rezervasyonu yap, katılımını takip et ve antrenman programını kontrol altında tut',
+      description:
+        'Ders rezervasyonu yap, katılımını takip et ve antrenman programını kontrol altında tut',
     },
     slide2: {
       title: 'Bağlantıda Kal',
@@ -72,7 +73,7 @@ export default {
   // Family / Profile Switching
   family: {
     title: 'Aile Üyeleri',
-    viewingAs: "{{name}} hesabı görüntüleniyor",
+    viewingAs: '{{name}} hesabı görüntüleniyor',
     switchBack: 'Geri dön',
     switchBackTo: 'Kendi hesabınıza geri dönün',
     switchAccount: 'Hesap Değiştir',
@@ -114,7 +115,7 @@ export default {
     upcomingClasses: 'Yaklaşan Dersler',
     unableToLoadClasses: 'Dersler yüklenemedi',
     noUpcomingClasses: 'Planlanmış ders bulunmuyor',
-    childClasses: "{{name}} Dersleri",
+    childClasses: '{{name}} Dersleri',
     childrenClasses: 'Çocuk Dersleri',
   },
 
@@ -237,6 +238,7 @@ export default {
   // Login Screen
   login: {
     title: 'Giriş',
+    subtitle: 'Hesabınıza giriş yapın',
     email: 'E-posta',
     password: 'Şifre',
     forgotPassword: 'Şifrenizi mi unuttunuz?',
@@ -250,6 +252,65 @@ export default {
     passwordRequired: 'Şifre gerekli',
     passwordTooShort: 'Şifre en az 6 karakter olmalıdır',
     loginFailed: 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.',
+  },
+
+  // Forgot Password Screen
+  forgotPassword: {
+    title: 'Şifre Sıfırla',
+    subtitle: 'Şifrenizi kurtarmak için e-posta adresinizi girin',
+    email: 'E-posta',
+    sendResetLink: 'Sıfırlama Linki Gönder',
+    successTitle: 'Şifre Sıfırlama Linki Gönderildi',
+    successMessage:
+      'E-posta adresinize bir şifre sıfırlama linki gönderdik. Lütfen gelen kutunuzu kontrol edin.',
+    errorTitle: 'Hata',
+    errorMessage: 'Şifre sıfırlama linki gönderilemedi. Lütfen tekrar deneyin.',
+  },
+
+  // Edit Profile Screen
+  editProfile: {
+    title: 'Profili Düzenle',
+    profilePictureHint: 'Profil resminizi güncellemek için spor salonunuzla iletişime geçin',
+    personalInformation: 'Kişisel Bilgiler',
+    firstName: 'Ad',
+    firstNameRequired: 'Ad *',
+    enterFirstName: 'Adınızı girin',
+    lastName: 'Soyad',
+    lastNameRequired: 'Soyad *',
+    enterLastName: 'Soyadınızı girin',
+    email: 'E-posta',
+    emailPlaceholder: 'E-posta adresi',
+    emailCannotChange: 'E-posta değiştirilemez. Gerekirse destek ile iletişime geçin.',
+    phone: 'Telefon',
+    enterPhone: 'Telefon numaranızı girin',
+    address: 'Adres',
+    streetAddress: 'Sokak Adresi',
+    enterStreetAddress: 'Sokak adresini girin',
+    city: 'Şehir',
+    enterCity: 'Şehir girin',
+    state: 'İl',
+    statePlaceholder: 'İl',
+    postalCode: 'Posta Kodu',
+    postalCodePlaceholder: 'Posta kodu',
+    country: 'Ülke',
+    enterCountry: 'Ülke girin',
+    emergencyContact: 'Acil Durum İletişimi',
+    emergencyContactHint: 'Acil durum iletişimleri spor salonu yöneticiniz tarafından yönetilir.',
+    name: 'Ad',
+    relationship: 'İlişki',
+    saving: 'Kaydediliyor...',
+    saveChanges: 'Değişiklikleri Kaydet',
+    cancel: 'İptal',
+    // Alerts
+    errorLoadingProfile: 'Profil yüklenemedi. Lütfen tekrar deneyin.',
+    errorLoadingProfileTitle: 'Hata',
+    validationError: 'Doğrulama Hatası',
+    firstLastNameRequired: 'Ad ve soyad gereklidir',
+    profileNotAvailable: 'Profil verileri mevcut değil',
+    errorUpdatingProfile: 'Profil güncellenemedi. Lütfen tekrar deneyin.',
+    errorUpdatingProfileTitle: 'Hata',
+    successTitle: 'Başarılı',
+    successMessage: 'Profil başarıyla güncellendi',
   },
 
   // Membership Screen
@@ -288,7 +349,8 @@ export default {
     downloadContract: 'Sözleşme PDF İndir',
     cancelMembership: 'Üyeliği İptal Et',
     noMembership: 'Üyelik bulunamadı',
-    supportMessage: 'Üyeliğinizle ilgili sorular için lütfen support@omoplata.com ile iletişime geçin',
+    supportMessage:
+      'Üyeliğinizle ilgili sorular için lütfen support@omoplata.com ile iletişime geçin',
 
     // Download messages
     contractPdfTitle: 'Sözleşme PDF',
@@ -346,8 +408,7 @@ export default {
     importantInformation: 'Önemli Bilgi',
     cancellationWarning:
       'Üyeliğinizi iptal etmek, tüm spor salonu tesislerine ve hizmetlerine erişiminizi sonlandıracaktır.',
-    cancellationReversible:
-      'İptal tarihi yürürlüğe girmeden önce bu kararı geri alabilirsiniz.',
+    cancellationReversible: 'İptal tarihi yürürlüğe girmeden önce bu kararı geri alabilirsiniz.',
     planName: 'Plan',
     amount: 'Tutar',
     cancellationDetails: 'İptal Detayları',
@@ -375,8 +436,7 @@ export default {
       'Üyeliğinize devam etmek istiyorsanız, yürürlüğe girmeden önce iptali geri alabilirsiniz.',
     revertCancellation: 'İptali Geri Al',
     confirmRevert: 'İptali Geri Al',
-    confirmRevertMessage:
-      'İptalinizi geri almak ve üyeliğinizi aktif tutmak ister misiniz?',
+    confirmRevertMessage: 'İptalinizi geri almak ve üyeliğinizi aktif tutmak ister misiniz?',
     yesRevert: 'Evet, Geri Al',
     revertSuccess: 'İptal Geri Alındı',
     revertSuccessMessage: 'Üyeliğiniz tekrar aktif.',
@@ -522,7 +582,7 @@ export default {
   // Graduation / Belt Progress
   graduation: {
     title: 'Kuşak İlerlemesi',
-    childTitle: "{{name}} Kuşakları",
+    childTitle: '{{name}} Kuşakları',
     currentBelt: 'Mevcut Kuşak',
     nextBelt: 'Sonraki Kuşak',
     classesProgress: 'Ders İlerlemesi',
@@ -572,6 +632,11 @@ export default {
     noResults: 'Sonuç Yok',
     tryDifferentFilters: 'Daha fazla sonuç görmek için filtrelerinizi ayarlayın',
     anonymous: 'Üye',
+    timePeriods: {
+      week: 'Hafta',
+      month: 'Ay',
+      year: 'Yıl',
+    },
     filters: {
       title: 'Filtreler',
       button: 'Filtreler',
