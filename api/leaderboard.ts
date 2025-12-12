@@ -1,6 +1,8 @@
+import { api } from './client';
+import { ENDPOINTS } from './config';
 import { BeltSystem } from './graduations';
 
-import data from '@/data/leaderboard.json';
+import { CACHE_KEYS, CACHE_DURATIONS, fetchWithCacheFallback } from '@/utils/local-cache';
 
 // API response types (snake_case - matches backend JSON)
 interface ApiUserRank {
@@ -43,7 +45,6 @@ interface ApiFilters {
   disciplines: ApiFilterOption[];
   time_periods: ApiFilterOption[];
   demographics: ApiFilterOption[];
-  sort_by: ApiFilterOption[];
 }
 
 interface ApiLeaderboardResponse {
@@ -93,7 +94,6 @@ export interface LeaderboardFilters {
   disciplines: FilterOption[];
   timePeriods: FilterOption[];
   demographics: FilterOption[];
-  sortBy: FilterOption[];
 }
 
 export interface LeaderboardResponse {
@@ -105,7 +105,6 @@ export interface LeaderboardParams {
   discipline?: string;
   timePeriod?: string;
   demographic?: string;
-  sortBy?: string;
   limit?: number;
   offset?: number;
 }
@@ -141,7 +140,6 @@ const transformFilters = (api: ApiFilters): LeaderboardFilters => ({
   disciplines: api.disciplines,
   timePeriods: api.time_periods,
   demographics: api.demographics,
-  sortBy: api.sort_by,
 });
 
 const transformLeaderboard = (api: ApiLeaderboard): Leaderboard => ({
@@ -150,71 +148,102 @@ const transformLeaderboard = (api: ApiLeaderboard): Leaderboard => ({
   entries: api.entries.map(transformEntry),
 });
 
-// Cast data to API types
-const apiData = data as ApiLeaderboardResponse;
+const transformResponse = (api: ApiLeaderboardResponse): LeaderboardResponse => ({
+  leaderboard: transformLeaderboard(api.leaderboard),
+  filters: transformFilters(api.filters),
+});
+
+/**
+ * Build query string from params
+ */
+const buildQueryString = (params?: LeaderboardParams): string => {
+  if (!params) return '';
+
+  const queryParams = new URLSearchParams();
+
+  if (params.discipline && params.discipline !== 'all') {
+    queryParams.append('discipline', params.discipline);
+  }
+  if (params.timePeriod) {
+    queryParams.append('time_period', params.timePeriod);
+  }
+  if (params.demographic && params.demographic !== 'all') {
+    queryParams.append('demographic', params.demographic);
+  }
+  if (params.limit) {
+    queryParams.append('limit', params.limit.toString());
+  }
+  if (params.offset) {
+    queryParams.append('offset', params.offset.toString());
+  }
+
+  const queryString = queryParams.toString();
+  return queryString ? `?${queryString}` : '';
+};
+
+/**
+ * Generate cache key based on params
+ */
+const getCacheKey = (params?: LeaderboardParams): string => {
+  const base = CACHE_KEYS.LEADERBOARD;
+  if (!params) return base;
+
+  const parts = [
+    params.discipline || 'all',
+    params.timePeriod || 'month',
+    params.demographic || 'all',
+  ];
+
+  return `${base}:${parts.join(':')}`;
+};
 
 /**
  * Fetch leaderboard with optional filters
+ * Uses cache fallback for better UX
  */
-export const getLeaderboard = async (params?: LeaderboardParams): Promise<LeaderboardResponse> => {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
+export const getLeaderboard = async (
+  params?: LeaderboardParams
+): Promise<{ data: LeaderboardResponse; fromCache: boolean }> => {
+  const cacheKey = getCacheKey(params);
+  const queryString = buildQueryString(params);
+  const endpoint = `${ENDPOINTS.LEADERBOARD.LIST}${queryString}`;
 
-  let entries = apiData.leaderboard.entries;
-
-  // Apply discipline filter (mock)
-  if (params?.discipline && params.discipline !== 'all') {
-    entries = entries.filter((e) =>
-      e.top_discipline.toLowerCase().includes(params.discipline!.toLowerCase())
-    );
-    // Re-rank after filter
-    entries = entries.map((e, i) => ({ ...e, rank: i + 1 }));
-  }
-
-  // Apply sort (mock)
-  if (params?.sortBy) {
-    switch (params.sortBy) {
-      case 'classes':
-        entries = [...entries].sort((a, b) => b.classes_attended - a.classes_attended);
-        break;
-      case 'streak':
-        entries = [...entries].sort((a, b) => b.streak_weeks - a.streak_weeks);
-        break;
-      default:
-        entries = [...entries].sort((a, b) => b.points - a.points);
-    }
-    // Re-rank after sort
-    entries = entries.map((e, i) => ({ ...e, rank: i + 1 }));
-  }
-
-  // Apply limit/offset
-  if (params?.limit) {
-    const offset = params.offset || 0;
-    entries = entries.slice(offset, offset + params.limit);
-  }
+  const result = await fetchWithCacheFallback<LeaderboardResponse>(
+    cacheKey,
+    async () => {
+      const response = await api.get<ApiLeaderboardResponse>(endpoint);
+      if (response.error || !response.data) {
+        throw new Error(response.error || 'Failed to fetch leaderboard');
+      }
+      return transformResponse(response.data);
+    },
+    { maxAge: CACHE_DURATIONS.SHORT }
+  );
 
   return {
-    leaderboard: transformLeaderboard({
-      ...apiData.leaderboard,
-      entries,
-      time_period: params?.timePeriod || apiData.leaderboard.time_period,
-    }),
-    filters: transformFilters(apiData.filters),
+    data: result.data,
+    fromCache: result.fromCache,
   };
 };
 
 /**
- * Fetch only the filter options
+ * Default/empty leaderboard for initial state
  */
-export const getLeaderboardFilters = async (): Promise<LeaderboardFilters> => {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  return transformFilters(apiData.filters);
-};
-
-/**
- * Fetch current user's rank
- */
-export const getUserRank = async (params?: LeaderboardParams): Promise<UserRank> => {
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  return transformUserRank(apiData.leaderboard.user_rank);
+export const DEFAULT_LEADERBOARD: LeaderboardResponse = {
+  leaderboard: {
+    userRank: {
+      rank: 0,
+      totalUsers: 0,
+      points: 0,
+      classesAttended: 0,
+      streakWeeks: 0,
+    },
+    timePeriod: 'month',
+    entries: [],
+  },
+  filters: {
+    disciplines: [],
+    timePeriods: [],
+    demographics: [],
+  },
 };

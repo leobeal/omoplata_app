@@ -1,0 +1,180 @@
+{
+  "success": true,
+  "data": {
+    "graphs": [
+      {
+        "type": "weekly_attendance",
+        "chart_type": "line",
+        "labels": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"],
+        "data": [3, 4, 2, 5, 4, 6]
+      },
+      {
+        "type": "monthly_attendance",
+        "chart_type": "bar",
+        "labels": [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec"
+        ],
+        "data": [12, 15, 10, 18, 14, 16, 20, 17, 19, 22, 18, 8]
+      },
+      {
+        "type": "discipline_breakdown",
+        "chart_type": "pie",
+        "labels": ["BJJ", "No-Gi", "MMA", "Wrestling"],
+        "data": [45, 25, 18, 12],
+        "colors": ["#3b82f6", "#8b5cf6", "#ef4444", "#f59e0b"]
+      },
+      {
+        "type": "class_type_breakdown",
+        "chart_type": "pie",
+        "labels": ["Fundamentals", "Advanced", "Competition", "Open Mat"],
+        "data": [35, 30, 20, 15]
+      },
+      {
+        "type": "training_streak",
+        "chart_type": "stats",
+        "current_streak": 6,
+        "longest_streak": 12,
+        "current_week_trained": 4
+      },
+      {
+        "type": "attendance_heatmap",
+        "chart_type": "heatmap",
+        "data": {
+          "2024-01-01": 1,
+          "2024-01-02": 2,
+          "2024-01-03": 0,
+          "2024-01-04": 1,
+          "2024-01-05": 3,
+          "2024-01-08": 2,
+          "2024-01-09": 1,
+          "2024-01-10": 0,
+          "2024-01-11": 2,
+          "2024-01-12": 1,
+          "2024-01-15": 1,
+          "2024-01-16": 2,
+          "2024-01-17": 1,
+          "2024-01-18": 0,
+          "2024-01-19": 2,
+          "2024-01-22": 1,
+          "2024-01-23": 3,
+          "2024-01-24": 1,
+          "2024-01-25": 2,
+          "2024-01-26": 1
+        },
+        "start_date": "2024-01-01",
+        "end_date": "2024-12-31"
+      },
+      {
+        "type": "year_overview",
+        "chart_type": "comparison",
+        "current_year": 156,
+        "previous_year": 132,
+        "current_year_label": "2024",
+        "previous_year_label": "2023",
+        "difference": 24,
+        "percentage_change": 18.2
+      },
+      {
+        "type": "progress_to_next_belt",
+        "chart_type": "progress",
+        "disciplines": [
+          {
+            "discipline_name": "BJJ",
+            "current_belt": "Blue",
+            "next_belt": "Purple",
+            "current_stripes": 2,
+            "is_max_rank": false,
+            "requirements": [
+              { "name": "Time at belt", "current": 18, "required": 24, "unit": "months" },
+              { "name": "Classes attended", "current": 156, "required": 200, "unit": "classes" },
+              {
+                "name": "Competition experience",
+                "current": 3,
+                "required": 5,
+                "unit": "competitions"
+              }
+            ]
+          },
+          {
+            "discipline_name": "No-Gi",
+            "current_belt": "Blue",
+            "next_belt": "Purple",
+            "current_stripes": 1,
+            "is_max_rank": false,
+            "requirements": [
+              { "name": "Time at belt", "current": 12, "required": 24, "unit": "months" },
+              { "name": "Classes attended", "current": 98, "required": 150, "unit": "classes" }
+            ]
+          }
+        ]
+      }
+    ],
+    "enabled_types": [
+      "weekly_attendance",
+      "discipline_breakdown",
+      "training_streak",
+      "progress_to_next_belt"
+    ],
+    "available_types": [
+      {
+        "value": "weekly_attendance",
+        "label": "Weekly Attendance",
+        "description": "Track your training frequency over the past 6 weeks",
+        "chart_type": "line"
+      },
+      {
+        "value": "monthly_attendance",
+        "label": "Monthly Attendance",
+        "description": "View your attendance trends across the year",
+        "chart_type": "bar"
+      },
+      {
+        "value": "discipline_breakdown",
+        "label": "Discipline Breakdown",
+        "description": "See how your training is distributed across disciplines",
+        "chart_type": "pie"
+      },
+      {
+        "value": "class_type_breakdown",
+        "label": "Class Type Breakdown",
+        "description": "Breakdown of classes by type (fundamentals, advanced, etc.)",
+        "chart_type": "pie"
+      },
+      {
+        "value": "training_streak",
+        "label": "Training Streak",
+        "description": "Your current and longest training streaks",
+        "chart_type": "stats"
+      },
+      {
+        "value": "attendance_heatmap",
+        "label": "Attendance Heatmap",
+        "description": "Visual calendar of your training activity",
+        "chart_type": "heatmap"
+      },
+      {
+        "value": "year_overview",
+        "label": "Year Overview",
+        "description": "Compare this year's training to last year",
+        "chart_type": "comparison"
+      },
+      {
+        "value": "progress_to_next_belt",
+        "label": "Belt Progress",
+        "description": "Track your progress towards your next belt promotion",
+        "chart_type": "progress"
+      }
+    ]
+  }
+}

@@ -24,9 +24,11 @@ export const CACHE_KEYS = {
   CLASSES: '@omoplata/cache/classes',
   GRADUATIONS: '@omoplata/cache/graduations',
   INVOICES: '@omoplata/cache/invoices',
+  LEADERBOARD: '@omoplata/cache/leaderboard',
   MEMBERSHIP: '@omoplata/cache/membership',
   PROFILE: '@omoplata/cache/profile',
   PAYMENT_METHODS: '@omoplata/cache/payment_methods',
+  STATISTICS: '@omoplata/cache/statistics',
 } as const;
 
 interface CacheEntry<T> {

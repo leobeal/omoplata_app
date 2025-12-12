@@ -100,6 +100,7 @@ export default {
     checkins: 'Girişler',
     thisMonth: 'bu ay',
     thisWeek: 'bu hafta',
+    last6Weeks: 'Son 6 hafta',
     lastSevenDays: 'Son 7 gün',
     goalProgress: 'Hedef İlerlemesi',
     monthly: 'Aylık',
@@ -631,6 +632,8 @@ export default {
     topPercentile: 'Üyelerin ilk %{{percent}}lik dilimindesin!',
     noResults: 'Sonuç Yok',
     tryDifferentFilters: 'Daha fazla sonuç görmek için filtrelerinizi ayarlayın',
+    errorTitle: 'Sıralama yüklenemedi',
+    errorMessage: 'Lütfen bağlantınızı kontrol edin ve tekrar deneyin',
     anonymous: 'Üye',
     timePeriods: {
       week: 'Hafta',
@@ -644,7 +647,6 @@ export default {
       timePeriod: 'Zaman Dilimi',
       discipline: 'Disiplin',
       demographic: 'Yaş Grubu',
-      sortBy: 'Sırala',
     },
   },
 
@@ -709,5 +711,16 @@ export default {
       'pt-BR': 'Português (Brasil)',
       tr: 'Türkçe',
     },
+  },
+
+  // Hakkında
+  about: {
+    title: 'Hakkında',
+    aboutDescription: 'Uygulama bilgisi, gizlilik politikası ve daha fazlası',
+    privacyPolicy: 'Gizlilik Politikası',
+    privacyPolicyDescription: 'Gizlilik politikamızı okuyun',
+    versionHistory: 'Sürüm Geçmişi',
+    versionHistoryDescription: 'Yeniliklere göz atın',
+    poweredBy: '{{appName}}, Omoplata tarafından desteklenmektedir',
   },
 };

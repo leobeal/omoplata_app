@@ -14,9 +14,7 @@ import Icon from '@/components/Icon';
 import Section from '@/components/Section';
 import SepaForm from '@/components/SepaForm';
 import { SmallChartCard } from '@/components/SmallChartCard';
-import { SmallCircleCard } from '@/components/SmallCircleCard';
 import { SmallDonutCard } from '@/components/SmallDonutCard';
-import { SmallProgressBarCard } from '@/components/SmallProgressBarCard';
 import { SmallStreakCard } from '@/components/SmallStreakCard';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
@@ -242,16 +240,36 @@ export default function HomeScreen() {
 
 const ActivityStats = memo(() => {
   const { t } = useTranslation();
+  const { analytics } = useAppData();
 
-  // Dummy data for courses attended by type
-  const courseSegments = [
-    { label: 'BJJ', value: 8, color: '#3b82f6' },
-    { label: 'No-Gi', value: 5, color: '#8b5cf6' },
-    { label: 'MMA', value: 3, color: '#ef4444' },
-    { label: 'Wrestling', value: 2, color: '#f59e0b' },
-  ];
+  // Extract graphs by type using helper
+  const classTypeBreakdown = analytics.graphs.find((g) => g.type === 'class_type_breakdown');
+  const weeklyAttendance = analytics.graphs.find((g) => g.type === 'weekly_attendance');
+  const trainingStreak = analytics.graphs.find((g) => g.type === 'training_streak');
 
-  const totalClasses = courseSegments.reduce((sum, seg) => sum + seg.value, 0);
+  // Transform class type breakdown to donut segments format
+  const donutSegments =
+    classTypeBreakdown && classTypeBreakdown.type === 'class_type_breakdown'
+      ? classTypeBreakdown.labels.map((label, i) => ({
+          label,
+          value: classTypeBreakdown.data[i],
+          color: ['#3b82f6', '#8b5cf6', '#ef4444', '#f59e0b'][i % 4], // Default colors
+        }))
+      : [];
+
+  const totalClasses = donutSegments.reduce((sum, s) => sum + s.value, 0);
+
+  // Get weekly attendance data for chart
+  const weeklyData =
+    weeklyAttendance && weeklyAttendance.type === 'weekly_attendance' ? weeklyAttendance.data : [];
+
+  // Get streak data
+  const currentStreak =
+    trainingStreak && trainingStreak.type === 'training_streak' ? trainingStreak.current_streak : 0;
+  const longestStreak =
+    trainingStreak && trainingStreak.type === 'training_streak'
+      ? trainingStreak.longest_streak
+      : 12;
 
   return (
     <View className="mb-6">
@@ -261,7 +279,7 @@ const ActivityStats = memo(() => {
             title={t('home.classes')}
             animate
             subtitle={t('home.thisMonth')}
-            segments={courseSegments}
+            segments={donutSegments}
             centerValue={totalClasses.toString()}
             centerLabel={t('home.total')}
             size={90}
@@ -270,32 +288,11 @@ const ActivityStats = memo(() => {
         <View className="flex-1">
           <SmallChartCard
             title={t('home.checkins')}
-            value="18"
+            value={weeklyData.reduce((a, b) => a + b, 0).toString()}
             unit={t('home.thisMonth')}
-            subtitle={t('home.thisWeek')}
-            data={[3, 2, 4, 3, 5, 4, 6]}
+            subtitle={t('home.last6Weeks')}
+            data={weeklyData}
             lineColor="#10b981"
-          />
-        </View>
-      </View>
-      <View className="mb-4 flex-row items-stretch gap-4">
-        <View className="flex-1">
-          <SmallCircleCard
-            title={t('home.goalProgress')}
-            subtitle={t('home.monthly')}
-            percentage={75}
-            value="15/20"
-            unit={t('home.classes').toLowerCase()}
-          />
-        </View>
-        <View className="flex-1">
-          <SmallProgressBarCard
-            title={t('home.weeklyActivity')}
-            subtitle={t('home.pastThreeWeeks')}
-            data={[{ percentage: 85 }, { percentage: 70 }, { percentage: 95 }]}
-            barColor="#06b6d4"
-            value="95%"
-            unit={t('home.onTrack')}
           />
         </View>
       </View>
@@ -304,8 +301,8 @@ const ActivityStats = memo(() => {
           <SmallStreakCard
             title={t('home.streak')}
             subtitle={t('home.currentStreak')}
-            streakWeeks={6}
-            goalWeeks={12}
+            streakWeeks={currentStreak}
+            goalWeeks={longestStreak}
           />
         </View>
       </View>

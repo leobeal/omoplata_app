@@ -98,6 +98,7 @@ export default {
     checkins: 'Check-ins',
     thisMonth: 'este mês',
     thisWeek: 'esta semana',
+    last6Weeks: 'Últimas 6 semanas',
     lastSevenDays: 'Últimos 7 dias',
     goalProgress: 'Progresso da Meta',
     monthly: 'Mensal',
@@ -598,6 +599,8 @@ export default {
     topPercentile: 'Você está entre os {{percent}}% melhores membros!',
     noResults: 'Sem Resultados',
     tryDifferentFilters: 'Tente ajustar seus filtros para ver mais resultados',
+    errorTitle: 'Não foi possível carregar o ranking',
+    errorMessage: 'Verifique sua conexão e tente novamente',
     anonymous: 'Membro',
     filters: {
       title: 'Filtros',
@@ -606,7 +609,6 @@ export default {
       timePeriod: 'Período',
       discipline: 'Modalidade',
       demographic: 'Faixa Etária',
-      sortBy: 'Ordenar por',
     },
     timePeriods: {
       week: 'Semana',
@@ -706,5 +708,16 @@ export default {
       'pt-BR': 'Português (Brasil)',
       tr: 'Türkçe',
     },
+  },
+
+  // Sobre
+  about: {
+    title: 'Sobre',
+    aboutDescription: 'Informações do app, política de privacidade e mais',
+    privacyPolicy: 'Política de Privacidade',
+    privacyPolicyDescription: 'Leia nossa política de privacidade',
+    versionHistory: 'Histórico de Versões',
+    versionHistoryDescription: 'Veja as novidades',
+    poweredBy: '{{appName}} é desenvolvido pela Omoplata',
   },
 };

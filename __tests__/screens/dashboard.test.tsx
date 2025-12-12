@@ -147,6 +147,9 @@ const mockTranslate = (key: string, params?: Record<string, string | number>) =>
     'home.pastThreeWeeks': 'Past 3 weeks',
     'home.onTrack': 'on track',
     'home.membershipStatus': 'Membership Status',
+    'home.streak': 'Streak',
+    'home.currentStreak': 'Current streak',
+    'home.last6Weeks': 'Last 6 weeks',
     'home.classesLeft': 'Classes Left',
     'home.unlimited': 'Unlimited',
     'home.nextBilling': 'Next Billing',
@@ -309,6 +312,32 @@ jest.mock('@/contexts/DashboardReadyContext', () => ({
     },
     paymentMethods: [],
     availablePaymentMethods: [],
+    analytics: {
+      graphs: [
+        {
+          type: 'class_type_breakdown',
+          chart_type: 'pie',
+          labels: ['Fundamentals', 'Advanced', 'Competition', 'Open Mat'],
+          data: [8, 5, 3, 2],
+        },
+        {
+          type: 'weekly_attendance',
+          chart_type: 'line',
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+          data: [3, 4, 2, 5, 4, 6],
+        },
+        {
+          type: 'training_streak',
+          chart_type: 'stats',
+          current_streak: 6,
+          longest_streak: 12,
+          current_week_trained: 4,
+        },
+      ],
+      enabled_types: ['class_type_breakdown', 'weekly_attendance', 'training_streak'],
+      available_types: [],
+    },
+    analyticsFromCache: false,
     refreshData: jest.fn().mockResolvedValue(undefined),
     setClasses: jest.fn(),
     setPaymentMethods: jest.fn(),
@@ -355,8 +384,7 @@ describe('HomeScreen (Dashboard)', () => {
       await waitFor(() => {
         expect(getByText('Classes')).toBeTruthy();
         expect(getByText('Check-ins')).toBeTruthy();
-        expect(getByText('Goal Progress')).toBeTruthy();
-        expect(getByText('Weekly Activity')).toBeTruthy();
+        expect(getByText('Streak')).toBeTruthy();
       });
     });
   });

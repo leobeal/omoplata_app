@@ -99,6 +99,7 @@ export default {
     checkins: 'Check-ins',
     thisMonth: 'this month',
     thisWeek: 'this week',
+    last6Weeks: 'Last 6 weeks',
     lastSevenDays: 'Last 7 days',
     goalProgress: 'Goal Progress',
     monthly: 'Monthly',
@@ -631,6 +632,8 @@ export default {
     topPercentile: "You're in the top {{percent}}% of members!",
     noResults: 'No Results',
     tryDifferentFilters: 'Try adjusting your filters to see more results',
+    errorTitle: 'Unable to Load Leaderboard',
+    errorMessage: 'Please check your connection and try again',
     anonymous: 'Member',
     filters: {
       title: 'Filters',
@@ -639,7 +642,6 @@ export default {
       timePeriod: 'Time Period',
       discipline: 'Discipline',
       demographic: 'Age Group',
-      sortBy: 'Sort By',
     },
     timePeriods: {
       week: 'Week',
@@ -709,5 +711,16 @@ export default {
       'pt-BR': 'Português (Brasil)',
       tr: 'Türkçe',
     },
+  },
+
+  // About Section
+  about: {
+    title: 'About',
+    aboutDescription: 'App info, privacy policy, and more',
+    privacyPolicy: 'Privacy Policy',
+    privacyPolicyDescription: 'Read our privacy policy',
+    versionHistory: 'Version History',
+    versionHistoryDescription: "See what's new",
+    poweredBy: '{{appName}} is powered by Omoplata',
   },
 };

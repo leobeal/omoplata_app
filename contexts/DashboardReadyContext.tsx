@@ -19,6 +19,7 @@ import {
   PaymentMethod,
   AvailablePaymentMethod,
 } from '@/api/payment-methods';
+import { getAnalytics, AnalyticsData, DEFAULT_ANALYTICS_DATA } from '@/api/statistics';
 
 interface AppDataContextType {
   // Loading state
@@ -32,6 +33,8 @@ interface AppDataContextType {
   membership: Membership | null;
   paymentMethods: PaymentMethod[];
   availablePaymentMethods: AvailablePaymentMethod[];
+  analytics: AnalyticsData;
+  analyticsFromCache: boolean;
 
   // Actions
   refreshData: () => Promise<void>;
@@ -48,6 +51,8 @@ const AppDataContext = createContext<AppDataContextType>({
   membership: null,
   paymentMethods: [],
   availablePaymentMethods: [],
+  analytics: DEFAULT_ANALYTICS_DATA,
+  analyticsFromCache: false,
   refreshData: async () => {},
   setClasses: () => {},
   setPaymentMethods: () => {},
@@ -66,35 +71,46 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [availablePaymentMethods, setAvailablePaymentMethods] = useState<AvailablePaymentMethod[]>(
     []
   );
+  const [analytics, setAnalytics] = useState<AnalyticsData>(DEFAULT_ANALYTICS_DATA);
+  const [analyticsFromCache, setAnalyticsFromCache] = useState(false);
   const hasLoadedData = useRef(false);
 
   const loadAllData = useCallback(async () => {
     setClassesError(null);
 
-    const [classesResult, membershipData, paymentMethodsData, availablePaymentMethodsData] =
-      await Promise.all([
-        getMyClassesWithChildren().catch((error) => {
-          console.error('Error loading classes:', error);
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : 'Failed to load classes. Please check your connection and try again.';
-          setClassesError(errorMessage);
-          return { classes: [], children: [], fromCache: false };
-        }),
-        getMembership().catch((error) => {
-          console.error('Error loading membership:', error);
-          return null;
-        }),
-        getPaymentMethods().catch((error) => {
-          console.error('Error loading payment methods:', error);
-          return [];
-        }),
-        getAvailablePaymentMethods().catch((error) => {
-          console.error('Error loading available payment methods:', error);
-          return [];
-        }),
-      ]);
+    const [
+      classesResult,
+      membershipData,
+      paymentMethodsData,
+      availablePaymentMethodsData,
+      statisticsResult,
+    ] = await Promise.all([
+      getMyClassesWithChildren().catch((error) => {
+        console.error('Error loading classes:', error);
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : 'Failed to load classes. Please check your connection and try again.';
+        setClassesError(errorMessage);
+        return { classes: [], children: [], fromCache: false };
+      }),
+      getMembership().catch((error) => {
+        console.error('Error loading membership:', error);
+        return null;
+      }),
+      getPaymentMethods().catch((error) => {
+        console.error('Error loading payment methods:', error);
+        return [];
+      }),
+      getAvailablePaymentMethods().catch((error) => {
+        console.error('Error loading available payment methods:', error);
+        return [];
+      }),
+      getAnalytics().catch((error) => {
+        console.error('Error loading analytics:', error);
+        return { data: DEFAULT_ANALYTICS_DATA, fromCache: false };
+      }),
+    ]);
 
     setClasses(classesResult.classes);
     setChildrenWithClasses(classesResult.children);
@@ -102,6 +118,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setMembership(membershipData);
     setPaymentMethods(paymentMethodsData);
     setAvailablePaymentMethods(availablePaymentMethodsData);
+    setAnalytics(statisticsResult.data);
+    setAnalyticsFromCache(statisticsResult.fromCache ?? false);
     setIsAppDataReady(true);
     hasLoadedData.current = true;
   }, []);
@@ -162,6 +180,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       setMembership(null);
       setPaymentMethods([]);
       setAvailablePaymentMethods([]);
+      setAnalytics(DEFAULT_ANALYTICS_DATA);
+      setAnalyticsFromCache(false);
     }
   }, [isAuthenticated, isAuthLoading]);
 
@@ -175,6 +195,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       membership,
       paymentMethods,
       availablePaymentMethods,
+      analytics,
+      analyticsFromCache,
       refreshData,
       setClasses,
       setPaymentMethods,
@@ -188,6 +210,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       membership,
       paymentMethods,
       availablePaymentMethods,
+      analytics,
+      analyticsFromCache,
       refreshData,
       setClasses,
       setPaymentMethods,

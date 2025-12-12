@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Pressable,
   RefreshControl,
   View,
 } from 'react-native';
@@ -39,6 +40,7 @@ export default function LeaderboardScreen() {
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [leaderboard, setLeaderboard] = useState<Leaderboard | null>(null);
   const [filters, setFilters] = useState<LeaderboardFilters | null>(null);
 
@@ -81,17 +83,19 @@ export default function LeaderboardScreen() {
   const loadLeaderboard = useCallback(
     async (showLoading = true) => {
       if (showLoading) setLoading(true);
+      setError(null);
       try {
         const params: LeaderboardParams = {
           discipline: selectedDiscipline,
           timePeriod: selectedTimePeriod,
           demographic: selectedDemographic,
         };
-        const response = await getLeaderboard(params);
-        setLeaderboard(response.leaderboard);
-        setFilters(response.filters);
-      } catch (error) {
-        console.error('Failed to load leaderboard:', error);
+        const { data } = await getLeaderboard(params);
+        setLeaderboard(data.leaderboard);
+        setFilters(data.filters);
+      } catch (err) {
+        console.error('Failed to load leaderboard:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load leaderboard');
       } finally {
         setLoading(false);
       }
@@ -99,8 +103,13 @@ export default function LeaderboardScreen() {
     [selectedDiscipline, selectedTimePeriod, selectedDemographic]
   );
 
+  // Track if initial load is done
+  const isInitialLoad = useRef(true);
+
   useEffect(() => {
-    loadLeaderboard();
+    // Skip showing loading spinner on filter changes (not initial load)
+    loadLeaderboard(isInitialLoad.current);
+    isInitialLoad.current = false;
   }, [loadLeaderboard]);
 
   const handleRefresh = useCallback(async () => {
@@ -108,13 +117,6 @@ export default function LeaderboardScreen() {
     await loadLeaderboard(false);
     setRefreshing(false);
   }, [loadLeaderboard]);
-
-  // When filters change, reload
-  useEffect(() => {
-    if (!loading) {
-      loadLeaderboard(false);
-    }
-  }, [selectedDiscipline, selectedTimePeriod, selectedDemographic]);
 
   if (loading && !leaderboard) {
     return (
@@ -133,6 +135,28 @@ export default function LeaderboardScreen() {
         />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={colors.highlight} />
+        </View>
+      </View>
+    );
+  }
+
+  if (error && !leaderboard) {
+    return (
+      <View className="flex-1 bg-background">
+        <Header
+          title={t('leaderboard.title')}
+          rightComponents={[
+            <Avatar
+              key="avatar"
+              name={user ? `${user.firstName} ${user.lastName}` : ''}
+              size="xs"
+              link="/screens/settings"
+              src={user?.profilePicture}
+            />,
+          ]}
+        />
+        <View className="flex-1 items-center justify-center px-6">
+          <ErrorState onRetry={() => loadLeaderboard(true)} />
         </View>
       </View>
     );
@@ -186,8 +210,8 @@ export default function LeaderboardScreen() {
           </View>
         )}
 
-        {/* Podium - Top 3 */}
-        {leaderboard && leaderboard.entries.length >= 3 && (
+        {/* Podium - Top 3 (or fewer) */}
+        {leaderboard && leaderboard.entries.length > 0 && (
           <Podium entries={leaderboard.entries} currentUserId="current-user" />
         )}
 
@@ -246,6 +270,34 @@ const EmptyState = memo(() => {
       <ThemedText className="text-center text-sm opacity-70">
         {t('leaderboard.tryDifferentFilters')}
       </ThemedText>
+    </View>
+  );
+});
+
+const ErrorState = memo(({ onRetry }: { onRetry: () => void }) => {
+  const { t } = useTranslation();
+  const colors = useThemeColors();
+
+  return (
+    <View className="w-full items-center justify-center rounded-2xl bg-secondary px-6 py-12">
+      <View
+        className="mb-4 h-16 w-16 items-center justify-center rounded-full"
+        style={{ backgroundColor: colors.error + '20' }}>
+        <Icon name="WifiOff" size={32} color={colors.error} />
+      </View>
+      <ThemedText className="mb-2 text-center text-lg font-semibold">
+        {t('leaderboard.errorTitle')}
+      </ThemedText>
+      <ThemedText className="mb-6 text-center text-sm opacity-70">
+        {t('leaderboard.errorMessage')}
+      </ThemedText>
+      <Pressable
+        onPress={onRetry}
+        className="flex-row items-center rounded-full px-6 py-3"
+        style={{ backgroundColor: colors.highlight }}>
+        <Icon name="RefreshCw" size={18} color="#FFFFFF" />
+        <ThemedText className="ml-2 font-semibold text-white">{t('common.retry')}</ThemedText>
+      </Pressable>
     </View>
   );
 });

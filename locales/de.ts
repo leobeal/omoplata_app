@@ -99,6 +99,7 @@ export default {
     checkins: 'Check-ins',
     thisMonth: 'diesen Monat',
     thisWeek: 'diese Woche',
+    last6Weeks: 'Letzte 6 Wochen',
     lastSevenDays: 'Letzte 7 Tage',
     goalProgress: 'Zielfortschritt',
     monthly: 'Monatlich',
@@ -599,6 +600,8 @@ export default {
     topPercentile: 'Du bist unter den Top {{percent}}% der Mitglieder!',
     noResults: 'Keine Ergebnisse',
     tryDifferentFilters: 'Versuche, deine Filter anzupassen, um mehr Ergebnisse zu sehen',
+    errorTitle: 'Rangliste konnte nicht geladen werden',
+    errorMessage: 'Bitte überprüfe deine Verbindung und versuche es erneut',
     anonymous: 'Mitglied',
     filters: {
       title: 'Filter',
@@ -607,7 +610,6 @@ export default {
       timePeriod: 'Zeitraum',
       discipline: 'Disziplin',
       demographic: 'Altersgruppe',
-      sortBy: 'Sortieren nach',
     },
     timePeriods: {
       week: 'Woche',
@@ -707,5 +709,16 @@ export default {
       'pt-BR': 'Português (Brasil)',
       tr: 'Türkçe',
     },
+  },
+
+  // Über
+  about: {
+    title: 'Über',
+    aboutDescription: 'App-Info, Datenschutzrichtlinie und mehr',
+    privacyPolicy: 'Datenschutzrichtlinie',
+    privacyPolicyDescription: 'Unsere Datenschutzrichtlinie lesen',
+    versionHistory: 'Versionshistorie',
+    versionHistoryDescription: 'Neuigkeiten ansehen',
+    poweredBy: '{{appName}} wird von Omoplata betrieben',
   },
 };

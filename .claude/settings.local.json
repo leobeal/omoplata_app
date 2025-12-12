@@ -29,7 +29,9 @@
       "Bash(grep:*)",
       "mcp__mcp-react-native-expo__analyze_codebase_performance",
       "Bash(node -e:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(ls:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

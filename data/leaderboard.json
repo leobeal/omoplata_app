@@ -183,11 +183,6 @@
       { "id": "kids", "name": "Kids" },
       { "id": "teens", "name": "Teens" },
       { "id": "seniors", "name": "Seniors (50+)" }
-    ],
-    "sort_by": [
-      { "id": "points", "name": "Points" },
-      { "id": "classes", "name": "Classes Attended" },
-      { "id": "streak", "name": "Streak" }
     ]
   }
 }

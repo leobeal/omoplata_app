@@ -261,8 +261,8 @@ const PodiumPlace = memo(
 );
 
 export const Podium = memo(({ entries, currentUserId }: PodiumProps) => {
-  // Need at least 3 entries for podium
-  if (entries.length < 3) return null;
+  // Need at least 1 entry for podium
+  if (entries.length < 1) return null;
 
   const first = entries[0];
   const second = entries[1];
@@ -271,13 +271,21 @@ export const Podium = memo(({ entries, currentUserId }: PodiumProps) => {
   return (
     <View className="mb-4 flex-row items-end gap-1 px-2">
       {/* 2nd Place - Left */}
-      <PodiumPlace entry={second} isCurrentUser={second.id === currentUserId} position={2} />
+      {second ? (
+        <PodiumPlace entry={second} isCurrentUser={second.id === currentUserId} position={2} />
+      ) : (
+        <View className="flex-1" />
+      )}
 
       {/* 1st Place - Center */}
       <PodiumPlace entry={first} isCurrentUser={first.id === currentUserId} position={1} />
 
       {/* 3rd Place - Right */}
-      <PodiumPlace entry={third} isCurrentUser={third.id === currentUserId} position={3} />
+      {third ? (
+        <PodiumPlace entry={third} isCurrentUser={third.id === currentUserId} position={3} />
+      ) : (
+        <View className="flex-1" />
+      )}
     </View>
   );
 });

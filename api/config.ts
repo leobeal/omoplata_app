@@ -149,6 +149,14 @@ export const ENDPOINTS = {
     REGISTER_TOKEN: '/push/register',
     UNREGISTER_TOKEN: '/push/unregister',
   },
+  // Analytics
+  STATISTICS: {
+    DASHBOARD: '/analytics',
+  },
+  // Leaderboard
+  LEADERBOARD: {
+    LIST: '/leaderboard',
+  },
 } as const;
 
 export default API_CONFIG;

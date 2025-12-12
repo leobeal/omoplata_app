@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import React, { useCallback, useState } from 'react';
 import {
   View,
@@ -288,32 +287,20 @@ export default function SettingsScreen() {
           />
           <ListLink
             className="px-5"
+            hasBorder
+            title={t('about.title')}
+            description={t('about.aboutDescription')}
+            icon="Info"
+            href="/screens/about"
+          />
+          <ListLink
+            className="px-5"
             title={t('settings.logout')}
             description={t('settings.signOut')}
             icon="LogOut"
             onPress={handleLogout}
           />
         </View>
-
-        {/* Version Info */}
-        <Section title={t('settings.version')} titleSize="lg">
-          <View className="rounded-2xl bg-secondary">
-            <View className="flex-row items-center justify-between border-b border-border px-5 py-4">
-              <ThemedText className="opacity-70">{t('settings.appVersion')}</ThemedText>
-              <ThemedText className="font-semibold">
-                {Constants.expoConfig?.version || '1.0.0'}
-              </ThemedText>
-            </View>
-            <View className="flex-row items-center justify-between px-5 py-4">
-              <ThemedText className="opacity-70">{t('settings.buildNumber')}</ThemedText>
-              <ThemedText className="font-semibold">
-                {Constants.expoConfig?.ios?.buildNumber ||
-                  Constants.expoConfig?.android?.versionCode ||
-                  '1'}
-              </ThemedText>
-            </View>
-          </View>
-        </Section>
       </ThemedScroller>
 
       {/* Language Selector Modal */}
