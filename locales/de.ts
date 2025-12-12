@@ -150,6 +150,8 @@ export default {
     buildNumber: 'Build-Nummer',
     privacy: 'Datenschutz',
     privacyDescription: 'Kontrolliere, wie deine Informationen geteilt werden',
+    language: 'Sprache',
+    languageDescription: 'App-Sprache ändern',
   },
 
   // Datenschutz-Einstellungen
@@ -627,5 +629,18 @@ export default {
     october: 'Oktober',
     november: 'November',
     december: 'Dezember',
+  },
+
+  // Sprachauswahl
+  language: {
+    title: 'Sprache wählen',
+    current: 'Aktuelle Sprache',
+    changeLanguage: 'Sprache ändern',
+    languages: {
+      en: 'English',
+      de: 'Deutsch',
+      'pt-BR': 'Português (Brasil)',
+      tr: 'Türkçe',
+    },
   },
 };

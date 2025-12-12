@@ -149,6 +149,8 @@ export default {
     buildNumber: 'Número da Build',
     privacy: 'Privacidade',
     privacyDescription: 'Controle como suas informações são compartilhadas',
+    language: 'Idioma',
+    languageDescription: 'Alterar idioma do aplicativo',
   },
 
   // Configurações de Privacidade
@@ -625,5 +627,18 @@ export default {
     october: 'Outubro',
     november: 'Novembro',
     december: 'Dezembro',
+  },
+
+  // Seleção de Idioma
+  language: {
+    title: 'Selecionar Idioma',
+    current: 'Idioma atual',
+    changeLanguage: 'Alterar Idioma',
+    languages: {
+      en: 'English',
+      de: 'Deutsch',
+      'pt-BR': 'Português (Brasil)',
+      tr: 'Türkçe',
+    },
   },
 };

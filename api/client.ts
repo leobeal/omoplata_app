@@ -1,6 +1,8 @@
 // API Client
 // Centralized HTTP client for making API requests
 
+import { getCurrentLocale } from '@/contexts/LocalizationContext';
+
 import { API_CONFIG } from './config';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -43,6 +45,10 @@ export async function apiRequest<T>(
     ...API_CONFIG.headers,
     ...headers,
   };
+
+  // Add language header for all requests
+  const locale = getCurrentLocale();
+  requestHeaders['Accept-Language'] = locale;
 
   if (authToken) {
     requestHeaders['Authorization'] = `Bearer ${authToken}`;

@@ -133,6 +133,7 @@ export interface ProfileUpdateRequest {
   last_name?: string;
   nickname?: string;
   gender?: string;
+  locale?: string;
   phone_country_code?: string;
   phone?: string;
   date_of_birth?: string;
@@ -238,4 +239,16 @@ export const updateProfile = async (
   }
 
   return transformApiUser(response.data.user);
+};
+
+/**
+ * Update user locale/language preference
+ */
+export const updateUserLocale = async (userId: string, locale: string): Promise<boolean> => {
+  const response = await api.put<{ user: ApiUserResponse }>(
+    ENDPOINTS.USERS.UPDATE.replace(':id', userId),
+    { locale }
+  );
+
+  return !response.error && response.data?.user !== undefined;
 };
