@@ -19,7 +19,7 @@ import CalendarClassCard from '@/components/CalendarClassCard';
 import Icon from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
-import { useT } from '@/contexts/LocalizationContext';
+import { useTranslation } from '@/contexts/LocalizationContext';
 import { useScrollToTop } from '@/contexts/ScrollToTopContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
@@ -39,8 +39,23 @@ interface DayData {
   classes: Class[];
 }
 
+// Helper to map app locale to date locale string
+const getDateLocale = (locale: string) => {
+  switch (locale) {
+    case 'pt-BR':
+      return 'pt-BR';
+    case 'de':
+      return 'de-DE';
+    case 'tr':
+      return 'tr-TR';
+    default:
+      return 'en-US';
+  }
+};
+
 export default function CalendarScreen() {
-  const t = useT();
+  const { t, locale } = useTranslation();
+  const dateLocale = getDateLocale(locale);
   const colors = useThemeColors();
   const { user } = useAuth();
   const { registerScrollHandler, unregisterScrollHandler } = useScrollToTop();
@@ -166,8 +181,8 @@ export default function CalendarScreen() {
       date.setDate(today.getDate() + i);
 
       const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-      const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+      const dayName = date.toLocaleDateString(dateLocale, { weekday: 'short' });
+      const monthName = date.toLocaleDateString(dateLocale, { month: 'short' });
 
       daysArray.push({
         date,
@@ -181,34 +196,40 @@ export default function CalendarScreen() {
     }
 
     return daysArray;
-  }, [classesByDate]);
+  }, [classesByDate, dateLocale]);
 
-  // Initialize visible month/year on first load
+  // Initialize visible month/year on first load or when locale changes
   useEffect(() => {
-    if (days.length > 0 && !visibleMonthYear) {
+    if (days.length > 0) {
       const today = new Date();
-      setVisibleMonthYear(today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
+      setVisibleMonthYear(today.toLocaleDateString(dateLocale, { month: 'long', year: 'numeric' }));
     }
-  }, [days, visibleMonthYear]);
+  }, [days.length, dateLocale]);
 
   // Handle scroll to update visible month
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const scrollX = event.nativeEvent.contentOffset.x;
-    const centerX = scrollX + SCREEN_WIDTH / 2;
-    // Calculate which item is at the center of the screen
-    // First item center is at: SCROLL_PADDING + DAY_MARGIN + DAY_ITEM_WIDTH / 2
-    const centerIndex = Math.round(
-      (centerX - SCROLL_PADDING - DAY_MARGIN - DAY_ITEM_WIDTH / 2) / DAY_TOTAL_WIDTH
-    );
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const scrollX = event.nativeEvent.contentOffset.x;
+      const centerX = scrollX + SCREEN_WIDTH / 2;
+      // Calculate which item is at the center of the screen
+      // First item center is at: SCROLL_PADDING + DAY_MARGIN + DAY_ITEM_WIDTH / 2
+      const centerIndex = Math.round(
+        (centerX - SCROLL_PADDING - DAY_MARGIN - DAY_ITEM_WIDTH / 2) / DAY_TOTAL_WIDTH
+      );
 
-    if (days[centerIndex]) {
-      const centerDate = days[centerIndex].date;
-      const monthYear = centerDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      if (monthYear !== visibleMonthYear) {
-        setVisibleMonthYear(monthYear);
+      if (days[centerIndex]) {
+        const centerDate = days[centerIndex].date;
+        const monthYear = centerDate.toLocaleDateString(dateLocale, {
+          month: 'long',
+          year: 'numeric',
+        });
+        if (monthYear !== visibleMonthYear) {
+          setVisibleMonthYear(monthYear);
+        }
       }
-    }
-  };
+    },
+    [days, dateLocale, visibleMonthYear]
+  );
 
   // Check if selected date is today
   const isSelectedToday = useMemo(() => {
@@ -374,7 +395,7 @@ export default function CalendarScreen() {
               {/* Date Header */}
               <View className="mb-4">
                 <ThemedText className="text-2xl font-bold">
-                  {day.date.toLocaleDateString('en-US', {
+                  {day.date.toLocaleDateString(dateLocale, {
                     weekday: 'long',
                     month: 'long',
                     day: 'numeric',
@@ -406,7 +427,7 @@ export default function CalendarScreen() {
                 {t('calendar.noClasses')}
               </ThemedText>
               <ThemedText className="mt-2 text-center opacity-50">
-                {day.date.toLocaleDateString('en-US', {
+                {day.date.toLocaleDateString(dateLocale, {
                   weekday: 'long',
                   month: 'long',
                   day: 'numeric',
@@ -417,7 +438,7 @@ export default function CalendarScreen() {
         </ScrollView>
       </View>
     ),
-    [refreshing, handleRefresh, colors, t]
+    [refreshing, handleRefresh, colors, t, dateLocale]
   );
 
   return (

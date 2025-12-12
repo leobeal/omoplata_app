@@ -1,0 +1,713 @@
+export default {
+  // Navigation
+  nav: {
+    dashboard: 'Ana Sayfa',
+    checkin: 'Giriş Yap',
+    classes: 'Dersler',
+    leaderboard: 'Sıralama',
+    membership: 'Üyelik',
+    billing: 'Faturalama',
+    settings: 'Ayarlar',
+  },
+
+  // Common
+  common: {
+    close: 'Kapat',
+    back: 'Geri',
+    cancel: 'İptal',
+    confirm: 'Onayla',
+    continue: 'Devam',
+    save: 'Kaydet',
+    delete: 'Sil',
+    edit: 'Düzenle',
+    reset: 'Sıfırla',
+    loading: 'Yükleniyor...',
+    error: 'Hata',
+    success: 'Başarılı',
+    retry: 'Tekrar Dene',
+    tryAgain: 'Tekrar Dene',
+    viewPlans: 'Planları Görüntüle',
+    logout: 'Çıkış Yap',
+  },
+
+  // Onboarding Slides
+  onboarding: {
+    slide1: {
+      title: 'Daha Akıllı Antrenman Yap',
+      description:
+        'Ders rezervasyonu yap, katılımını takip et ve antrenman programını kontrol altında tut',
+    },
+    slide2: {
+      title: 'Bağlantıda Kal',
+      description: 'Yaklaşan dersler hakkında bildirim al ve hiçbir antrenmana gelmezlik etme',
+    },
+    slide3: {
+      title: 'Hedeflerine Ulaş',
+      description: 'İlerlemeni takip et ve fitness hedeflerini gerçekleştir',
+    },
+  },
+
+  // Tenant Selection
+  tenantSelection: {
+    title: 'Spor Salonunu Bul',
+    subtitle: 'Başlamak için spor salonu tanımlayıcını gir',
+    label: 'Spor Salonu Tanımlayıcı',
+    placeholder: 'örn: evolve',
+    help: 'Tanımlayıcı için spor salonunuza sorun',
+    errors: {
+      required: 'Lütfen spor salonu tanımlayıcınızı girin',
+      invalid: 'Sadece küçük harfler, rakamlar ve tire kullanılabilir',
+      tooShort: 'Tanımlayıcı en az 2 karakter olmalıdır',
+      failed: 'Bağlantı kurulamadı. Lütfen tekrar deneyin.',
+    },
+  },
+
+  // Network
+  network: {
+    offline: 'Çevrimdışısınız',
+    offlineMessage: 'Bağlantı kurulduğunda değişiklikler senkronize edilecek',
+    backOnline: 'Tekrar çevrimiçi',
+    usingCachedData: 'Önbelleğe alınmış veriler gösteriliyor',
+  },
+
+  // Family / Profile Switching
+  family: {
+    title: 'Aile Üyeleri',
+    viewingAs: '{{name}} hesabı görüntüleniyor',
+    switchBack: 'Geri dön',
+    switchBackTo: 'Kendi hesabınıza geri dönün',
+    switchAccount: 'Hesap Değiştir',
+    tapToView: 'Hesabını görüntülemek için dokun',
+    view: 'Görüntüle',
+    switch: 'Değiştir',
+    switchError: 'Hesap değiştirilemedi',
+    switchBackError: 'Hesabınıza geri dönülemedi',
+  },
+
+  // Home/Dashboard Screen
+  home: {
+    welcomeBack: 'Tekrar hoş geldin!',
+    goodMorning: 'Günaydın!',
+    goodAfternoon: 'İyi günler!',
+    goodEvening: 'İyi akşamlar!',
+    membershipStatus: 'Üyelik Durumu',
+    activeMember: 'Aktif Üye',
+    classesLeft: 'Kalan Ders',
+    unlimited: 'Sınırsız',
+    nextBilling: 'Sonraki Fatura',
+    memberSince: 'Üyelik Başlangıcı',
+    classes: 'Dersler',
+    checkins: 'Girişler',
+    thisMonth: 'bu ay',
+    thisWeek: 'bu hafta',
+    lastSevenDays: 'Son 7 gün',
+    goalProgress: 'Hedef İlerlemesi',
+    monthly: 'Aylık',
+    weeklyActivity: 'Haftalık Aktivite',
+    pastThreeWeeks: 'Son 3 hafta',
+    onTrack: 'yolunda',
+    total: 'toplam',
+    streak: 'Seri',
+    currentStreak: 'Mevcut seri',
+    weeks: 'hafta',
+    week: 'hafta',
+    best: 'En iyi',
+    upcomingClasses: 'Yaklaşan Dersler',
+    unableToLoadClasses: 'Dersler yüklenemedi',
+    noUpcomingClasses: 'Planlanmış ders bulunmuyor',
+    childClasses: '{{name}} Dersleri',
+    childrenClasses: 'Çocuk Dersleri',
+  },
+
+  // Settings Screen
+  settings: {
+    title: 'Ayarlar',
+    profile: 'Profil',
+    currentPlan: 'Mevcut plan',
+    classesThisMonth: 'Bu ayki dersler',
+    attendance: 'Katılım',
+    lastYear: 'Son 12 ay',
+    tapToSeeDetails: 'Detayları görmek için çubuğa dokun',
+    day: 'gün',
+    days: 'gün',
+    weeksAgo: 'hafta önce',
+    now: 'Şimdi',
+    upgradeMembership: 'Üyeliği Yükselt',
+    unlockUnlimitedClasses: 'Sınırsız ders hakkı aç',
+    editProfile: 'Profili Düzenle',
+    updatePersonalInfo: 'Kişisel bilgilerinizi güncelleyin',
+    membership: 'Üyelik',
+    manageSubscription: 'Aboneliğinizi yönetin',
+    notifications: 'Bildirimler',
+    classRemindersAndUpdates: 'Ders hatırlatıcıları ve güncellemeler',
+    helpAndSupport: 'Yardım ve Destek',
+    getHelp: 'Hesabınızla ilgili yardım alın',
+    logout: 'Çıkış Yap',
+    signOut: 'Hesabınızdan çıkış yapın',
+    logoutConfirm: 'Çıkış yapmak istediğinizden emin misiniz?',
+    logoutError: 'Çıkış yapılamadı. Lütfen tekrar deneyin.',
+    version: 'Sürüm',
+    appVersion: 'Uygulama Sürümü',
+    buildNumber: 'Yapı Numarası',
+    privacy: 'Gizlilik',
+    privacyDescription: 'Bilgilerinizin nasıl paylaşıldığını kontrol edin',
+    language: 'Dil',
+    languageDescription: 'Uygulama dilini değiştirin',
+  },
+
+  // Privacy Settings
+  privacy: {
+    title: 'Gizlilik',
+  },
+
+  // Help Screen
+  help: {
+    contactSupport: 'Destek ile İletişim',
+    emailSupport: 'E-posta Desteği',
+    callSupport: 'Telefon Desteği',
+    clubQuestions: 'Kulüp Soruları',
+    appQuestions: 'Uygulama Soruları',
+    stillNeedHelp: 'Hâlâ yardıma mı ihtiyacınız var?',
+    stillNeedHelpDescription:
+      'Aradığınızı bulamıyor musunuz? Destek ekibimiz her türlü soru ve endişenizde size yardımcı olmak için burada.',
+    contactSupportTeam: 'Destek Ekibiyle İletişime Geç',
+  },
+
+  // Memberships Screen
+  memberships: {
+    title: 'Üyelik Planları',
+    chooseYourPlan: 'Planınızı seçin',
+    flexibleOptions: 'Fitness yolculuğunuz için esnek üyelik seçenekleri',
+    allPlansInclude: 'Tüm planlar son teknoloji tesislerimize erişim içerir',
+    selectPlan: '{{plan}} Planını Seç',
+    whatsIncluded: 'DAHİL OLANLAR',
+    perMonth: '/ay',
+    off: 'indirim',
+
+    // Plan names
+    basic: 'Temel',
+    monthlyPremium: 'Aylık Premium',
+    annualPremium: 'Yıllık Premium',
+
+    // Plan descriptions
+    basicDescription: 'Başlangıç için ideal',
+    monthlyDescription: 'Kararlı üyeler için en popüler',
+    annualDescription: 'Adanmış sporcular için en iyi değer',
+
+    // Features
+    gymFloorAccess: 'Spor salonu alanına erişim',
+    groupClasses: 'Ayda {{count}} grup dersi',
+    unlimitedGymAccess: 'Sınırsız spor salonu erişimi',
+    unlimitedGroupClasses: 'Sınırsız grup dersleri',
+    basicEquipment: 'Temel ekipman',
+    lockerAccess: 'Dolap erişimi',
+    premiumLocker: 'Premium dolap',
+    personalTrainingSession: 'Kişisel antrenman seansı',
+    personalTrainingSessions: '{{count}} kişisel antrenman seansı',
+    guestPasses: 'Misafir kartları ({{count}}/ay)',
+    allPremiumFeatures: 'Tüm Premium özellikler',
+    nutritionConsultation: 'Beslenme danışmanlığı',
+    freeMerchandise: 'Ücretsiz ürünler',
+    priorityClassBooking: 'Öncelikli ders rezervasyonu',
+  },
+
+  // Check-in Screen
+  checkin: {
+    title: 'QR Kodu Tara',
+    permissionRequired: 'Kamera İzni Gerekli',
+    grantPermission: 'İzin Ver',
+    permissionMessage: 'Giriş için QR kodları taramak için lütfen kamera erişimi verin',
+    requestingPermission: 'Kamera izni isteniyor...',
+    goBack: 'Geri Dön',
+    pointCameraAtQR: 'Kamerayı QR koduna doğrultun',
+    alignQRCode: 'QR kodunu çerçeve içine hizalayın',
+    checkingIn: 'Giriş yapılıyor...',
+    checkInSuccess: 'Giriş Başarılı!',
+    welcomeBack: 'Tekrar hoş geldin, {{name}}!',
+    checkInNumber: 'Bu ay {{count}}. giriş',
+    keepUpStreak: 'Serini sürdür!',
+
+    // Errors
+    invalidQRCode: 'Geçersiz QR kodu',
+    alreadyCheckedIn: 'Zaten giriş yaptınız',
+    membershipInactive: 'Üyeliğiniz aktif değil.\nLütfen resepsiyonla iletişime geçin.',
+    checkInFailed: 'Giriş başarısız',
+    networkError: 'Ağ hatası. Lütfen tekrar deneyin.',
+  },
+
+  // Login Screen
+  login: {
+    title: 'Giriş',
+    subtitle: 'Hesabınıza giriş yapın',
+    email: 'E-posta',
+    password: 'Şifre',
+    forgotPassword: 'Şifrenizi mi unuttunuz?',
+    login: 'Giriş Yap',
+    noAccount: 'Hesabınız yok mu?',
+    signUp: 'Kayıt ol',
+
+    // Validation
+    emailRequired: 'E-posta gerekli',
+    invalidEmail: 'Lütfen geçerli bir e-posta girin',
+    passwordRequired: 'Şifre gerekli',
+    passwordTooShort: 'Şifre en az 6 karakter olmalıdır',
+    loginFailed: 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.',
+  },
+
+  // Forgot Password Screen
+  forgotPassword: {
+    title: 'Şifre Sıfırla',
+    subtitle: 'Şifrenizi kurtarmak için e-posta adresinizi girin',
+    email: 'E-posta',
+    sendResetLink: 'Sıfırlama Linki Gönder',
+    successTitle: 'Şifre Sıfırlama Linki Gönderildi',
+    successMessage:
+      'E-posta adresinize bir şifre sıfırlama linki gönderdik. Lütfen gelen kutunuzu kontrol edin.',
+    errorTitle: 'Hata',
+    errorMessage: 'Şifre sıfırlama linki gönderilemedi. Lütfen tekrar deneyin.',
+  },
+
+  // Edit Profile Screen
+  editProfile: {
+    title: 'Profili Düzenle',
+    profilePictureHint: 'Profil resminizi güncellemek için spor salonunuzla iletişime geçin',
+    personalInformation: 'Kişisel Bilgiler',
+    firstName: 'Ad',
+    firstNameRequired: 'Ad *',
+    enterFirstName: 'Adınızı girin',
+    lastName: 'Soyad',
+    lastNameRequired: 'Soyad *',
+    enterLastName: 'Soyadınızı girin',
+    email: 'E-posta',
+    emailPlaceholder: 'E-posta adresi',
+    emailCannotChange: 'E-posta değiştirilemez. Gerekirse destek ile iletişime geçin.',
+    phone: 'Telefon',
+    enterPhone: 'Telefon numaranızı girin',
+    address: 'Adres',
+    streetAddress: 'Sokak Adresi',
+    enterStreetAddress: 'Sokak adresini girin',
+    city: 'Şehir',
+    enterCity: 'Şehir girin',
+    state: 'İl',
+    statePlaceholder: 'İl',
+    postalCode: 'Posta Kodu',
+    postalCodePlaceholder: 'Posta kodu',
+    country: 'Ülke',
+    enterCountry: 'Ülke girin',
+    emergencyContact: 'Acil Durum İletişimi',
+    emergencyContactHint: 'Acil durum iletişimleri spor salonu yöneticiniz tarafından yönetilir.',
+    name: 'Ad',
+    relationship: 'İlişki',
+    saving: 'Kaydediliyor...',
+    saveChanges: 'Değişiklikleri Kaydet',
+    cancel: 'İptal',
+    // Alerts
+    errorLoadingProfile: 'Profil yüklenemedi. Lütfen tekrar deneyin.',
+    errorLoadingProfileTitle: 'Hata',
+    validationError: 'Doğrulama Hatası',
+    firstLastNameRequired: 'Ad ve soyad gereklidir',
+    profileNotAvailable: 'Profil verileri mevcut değil',
+    errorUpdatingProfile: 'Profil güncellenemedi. Lütfen tekrar deneyin.',
+    errorUpdatingProfileTitle: 'Hata',
+    successTitle: 'Başarılı',
+    successMessage: 'Profil başarıyla güncellendi',
+  },
+
+  // Membership Screen
+  membership: {
+    title: 'Üyeliğim',
+    currentPlan: 'Mevcut Plan',
+    memberId: 'Üye Kimliği',
+    membershipId: 'Üyelik Kimliği',
+    members: 'Üyeler',
+    contractId: 'Sözleşme Kimliği',
+    contractDetails: 'Sözleşme Detayları',
+    startDate: 'Başlangıç Tarihi',
+    endDate: 'Bitiş Tarihi',
+    renewalDate: 'Yenileme Tarihi',
+    nextCancellationDate: 'Sonraki İptal Tarihi',
+    autoRenewal: 'Otomatik Yenileme',
+    enabled: 'Etkin',
+    disabled: 'Devre Dışı',
+    pricing: 'Fiyatlandırma',
+    annualFee: 'Yıllık Ücret',
+    monthlyFee: 'Aylık Ücret',
+    monthlyEquivalent: 'Aylık Eşdeğer',
+    billedAnnually: 'Yıllık faturalandırma',
+    billedMonthly: 'Aylık faturalandırma',
+    billedWeekly: 'Haftalık faturalandırma',
+    contractDuration: 'Sözleşme Süresi',
+    perMonth: '/ay',
+    planFeatures: 'Plan Özellikleri',
+    limit: 'Limit',
+    paymentMethod: 'Ödeme Yöntemi',
+    accountHolder: 'Hesap Sahibi',
+    policies: 'Üyelik Politikaları',
+    cancellationPolicy: 'İptal Politikası',
+    freezePolicy: 'Dondurma Politikası',
+    transferPolicy: 'Transfer Politikası',
+    downloadContract: 'Sözleşme PDF İndir',
+    cancelMembership: 'Üyeliği İptal Et',
+    noMembership: 'Üyelik bulunamadı',
+    supportMessage:
+      'Üyeliğinizle ilgili sorular için lütfen support@omoplata.com ile iletişime geçin',
+
+    // Download messages
+    contractPdfTitle: 'Sözleşme PDF',
+    contractDownloadMessage: 'Sözleşme şuradan indirilecek: {{url}}',
+    downloadError: 'Sözleşme PDF indirilemedi',
+
+    // Policy details
+    daysNoticeRequired: '{{count}} gün önceden bildirim gerekli',
+    upTo: 'En fazla',
+    daysPerYear: 'Yılda {{count}} gün',
+    defaultCancellationPolicy: 'İptal detayları için destek ile iletişime geçin',
+    defaultFreezePolicy: 'Talep üzerine dondurma mümkün',
+    defaultTransferPolicy: 'Üyelikler devredilemez',
+
+    // Status
+    new: 'Yeni',
+    onboardingStarted: 'Kayıt Başlatıldı',
+    active: 'Aktif',
+    paused: 'Duraklatıldı',
+    cancelled: 'İptal Edildi',
+    defaulted: 'Temerrüt',
+
+    // Status descriptions
+    newDescription: 'Üyelik oluşturuldu, kayıt bekleniyor',
+    onboardingStartedDescription: 'Kayıt devam ediyor',
+    activeDescription: 'Aktif üyelik',
+    pausedDescription: 'Üyelik geçici olarak duraklatıldı',
+    cancelledDescription: 'Üyelik iptal edildi',
+    defaultedDescription: 'Ödeme temerrüdü - lütfen destek ile iletişime geçin',
+
+    // Document requests
+    documentRequests: 'Belge Talepleri',
+    pendingDocuments: 'Bekleyen Belgeler',
+    documentRequired: 'Belge Gerekli',
+    uploadDocument: 'Belge Yükle',
+    uploading: 'Yükleniyor...',
+    uploadSuccess: 'Belge başarıyla yüklendi',
+    uploadError: 'Belge yüklenemedi',
+    selectFile: 'Dosya Seç',
+    takePhoto: 'Fotoğraf Çek',
+    chooseFromLibrary: 'Galeriden Seç',
+
+    // Document types
+    documentTypes: {
+      studentProof: 'Öğrenci Kimliği',
+      idCard: 'Kimlik Kartı',
+      passport: 'Pasaport',
+      proofOfAddress: 'Adres Belgesi',
+      medicalCertificate: 'Sağlık Raporu',
+      other: 'Diğer Belge',
+    },
+
+    // Cancellation
+    downloadFailed: 'İndirme Başarısız',
+    importantInformation: 'Önemli Bilgi',
+    cancellationWarning:
+      'Üyeliğinizi iptal etmek, tüm spor salonu tesislerine ve hizmetlerine erişiminizi sonlandıracaktır.',
+    cancellationReversible: 'İptal tarihi yürürlüğe girmeden önce bu kararı geri alabilirsiniz.',
+    planName: 'Plan',
+    amount: 'Tutar',
+    cancellationDetails: 'İptal Detayları',
+    effectiveCancellationDate: 'Geçerli İptal Tarihi',
+    membershipCancelledOn: 'Üyeliğiniz şu tarihte iptal edilecek: {{date}}',
+    earliestCancellationDate: 'En erken uygun tarih: {{date}}',
+    noticePeriod: 'Bildirim Süresi',
+    cancellationReason: 'İptal Nedeni',
+    cancellationReasonPlaceholder: 'İptal nedeninizi belirtin (isteğe bağlı)...',
+    cancellationReasonOptional: 'Bu, hizmetlerimizi geliştirmemize yardımcı olur',
+    cancelMyMembership: 'Üyeliğimi İptal Et',
+    keepMembership: 'Üyeliğimi Koru',
+    confirmCancellation: 'İptali Onayla',
+    confirmCancellationMessage:
+      'Üyeliğinizi {{date}} tarihinde iptal etmek istediğinizden emin misiniz?',
+    yesCancelMembership: 'Evet, İptal Et',
+    cancellationSuccess: 'Üyelik İptal Edildi',
+    cancellationError: 'Üyelik iptal edilemedi. Lütfen tekrar deneyin.',
+
+    // Revert cancellation
+    alreadyCancelled: 'Üyelik İptal Edildi',
+    membershipEndsOn: 'Üyeliğiniz {{date}} tarihinde sona erecek.',
+    changeYourMind: 'Fikrinizi mi değiştirdiniz?',
+    revertDescription:
+      'Üyeliğinize devam etmek istiyorsanız, yürürlüğe girmeden önce iptali geri alabilirsiniz.',
+    revertCancellation: 'İptali Geri Al',
+    confirmRevert: 'İptali Geri Al',
+    confirmRevertMessage: 'İptalinizi geri almak ve üyeliğinizi aktif tutmak ister misiniz?',
+    yesRevert: 'Evet, Geri Al',
+    revertSuccess: 'İptal Geri Alındı',
+    revertSuccessMessage: 'Üyeliğiniz tekrar aktif.',
+    revertError: 'İptal geri alınamadı. Lütfen tekrar deneyin.',
+  },
+
+  // Billing Screen
+  billing: {
+    title: 'Faturalama',
+    nextInvoice: 'Sonraki Fatura',
+    due: 'Vade',
+    viewDetails: 'Detayları Görüntüle',
+    recentInvoices: 'Son Faturalar',
+    paymentMethod: 'Ödeme Yöntemi',
+    sepaDirectDebit: 'SEPA Otomatik Ödeme',
+    edit: 'Düzenle',
+    loadMore: 'Daha Fazla Yükle',
+    errorTitle: 'Faturalar yüklenemedi',
+
+    // Invoice status
+    paid: 'Ödendi',
+    pending: 'Beklemede',
+    overdue: 'Vadesi Geçmiş',
+
+    // Invoice detail
+    invoiceDetails: 'Fatura Detayları',
+    invoiceNumber: 'Fatura Numarası',
+    issueDate: 'Düzenleme Tarihi',
+    dueDate: 'Vade Tarihi',
+    account: 'Hesap',
+    items: 'Kalemler',
+    subtotal: 'Ara Toplam',
+    tax: 'Vergi',
+    taxRate: '(%{{rate}})',
+    total: 'Toplam',
+    billingInformation: 'Fatura Bilgileri',
+    addressOnFile: 'Kayıtlı adres',
+    downloadPdf: 'PDF İndir',
+    invoiceNotFound: 'Fatura bulunamadı',
+    unableToLoadInvoice: 'Fatura yüklenemedi',
+    shareFailed: 'Paylaşım Başarısız',
+    shareFailedMessage: 'Fatura paylaşılamadı. Lütfen tekrar deneyin.',
+    downloadFailed: 'İndirme Başarısız',
+    downloadFailedMessage: 'Fatura indirilemedi. Lütfen tekrar deneyin.',
+    supportContact: 'Bu faturayla ilgili sorular için lütfen {{email}} ile iletişime geçin',
+  },
+
+  // SEPA Form
+  sepaForm: {
+    title: 'Otomatik Ödeme Kur',
+    subtitle: 'Otomatik ödemeleri etkinleştirmek için banka bilgilerinizi ekleyin',
+    accountHolder: 'Hesap Sahibi',
+    accountHolderPlaceholder: 'Hesapta görünen tam ad',
+    iban: 'IBAN',
+    ibanPlaceholder: 'DE89 3704 0044 0532 0130 00',
+    bic: 'BIC/SWIFT (isteğe bağlı)',
+    bicPlaceholder: 'COBADEFFXXX',
+    mandateText:
+      'IBAN bilgilerinizi sağlayarak, bu talimatlara uygun olarak hesabınızdan ödeme çekmek için bankanıza talimat göndermemize izin veriyorsunuz.',
+    submitButton: 'Otomatik Ödeme Kur',
+    submitting: 'Kuruluyor...',
+    successMessage: 'Otomatik ödeme başarıyla kuruldu',
+    errorMessage: 'Otomatik ödeme kurulamadı. Lütfen tekrar deneyin.',
+    invalidIban: 'Lütfen geçerli bir IBAN girin',
+    invalidAccountHolder: 'Lütfen hesap sahibi adını girin',
+  },
+
+  // Classes Screen
+  classes: {
+    title: 'Tüm Dersler',
+    filters: 'Filtreler',
+    clearFilters: 'Tümünü Temizle',
+    category: 'Kategori',
+    level: 'Seviye',
+    instructor: 'Eğitmen',
+    location: 'Konum',
+    showingResults: '{{total}} dersten {{count}} tanesi gösteriliyor',
+    loadMore: 'Daha Fazla Ders Yükle',
+    noClassesFound: 'Ders Bulunamadı',
+    tryDifferentFilters: 'Filtrelerinizi ayarlamayı deneyin',
+    errorTitle: 'Dersler yüklenemedi',
+  },
+
+  // Class Card
+  classCard: {
+    today: 'Bugün',
+    tomorrow: 'Yarın',
+    confirmed: 'Onaylandı',
+    declined: 'Reddedildi',
+    decline: 'Reddet',
+    confirm: 'Onayla',
+    cancelAttendance: 'Katılımı İptal Et',
+    confirmAttendance: 'Katılımı Onayla',
+    attendanceFailed: 'Katılım güncellenemedi. Lütfen tekrar deneyin.',
+    enrolled: '{{count}} kayıtlı',
+    enrolledWithMax: '{{enrolled}}/{{max}} kayıtlı',
+  },
+
+  // Calendar Screen
+  calendar: {
+    title: 'Ders Takvimi',
+    legend: 'Ders Kategorileri',
+    noClasses: 'Bu gün için planlanmış ders yok',
+    errorTitle: 'Dersler yüklenemedi',
+    today: 'Bugün',
+    scheduled: 'planlandı',
+    classCount: {
+      one: 'ders',
+      other: 'ders',
+    },
+  },
+
+  // Frequencies / Durations (ISO 8601)
+  frequency: {
+    // Recurring intervals (for charge_interval)
+    recurring: {
+      P1D: 'günlük',
+      P1W: 'haftalık',
+      P2W: '2 haftada bir',
+      P1M: 'aylık',
+      P3M: '3 ayda bir',
+      P6M: '6 ayda bir',
+      P12M: '12 ayda bir',
+      P18M: '18 ayda bir',
+      P24M: '24 ayda bir',
+      P1Y: 'yıllık',
+    },
+    // One-time durations (for contract_duration)
+    once: {
+      P1W: '1 hafta',
+      P1M: '1 ay',
+      P2M: '2 ay',
+      P3M: '3 ay',
+      P6M: '6 ay',
+      P12M: '12 ay',
+      P18M: '18 ay',
+      P24M: '24 ay',
+      P1Y: '1 yıl',
+      P2Y: '2 yıl',
+    },
+  },
+
+  // Graduation / Belt Progress
+  graduation: {
+    title: 'Kuşak İlerlemesi',
+    childTitle: '{{name}} Kuşakları',
+    currentBelt: 'Mevcut Kuşak',
+    nextBelt: 'Sonraki Kuşak',
+    classesProgress: 'Ders İlerlemesi',
+    classesRemaining: 'ders kaldı',
+    stripes: 'şerit',
+    nextStripe: 'Sonraki Şerit',
+    lastPromotion: 'Son Terfi',
+    belts: {
+      // Adult belts - Yetişkin kuşakları
+      white: 'Beyaz Kuşak',
+      blue: 'Mavi Kuşak',
+      purple: 'Mor Kuşak',
+      brown: 'Kahverengi Kuşak',
+      black: 'Siyah Kuşak',
+      // Kids belts - solid - Çocuk kuşakları - düz
+      grey: 'Gri Kuşak',
+      yellow: 'Sarı Kuşak',
+      orange: 'Turuncu Kuşak',
+      green: 'Yeşil Kuşak',
+      // Kids belts - two-color - Çocuk kuşakları - iki renkli
+      'white-grey': 'Beyaz-Gri Kuşak',
+      'grey-white': 'Gri-Beyaz Kuşak',
+      'grey-black': 'Gri-Siyah Kuşak',
+      'yellow-white': 'Sarı-Beyaz Kuşak',
+      'yellow-black': 'Sarı-Siyah Kuşak',
+      'orange-white': 'Turuncu-Beyaz Kuşak',
+      'orange-black': 'Turuncu-Siyah Kuşak',
+      'green-white': 'Yeşil-Beyaz Kuşak',
+      'green-black': 'Yeşil-Siyah Kuşak',
+      // Coral & Red belts - Mercan ve Kırmızı kuşaklar
+      'red-black': 'Mercan Kuşak (Kırmızı/Siyah)',
+      'red-white': 'Mercan Kuşak (Kırmızı/Beyaz)',
+      red: 'Kırmızı Kuşak',
+    },
+  },
+
+  // Leaderboard
+  leaderboard: {
+    title: 'Sıralama',
+    rankings: 'Sıralamalar',
+    you: 'Sen',
+    points: 'puan',
+    classes: 'ders',
+    weeks: 'hafta',
+    outOf: '{{total}} üyeden',
+    topPercentile: 'Üyelerin ilk %{{percent}}lik dilimindesin!',
+    noResults: 'Sonuç Yok',
+    tryDifferentFilters: 'Daha fazla sonuç görmek için filtrelerinizi ayarlayın',
+    anonymous: 'Üye',
+    timePeriods: {
+      week: 'Hafta',
+      month: 'Ay',
+      year: 'Yıl',
+    },
+    filters: {
+      title: 'Filtreler',
+      button: 'Filtreler',
+      apply: 'Filtreleri Uygula',
+      timePeriod: 'Zaman Dilimi',
+      discipline: 'Disiplin',
+      demographic: 'Yaş Grubu',
+      sortBy: 'Sırala',
+    },
+  },
+
+  // Notifications
+  notifications: {
+    title: 'Bildirimler',
+    all: 'Tümü',
+    classes: 'Dersler',
+    achievements: 'Başarılar',
+    reminders: 'Hatırlatıcılar',
+    billing: 'Faturalama',
+    noNotifications: 'Bildirim yok',
+    noNotificationsMessage: 'Her şey güncel! Güncellemeler için daha sonra tekrar kontrol edin.',
+    unreadCount: '{{count}} okunmamış',
+    markAllRead: 'Tümünü okundu işaretle',
+  },
+
+  // Club Not Found
+  clubNotFound: {
+    title: 'Kulüp Bulunamadı',
+    message:
+      'Bu kulübü bulamadık. Kulüp kaldırılmış olabilir veya kullandığınız bağlantı yanlış olabilir.',
+    suggestions: 'Deneyebilecekleriniz:',
+    checkUrl: 'Kulüp URL veya kodunun doğru olduğunu kontrol edin',
+    contactClub: 'Detaylarını doğrulamak için kulübünüzle doğrudan iletişime geçin',
+    tryLater: 'Geçici bir sorun olması durumunda daha sonra tekrar deneyin',
+    selectDifferentClub: 'Farklı Bir Kulüp Seç',
+  },
+
+  // Date/Time
+  date: {
+    monday: 'Pazartesi',
+    tuesday: 'Salı',
+    wednesday: 'Çarşamba',
+    thursday: 'Perşembe',
+    friday: 'Cuma',
+    saturday: 'Cumartesi',
+    sunday: 'Pazar',
+
+    january: 'Ocak',
+    february: 'Şubat',
+    march: 'Mart',
+    april: 'Nisan',
+    may: 'Mayıs',
+    june: 'Haziran',
+    july: 'Temmuz',
+    august: 'Ağustos',
+    september: 'Eylül',
+    october: 'Ekim',
+    november: 'Kasım',
+    december: 'Aralık',
+  },
+
+  // Language Selection
+  language: {
+    title: 'Dil Seçin',
+    current: 'Mevcut dil',
+    changeLanguage: 'Dili Değiştir',
+    languages: {
+      en: 'English',
+      de: 'Deutsch',
+      'pt-BR': 'Português (Brasil)',
+      tr: 'Türkçe',
+    },
+  },
+};

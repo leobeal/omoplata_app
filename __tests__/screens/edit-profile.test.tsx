@@ -22,6 +22,62 @@ jest.mock('@/contexts/ScrollToTopContext', () => ({
   }),
 }));
 
+const mockTranslate = (key: string) => {
+  const translations: Record<string, string> = {
+    'editProfile.title': 'Edit Profile',
+    'editProfile.personalInformation': 'Personal Information',
+    'editProfile.firstNameRequired': 'First Name *',
+    'editProfile.lastNameRequired': 'Last Name *',
+    'editProfile.enterFirstName': 'Enter first name',
+    'editProfile.enterLastName': 'Enter last name',
+    'editProfile.email': 'Email',
+    'editProfile.emailPlaceholder': 'Email',
+    'editProfile.emailCannotChange': 'Email cannot be changed',
+    'editProfile.phone': 'Phone',
+    'editProfile.enterPhone': 'Enter phone number',
+    'editProfile.address': 'Address',
+    'editProfile.streetAddress': 'Street Address',
+    'editProfile.enterStreetAddress': 'Enter street address',
+    'editProfile.city': 'City',
+    'editProfile.enterCity': 'Enter city',
+    'editProfile.state': 'State',
+    'editProfile.statePlaceholder': 'State',
+    'editProfile.postalCode': 'Postal Code',
+    'editProfile.postalCodePlaceholder': 'Postal code',
+    'editProfile.country': 'Country',
+    'editProfile.enterCountry': 'Enter country',
+    'editProfile.emergencyContact': 'Emergency Contact',
+    'editProfile.emergencyContactHint': 'Emergency contact information',
+    'editProfile.name': 'Name',
+    'editProfile.relationship': 'Relationship',
+    'editProfile.saveChanges': 'Save Changes',
+    'editProfile.cancel': 'Cancel',
+    'editProfile.saving': 'Saving...',
+    'editProfile.profilePictureHint': 'Tap to change profile picture',
+    // Alert messages - these are what the tests expect
+    'editProfile.validationError': 'Validation Error',
+    'editProfile.firstLastNameRequired': 'First name and last name are required',
+    'editProfile.successTitle': 'Success',
+    'editProfile.successMessage': 'Profile updated successfully',
+    'editProfile.errorUpdatingProfileTitle': 'Error',
+    'editProfile.errorUpdatingProfile': 'Failed to update profile',
+    'editProfile.errorLoadingProfileTitle': 'Error',
+    'editProfile.errorLoadingProfile': 'Failed to load profile',
+    'editProfile.profileNotAvailable': 'Profile not available',
+  };
+  return translations[key] || key;
+};
+
+jest.mock('@/contexts/LocalizationContext', () => ({
+  useT: () => mockTranslate,
+  useTranslation: () => ({
+    t: mockTranslate,
+    locale: 'en',
+    setLocale: jest.fn(),
+    isLoading: false,
+  }),
+}));
+
 // Mock the profile API
 const mockProfile = {
   id: 'user-001',

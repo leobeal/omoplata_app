@@ -3,6 +3,8 @@
 
 import { API_CONFIG } from './config';
 
+import { getCurrentLocale } from '@/contexts/LocalizationContext';
+
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 interface RequestOptions {
@@ -43,6 +45,10 @@ export async function apiRequest<T>(
     ...API_CONFIG.headers,
     ...headers,
   };
+
+  // Add language header for all requests
+  const locale = getCurrentLocale();
+  requestHeaders['Accept-Language'] = locale;
 
   if (authToken) {
     requestHeaders['Authorization'] = `Bearer ${authToken}`;

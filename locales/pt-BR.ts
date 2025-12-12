@@ -149,6 +149,8 @@ export default {
     buildNumber: 'Número da Build',
     privacy: 'Privacidade',
     privacyDescription: 'Controle como suas informações são compartilhadas',
+    language: 'Idioma',
+    languageDescription: 'Alterar idioma do aplicativo',
   },
 
   // Configurações de Privacidade
@@ -234,6 +236,7 @@ export default {
   // Tela de Login
   login: {
     title: 'Entrar',
+    subtitle: 'Entre na sua conta',
     email: 'E-mail',
     password: 'Senha',
     forgotPassword: 'Esqueceu a senha?',
@@ -247,6 +250,66 @@ export default {
     passwordRequired: 'Senha é obrigatória',
     passwordTooShort: 'A senha deve ter pelo menos 6 caracteres',
     loginFailed: 'Falha no login. Por favor, verifique suas credenciais.',
+  },
+
+  // Tela de Esqueci a Senha
+  forgotPassword: {
+    title: 'Redefinir Senha',
+    subtitle: 'Digite seu e-mail para recuperar a senha',
+    email: 'E-mail',
+    sendResetLink: 'Enviar Link de Redefinição',
+    successTitle: 'Link de Redefinição Enviado',
+    successMessage:
+      'Enviamos um link de redefinição de senha para seu e-mail. Por favor, verifique sua caixa de entrada.',
+    errorTitle: 'Erro',
+    errorMessage: 'Falha ao enviar link de redefinição. Por favor, tente novamente.',
+  },
+
+  // Tela de Editar Perfil
+  editProfile: {
+    title: 'Editar Perfil',
+    profilePictureHint: 'Entre em contato com sua academia para atualizar sua foto de perfil',
+    personalInformation: 'Informações Pessoais',
+    firstName: 'Nome',
+    firstNameRequired: 'Nome *',
+    enterFirstName: 'Digite o nome',
+    lastName: 'Sobrenome',
+    lastNameRequired: 'Sobrenome *',
+    enterLastName: 'Digite o sobrenome',
+    email: 'E-mail',
+    emailPlaceholder: 'Endereço de e-mail',
+    emailCannotChange:
+      'O e-mail não pode ser alterado. Entre em contato com o suporte se necessário.',
+    phone: 'Telefone',
+    enterPhone: 'Digite o número de telefone',
+    address: 'Endereço',
+    streetAddress: 'Rua',
+    enterStreetAddress: 'Digite o endereço',
+    city: 'Cidade',
+    enterCity: 'Digite a cidade',
+    state: 'Estado',
+    statePlaceholder: 'Estado',
+    postalCode: 'CEP',
+    postalCodePlaceholder: 'CEP',
+    country: 'País',
+    enterCountry: 'Digite o país',
+    emergencyContact: 'Contato de Emergência',
+    emergencyContactHint: 'Contatos de emergência são gerenciados pelo administrador da academia.',
+    name: 'Nome',
+    relationship: 'Relacionamento',
+    saving: 'Salvando...',
+    saveChanges: 'Salvar Alterações',
+    cancel: 'Cancelar',
+    // Alertas
+    errorLoadingProfile: 'Falha ao carregar perfil. Por favor, tente novamente.',
+    errorLoadingProfileTitle: 'Erro',
+    validationError: 'Erro de Validação',
+    firstLastNameRequired: 'Nome e sobrenome são obrigatórios',
+    profileNotAvailable: 'Dados do perfil não disponíveis',
+    errorUpdatingProfile: 'Falha ao atualizar perfil. Por favor, tente novamente.',
+    errorUpdatingProfileTitle: 'Erro',
+    successTitle: 'Sucesso',
+    successMessage: 'Perfil atualizado com sucesso',
   },
 
   // Tela de Assinatura
@@ -545,6 +608,11 @@ export default {
       demographic: 'Faixa Etária',
       sortBy: 'Ordenar por',
     },
+    timePeriods: {
+      week: 'Semana',
+      month: 'Mês',
+      year: 'Ano',
+    },
   },
 
   // Notificações
@@ -625,5 +693,18 @@ export default {
     october: 'Outubro',
     november: 'Novembro',
     december: 'Dezembro',
+  },
+
+  // Seleção de Idioma
+  language: {
+    title: 'Selecionar Idioma',
+    current: 'Idioma atual',
+    changeLanguage: 'Alterar Idioma',
+    languages: {
+      en: 'English',
+      de: 'Deutsch',
+      'pt-BR': 'Português (Brasil)',
+      tr: 'Türkçe',
+    },
   },
 };

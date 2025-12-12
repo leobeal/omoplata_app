@@ -28,11 +28,11 @@ import Section from '@/components/Section';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
-import { useT } from '@/contexts/LocalizationContext';
+import { useTranslation } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function LeaderboardScreen() {
-  const t = useT();
+  const { t } = useTranslation();
   const colors = useThemeColors();
   const { user } = useAuth();
   const filterSheetRef = useRef<FilterBottomSheetRef>(null);
@@ -55,6 +55,15 @@ export default function LeaderboardScreen() {
     const offsetY = event.nativeEvent.contentOffset.y;
     setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
   }, []);
+
+  // Translate time period filter options
+  const translatedTimePeriods = useMemo(() => {
+    if (!filters?.timePeriods) return [];
+    return filters.timePeriods.map((option) => ({
+      ...option,
+      name: t(`leaderboard.timePeriods.${option.id}`) || option.name,
+    }));
+  }, [filters?.timePeriods, t]);
 
   // Count active secondary filters (non-default values)
   const activeFilterCount = useMemo(() => {
@@ -165,7 +174,7 @@ export default function LeaderboardScreen() {
           <View className="mb-4 flex-row items-center justify-between">
             <View style={{ flex: 0.85 }}>
               <FilterTabs
-                options={filters.timePeriods}
+                options={translatedTimePeriods}
                 selectedId={selectedTimePeriod}
                 onSelect={setSelectedTimePeriod}
               />
@@ -221,7 +230,7 @@ export default function LeaderboardScreen() {
 }
 
 const EmptyState = memo(() => {
-  const t = useT();
+  const { t } = useTranslation();
   const colors = useThemeColors();
 
   return (

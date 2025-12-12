@@ -12,6 +12,7 @@ import Icon from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
 import Input from '@/components/forms/Input';
 import { useAuth } from '@/contexts/AuthContext';
+import { useT } from '@/contexts/LocalizationContext';
 import { useTenant } from '@/contexts/TenantContext';
 import { getCachedImage } from '@/utils/image-cache';
 
@@ -22,6 +23,7 @@ export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const { login } = useAuth();
   const { tenant, isTenantRequired } = useTenant();
+  const t = useT();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -60,10 +62,10 @@ export default function LoginScreen() {
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) {
-      setEmailError('Email is required');
+      setEmailError(t('login.emailRequired'));
       return false;
     } else if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email');
+      setEmailError(t('login.invalidEmail'));
       return false;
     }
     setEmailError('');
@@ -72,10 +74,10 @@ export default function LoginScreen() {
 
   const validatePassword = (password: string) => {
     if (!password) {
-      setPasswordError('Password is required');
+      setPasswordError(t('login.passwordRequired'));
       return false;
     } else if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
+      setPasswordError(t('login.passwordTooShort'));
       return false;
     }
     setPasswordError('');
@@ -104,11 +106,11 @@ export default function LoginScreen() {
           // This prevents race conditions where router.replace runs before
           // the auth state has fully propagated through React context
         } else {
-          setGeneralError(result.error || 'Login failed. Please try again.');
+          setGeneralError(result.error || t('login.loginFailed'));
           setIsLoading(false);
         }
       } catch {
-        setGeneralError('An unexpected error occurred. Please try again.');
+        setGeneralError(t('login.loginFailed'));
         setIsLoading(false);
       }
       // Note: Don't setIsLoading(false) on success - keep showing loading
@@ -153,8 +155,8 @@ export default function LoginScreen() {
             <AnimatedView duration={500} delay={200} animation="slideInBottom" className="p-4">
               <View className="rounded-3xl border border-border bg-background p-6">
                 <View className="mb-6 items-center justify-center">
-                  <ThemedText className="font-outfit-bold text-3xl">Login</ThemedText>
-                  <ThemedText className="text-sm opacity-60">Sign in to your account</ThemedText>
+                  <ThemedText className="font-outfit-bold text-3xl">{t('login.title')}</ThemedText>
+                  <ThemedText className="text-sm opacity-60">{t('login.subtitle')}</ThemedText>
                 </View>
 
                 {generalError ? (
@@ -164,7 +166,7 @@ export default function LoginScreen() {
                 ) : null}
 
                 <Input
-                  label="Email"
+                  label={t('login.email')}
                   value={email}
                   onChangeText={(text) => {
                     setEmail(text);
@@ -178,7 +180,7 @@ export default function LoginScreen() {
                 />
 
                 <Input
-                  label="Password"
+                  label={t('login.password')}
                   value={password}
                   onChangeText={(text) => {
                     setPassword(text);
@@ -191,7 +193,7 @@ export default function LoginScreen() {
                 />
 
                 <Button
-                  title="Login"
+                  title={t('login.login')}
                   onPress={handleLogin}
                   loading={isLoading}
                   size="large"
@@ -201,7 +203,7 @@ export default function LoginScreen() {
                 <Link
                   className="mb-4 text-center text-sm text-text underline"
                   href="/screens/forgot-password">
-                  Forgot Password?
+                  {t('login.forgotPassword')}
                 </Link>
               </View>
             </AnimatedView>

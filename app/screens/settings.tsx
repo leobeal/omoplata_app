@@ -13,6 +13,7 @@ import {
 import { AttendanceGraph } from '@/components/AttendanceGraph';
 import Avatar from '@/components/Avatar';
 import Header from '@/components/Header';
+import LanguageSelector from '@/components/LanguageSelector';
 import LargeTitle from '@/components/LargeTitle';
 import ListLink from '@/components/ListLink';
 import Section from '@/components/Section';
@@ -21,11 +22,12 @@ import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/contexts/DashboardReadyContext';
-import { useT } from '@/contexts/LocalizationContext';
+import { useTranslation } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
+import { LANGUAGE_OPTIONS } from '@/locales';
 
 export default function SettingsScreen() {
-  const t = useT();
+  const { t, locale } = useTranslation();
   const colors = useThemeColors();
   const {
     logout,
@@ -40,6 +42,10 @@ export default function SettingsScreen() {
   const { membership } = useAppData();
   const [refreshing, setRefreshing] = useState(false);
   const [switchingChildId, setSwitchingChildId] = useState<string | null>(null);
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+
+  // Get current language display info
+  const currentLanguage = LANGUAGE_OPTIONS.find((l) => l.code === locale);
 
   // Scroll state for collapsible title
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
@@ -263,6 +269,18 @@ export default function SettingsScreen() {
           <ListLink
             className="px-5"
             hasBorder
+            title={t('settings.language')}
+            description={
+              currentLanguage
+                ? `${currentLanguage.flag} ${currentLanguage.nativeName}`
+                : t('settings.languageDescription')
+            }
+            icon="Globe"
+            onPress={() => setShowLanguageSelector(true)}
+          />
+          <ListLink
+            className="px-5"
+            hasBorder
             title={t('settings.helpAndSupport')}
             description={t('settings.getHelp')}
             icon="HelpCircle"
@@ -297,6 +315,12 @@ export default function SettingsScreen() {
           </View>
         </Section>
       </ThemedScroller>
+
+      {/* Language Selector Modal */}
+      <LanguageSelector
+        visible={showLanguageSelector}
+        onClose={() => setShowLanguageSelector(false)}
+      />
     </>
   );
 }
