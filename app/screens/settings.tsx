@@ -1,3 +1,4 @@
+import * as StoreReview from 'expo-store-review';
 import React, { useCallback, useState } from 'react';
 import {
   View,
@@ -9,7 +10,6 @@ import {
   NativeSyntheticEvent,
 } from 'react-native';
 
-import { AttendanceGraph } from '@/components/AttendanceGraph';
 import Avatar from '@/components/Avatar';
 import Header from '@/components/Header';
 import LanguageSelector from '@/components/LanguageSelector';
@@ -92,6 +92,12 @@ export default function SettingsScreen() {
     }
   };
 
+  const handleRateApp = async () => {
+    if (await StoreReview.hasAction()) {
+      await StoreReview.requestReview();
+    }
+  };
+
   const handleSwitchToChild = async (childId: string) => {
     setSwitchingChildId(childId);
     try {
@@ -159,11 +165,6 @@ export default function SettingsScreen() {
               </View>
             </View>
           )}
-        </View>
-
-        {/* Attendance Graph */}
-        <View className="mt-4">
-          <AttendanceGraph title={t('settings.attendance')} subtitle={t('settings.lastYear')} />
         </View>
 
         {/* Family Section - Show if parent has children */}
@@ -276,6 +277,14 @@ export default function SettingsScreen() {
             }
             icon="Globe"
             onPress={() => setShowLanguageSelector(true)}
+          />
+          <ListLink
+            className="px-5"
+            hasBorder
+            title={t('settings.rateApp')}
+            description={t('settings.rateAppDescription')}
+            icon="Star"
+            onPress={handleRateApp}
           />
           <ListLink
             className="px-5"

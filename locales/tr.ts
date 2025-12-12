@@ -154,11 +154,18 @@ export default {
     privacyDescription: 'Bilgilerinizin nasıl paylaşıldığını kontrol edin',
     language: 'Dil',
     languageDescription: 'Uygulama dilini değiştirin',
+    rateApp: 'Uygulamayı Değerlendir',
+    rateAppDescription: 'Uygulamayı beğendiniz mi? Bir değerlendirme bırakın!',
   },
 
   // Privacy Settings
   privacy: {
     title: 'Gizlilik',
+    attendancePublic: 'Herkese Açık Katılım',
+    attendancePublicDescription: 'Diğer üyelerin derslere katılımınızı görmesine izin verin',
+    showInLeaderboard: 'Liderlik Tablosunda Göster',
+    showInLeaderboardDescription:
+      'Adınızı ve istatistiklerinizi kulüp liderlik tablosunda gösterin',
   },
 
   // Help Screen

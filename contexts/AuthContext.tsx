@@ -153,6 +153,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
       // Prepare user data for storage (API already returns camelCase)
       const userToStore: StoredUser = {
         id: userData.id,
+        prefixedId: userData.prefixedId,
         email: userData.email,
         firstName: userData.firstName,
         lastName: userData.lastName,
@@ -324,6 +325,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
       // Prepare child user data (children are always members)
       const childUser: StoredUser = {
         id: result.user.id,
+        prefixedId: result.user.prefixedId,
         email: result.user.email,
         firstName: result.user.firstName,
         lastName: result.user.lastName,

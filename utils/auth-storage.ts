@@ -11,6 +11,7 @@ export type UserRole = 'member' | 'responsible';
 
 export interface StoredUser {
   id: string;
+  prefixedId: string;
   email: string;
   firstName: string;
   lastName: string;

@@ -153,11 +153,17 @@ export default {
     privacyDescription: 'Control how your information is shared',
     language: 'Language',
     languageDescription: 'Change app language',
+    rateApp: 'Rate App',
+    rateAppDescription: 'Love the app? Leave us a review!',
   },
 
   // Privacy Settings
   privacy: {
     title: 'Privacy',
+    attendancePublic: 'Public Attendance',
+    attendancePublicDescription: 'Allow other members to see when you attend classes',
+    showInLeaderboard: 'Show in Leaderboard',
+    showInLeaderboardDescription: 'Display your name and stats on the club leaderboard',
   },
 
   // Help Screen

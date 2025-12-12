@@ -153,11 +153,19 @@ export default {
     privacyDescription: 'Kontrolliere, wie deine Informationen geteilt werden',
     language: 'Sprache',
     languageDescription: 'App-Sprache ändern',
+    rateApp: 'App bewerten',
+    rateAppDescription: 'Gefällt dir die App? Hinterlasse eine Bewertung!',
   },
 
   // Datenschutz-Einstellungen
   privacy: {
     title: 'Datenschutz',
+    attendancePublic: 'Öffentliche Anwesenheit',
+    attendancePublicDescription:
+      'Anderen Mitgliedern erlauben zu sehen, wann du an Kursen teilnimmst',
+    showInLeaderboard: 'In Rangliste anzeigen',
+    showInLeaderboardDescription:
+      'Deinen Namen und deine Statistiken in der Club-Rangliste anzeigen',
   },
 
   // Hilfe-Bildschirm

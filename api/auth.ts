@@ -52,6 +52,7 @@ export interface RegisterRequest {
 // Note: API returns snake_case, which is transformed to camelCase
 export interface User {
   id: string;
+  prefixedId: string;
   email: string;
   firstName: string;
   lastName: string;

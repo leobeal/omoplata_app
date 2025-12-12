@@ -152,11 +152,18 @@ export default {
     privacyDescription: 'Controle como suas informações são compartilhadas',
     language: 'Idioma',
     languageDescription: 'Alterar idioma do aplicativo',
+    rateApp: 'Avaliar App',
+    rateAppDescription: 'Gostou do app? Deixe uma avaliação!',
   },
 
   // Configurações de Privacidade
   privacy: {
     title: 'Privacidade',
+    attendancePublic: 'Presença Pública',
+    attendancePublicDescription:
+      'Permitir que outros membros vejam quando você participa das aulas',
+    showInLeaderboard: 'Exibir no Ranking',
+    showInLeaderboardDescription: 'Mostrar seu nome e estatísticas no ranking da academia',
   },
 
   // Tela de Ajuda
