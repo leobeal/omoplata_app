@@ -1,0 +1,22 @@
+{
+  "settings": [
+    {
+      "id": "show_on_leaderboard",
+      "title": "Show on Leaderboard",
+      "description": "Allow your name and rank to appear on the public leaderboard",
+      "enabled": true
+    },
+    {
+      "id": "show_profile_picture",
+      "title": "Show Profile Picture",
+      "description": "Display your profile picture to other members in rankings and classes",
+      "enabled": true
+    },
+    {
+      "id": "public_profile",
+      "title": "Public Profile",
+      "description": "Allow other members to view your profile, including your training history and achievements",
+      "enabled": false
+    }
+  ]
+}

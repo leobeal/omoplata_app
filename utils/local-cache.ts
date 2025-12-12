@@ -22,6 +22,7 @@ export const CACHE_FALLBACK_TIMEOUT = 4000; // 4 seconds
 export const CACHE_KEYS = {
   APP_CONFIG: '@omoplata/cache/app_config',
   CLASSES: '@omoplata/cache/classes',
+  GRADUATIONS: '@omoplata/cache/graduations',
   INVOICES: '@omoplata/cache/invoices',
   MEMBERSHIP: '@omoplata/cache/membership',
   PROFILE: '@omoplata/cache/profile',
@@ -132,6 +133,14 @@ export async function clearAllCache(): Promise<void> {
   } catch (error) {
     console.error('[Cache] Error clearing cache:', error);
   }
+}
+
+/**
+ * Clear membership cache specifically
+ * Call this when membership data needs to be refreshed (e.g., after cancellation)
+ */
+export async function clearMembershipCache(): Promise<void> {
+  await removeFromCache(CACHE_KEYS.MEMBERSHIP);
 }
 
 /**

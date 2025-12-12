@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
-import { View, Alert, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Constants from 'expo-constants';
+import React, { useCallback, useState } from 'react';
+import {
+  View,
+  Alert,
+  RefreshControl,
+  TouchableOpacity,
+  ActivityIndicator,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 
 import { AttendanceGraph } from '@/components/AttendanceGraph';
 import Avatar from '@/components/Avatar';
 import Header from '@/components/Header';
+import LargeTitle from '@/components/LargeTitle';
 import ListLink from '@/components/ListLink';
 import Section from '@/components/Section';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -30,6 +40,15 @@ export default function SettingsScreen() {
   const { membership } = useAppData();
   const [refreshing, setRefreshing] = useState(false);
   const [switchingChildId, setSwitchingChildId] = useState<string | null>(null);
+
+  // Scroll state for collapsible title
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
+  const LARGE_TITLE_HEIGHT = 44;
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
+  }, []);
 
   // Get user display name
   const userName = user ? `${user.firstName} ${user.lastName}`.trim() : '';
@@ -89,9 +108,16 @@ export default function SettingsScreen() {
 
   return (
     <>
-      <Header title={t('settings.title')} rightComponents={[<ThemeToggle />]} />
+      <Header
+        title={t('settings.title')}
+        showTitle={showHeaderTitle}
+        showBackButton
+        rightComponents={[<ThemeToggle />]}
+      />
       <ThemedScroller
-        className="px-6 pt-4"
+        className="px-6"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -101,6 +127,7 @@ export default function SettingsScreen() {
             progressBackgroundColor={colors.bg}
           />
         }>
+        <LargeTitle title={t('settings.title')} className="pt-2" />
         <View className="mb-4 w-full flex-row rounded-2xl bg-secondary pb-10 pt-10">
           <View className="w-1/2 flex-col items-center">
             <Avatar name={userName} size="xl" src={user?.profilePicture} />
@@ -215,7 +242,7 @@ export default function SettingsScreen() {
             title={t('settings.membership')}
             description={t('settings.manageSubscription')}
             icon="CreditCard"
-            href="/membership"
+            href="/screens/membership"
           />
           <ListLink
             className="px-5"
@@ -224,6 +251,14 @@ export default function SettingsScreen() {
             description={t('settings.classRemindersAndUpdates')}
             icon="Bell"
             href="/screens/notifications"
+          />
+          <ListLink
+            className="px-5"
+            hasBorder
+            title={t('settings.privacy')}
+            description={t('settings.privacyDescription')}
+            icon="Shield"
+            href="/screens/privacy"
           />
           <ListLink
             className="px-5"
@@ -241,6 +276,26 @@ export default function SettingsScreen() {
             onPress={handleLogout}
           />
         </View>
+
+        {/* Version Info */}
+        <Section title={t('settings.version')} titleSize="lg">
+          <View className="rounded-2xl bg-secondary">
+            <View className="flex-row items-center justify-between border-b border-border px-5 py-4">
+              <ThemedText className="opacity-70">{t('settings.appVersion')}</ThemedText>
+              <ThemedText className="font-semibold">
+                {Constants.expoConfig?.version || '1.0.0'}
+              </ThemedText>
+            </View>
+            <View className="flex-row items-center justify-between px-5 py-4">
+              <ThemedText className="opacity-70">{t('settings.buildNumber')}</ThemedText>
+              <ThemedText className="font-semibold">
+                {Constants.expoConfig?.ios?.buildNumber ||
+                  Constants.expoConfig?.android?.versionCode ||
+                  '1'}
+              </ThemedText>
+            </View>
+          </View>
+        </Section>
       </ThemedScroller>
     </>
   );

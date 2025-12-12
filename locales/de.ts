@@ -4,6 +4,7 @@ export default {
     dashboard: 'Dashboard',
     checkin: 'Check-in',
     classes: 'Kurse',
+    leaderboard: 'Rangliste',
     membership: 'Mitgliedschaft',
     billing: 'Abrechnung',
     settings: 'Einstellungen',
@@ -19,6 +20,7 @@ export default {
     save: 'Speichern',
     delete: 'Löschen',
     edit: 'Bearbeiten',
+    reset: 'Zurücksetzen',
     loading: 'Wird geladen...',
     error: 'Fehler',
     success: 'Erfolg',
@@ -143,6 +145,29 @@ export default {
     signOut: 'Von deinem Konto abmelden',
     logoutConfirm: 'Möchtest du dich wirklich abmelden?',
     logoutError: 'Abmeldung fehlgeschlagen. Bitte versuche es erneut.',
+    version: 'Version',
+    appVersion: 'App-Version',
+    buildNumber: 'Build-Nummer',
+    privacy: 'Datenschutz',
+    privacyDescription: 'Kontrolliere, wie deine Informationen geteilt werden',
+  },
+
+  // Datenschutz-Einstellungen
+  privacy: {
+    title: 'Datenschutz',
+  },
+
+  // Hilfe-Bildschirm
+  help: {
+    contactSupport: 'Support kontaktieren',
+    emailSupport: 'E-Mail-Support',
+    callSupport: 'Telefonischer Support',
+    clubQuestions: 'Fragen zum Club',
+    appQuestions: 'Fragen zur App',
+    stillNeedHelp: 'Noch Fragen?',
+    stillNeedHelpDescription:
+      'Du findest nicht, was du suchst? Unser Support-Team hilft dir gerne bei Fragen oder Anliegen.',
+    contactSupportTeam: 'Support-Team kontaktieren',
   },
 
   // Mitgliedschaften
@@ -227,7 +252,7 @@ export default {
 
   // Mitgliedschaftsseite
   membership: {
-    title: 'Meine Mitgliedschaft',
+    title: 'Mitgliedschaft',
     currentPlan: 'Aktueller Plan',
     memberId: 'Mitglieds-ID',
     membershipId: 'Mitgliedschafts-ID',
@@ -313,6 +338,46 @@ export default {
       medicalCertificate: 'Ärztliches Attest',
       other: 'Sonstiges Dokument',
     },
+
+    // Kündigung
+    downloadFailed: 'Download fehlgeschlagen',
+    importantInformation: 'Wichtige Information',
+    cancellationWarning:
+      'Die Kündigung deiner Mitgliedschaft beendet deinen Zugang zu allen Einrichtungen und Dienstleistungen.',
+    cancellationReversible:
+      'Du kannst diese Entscheidung rückgängig machen, bevor das Kündigungsdatum in Kraft tritt.',
+    planName: 'Plan',
+    amount: 'Betrag',
+    cancellationDetails: 'Kündigungsdetails',
+    effectiveCancellationDate: 'Kündigungsdatum',
+    membershipCancelledOn: 'Deine Mitgliedschaft wird am {{date}} gekündigt',
+    earliestCancellationDate: 'Frühestes verfügbares Datum: {{date}}',
+    noticePeriod: 'Kündigungsfrist',
+    cancellationReason: 'Kündigungsgrund',
+    cancellationReasonPlaceholder: 'Teile uns mit, warum du kündigst (optional)...',
+    cancellationReasonOptional: 'Dies hilft uns, unsere Dienstleistungen zu verbessern',
+    cancelMyMembership: 'Mitgliedschaft kündigen',
+    keepMembership: 'Mitgliedschaft behalten',
+    confirmCancellation: 'Kündigung bestätigen',
+    confirmCancellationMessage:
+      'Bist du sicher, dass du deine Mitgliedschaft zum {{date}} kündigen möchtest?',
+    yesCancelMembership: 'Ja, kündigen',
+    cancellationError: 'Kündigung fehlgeschlagen. Bitte versuche es erneut.',
+
+    // Kündigung rückgängig machen
+    alreadyCancelled: 'Mitgliedschaft gekündigt',
+    membershipEndsOn: 'Deine Mitgliedschaft endet am {{date}}.',
+    changeYourMind: 'Doch anders entschieden?',
+    revertDescription:
+      'Wenn du deine Mitgliedschaft fortsetzen möchtest, kannst du die Kündigung rückgängig machen, bevor sie wirksam wird.',
+    revertCancellation: 'Kündigung rückgängig machen',
+    confirmRevert: 'Kündigung rückgängig machen',
+    confirmRevertMessage:
+      'Möchtest du die Kündigung rückgängig machen und deine Mitgliedschaft aktiv halten?',
+    yesRevert: 'Ja, rückgängig machen',
+    revertSuccess: 'Kündigung rückgängig gemacht',
+    revertSuccessMessage: 'Deine Mitgliedschaft ist wieder aktiv.',
+    revertError: 'Kündigung konnte nicht rückgängig gemacht werden. Bitte versuche es erneut.',
   },
 
   // Abrechnungsseite
@@ -326,11 +391,34 @@ export default {
     sepaDirectDebit: 'SEPA-Lastschrift',
     edit: 'Bearbeiten',
     loadMore: 'Mehr laden',
+    errorTitle: 'Rechnungen konnten nicht geladen werden',
 
     // Rechnungsstatus
     paid: 'Bezahlt',
     pending: 'Ausstehend',
     overdue: 'Überfällig',
+
+    // Rechnungsdetails
+    invoiceDetails: 'Rechnungsdetails',
+    invoiceNumber: 'Rechnungsnummer',
+    issueDate: 'Rechnungsdatum',
+    dueDate: 'Fälligkeitsdatum',
+    account: 'Konto',
+    items: 'Positionen',
+    subtotal: 'Zwischensumme',
+    tax: 'MwSt.',
+    taxRate: '({{rate}}%)',
+    total: 'Gesamt',
+    billingInformation: 'Rechnungsinformationen',
+    addressOnFile: 'Hinterlegte Adresse',
+    downloadPdf: 'PDF herunterladen',
+    invoiceNotFound: 'Rechnung nicht gefunden',
+    unableToLoadInvoice: 'Rechnung konnte nicht geladen werden',
+    shareFailed: 'Teilen fehlgeschlagen',
+    shareFailedMessage: 'Rechnung konnte nicht geteilt werden. Bitte erneut versuchen.',
+    downloadFailed: 'Download fehlgeschlagen',
+    downloadFailedMessage: 'Rechnung konnte nicht heruntergeladen werden. Bitte erneut versuchen.',
+    supportContact: 'Bei Fragen zu dieser Rechnung kontaktieren Sie bitte {{email}}',
   },
 
   // SEPA-Formular
@@ -395,6 +483,84 @@ export default {
       one: 'Kurs',
       other: 'Kurse',
     },
+  },
+
+  // Graduierung / Gürtelfortschritt
+  graduation: {
+    title: 'Gürtelfortschritt',
+    childTitle: '{{name}}s Gürtel',
+    currentBelt: 'Aktueller Gürtel',
+    nextBelt: 'Nächster Gürtel',
+    classesProgress: 'Kursfortschritt',
+    classesRemaining: 'Kurse verbleibend',
+    stripes: 'Streifen',
+    nextStripe: 'Nächster Streifen',
+    lastPromotion: 'Letzte Beförderung',
+    belts: {
+      // Erwachsenen-Gürtel
+      white: 'Weißgurt',
+      blue: 'Blaugurt',
+      purple: 'Lilgurt',
+      brown: 'Braungurt',
+      black: 'Schwarzgurt',
+      // Kinder-Gürtel - einfarbig
+      grey: 'Graugurt',
+      yellow: 'Gelbgurt',
+      orange: 'Orangegurt',
+      green: 'Grüngurt',
+      // Kinder-Gürtel - zweifarbig
+      'white-grey': 'Weiß-Grau Gurt',
+      'grey-white': 'Grau-Weiß Gurt',
+      'grey-black': 'Grau-Schwarz Gurt',
+      'yellow-white': 'Gelb-Weiß Gurt',
+      'yellow-black': 'Gelb-Schwarz Gurt',
+      'orange-white': 'Orange-Weiß Gurt',
+      'orange-black': 'Orange-Schwarz Gurt',
+      'green-white': 'Grün-Weiß Gurt',
+      'green-black': 'Grün-Schwarz Gurt',
+      // Korall- & Rotgurte
+      'red-black': 'Korallgurt (Rot/Schwarz)',
+      'red-white': 'Korallgurt (Rot/Weiß)',
+      red: 'Rotgurt',
+    },
+  },
+
+  // Rangliste
+  leaderboard: {
+    title: 'Rangliste',
+    rankings: 'Platzierungen',
+    you: 'Du',
+    points: 'Punkte',
+    classes: 'Kurse',
+    weeks: 'Wochen',
+    outOf: 'von {{total}} Mitgliedern',
+    topPercentile: 'Du bist unter den Top {{percent}}% der Mitglieder!',
+    noResults: 'Keine Ergebnisse',
+    tryDifferentFilters: 'Versuche, deine Filter anzupassen, um mehr Ergebnisse zu sehen',
+    anonymous: 'Mitglied',
+    filters: {
+      title: 'Filter',
+      button: 'Filter',
+      apply: 'Filter anwenden',
+      timePeriod: 'Zeitraum',
+      discipline: 'Disziplin',
+      demographic: 'Altersgruppe',
+      sortBy: 'Sortieren nach',
+    },
+  },
+
+  // Benachrichtigungen
+  notifications: {
+    title: 'Benachrichtigungen',
+    all: 'Alle',
+    classes: 'Kurse',
+    achievements: 'Erfolge',
+    reminders: 'Erinnerungen',
+    billing: 'Abrechnung',
+    noNotifications: 'Keine Benachrichtigungen',
+    noNotificationsMessage: 'Du bist auf dem neuesten Stand! Schau später wieder vorbei.',
+    unreadCount: '{{count}} ungelesen',
+    markAllRead: 'Alle als gelesen markieren',
   },
 
   // Club nicht gefunden

@@ -99,8 +99,10 @@ export const ENDPOINTS = {
     PLANS: '/memberships/plans',
     SUBSCRIBE: '/memberships/subscribe',
     CANCEL: (id: string) => `/memberships/${id}/cancel`,
+    REVERT_CANCEL: (id: string) => `/memberships/${id}/revert-cancel`,
     PAUSE: (id: string) => `/memberships/${id}/pause`,
     RESUME: (id: string) => `/memberships/${id}/resume`,
+    DOWNLOAD_CONTRACT: (id: number) => `/memberships/${id}/contract/download`,
   },
   // Classes
   CLASSES: {
@@ -122,6 +124,10 @@ export const ENDPOINTS = {
   INVOICES: {
     LIST: '/invoices',
     DOWNLOAD: (id: string) => `/invoices/${id}/download`,
+  },
+  // Graduations
+  GRADUATIONS: {
+    LIST: '/graduations',
   },
   // App Config
   CONFIG: {

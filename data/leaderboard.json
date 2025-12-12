@@ -1,0 +1,193 @@
+{
+  "leaderboard": {
+    "user_rank": {
+      "rank": 12,
+      "total_users": 156,
+      "points": 2450,
+      "classes_attended": 45,
+      "streak_weeks": 6
+    },
+    "time_period": "month",
+    "entries": [
+      {
+        "id": "user-001",
+        "rank": 1,
+        "first_name": "Marcus",
+        "last_name": "Silva",
+        "avatar_url": null,
+        "points": 4850,
+        "classes_attended": 78,
+        "streak_weeks": 12,
+        "top_discipline": "Brazilian Jiu-Jitsu",
+        "belt": "purple",
+        "belt_system": "bjj",
+        "trend": "up",
+        "rank_change": 2
+      },
+      {
+        "id": "user-002",
+        "rank": 2,
+        "first_name": "Ana",
+        "last_name": "Costa",
+        "avatar_url": null,
+        "points": 4620,
+        "classes_attended": 72,
+        "streak_weeks": 10,
+        "top_discipline": "No-Gi",
+        "belt": "brown",
+        "belt_system": "bjj",
+        "trend": "down",
+        "rank_change": 1
+      },
+      {
+        "id": "user-003",
+        "rank": 3,
+        "first_name": "James",
+        "last_name": "Chen",
+        "avatar_url": null,
+        "points": 4380,
+        "classes_attended": 68,
+        "streak_weeks": 8,
+        "top_discipline": "MMA",
+        "belt": "blue",
+        "belt_system": "bjj",
+        "trend": "up",
+        "rank_change": 1
+      },
+      {
+        "id": "user-004",
+        "rank": 4,
+        "first_name": "Hidden",
+        "last_name": "User",
+        "avatar_url": null,
+        "points": 4150,
+        "classes_attended": 65,
+        "streak_weeks": 9,
+        "top_discipline": "Brazilian Jiu-Jitsu",
+        "belt": "purple",
+        "belt_system": "bjj",
+        "trend": "same",
+        "rank_change": 0,
+        "is_opted_in": false
+      },
+      {
+        "id": "user-005",
+        "rank": 5,
+        "first_name": "Lucas",
+        "last_name": "Oliveira",
+        "avatar_url": null,
+        "points": 3920,
+        "classes_attended": 61,
+        "streak_weeks": 7,
+        "top_discipline": "Wrestling",
+        "belt": "blue",
+        "belt_system": "wrestling",
+        "trend": "up",
+        "rank_change": 3
+      },
+      {
+        "id": "user-006",
+        "rank": 6,
+        "first_name": "Emma",
+        "last_name": "Johnson",
+        "avatar_url": null,
+        "points": 3780,
+        "classes_attended": 58,
+        "streak_weeks": 6,
+        "top_discipline": "No-Gi",
+        "belt": "purple",
+        "belt_system": "bjj",
+        "trend": "down",
+        "rank_change": 2
+      },
+      {
+        "id": "user-007",
+        "rank": 7,
+        "first_name": "Daniel",
+        "last_name": "Kim",
+        "avatar_url": null,
+        "points": 3650,
+        "classes_attended": 55,
+        "streak_weeks": 5,
+        "top_discipline": "Judo",
+        "belt": "brown",
+        "belt_system": "judo",
+        "trend": "up",
+        "rank_change": 1
+      },
+      {
+        "id": "user-008",
+        "rank": 8,
+        "first_name": "Isabella",
+        "last_name": "Garcia",
+        "avatar_url": null,
+        "points": 3520,
+        "classes_attended": 52,
+        "streak_weeks": 4,
+        "top_discipline": "Brazilian Jiu-Jitsu",
+        "belt": "blue",
+        "belt_system": "bjj",
+        "trend": "same",
+        "rank_change": 0
+      },
+      {
+        "id": "user-009",
+        "rank": 9,
+        "first_name": "Michael",
+        "last_name": "Brown",
+        "avatar_url": null,
+        "points": 3380,
+        "classes_attended": 49,
+        "streak_weeks": 3,
+        "top_discipline": "MMA",
+        "belt": "white",
+        "belt_system": "bjj",
+        "trend": "up",
+        "rank_change": 4
+      },
+      {
+        "id": "user-010",
+        "rank": 10,
+        "first_name": "Olivia",
+        "last_name": "Schmidt",
+        "avatar_url": null,
+        "points": 3250,
+        "classes_attended": 47,
+        "streak_weeks": 6,
+        "top_discipline": "Muay Thai",
+        "belt": null,
+        "belt_system": null,
+        "trend": "down",
+        "rank_change": 1
+      }
+    ]
+  },
+  "filters": {
+    "disciplines": [
+      { "id": "all", "name": "All Classes" },
+      { "id": "bjj", "name": "Brazilian Jiu-Jitsu" },
+      { "id": "no-gi", "name": "No-Gi" },
+      { "id": "mma", "name": "MMA" },
+      { "id": "wrestling", "name": "Wrestling" },
+      { "id": "judo", "name": "Judo" },
+      { "id": "muay-thai", "name": "Muay Thai" }
+    ],
+    "time_periods": [
+      { "id": "week", "name": "Week" },
+      { "id": "month", "name": "Month" },
+      { "id": "year", "name": "Year" }
+    ],
+    "demographics": [
+      { "id": "all", "name": "Everyone" },
+      { "id": "adults", "name": "Adults" },
+      { "id": "kids", "name": "Kids" },
+      { "id": "teens", "name": "Teens" },
+      { "id": "seniors", "name": "Seniors (50+)" }
+    ],
+    "sort_by": [
+      { "id": "points", "name": "Points" },
+      { "id": "classes", "name": "Classes Attended" },
+      { "id": "streak", "name": "Streak" }
+    ]
+  }
+}

@@ -42,14 +42,9 @@ export default function TabsLayout() {
   const tabs = navConfig.tabs || [];
   const showCheckInButton = featureFlags.checkInEnabled;
 
-  // Calculate tab width based on number of tabs
-  const hasCheckIn = showCheckInButton;
-  const totalTabs = tabs.length + (hasCheckIn ? 1 : 0);
-  const tabWidth = totalTabs > 0 ? `${100 / totalTabs}%` : '33.33%';
-
   // Insert check-in button in the middle if enabled
   const renderTabs = () => {
-    if (!hasCheckIn) {
+    if (!showCheckInButton) {
       // No check-in button, render all tabs
       return tabs.map((tab) => (
         <TabTrigger key={tab.name} name={tab.name} href={tab.href} asChild>
@@ -76,7 +71,7 @@ export default function TabsLayout() {
         ))}
 
         {/* Check-in Button (middle) */}
-        <View style={{ width: tabWidth }} className="items-center justify-center">
+        <View className="w-1/5 items-center justify-center">
           <CheckInButton />
         </View>
 

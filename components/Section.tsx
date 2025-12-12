@@ -21,6 +21,7 @@ interface SectionProps {
   link?: string;
   linkText?: string;
   linkClassName?: string;
+  noTopMargin?: boolean;
 }
 
 export const Section: React.FC<SectionProps> = ({
@@ -37,6 +38,7 @@ export const Section: React.FC<SectionProps> = ({
   link,
   linkText,
   linkClassName = '',
+  noTopMargin = false,
 }) => {
   const getPaddingClass = () => {
     switch (padding) {
@@ -85,7 +87,8 @@ export const Section: React.FC<SectionProps> = ({
   return (
     <View className={`w-full ${getPaddingClass()} ${className}`} style={style}>
       {(title || header) && (
-        <View className="mb-4 flex-row items-center">
+        <View
+          className={`flex-row items-center ${noTopMargin ? '' : 'mt-8'} ${children ? 'mb-2' : ''}`}>
           {icon && (
             <View className="mr-4">
               <Icon name={icon} size={24} />

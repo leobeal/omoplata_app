@@ -20,6 +20,7 @@ type HeaderProps = {
   middleComponent?: React.ReactNode;
   className?: string;
   style?: ViewStyle;
+  showTitle?: boolean; // For collapsible title behavior
 };
 
 const Header: React.FC<HeaderProps> = ({
@@ -32,6 +33,7 @@ const Header: React.FC<HeaderProps> = ({
   middleComponent,
   className,
   style,
+  showTitle = true,
 }) => {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
@@ -47,39 +49,44 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <View
       style={[{ paddingTop: insets.top }, style]}
-      className={`relative z-50 w-full flex-row justify-between bg-background px-6 pb-2 ${className}`}>
-      {(showBackButton || leftComponent || title) && (
-        <View className="flex-1 flex-row items-center">
+      className={`relative z-50 w-full bg-background px-6 pb-2 ${className}`}>
+      <View className="h-14 flex-row items-center justify-between">
+        {/* Left side - back button or left component */}
+        <View className="z-10 min-w-[40px] flex-row items-center">
           {showBackButton && (
-            <TouchableOpacity onPress={handleBackPress} className="relative z-50 mr-6 py-4">
+            <TouchableOpacity onPress={handleBackPress}>
               <Icon name="ArrowLeft" size={24} color={colors.icon} />
             </TouchableOpacity>
           )}
-
-          {leftComponent ||
-            (title && (
-              <View className="relative z-50 flex-row items-center py-4">
-                {leftComponent}
-
-                {title && <ThemedText className="text-lg font-bold">{title}</ThemedText>}
-              </View>
-            ))}
+          {leftComponent}
         </View>
-      )}
 
-      {middleComponent && (
-        <View className="flex-1 flex-row items-center justify-center py-4">{middleComponent}</View>
-      )}
+        {/* Center - title (absolutely positioned for true center) */}
+        {title && (
+          <View
+            className="absolute inset-x-0 -z-10 items-center justify-center"
+            style={{ height: 56 }}
+            pointerEvents="none">
+            <ThemedText className="text-lg font-semibold" style={{ opacity: showTitle ? 1 : 0 }}>
+              {title}
+            </ThemedText>
+          </View>
+        )}
 
-      {rightComponents.length > 0 && (
-        <View className="relative z-50 flex-1 flex-row items-center justify-end">
+        {/* Middle component (if provided, replaces title centering) */}
+        {middleComponent && (
+          <View className="flex-1 flex-row items-center justify-center">{middleComponent}</View>
+        )}
+
+        {/* Right side - right components */}
+        <View className="z-10 min-w-[40px] flex-row items-center justify-end">
           {rightComponents.map((component, index) => (
-            <View key={index} className="ml-6">
+            <View key={index} className="ml-4">
               {component}
             </View>
           ))}
         </View>
-      )}
+      </View>
       {children}
     </View>
   );

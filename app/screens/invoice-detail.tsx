@@ -11,10 +11,12 @@ import Icon from '@/components/Icon';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
+import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function InvoiceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const t = useT();
   const colors = useThemeColors();
   const { user } = useAuth();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
@@ -71,11 +73,11 @@ export default function InvoiceDetailScreen() {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'paid':
-        return 'Paid';
+        return t('billing.paid');
       case 'pending':
-        return 'Pending';
+        return t('billing.pending');
       case 'overdue':
-        return 'Overdue';
+        return t('billing.overdue');
       default:
         return status;
     }
@@ -90,8 +92,8 @@ export default function InvoiceDetailScreen() {
     } catch (error) {
       console.error('Error sharing invoice:', error);
       Alert.alert(
-        'Share Failed',
-        error instanceof Error ? error.message : 'Failed to share invoice. Please try again.'
+        t('billing.shareFailed'),
+        error instanceof Error ? error.message : t('billing.shareFailedMessage')
       );
     } finally {
       setSharing(false);
@@ -107,8 +109,8 @@ export default function InvoiceDetailScreen() {
     } catch (error) {
       console.error('Error downloading invoice:', error);
       Alert.alert(
-        'Download Failed',
-        error instanceof Error ? error.message : 'Failed to download invoice. Please try again.'
+        t('billing.downloadFailed'),
+        error instanceof Error ? error.message : t('billing.downloadFailedMessage')
       );
     } finally {
       setDownloading(false);
@@ -118,7 +120,7 @@ export default function InvoiceDetailScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-background">
-        <Header showBackButton title="Invoice Details" />
+        <Header showBackButton title={t('billing.invoiceDetails')} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" />
         </View>
@@ -129,15 +131,15 @@ export default function InvoiceDetailScreen() {
   if (error) {
     return (
       <View className="flex-1 bg-background">
-        <Header showBackButton title="Invoice Details" />
+        <Header showBackButton title={t('billing.invoiceDetails')} />
         <ErrorState
-          title="Unable to load invoice"
+          title={t('billing.unableToLoadInvoice')}
           message={error}
           onRetry={() => {
             setLoading(true);
             loadInvoice();
           }}
-          retryButtonText="Try Again"
+          retryButtonText={t('common.tryAgain')}
         />
       </View>
     );
@@ -146,10 +148,10 @@ export default function InvoiceDetailScreen() {
   if (!invoice) {
     return (
       <View className="flex-1 bg-background">
-        <Header showBackButton title="Invoice Details" />
+        <Header showBackButton title={t('billing.invoiceDetails')} />
         <View className="flex-1 items-center justify-center px-6">
           <Icon name="FileX" size={64} className="mb-4 opacity-30" />
-          <ThemedText className="text-center text-lg">Invoice not found</ThemedText>
+          <ThemedText className="text-center text-lg">{t('billing.invoiceNotFound')}</ThemedText>
         </View>
       </View>
     );
@@ -159,7 +161,7 @@ export default function InvoiceDetailScreen() {
     <View className="flex-1 bg-background">
       <Header
         showBackButton
-        title="Invoice Details"
+        title={t('billing.invoiceDetails')}
         rightComponents={[
           <Pressable key="share" onPress={handleShare} disabled={sharing} className="p-2">
             {sharing ? <ActivityIndicator size="small" /> : <Icon name="Share2" size={20} />}
@@ -171,7 +173,9 @@ export default function InvoiceDetailScreen() {
         <View className="mb-6 rounded-2xl bg-secondary p-6">
           <View className="mb-4 flex-row items-start justify-between">
             <View>
-              <ThemedText className="mb-1 text-sm opacity-50">Invoice Number</ThemedText>
+              <ThemedText className="mb-1 text-sm opacity-50">
+                {t('billing.invoiceNumber')}
+              </ThemedText>
               <ThemedText className="text-2xl font-bold">{invoice.id}</ThemedText>
             </View>
             <View
@@ -187,20 +191,20 @@ export default function InvoiceDetailScreen() {
 
           <View className="border-t border-border pt-4">
             <View className="mb-3 flex-row justify-between">
-              <ThemedText className="opacity-50">Issue Date</ThemedText>
+              <ThemedText className="opacity-50">{t('billing.issueDate')}</ThemedText>
               <ThemedText className="font-semibold">{formatDate(invoice.date)}</ThemedText>
             </View>
             <View className="mb-3 flex-row justify-between">
-              <ThemedText className="opacity-50">Due Date</ThemedText>
+              <ThemedText className="opacity-50">{t('billing.dueDate')}</ThemedText>
               <ThemedText className="font-semibold">{formatDate(invoice.dueDate)}</ThemedText>
             </View>
             <View className="mb-3 flex-row justify-between">
-              <ThemedText className="opacity-50">Payment Method</ThemedText>
+              <ThemedText className="opacity-50">{t('billing.paymentMethod')}</ThemedText>
               <ThemedText className="font-semibold">{invoice.paymentMethod}</ThemedText>
             </View>
             {invoice.paymentDetails && (
               <View className="flex-row justify-between">
-                <ThemedText className="opacity-50">Account</ThemedText>
+                <ThemedText className="opacity-50">{t('billing.account')}</ThemedText>
                 <ThemedText className="font-semibold">{invoice.paymentDetails}</ThemedText>
               </View>
             )}
@@ -209,7 +213,7 @@ export default function InvoiceDetailScreen() {
 
         {/* Line Items */}
         <View className="mb-4">
-          <ThemedText className="mb-3 text-lg font-bold">Items</ThemedText>
+          <ThemedText className="mb-3 text-lg font-bold">{t('billing.items')}</ThemedText>
         </View>
 
         <View className="mb-6 rounded-2xl bg-secondary">
@@ -222,6 +226,7 @@ export default function InvoiceDetailScreen() {
                   <ThemedText className="font-semibold">{item.description}</ThemedText>
                   <ThemedText className="mt-1 text-sm opacity-50">
                     {item.quantity} × {formatAmount(item.unitPrice)}
+                    {item.taxRate > 0 && ` ${t('billing.taxRate', { rate: item.taxRate })}`}
                   </ThemedText>
                 </View>
                 <ThemedText className="text-lg font-bold">{formatAmount(item.total)}</ThemedText>
@@ -232,15 +237,15 @@ export default function InvoiceDetailScreen() {
           {/* Totals */}
           <View className="border-t border-border p-5">
             <View className="mb-3 flex-row justify-between">
-              <ThemedText className="opacity-70">Subtotal</ThemedText>
+              <ThemedText className="opacity-70">{t('billing.subtotal')}</ThemedText>
               <ThemedText className="font-semibold">{formatAmount(invoice.subtotal)}</ThemedText>
             </View>
             <View className="mb-3 flex-row justify-between">
-              <ThemedText className="opacity-70">Tax</ThemedText>
+              <ThemedText className="opacity-70">{t('billing.tax')}</ThemedText>
               <ThemedText className="font-semibold">{formatAmount(invoice.tax)}</ThemedText>
             </View>
             <View className="flex-row justify-between border-t border-border pt-3">
-              <ThemedText className="text-lg font-bold">Total</ThemedText>
+              <ThemedText className="text-lg font-bold">{t('billing.total')}</ThemedText>
               <ThemedText className="text-2xl font-bold">{formatAmount(invoice.total)}</ThemedText>
             </View>
           </View>
@@ -248,7 +253,9 @@ export default function InvoiceDetailScreen() {
 
         {/* Billing Information */}
         <View className="mb-4">
-          <ThemedText className="mb-3 text-lg font-bold">Billing Information</ThemedText>
+          <ThemedText className="mb-3 text-lg font-bold">
+            {t('billing.billingInformation')}
+          </ThemedText>
         </View>
 
         <View className="mb-6 rounded-2xl bg-secondary p-5">
@@ -258,14 +265,28 @@ export default function InvoiceDetailScreen() {
           <ThemedText className="mt-1 text-sm opacity-70">
             {user?.email || 'user@example.com'}
           </ThemedText>
-          <ThemedText className="mt-1 text-sm opacity-70">Address on file</ThemedText>
+          {invoice.payerAddress ? (
+            <>
+              <ThemedText className="mt-1 text-sm opacity-70">
+                {invoice.payerAddress.street}
+              </ThemedText>
+              <ThemedText className="text-sm opacity-70">
+                {invoice.payerAddress.postalCode} {invoice.payerAddress.city}
+              </ThemedText>
+              <ThemedText className="text-sm opacity-70">{invoice.payerAddress.country}</ThemedText>
+            </>
+          ) : (
+            <ThemedText className="mt-1 text-sm opacity-70">
+              {t('billing.addressOnFile')}
+            </ThemedText>
+          )}
         </View>
 
         {/* Actions */}
         {invoice.status === 'paid' && (
           <View className="mb-8">
             <Button
-              title="Download PDF"
+              title={t('billing.downloadPdf')}
               icon="Download"
               variant="outline"
               onPress={handleDownloadPdf}
@@ -277,7 +298,7 @@ export default function InvoiceDetailScreen() {
 
         <View className="mb-8">
           <ThemedText className="text-center text-xs opacity-50">
-            For questions about this invoice, please contact support@omoplata.com
+            {t('billing.supportContact', { email: 'support@omoplata.com' })}
           </ThemedText>
         </View>
       </ThemedScroller>

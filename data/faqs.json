@@ -3,6 +3,7 @@
     {
       "id": "membership",
       "title": "Membership & Billing",
+      "type": "club",
       "faqs": [
         {
           "question": "How do I cancel my membership?",
@@ -29,6 +30,7 @@
     {
       "id": "facilities",
       "title": "Facilities & Classes",
+      "type": "club",
       "faqs": [
         {
           "question": "What are your gym hours?",
@@ -53,34 +55,9 @@
       ]
     },
     {
-      "id": "account",
-      "title": "Account & App",
-      "faqs": [
-        {
-          "question": "How do I reset my password?",
-          "answer": "On the login screen, tap 'Forgot Password' and enter your email address. You'll receive a password reset link within a few minutes."
-        },
-        {
-          "question": "How do I update my personal information?",
-          "answer": "Go to Settings > Edit Profile to update your name, email, phone number, and address."
-        },
-        {
-          "question": "Can I use the app for check-in?",
-          "answer": "Yes! Use the QR code check-in feature on the home screen. Simply scan the code at the entrance kiosk or show it to staff."
-        },
-        {
-          "question": "The app isn't working. What should I do?",
-          "answer": "Try these steps: 1) Make sure you have the latest version of the app, 2) Force quit and restart the app, 3) Check your internet connection, 4) If issues persist, contact support."
-        },
-        {
-          "question": "How do I enable notifications?",
-          "answer": "Go to Settings > Notifications to manage your notification preferences. You can customize reminders for classes, billing, and gym announcements."
-        }
-      ]
-    },
-    {
       "id": "other",
-      "title": "Other Questions",
+      "title": "General Questions",
+      "type": "club",
       "faqs": [
         {
           "question": "What should I bring to the gym?",
@@ -95,12 +72,69 @@
           "answer": "Yes, we have full locker rooms with showers, changing areas, and amenities. Premium members have access to premium lockers."
         },
         {
-          "question": "How do I contact support?",
+          "question": "How do I contact the gym?",
           "answer": "You can contact us via email at support@omoplata.com, call us at (555) 123-4567, or speak with staff at the front desk during operating hours."
         },
         {
           "question": "Can I transfer my membership to someone else?",
           "answer": "Memberships are non-transferable according to our terms and conditions. However, you can freeze your membership if you need a temporary break."
+        }
+      ]
+    },
+    {
+      "id": "account",
+      "title": "Account & Profile",
+      "type": "app",
+      "faqs": [
+        {
+          "question": "How do I reset my password?",
+          "answer": "On the login screen, tap 'Forgot Password' and enter your email address. You'll receive a password reset link within a few minutes."
+        },
+        {
+          "question": "How do I update my personal information?",
+          "answer": "Go to Settings > Edit Profile to update your name, email, phone number, and address."
+        },
+        {
+          "question": "How do I enable notifications?",
+          "answer": "Go to Settings > Notifications to manage your notification preferences. You can customize reminders for classes, billing, and gym announcements."
+        }
+      ]
+    },
+    {
+      "id": "app-features",
+      "title": "App Features",
+      "type": "app",
+      "faqs": [
+        {
+          "question": "Can I use the app for check-in?",
+          "answer": "Yes! Use the QR code check-in feature on the home screen. Simply scan the code at the entrance kiosk or show it to staff."
+        },
+        {
+          "question": "How do I view my class schedule?",
+          "answer": "Go to the Calendar tab to view all available classes. You can filter by discipline and see your upcoming booked classes."
+        },
+        {
+          "question": "How do I track my attendance?",
+          "answer": "Your attendance history is visible in Settings. You can see a graph of your attendance over the last 12 months."
+        }
+      ]
+    },
+    {
+      "id": "troubleshooting",
+      "title": "Troubleshooting",
+      "type": "app",
+      "faqs": [
+        {
+          "question": "The app isn't working. What should I do?",
+          "answer": "Try these steps: 1) Make sure you have the latest version of the app, 2) Force quit and restart the app, 3) Check your internet connection, 4) If issues persist, contact support."
+        },
+        {
+          "question": "I'm not receiving notifications",
+          "answer": "Make sure notifications are enabled in both the app settings and your device settings. Go to Settings > Notifications in the app, and also check your phone's notification settings for this app."
+        },
+        {
+          "question": "My check-in QR code isn't scanning",
+          "answer": "Ensure your screen brightness is turned up. If the issue persists, try refreshing the QR code or contact staff at the front desk for manual check-in."
         }
       ]
     }

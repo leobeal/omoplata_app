@@ -34,6 +34,12 @@ export const defaultNavigation: NavigationConfig = {
       href: '/',
     },
     {
+      name: 'leaderboard',
+      icon: 'Trophy',
+      label: 'nav.leaderboard',
+      href: '/leaderboard',
+    },
+    {
       name: 'calendar',
       icon: 'Calendar',
       label: 'nav.classes',
@@ -47,15 +53,9 @@ export const defaultNavigation: NavigationConfig = {
     },
     {
       name: 'billing',
-      icon: 'Receipt',
+      icon: 'CreditCard',
       label: 'nav.billing',
       href: '/billing',
-    },
-    {
-      name: 'settings',
-      icon: 'Settings',
-      label: 'nav.settings',
-      href: '/settings',
     },
   ],
   showCheckInButton: true,

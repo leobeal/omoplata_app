@@ -2,16 +2,17 @@ import { router } from 'expo-router';
 import React from 'react';
 import { Image, Pressable, View, ViewStyle, ImageSourcePropType } from 'react-native';
 
+import Icon from './Icon';
 import ThemedText from './ThemedText';
 
 type AvatarProps = {
   size?: 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
-  src?: string | ImageSourcePropType;
-  name?: string;
+  src?: string | ImageSourcePropType; // Can be a URL string or required image
+  name?: string; // for displaying initials if no image
   border?: boolean;
-  bgColor?: string;
-  onPress?: () => void;
-  link?: string;
+  bgColor?: string; // Optional background color
+  onPress?: () => void; // Optional onPress for Pressable or Link
+  link?: string; // Optional URL for Link
   className?: string;
   style?: ViewStyle;
 };
@@ -27,6 +28,7 @@ const Avatar: React.FC<AvatarProps> = ({
   className,
   style,
 }) => {
+  // Avatar size styles
   const sizeMap = {
     xxs: 'w-7 h-7',
     xs: 'w-8 h-8',
@@ -37,29 +39,51 @@ const Avatar: React.FC<AvatarProps> = ({
     xxl: 'w-24 h-24',
   };
 
+  // Define border size and color if enabled
   const borderStyle = border ? 'border-2 border-border' : '';
 
-  const renderInitials = () => {
-    if (!name) return null;
-    const initials = name
-      .split(' ')
-      .filter((part) => part.length > 0)
-      .map((part) => part[0].toUpperCase())
-      .join('');
-    return <ThemedText className="text-center font-medium">{initials}</ThemedText>;
+  // Icon size map for fallback
+  const iconSizeMap = {
+    xxs: 14,
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 32,
+    xl: 40,
+    xxl: 48,
   };
 
+  // Component for initials or fallback icon if image is not provided
+  const renderFallback = () => {
+    if (name && name.trim()) {
+      const initials = name
+        .split(' ')
+        .filter((part) => part.length > 0)
+        .map((part) => part[0].toUpperCase())
+        .join('');
+      if (initials) {
+        return <ThemedText className="text-center font-medium">{initials}</ThemedText>;
+      }
+    }
+    // Fallback to user icon if no name
+    return <Icon name="User" size={iconSizeMap[size]} />;
+  };
+
+  // Convert the src prop to an appropriate Image source prop
   const getImageSource = (): ImageSourcePropType => {
     if (!src) {
+      // Return a transparent 1x1 pixel as fallback instead of null
       return {
         uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
       };
     }
 
+    // If src is a string (URL), return it as a uri object
     if (typeof src === 'string') {
       return { uri: src };
     }
 
+    // Otherwise it's already a required image or other valid source
     return src;
   };
 
@@ -70,16 +94,26 @@ const Avatar: React.FC<AvatarProps> = ({
       {src ? (
         <Image source={getImageSource()} className="h-full w-full rounded-full object-cover" />
       ) : (
-        renderInitials()
+        renderFallback()
       )}
     </View>
   );
 
   if (link) {
-    return <Pressable onPress={() => router.push(link)}>{avatarContent}</Pressable>;
+    return (
+      <Pressable onPress={() => router.push(link)} hitSlop={8}>
+        {avatarContent}
+      </Pressable>
+    );
   }
 
-  return onPress ? <Pressable onPress={onPress}>{avatarContent}</Pressable> : avatarContent;
+  return onPress ? (
+    <Pressable onPress={onPress} hitSlop={8}>
+      {avatarContent}
+    </Pressable>
+  ) : (
+    avatarContent
+  );
 };
 
 export default Avatar;

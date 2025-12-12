@@ -1,12 +1,14 @@
-import React, { memo, useState, useCallback, useMemo } from 'react';
+import React, { memo, useState, useCallback, useMemo, useEffect } from 'react';
 import { View, Pressable, RefreshControl, useWindowDimensions, Alert } from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 
 import { confirmAttendance, denyAttendance, ChildWithClasses } from '@/api/classes';
+import { getGraduationsWithChildren, Graduation, ChildWithGraduations } from '@/api/graduations';
 import { getStatusTranslationKey, Membership } from '@/api/membership';
 import { isSepaAvailable, PaymentMethod } from '@/api/payment-methods';
 import Avatar from '@/components/Avatar';
 import ClassCard from '@/components/ClassCard';
+import GraduationSection, { ChildrenGraduationsSection } from '@/components/GraduationSection';
 import Header, { HeaderIcon } from '@/components/Header';
 import Icon from '@/components/Icon';
 import Section from '@/components/Section';
@@ -40,8 +42,33 @@ export default function HomeScreen() {
     setPaymentMethods,
   } = useAppData();
   const [refreshing, setRefreshing] = useState(false);
+  const [graduations, setGraduations] = useState<Graduation[]>([]);
+  const [childrenWithGraduations, setChildrenWithGraduations] = useState<ChildWithGraduations[]>(
+    []
+  );
 
   const userName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';
+
+  // Check if user has responsible role
+  const isResponsible = user?.roles?.includes('responsible') ?? false;
+
+  // Load graduations (including children's)
+  useEffect(() => {
+    const loadGraduations = async () => {
+      try {
+        const data = await getGraduationsWithChildren({
+          includeChildren: isResponsible,
+        });
+        setGraduations(data.graduations);
+        setChildrenWithGraduations(data.children || []);
+      } catch (error) {
+        console.error('Failed to load graduations:', error);
+      }
+    };
+    if (isMember) {
+      loadGraduations();
+    }
+  }, [isMember, isResponsible]);
 
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -100,10 +127,10 @@ export default function HomeScreen() {
     <>
       <Header
         className="bg-secondary"
-        leftComponent={
-          <Avatar name={userName} size="sm" link="/settings" src={user?.profilePicture} />
-        }
-        rightComponents={[<HeaderIcon icon="Bell" hasBadge href="/screens/notifications" />]}
+        leftComponent={<HeaderIcon icon="Bell" hasBadge href="/screens/notifications" />}
+        rightComponents={[
+          <Avatar name={userName} size="sm" link="/screens/settings" src={user?.profilePicture} />,
+        ]}
       />
       <ThemedScroller
         className="flex-1 bg-background !px-0"
@@ -147,10 +174,16 @@ export default function HomeScreen() {
             <ActivityStats />
           </View>
         )}
+        {/* Graduation Progress Section */}
+        {isMember && graduations.length > 0 && <GraduationSection graduations={graduations} />}
+        {/* Children's Graduation Progress Section */}
+        {isMember && childrenWithGraduations.length > 0 && (
+          <ChildrenGraduationsSection childrenWithGraduations={childrenWithGraduations} />
+        )}
         {/* Only show user's classes section if they have classes or there's an error */}
         {(classes.length > 0 || classesError) && (
           <View className="bg-background px-5 pb-5">
-            <Section title={t('home.upcomingClasses')} className="mb-4" />
+            <Section title={t('home.upcomingClasses')} className="mb-2" />
             {classesError ? (
               <View className="items-center justify-center rounded-2xl bg-secondary py-12">
                 <View
@@ -417,7 +450,7 @@ const ChildrenClassesTabs = memo(({ children, onConfirm, onDeny }: ChildrenClass
       {childrenWithClassesFiltered.map((child) => (
         <View key={child.id} className="bg-background pb-5">
           {/* Child header with avatar and name */}
-          <View className="mb-4 flex-row items-center px-5">
+          <View className="mb-2 flex-row items-center px-5">
             <Avatar name={child.fullName} size="sm" />
             <Section title={t('home.childClasses', { name: child.firstName })} className="ml-3" />
           </View>

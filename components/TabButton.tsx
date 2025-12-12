@@ -1,6 +1,5 @@
-import { usePathname } from 'expo-router';
 import { TabTriggerSlotProps } from 'expo-router/ui';
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { Text, Pressable, View, Animated } from 'react-native';
 
 import Icon, { IconName } from '@/components/Icon';
@@ -13,10 +12,11 @@ export type TabButtonProps = TabTriggerSlotProps & {
 };
 
 export const TabButton = forwardRef<View, TabButtonProps>(
-  ({ icon, children, isFocused, onPress, labelAnimated = true, ...props }, ref) => {
+  ({ icon, children, isFocused, onPress, href, labelAnimated = true, ...props }, ref) => {
     const colors = useThemeColors();
     const { scrollToTop } = useScrollToTop();
-    const pathname = usePathname();
+    const lastTapTime = useRef<number>(0);
+    const DOUBLE_TAP_DELAY = 300; // ms
 
     const [labelOpacity] = useState(new Animated.Value(isFocused ? 1 : 0));
     const [labelMarginBottom] = useState(new Animated.Value(isFocused ? 0 : 10));
@@ -37,24 +37,32 @@ export const TabButton = forwardRef<View, TabButtonProps>(
     }, [isFocused]);
 
     const handlePress = (e: any) => {
-      if (isFocused) {
-        // Tab is already active, scroll to top and prevent navigation
+      const now = Date.now();
+      const isDoubleTap = now - lastTapTime.current < DOUBLE_TAP_DELAY;
+      lastTapTime.current = now;
+
+      if (isFocused && isDoubleTap) {
+        // Double tap on active tab - scroll to top
         e.preventDefault?.();
         e.stopPropagation?.();
-        scrollToTop(pathname);
-        // Don't call onPress to avoid JUMP_TO action error
+        const path = typeof href === 'string' ? href : '/';
+        scrollToTop(path);
         return;
       }
+
+      if (isFocused) {
+        // Single tap on active tab - do nothing (wait for potential double tap)
+        e.preventDefault?.();
+        e.stopPropagation?.();
+        return;
+      }
+
       // Tab is not active, proceed with navigation
       onPress?.(e);
     };
 
     return (
-      <Pressable
-        className={`w-1/5 overflow-hidden ${isFocused ? '' : ''}`}
-        ref={ref}
-        {...props}
-        onPress={handlePress}>
+      <Pressable className="w-1/5 overflow-hidden" ref={ref} {...props} onPress={handlePress}>
         <View className="relative w-full flex-col items-center justify-center pb-0 pt-4">
           {icon && (
             <View className="relative">

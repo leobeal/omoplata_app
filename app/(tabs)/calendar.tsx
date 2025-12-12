@@ -14,10 +14,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getClasses, Class } from '@/api/classes';
+import Avatar from '@/components/Avatar';
 import CalendarClassCard from '@/components/CalendarClassCard';
 import Icon from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
+import { useAuth } from '@/contexts/AuthContext';
 import { useT } from '@/contexts/LocalizationContext';
+import { useScrollToTop } from '@/contexts/ScrollToTopContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -39,9 +42,14 @@ interface DayData {
 export default function CalendarScreen() {
   const t = useT();
   const colors = useThemeColors();
+  const { user } = useAuth();
+  const { registerScrollHandler, unregisterScrollHandler } = useScrollToTop();
   const daysListRef = useRef<FlatList<DayData>>(null);
   const classesListRef = useRef<FlatList<DayData>>(null);
+  const currentDayScrollViewRef = useRef<ScrollView>(null);
   const isScrollingFromSwipe = useRef(false);
+  const scrollHandlerRef = useRef<() => void>(() => {});
+  const selectedDateRef = useRef<string>('');
 
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
@@ -56,6 +64,19 @@ export default function CalendarScreen() {
 
   useEffect(() => {
     loadClasses();
+  }, []);
+
+  // Register scroll-to-top handler
+  useEffect(() => {
+    const handleScrollToTop = () => {
+      scrollHandlerRef.current();
+    };
+
+    registerScrollHandler('/calendar', handleScrollToTop);
+
+    return () => {
+      unregisterScrollHandler('/calendar');
+    };
   }, []);
 
   // Scroll to selected date when it changes
@@ -203,6 +224,28 @@ export default function CalendarScreen() {
     setSelectedDate(todayString);
   };
 
+  // Keep selectedDateRef in sync
+  selectedDateRef.current = selectedDate;
+
+  // Scroll to top (go to today and scroll content to top)
+  const scrollToTop = useCallback(() => {
+    // Scroll current day's content to top
+    currentDayScrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
+
+    // Go to today
+    goToToday();
+
+    // Also scroll the days list to the beginning (today)
+    daysListRef.current?.scrollToIndex({
+      index: 0,
+      animated: true,
+      viewPosition: 0.5,
+    });
+  }, []);
+
+  // Keep scroll handler ref updated
+  scrollHandlerRef.current = scrollToTop;
+
   // Render day item for horizontal FlatList
   const renderDayItem: ListRenderItem<DayData> = useCallback(
     ({ item: day }) => {
@@ -267,12 +310,6 @@ export default function CalendarScreen() {
     return days.findIndex((day) => day.dateString === selectedDate);
   }, [days, selectedDate]);
 
-  // Track selected date in ref for viewable items callback
-  const selectedDateRef = useRef(selectedDate);
-  useEffect(() => {
-    selectedDateRef.current = selectedDate;
-  }, [selectedDate]);
-
   // Handle viewable items change for swipe
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: { item: DayData }[] }) => {
@@ -320,6 +357,7 @@ export default function CalendarScreen() {
     ({ item: day }) => (
       <View style={{ width: SCREEN_WIDTH }}>
         <ScrollView
+          ref={day.dateString === selectedDateRef.current ? currentDayScrollViewRef : undefined}
           className="flex-1 px-6 pt-6"
           showsVerticalScrollIndicator={false}
           refreshControl={
@@ -394,19 +432,30 @@ export default function CalendarScreen() {
             {/* Month and Year */}
             <ThemedText className="text-base opacity-70">{visibleMonthYear}</ThemedText>
 
-            {/* Today Button */}
-            <Pressable
-              onPress={goToToday}
-              className="rounded-full px-3 py-2"
-              style={{
-                backgroundColor: isSelectedToday ? 'transparent' : colors.highlight,
-                opacity: isSelectedToday ? 0 : 1,
-              }}
-              disabled={isSelectedToday}>
-              <ThemedText className="text-xs font-semibold" style={{ color: '#FFFFFF' }}>
-                {t('calendar.today')}
-              </ThemedText>
-            </Pressable>
+            {/* Right side: Today Button + Avatar */}
+            <View className="flex-row items-center gap-3">
+              {/* Today Button */}
+              <Pressable
+                onPress={goToToday}
+                className="rounded-full px-3 py-2"
+                style={{
+                  backgroundColor: isSelectedToday ? 'transparent' : colors.highlight,
+                  opacity: isSelectedToday ? 0 : 1,
+                }}
+                disabled={isSelectedToday}>
+                <ThemedText className="text-xs font-semibold" style={{ color: '#FFFFFF' }}>
+                  {t('calendar.today')}
+                </ThemedText>
+              </Pressable>
+
+              {/* Avatar */}
+              <Avatar
+                name={user ? `${user.firstName} ${user.lastName}` : ''}
+                size="xs"
+                link="/screens/settings"
+                src={user?.profilePicture}
+              />
+            </View>
           </View>
         </View>
 

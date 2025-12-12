@@ -4,6 +4,7 @@ export default {
     dashboard: 'Dashboard',
     checkin: 'Check-in',
     classes: 'Classes',
+    leaderboard: 'Leaderboard',
     membership: 'Membership',
     billing: 'Billing',
     settings: 'Settings',
@@ -19,6 +20,7 @@ export default {
     save: 'Save',
     delete: 'Delete',
     edit: 'Edit',
+    reset: 'Reset',
     loading: 'Loading...',
     error: 'Error',
     success: 'Success',
@@ -143,6 +145,29 @@ export default {
     signOut: 'Sign out of your account',
     logoutConfirm: 'Are you sure you want to logout?',
     logoutError: 'Failed to logout. Please try again.',
+    version: 'Version',
+    appVersion: 'App Version',
+    buildNumber: 'Build Number',
+    privacy: 'Privacy',
+    privacyDescription: 'Control how your information is shared',
+  },
+
+  // Privacy Settings
+  privacy: {
+    title: 'Privacy',
+  },
+
+  // Help Screen
+  help: {
+    contactSupport: 'Contact Support',
+    emailSupport: 'Email Support',
+    callSupport: 'Call Support',
+    clubQuestions: 'Club Questions',
+    appQuestions: 'App Questions',
+    stillNeedHelp: 'Still need help?',
+    stillNeedHelpDescription:
+      "Can't find what you're looking for? Our support team is here to help you with any questions or concerns.",
+    contactSupportTeam: 'Contact Support Team',
   },
 
   // Memberships Screen
@@ -313,6 +338,47 @@ export default {
       medicalCertificate: 'Medical Certificate',
       other: 'Other Document',
     },
+
+    // Cancellation
+    downloadFailed: 'Download Failed',
+    importantInformation: 'Important Information',
+    cancellationWarning:
+      'Cancelling your membership will end your access to all gym facilities and services.',
+    cancellationReversible:
+      'You can reverse this decision before the cancellation date takes effect.',
+    planName: 'Plan',
+    amount: 'Amount',
+    cancellationDetails: 'Cancellation Details',
+    effectiveCancellationDate: 'Effective Cancellation Date',
+    membershipCancelledOn: 'Your membership will be cancelled on: {{date}}',
+    earliestCancellationDate: 'Earliest available date: {{date}}',
+    noticePeriod: 'Notice Period',
+    cancellationReason: 'Reason for Cancellation',
+    cancellationReasonPlaceholder: 'Tell us why you are cancelling (optional)...',
+    cancellationReasonOptional: 'This helps us improve our services',
+    cancelMyMembership: 'Cancel My Membership',
+    keepMembership: 'Keep My Membership',
+    confirmCancellation: 'Confirm Cancellation',
+    confirmCancellationMessage:
+      'Are you sure you want to cancel your membership effective {{date}}?',
+    yesCancelMembership: 'Yes, Cancel',
+    cancellationSuccess: 'Membership Cancelled',
+    cancellationError: 'Failed to cancel membership. Please try again.',
+
+    // Revert cancellation
+    alreadyCancelled: 'Membership Cancelled',
+    membershipEndsOn: 'Your membership will end on {{date}}.',
+    changeYourMind: 'Changed Your Mind?',
+    revertDescription:
+      'If you would like to continue your membership, you can revert the cancellation before it takes effect.',
+    revertCancellation: 'Revert Cancellation',
+    confirmRevert: 'Revert Cancellation',
+    confirmRevertMessage:
+      'Would you like to revert your cancellation and keep your membership active?',
+    yesRevert: 'Yes, Revert',
+    revertSuccess: 'Cancellation Reverted',
+    revertSuccessMessage: 'Your membership is active again.',
+    revertError: 'Failed to revert cancellation. Please try again.',
   },
 
   // Billing Screen
@@ -332,6 +398,28 @@ export default {
     paid: 'Paid',
     pending: 'Pending',
     overdue: 'Overdue',
+
+    // Invoice detail
+    invoiceDetails: 'Invoice Details',
+    invoiceNumber: 'Invoice Number',
+    issueDate: 'Issue Date',
+    dueDate: 'Due Date',
+    account: 'Account',
+    items: 'Items',
+    subtotal: 'Subtotal',
+    tax: 'Tax',
+    taxRate: '({{rate}}%)',
+    total: 'Total',
+    billingInformation: 'Billing Information',
+    addressOnFile: 'Address on file',
+    downloadPdf: 'Download PDF',
+    invoiceNotFound: 'Invoice not found',
+    unableToLoadInvoice: 'Unable to load invoice',
+    shareFailed: 'Share Failed',
+    shareFailedMessage: 'Failed to share invoice. Please try again.',
+    downloadFailed: 'Download Failed',
+    downloadFailedMessage: 'Failed to download invoice. Please try again.',
+    supportContact: 'For questions about this invoice, please contact {{email}}',
   },
 
   // SEPA Form
@@ -427,6 +515,84 @@ export default {
       P1Y: '1 year',
       P2Y: '2 years',
     },
+  },
+
+  // Graduation / Belt Progress
+  graduation: {
+    title: 'Belt Progress',
+    childTitle: "{{name}}'s Belts",
+    currentBelt: 'Current Belt',
+    nextBelt: 'Next Belt',
+    classesProgress: 'Classes Progress',
+    classesRemaining: 'classes remaining',
+    stripes: 'stripes',
+    nextStripe: 'Next Stripe',
+    lastPromotion: 'Last Promotion',
+    belts: {
+      // Adult belts
+      white: 'White Belt',
+      blue: 'Blue Belt',
+      purple: 'Purple Belt',
+      brown: 'Brown Belt',
+      black: 'Black Belt',
+      // Kids belts - solid
+      grey: 'Grey Belt',
+      yellow: 'Yellow Belt',
+      orange: 'Orange Belt',
+      green: 'Green Belt',
+      // Kids belts - two-color
+      'white-grey': 'White-Grey Belt',
+      'grey-white': 'Grey-White Belt',
+      'grey-black': 'Grey-Black Belt',
+      'yellow-white': 'Yellow-White Belt',
+      'yellow-black': 'Yellow-Black Belt',
+      'orange-white': 'Orange-White Belt',
+      'orange-black': 'Orange-Black Belt',
+      'green-white': 'Green-White Belt',
+      'green-black': 'Green-Black Belt',
+      // Coral & Red belts
+      'red-black': 'Coral Belt (Red/Black)',
+      'red-white': 'Coral Belt (Red/White)',
+      red: 'Red Belt',
+    },
+  },
+
+  // Leaderboard
+  leaderboard: {
+    title: 'Leaderboard',
+    rankings: 'Rankings',
+    you: 'You',
+    points: 'points',
+    classes: 'classes',
+    weeks: 'weeks',
+    outOf: 'of {{total}} members',
+    topPercentile: "You're in the top {{percent}}% of members!",
+    noResults: 'No Results',
+    tryDifferentFilters: 'Try adjusting your filters to see more results',
+    anonymous: 'Member',
+    filters: {
+      title: 'Filters',
+      button: 'Filters',
+      apply: 'Apply Filters',
+      timePeriod: 'Time Period',
+      discipline: 'Discipline',
+      demographic: 'Age Group',
+      sortBy: 'Sort By',
+    },
+  },
+
+  // Notifications
+  notifications: {
+    title: 'Notifications',
+    all: 'All',
+    classes: 'Classes',
+    achievements: 'Achievements',
+    reminders: 'Reminders',
+    billing: 'Billing',
+    noNotifications: 'No notifications',
+    noNotificationsMessage: "You're all caught up! Check back later for updates.",
+    unreadCount: '{{count}} unread',
+    markAllRead: 'Mark all read',
   },
 
   // Club Not Found

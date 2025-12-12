@@ -4,7 +4,7 @@ import api from './client';
 import { ENDPOINTS } from './config';
 
 const CACHE_KEY = 'app_config';
-const CACHE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const CACHE_DURATION_MS = 1; // 24 hours in milliseconds
 
 /**
  * Convert snake_case keys to camelCase

@@ -1,14 +1,26 @@
 import { router } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { View, Pressable, ActivityIndicator, RefreshControl, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  View,
+  Pressable,
+  ActivityIndicator,
+  RefreshControl,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 
 import { getInvoicesPaginated, getNextInvoice, Invoice } from '@/api/invoices';
 import { formatCurrency } from '@/api/membership';
 import { getPaymentMethodIcon, getPaymentMethodTypeName } from '@/api/payment-methods';
+import Avatar from '@/components/Avatar';
 import ErrorState from '@/components/ErrorState';
 import Header from '@/components/Header';
 import Icon from '@/components/Icon';
+import LargeTitle from '@/components/LargeTitle';
+import Section from '@/components/Section';
+import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
+import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -16,6 +28,7 @@ import { useThemeColors } from '@/contexts/ThemeColors';
 export default function BillingScreen() {
   const t = useT();
   const colors = useThemeColors();
+  const { user } = useAuth();
   const { paymentMethods } = useAppData();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [nextInvoice, setNextInvoice] = useState<Invoice | null>(null);
@@ -25,6 +38,15 @@ export default function BillingScreen() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Scroll state for collapsible title
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
+  const LARGE_TITLE_HEIGHT = 44;
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
+  }, []);
 
   useEffect(() => {
     loadInvoices();
@@ -117,7 +139,18 @@ export default function BillingScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-background">
-        <Header title={t('billing.title')} />
+        <Header
+          title={t('billing.title')}
+          rightComponents={[
+            <Avatar
+              key="avatar"
+              name={user ? `${user.firstName} ${user.lastName}` : ''}
+              size="xs"
+              link="/screens/settings"
+              src={user?.profilePicture}
+            />,
+          ]}
+        />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" />
         </View>
@@ -128,7 +161,18 @@ export default function BillingScreen() {
   if (error) {
     return (
       <View className="flex-1 bg-background">
-        <Header title={t('billing.title')} />
+        <Header
+          title={t('billing.title')}
+          rightComponents={[
+            <Avatar
+              key="avatar"
+              name={user ? `${user.firstName} ${user.lastName}` : ''}
+              size="xs"
+              link="/screens/settings"
+              src={user?.profilePicture}
+            />,
+          ]}
+        />
         <ErrorState
           title={t('billing.errorTitle') || 'Unable to load invoices'}
           message={error}
@@ -144,10 +188,23 @@ export default function BillingScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title={t('billing.title')} />
-      <ScrollView
-        className="flex-1 px-6 pt-4"
-        showsVerticalScrollIndicator={false}
+      <Header
+        title={t('billing.title')}
+        showTitle={showHeaderTitle}
+        rightComponents={[
+          <Avatar
+            key="avatar"
+            name={user ? `${user.firstName} ${user.lastName}` : ''}
+            size="xs"
+            link="/screens/settings"
+            src={user?.profilePicture}
+          />,
+        ]}
+      />
+      <ThemedScroller
+        className="flex-1 px-6"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -157,6 +214,8 @@ export default function BillingScreen() {
             progressBackgroundColor={colors.bg}
           />
         }>
+        <LargeTitle title={t('billing.title')} className="pt-2" />
+
         {/* Next Invoice Card */}
         {nextInvoice && (
           <Pressable
@@ -192,78 +251,70 @@ export default function BillingScreen() {
         )}
 
         {/* Invoices List */}
-        <View className="mb-4">
-          <ThemedText className="mb-3 text-lg font-bold">{t('billing.recentInvoices')}</ThemedText>
-        </View>
-
-        <View className="mb-4 rounded-2xl bg-secondary">
-          {invoices.map((invoice, index) => (
-            <Pressable
-              key={invoice.id}
-              className={`flex-row items-center p-5 ${
-                index < invoices.length - 1 ? 'border-b border-border' : ''
-              }`}
-              onPress={() => router.push(`/screens/invoice-detail?id=${invoice.id}`)}>
-              <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-background">
-                <Icon name="FileText" size={20} />
-              </View>
-
-              <View className="flex-1">
-                <ThemedText className="font-semibold">{invoice.id}</ThemedText>
-                <ThemedText className="text-sm opacity-50">{formatDate(invoice.date)}</ThemedText>
-              </View>
-
-              <View className="items-end">
-                <ThemedText className="font-bold">
-                  {formatAmount(invoice.amount, invoice.currency)}
-                </ThemedText>
-                <View
-                  className="mt-1 rounded-full px-2 py-0.5"
-                  style={{ backgroundColor: `${getStatusColor(invoice.status)}20` }}>
-                  <ThemedText
-                    className="text-xs font-semibold"
-                    style={{ color: getStatusColor(invoice.status) }}>
-                    {getStatusLabel(invoice.status)}
-                  </ThemedText>
+        <Section title={t('billing.recentInvoices')} titleSize="lg" noTopMargin className="mt-4">
+          <View className="rounded-2xl bg-secondary">
+            {invoices.map((invoice, index) => (
+              <Pressable
+                key={invoice.id}
+                className={`flex-row items-center p-5 ${
+                  index < invoices.length - 1 ? 'border-b border-border' : ''
+                }`}
+                onPress={() => router.push(`/screens/invoice-detail?id=${invoice.id}`)}>
+                <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-background">
+                  <Icon name="FileText" size={20} />
                 </View>
-              </View>
 
-              <View className="ml-3 opacity-30">
-                <Icon name="ChevronRight" size={20} />
-              </View>
+                <View className="flex-1">
+                  <ThemedText className="font-semibold">{invoice.id}</ThemedText>
+                  <ThemedText className="text-sm opacity-50">{formatDate(invoice.date)}</ThemedText>
+                </View>
+
+                <View className="items-end">
+                  <ThemedText className="font-bold">
+                    {formatAmount(invoice.amount, invoice.currency)}
+                  </ThemedText>
+                  <View
+                    className="mt-1 rounded-full px-2 py-0.5"
+                    style={{ backgroundColor: `${getStatusColor(invoice.status)}20` }}>
+                    <ThemedText
+                      className="text-xs font-semibold"
+                      style={{ color: getStatusColor(invoice.status) }}>
+                      {getStatusLabel(invoice.status)}
+                    </ThemedText>
+                  </View>
+                </View>
+
+                <View className="ml-3 opacity-30">
+                  <Icon name="ChevronRight" size={20} />
+                </View>
+              </Pressable>
+            ))}
+          </View>
+
+          {/* Load More Button */}
+          {hasMore && (
+            <Pressable
+              className="mt-4 flex-row items-center justify-center rounded-2xl bg-secondary p-4"
+              onPress={loadMore}
+              disabled={loadingMore}>
+              {loadingMore ? (
+                <ActivityIndicator size="small" color={colors.highlight} />
+              ) : (
+                <>
+                  <ThemedText className="mr-2 font-semibold text-highlight">
+                    {t('billing.loadMore')}
+                  </ThemedText>
+                  <Icon name="ChevronDown" size={20} color={colors.highlight} />
+                </>
+              )}
             </Pressable>
-          ))}
-        </View>
-
-        {/* Load More Button */}
-        {hasMore && (
-          <Pressable
-            className="mb-8 flex-row items-center justify-center rounded-2xl bg-secondary p-4"
-            onPress={loadMore}
-            disabled={loadingMore}>
-            {loadingMore ? (
-              <ActivityIndicator size="small" color={colors.highlight} />
-            ) : (
-              <>
-                <ThemedText className="mr-2 font-semibold text-highlight">
-                  {t('billing.loadMore')}
-                </ThemedText>
-                <Icon name="ChevronDown" size={20} color={colors.highlight} />
-              </>
-            )}
-          </Pressable>
-        )}
+          )}
+        </Section>
 
         {/* Payment Method */}
         {paymentMethods.length > 0 && (
-          <>
-            <View className="mb-4">
-              <ThemedText className="mb-3 text-lg font-bold">
-                {t('billing.paymentMethod')}
-              </ThemedText>
-            </View>
-
-            <View className="mb-8 rounded-2xl bg-secondary p-5">
+          <Section title={t('billing.paymentMethod')} titleSize="lg">
+            <View className="rounded-2xl bg-secondary p-5">
               {paymentMethods
                 .filter((pm) => pm.isActive)
                 .map((paymentMethod) => (
@@ -279,17 +330,12 @@ export default function BillingScreen() {
                         {paymentMethod.details?.maskedIban || paymentMethod.last4}
                       </ThemedText>
                     </View>
-                    <Pressable onPress={() => router.push('/screens/payment-methods')}>
-                      <ThemedText className="font-semibold text-highlight">
-                        {t('billing.edit')}
-                      </ThemedText>
-                    </Pressable>
                   </View>
                 ))}
             </View>
-          </>
+          </Section>
         )}
-      </ScrollView>
+      </ThemedScroller>
     </View>
   );
 }

@@ -7,6 +7,7 @@
     "ends_at": null,
     "renews_at": null,
     "renews_automatically": true,
+    "cancellable_at": "2026-06-03",
     "amount": 89,
     "currency": "EUR",
     "plan": {

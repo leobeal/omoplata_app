@@ -11,6 +11,33 @@ import {
   CACHE_DURATIONS,
 } from '@/utils/local-cache';
 
+/**
+ * Convert snake_case keys to camelCase
+ */
+function toCamelCase(str: string): string {
+  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+
+/**
+ * Transform snake_case object to camelCase
+ */
+function transformToCamelCase<T>(obj: unknown): T {
+  if (Array.isArray(obj)) {
+    return obj.map(transformToCamelCase) as T;
+  }
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).reduce(
+      (acc, key) => {
+        const camelKey = toCamelCase(key);
+        acc[camelKey] = transformToCamelCase((obj as Record<string, unknown>)[key]);
+        return acc;
+      },
+      {} as Record<string, unknown>
+    ) as T;
+  }
+  return obj as T;
+}
+
 export type InvoiceStatus =
   | 'pending'
   | 'processing'
@@ -24,11 +51,20 @@ export type InvoiceStatus =
   | 'overdue'
   | 'void';
 
+export interface PayerAddress {
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
 export interface LineItem {
   id: string;
   description: string;
   quantity: number;
   unitPrice: number;
+  taxRate: number;
   total: number;
 }
 
@@ -41,6 +77,7 @@ export interface Invoice {
   amount: number;
   paymentMethod: string;
   paymentDetails?: string;
+  payerAddress?: PayerAddress;
   lineItems: LineItem[];
   subtotal: number;
   tax: number;
@@ -84,16 +121,20 @@ export const getInvoices = async (params?: InvoicesParams): Promise<InvoicesResp
   const cacheKey = `${CACHE_KEYS.INVOICES}:${queryParams || 'default'}`;
 
   try {
-    const response = await api.get<InvoicesResponse>(endpoint);
+    // API returns snake_case, we need to type as unknown first
+    const response = await api.get<unknown>(endpoint);
 
     if (response.error || !response.data) {
       throw new Error(response.error || 'Failed to fetch invoices');
     }
 
-    // Cache successful response
-    await saveToCache(cacheKey, response.data);
+    // Transform snake_case API response to camelCase
+    const transformedData = transformToCamelCase<InvoicesResponse>(response.data);
 
-    return response.data;
+    // Cache successful response (already in camelCase)
+    await saveToCache(cacheKey, transformedData);
+
+    return transformedData;
   } catch (error) {
     // Try to get cached data as fallback (allow stale for offline)
     const { data: cachedInvoices } = await getFromCacheWithStale<InvoicesResponse>(

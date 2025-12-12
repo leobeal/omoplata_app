@@ -4,6 +4,7 @@ export default {
     dashboard: 'Painel',
     checkin: 'Check-in',
     classes: 'Aulas',
+    leaderboard: 'Ranking',
     membership: 'Assinatura',
     billing: 'Faturamento',
     settings: 'Configurações',
@@ -19,6 +20,7 @@ export default {
     save: 'Salvar',
     delete: 'Excluir',
     edit: 'Editar',
+    reset: 'Redefinir',
     loading: 'Carregando...',
     error: 'Erro',
     success: 'Sucesso',
@@ -142,6 +144,29 @@ export default {
     signOut: 'Sair da sua conta',
     logoutConfirm: 'Tem certeza que deseja sair?',
     logoutError: 'Falha ao sair. Por favor, tente novamente.',
+    version: 'Versão',
+    appVersion: 'Versão do App',
+    buildNumber: 'Número da Build',
+    privacy: 'Privacidade',
+    privacyDescription: 'Controle como suas informações são compartilhadas',
+  },
+
+  // Configurações de Privacidade
+  privacy: {
+    title: 'Privacidade',
+  },
+
+  // Tela de Ajuda
+  help: {
+    contactSupport: 'Contato do Suporte',
+    emailSupport: 'Suporte por E-mail',
+    callSupport: 'Suporte por Telefone',
+    clubQuestions: 'Perguntas sobre a Academia',
+    appQuestions: 'Perguntas sobre o App',
+    stillNeedHelp: 'Ainda precisa de ajuda?',
+    stillNeedHelpDescription:
+      'Não encontrou o que procurava? Nossa equipe de suporte está aqui para ajudá-lo com qualquer dúvida ou preocupação.',
+    contactSupportTeam: 'Contatar Equipe de Suporte',
   },
 
   // Tela de Assinaturas
@@ -312,6 +337,45 @@ export default {
       medicalCertificate: 'Atestado Médico',
       other: 'Outro Documento',
     },
+
+    // Cancelamento
+    downloadFailed: 'Falha no Download',
+    importantInformation: 'Informação Importante',
+    cancellationWarning:
+      'Cancelar sua assinatura encerrará seu acesso a todas as instalações e serviços.',
+    cancellationReversible:
+      'Você pode reverter esta decisão antes que a data de cancelamento entre em vigor.',
+    planName: 'Plano',
+    amount: 'Valor',
+    cancellationDetails: 'Detalhes do Cancelamento',
+    effectiveCancellationDate: 'Data Efetiva do Cancelamento',
+    membershipCancelledOn: 'Sua assinatura será cancelada em: {{date}}',
+    earliestCancellationDate: 'Data mais cedo disponível: {{date}}',
+    noticePeriod: 'Período de Aviso',
+    cancellationReason: 'Motivo do Cancelamento',
+    cancellationReasonPlaceholder: 'Conte-nos por que você está cancelando (opcional)...',
+    cancellationReasonOptional: 'Isso nos ajuda a melhorar nossos serviços',
+    cancelMyMembership: 'Cancelar Minha Assinatura',
+    keepMembership: 'Manter Minha Assinatura',
+    confirmCancellation: 'Confirmar Cancelamento',
+    confirmCancellationMessage:
+      'Tem certeza de que deseja cancelar sua assinatura a partir de {{date}}?',
+    yesCancelMembership: 'Sim, Cancelar',
+    cancellationError: 'Falha ao cancelar assinatura. Por favor, tente novamente.',
+
+    // Reverter cancelamento
+    alreadyCancelled: 'Assinatura Cancelada',
+    membershipEndsOn: 'Sua assinatura terminará em {{date}}.',
+    changeYourMind: 'Mudou de Ideia?',
+    revertDescription:
+      'Se você deseja continuar sua assinatura, pode reverter o cancelamento antes que ele entre em vigor.',
+    revertCancellation: 'Reverter Cancelamento',
+    confirmRevert: 'Reverter Cancelamento',
+    confirmRevertMessage: 'Deseja reverter o cancelamento e manter sua assinatura ativa?',
+    yesRevert: 'Sim, Reverter',
+    revertSuccess: 'Cancelamento Revertido',
+    revertSuccessMessage: 'Sua assinatura está ativa novamente.',
+    revertError: 'Falha ao reverter cancelamento. Por favor, tente novamente.',
   },
 
   // Tela de Faturamento
@@ -325,11 +389,34 @@ export default {
     sepaDirectDebit: 'Débito Direto SEPA',
     edit: 'Editar',
     loadMore: 'Carregar Mais',
+    errorTitle: 'Não foi possível carregar as faturas',
 
     // Status da fatura
     paid: 'Pago',
     pending: 'Pendente',
     overdue: 'Vencido',
+
+    // Detalhes da fatura
+    invoiceDetails: 'Detalhes da Fatura',
+    invoiceNumber: 'Número da Fatura',
+    issueDate: 'Data de Emissão',
+    dueDate: 'Data de Vencimento',
+    account: 'Conta',
+    items: 'Itens',
+    subtotal: 'Subtotal',
+    tax: 'Impostos',
+    taxRate: '({{rate}}%)',
+    total: 'Total',
+    billingInformation: 'Informações de Cobrança',
+    addressOnFile: 'Endereço cadastrado',
+    downloadPdf: 'Baixar PDF',
+    invoiceNotFound: 'Fatura não encontrada',
+    unableToLoadInvoice: 'Não foi possível carregar a fatura',
+    shareFailed: 'Falha ao compartilhar',
+    shareFailedMessage: 'Não foi possível compartilhar a fatura. Por favor, tente novamente.',
+    downloadFailed: 'Falha no download',
+    downloadFailedMessage: 'Não foi possível baixar a fatura. Por favor, tente novamente.',
+    supportContact: 'Para dúvidas sobre esta fatura, entre em contato com {{email}}',
   },
 
   // Formulário SEPA
@@ -394,6 +481,84 @@ export default {
       one: 'aula',
       other: 'aulas',
     },
+  },
+
+  // Graduação / Progresso de Faixa
+  graduation: {
+    title: 'Progresso de Faixa',
+    childTitle: 'Faixas de {{name}}',
+    currentBelt: 'Faixa Atual',
+    nextBelt: 'Próxima Faixa',
+    classesProgress: 'Progresso de Aulas',
+    classesRemaining: 'aulas restantes',
+    stripes: 'graus',
+    nextStripe: 'Próximo Grau',
+    lastPromotion: 'Última Graduação',
+    belts: {
+      // Faixas adultas
+      white: 'Faixa Branca',
+      blue: 'Faixa Azul',
+      purple: 'Faixa Roxa',
+      brown: 'Faixa Marrom',
+      black: 'Faixa Preta',
+      // Faixas infantis - sólidas
+      grey: 'Faixa Cinza',
+      yellow: 'Faixa Amarela',
+      orange: 'Faixa Laranja',
+      green: 'Faixa Verde',
+      // Faixas infantis - duas cores
+      'white-grey': 'Faixa Branca-Cinza',
+      'grey-white': 'Faixa Cinza-Branca',
+      'grey-black': 'Faixa Cinza-Preta',
+      'yellow-white': 'Faixa Amarela-Branca',
+      'yellow-black': 'Faixa Amarela-Preta',
+      'orange-white': 'Faixa Laranja-Branca',
+      'orange-black': 'Faixa Laranja-Preta',
+      'green-white': 'Faixa Verde-Branca',
+      'green-black': 'Faixa Verde-Preta',
+      // Faixas coral e vermelha
+      'red-black': 'Faixa Coral (Vermelha/Preta)',
+      'red-white': 'Faixa Coral (Vermelha/Branca)',
+      red: 'Faixa Vermelha',
+    },
+  },
+
+  // Ranking
+  leaderboard: {
+    title: 'Ranking',
+    rankings: 'Classificação',
+    you: 'Você',
+    points: 'pontos',
+    classes: 'aulas',
+    weeks: 'semanas',
+    outOf: 'de {{total}} membros',
+    topPercentile: 'Você está entre os {{percent}}% melhores membros!',
+    noResults: 'Sem Resultados',
+    tryDifferentFilters: 'Tente ajustar seus filtros para ver mais resultados',
+    anonymous: 'Membro',
+    filters: {
+      title: 'Filtros',
+      button: 'Filtros',
+      apply: 'Aplicar Filtros',
+      timePeriod: 'Período',
+      discipline: 'Modalidade',
+      demographic: 'Faixa Etária',
+      sortBy: 'Ordenar por',
+    },
+  },
+
+  // Notificações
+  notifications: {
+    title: 'Notificações',
+    all: 'Todas',
+    classes: 'Aulas',
+    achievements: 'Conquistas',
+    reminders: 'Lembretes',
+    billing: 'Faturamento',
+    noNotifications: 'Sem notificações',
+    noNotificationsMessage: 'Você está em dia! Volte mais tarde para ver atualizações.',
+    unreadCount: '{{count}} não lidas',
+    markAllRead: 'Marcar todas como lidas',
   },
 
   // Club não encontrado

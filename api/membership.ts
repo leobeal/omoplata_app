@@ -1,5 +1,8 @@
-import api from './client';
-import { ENDPOINTS } from './config';
+import { File, Paths } from 'expo-file-system/next';
+import * as Sharing from 'expo-sharing';
+
+import api, { getAuthToken } from './client';
+import { ENDPOINTS, getBaseUrl } from './config';
 
 import {
   CACHE_KEYS,
@@ -112,6 +115,7 @@ export interface Membership {
   endsAt: string | null;
   renewsAt: string | null;
   renewsAutomatically: boolean;
+  cancellableAt: string | null; // Earliest date the membership can be cancelled (from backend)
   amount: number;
   currency: string;
   plan: Plan;
@@ -160,42 +164,144 @@ export const getMembership = async (): Promise<Membership | null> => {
 };
 
 /**
- * Download contract PDF (simulated)
+ * Download contract PDF and open share dialog
  */
-export const downloadContract = async (membershipId: string): Promise<string> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  // In a real app, this would return a PDF URL or blob
-  return `https://api.omoplata.com/memberships/${membershipId}/contract/download`;
+export const downloadContract = async (membershipId: number): Promise<void> => {
+  const token = getAuthToken();
+  console.log('[Contract Download] Starting download for membership:', membershipId);
+  console.log('[Contract Download] Auth token present:', !!token);
+
+  if (!token) {
+    throw new Error('Not authenticated');
+  }
+
+  const downloadUrl = `${getBaseUrl()}${ENDPOINTS.MEMBERSHIPS.DOWNLOAD_CONTRACT(membershipId)}`;
+  console.log('[Contract Download] Download URL:', downloadUrl);
+
+  const file = new File(Paths.cache, `contract-${membershipId}.pdf`);
+  console.log('[Contract Download] Target file path:', file.uri);
+
+  const response = await fetch(downloadUrl, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to download contract: ${response.status} - ${errorText}`);
+  }
+
+  const blob = await response.blob();
+
+  // Convert blob to base64 using FileReader (React Native compatible)
+  const base64 = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
+      const base64Data = result.split(',')[1];
+      resolve(base64Data);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+
+  console.log('[Contract Download] Writing file...');
+  await file.write(base64, { encoding: 'base64' });
+  console.log('[Contract Download] File written successfully');
+
+  const canShare = await Sharing.isAvailableAsync();
+  console.log('[Contract Download] Sharing available:', canShare);
+
+  if (!canShare) {
+    throw new Error('Sharing is not available on this device');
+  }
+
+  console.log('[Contract Download] Opening share dialog...');
+  await Sharing.shareAsync(file.uri, {
+    mimeType: 'application/pdf',
+    dialogTitle: `Contract ${membershipId}`,
+  });
+  console.log('[Contract Download] Share dialog closed');
 };
 
+// Cancellation request payload
+export interface CancelMembershipRequest {
+  cancellation_date: string; // ISO date string (YYYY-MM-DD)
+  reason?: string;
+}
+
+// Cancellation response from API
+export interface CancelMembershipResponse {
+  success: boolean;
+  message: string;
+  membership: {
+    id: number;
+    status: MembershipStatus;
+    cancellation_date: string;
+    cancelled_at: string;
+  };
+}
+
 /**
- * Cancel membership (simulated)
+ * Cancel membership
  * @param membershipId - The membership ID to cancel
- * @param cancellationDate - The effective cancellation date
+ * @param cancellationDate - The effective cancellation date (YYYY-MM-DD)
  * @param reason - Optional cancellation reason
  */
 export const cancelMembership = async (
-  membershipId: string,
+  membershipId: number,
   cancellationDate: string,
   reason?: string
-): Promise<{ success: boolean; message: string }> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+): Promise<CancelMembershipResponse> => {
+  const response = await api.post<CancelMembershipResponse>(
+    ENDPOINTS.MEMBERSHIPS.CANCEL(String(membershipId)),
+    {
+      cancellation_date: cancellationDate,
+      reason,
+    }
+  );
 
-  // In a real app, this would call your backend API:
-  // const response = await fetch(`${API_BASE_URL}/memberships/${membershipId}/cancel`, {
-  //   method: 'POST',
-  //   body: JSON.stringify({ cancellationDate, reason })
-  // });
-  // return response.json();
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to cancel membership');
+  }
 
-  console.log('Cancellation reason:', reason);
+  // Clear membership cache since it's now cancelled
+  await saveToCache(CACHE_KEYS.MEMBERSHIP, null);
 
-  return {
-    success: true,
-    message: `Membership will be cancelled effective ${cancellationDate}`,
+  return response.data;
+};
+
+// Revert cancellation response from API
+export interface RevertCancellationResponse {
+  success: boolean;
+  message: string;
+  membership: {
+    id: number;
+    status: MembershipStatus;
   };
+}
+
+/**
+ * Revert membership cancellation (take back the cancellation)
+ * @param membershipId - The membership ID to revert cancellation for
+ */
+export const revertCancellation = async (
+  membershipId: number
+): Promise<RevertCancellationResponse> => {
+  const response = await api.post<RevertCancellationResponse>(
+    ENDPOINTS.MEMBERSHIPS.REVERT_CANCEL(String(membershipId))
+  );
+
+  if (response.error || !response.data) {
+    throw new Error(response.error || 'Failed to revert cancellation');
+  }
+
+  // Clear membership cache to refresh data
+  await saveToCache(CACHE_KEYS.MEMBERSHIP, null);
+
+  return response.data;
 };
 
 /**

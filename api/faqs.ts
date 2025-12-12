@@ -5,9 +5,12 @@ export interface FAQ {
   answer: string;
 }
 
+export type FAQType = 'club' | 'app';
+
 export interface FAQCategory {
   id: string;
   title: string;
+  type: FAQType;
   faqs: FAQ[];
 }
 

@@ -1,8 +1,16 @@
 import { getDocumentAsync } from 'expo-document-picker';
 import { requestCameraPermissionsAsync, launchCameraAsync } from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, Alert, RefreshControl, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  View,
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
+  TouchableOpacity,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 
 import {
   getMembership,
@@ -26,10 +34,12 @@ import { getPaymentMethod, PaymentMethod, getPaymentMethodIcon } from '@/api/pay
 import { Button } from '@/components/Button';
 import Header from '@/components/Header';
 import Icon from '@/components/Icon';
+import LargeTitle from '@/components/LargeTitle';
 import Section from '@/components/Section';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useMembershipSettings, useFeatureFlags } from '@/contexts/AppConfigContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
@@ -37,6 +47,7 @@ export default function MembershipScreen() {
   const t = useT();
   const colors = useThemeColors();
   const router = useRouter();
+  const { user } = useAuth();
   const membershipSettings = useMembershipSettings();
   const featureFlags = useFeatureFlags();
   const [membership, setMembership] = useState<MembershipType | null>(null);
@@ -45,6 +56,15 @@ export default function MembershipScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [uploadingDocumentId, setUploadingDocumentId] = useState<number | null>(null);
+
+  // Scroll state for collapsible title
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
+  const LARGE_TITLE_HEIGHT = 44;
+
+  const handleScrollForTitle = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -75,16 +95,13 @@ export default function MembershipScreen() {
 
     setDownloadingPdf(true);
     try {
-      const pdfUrl = await downloadContract(membership.id);
-      // In a real app, this would open the PDF or download it
-      Alert.alert(
-        t('membership.contractPdfTitle'),
-        t('membership.contractDownloadMessage', { url: pdfUrl }),
-        [{ text: t('common.confirm'), style: 'default' }]
-      );
+      await downloadContract(membership.id);
     } catch (error) {
       console.error('Error downloading contract:', error);
-      Alert.alert(t('common.error'), t('membership.downloadError'));
+      Alert.alert(
+        t('membership.downloadFailed'),
+        error instanceof Error ? error.message : t('membership.downloadError')
+      );
     } finally {
       setDownloadingPdf(false);
     }
@@ -215,7 +232,7 @@ export default function MembershipScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-background">
-        <Header title={t('membership.title')} />
+        <Header title={t('membership.title')} showBackButton />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" testID="activity-indicator" />
         </View>
@@ -226,7 +243,7 @@ export default function MembershipScreen() {
   if (!membership) {
     return (
       <View className="flex-1 bg-background">
-        <Header title={t('membership.title')} />
+        <Header title={t('membership.title')} showBackButton />
         <View className="flex-1 items-center justify-center px-6">
           <Icon name="UserX" size={64} className="mb-4 opacity-30" />
           <ThemedText className="text-center text-lg">{t('membership.noMembership')}</ThemedText>
@@ -241,9 +258,11 @@ export default function MembershipScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title={t('membership.title')} />
+      <Header title={t('membership.title')} showTitle={showHeaderTitle} showBackButton />
       <ThemedScroller
-        className="px-6 pt-4"
+        className="px-6"
+        onScroll={handleScrollForTitle}
+        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -253,6 +272,8 @@ export default function MembershipScreen() {
             progressBackgroundColor={colors.bg}
           />
         }>
+        <LargeTitle title={t('membership.title')} className="pt-2" />
+
         {/* Current Plan Card */}
         <View className="mb-6 rounded-2xl bg-secondary p-6">
           <View className="mb-4 flex-row items-start justify-between">
@@ -295,7 +316,7 @@ export default function MembershipScreen() {
         {/* Pending Document Requests */}
         {pendingDocuments.length > 0 && (
           <>
-            <Section title={t('membership.pendingDocuments')} className="mb-4" />
+            <Section title={t('membership.pendingDocuments')} className="mb-2" />
             <View className="mb-6 rounded-2xl bg-secondary">
               {pendingDocuments.map((docRequest, index) => (
                 <View
@@ -345,7 +366,7 @@ export default function MembershipScreen() {
         {/* Members (if more than one) */}
         {membership.members.length > 1 && (
           <>
-            <Section title={t('membership.members')} className="mb-4" />
+            <Section title={t('membership.members')} className="mb-2" />
             <View className="mb-6 rounded-2xl bg-secondary">
               {membership.members.map((member, index) => (
                 <View
@@ -372,7 +393,7 @@ export default function MembershipScreen() {
         )}
 
         {/* Contract Details */}
-        <Section title={t('membership.contractDetails')} className="mb-4" />
+        <Section title={t('membership.contractDetails')} className="mb-2" />
         <View className="mb-6 rounded-2xl bg-secondary">
           <View className="flex-row items-center justify-between border-b border-border p-5">
             <ThemedText className="opacity-70">{t('membership.startDate')}</ThemedText>
@@ -413,7 +434,7 @@ export default function MembershipScreen() {
         </View>
 
         {/* Pricing */}
-        <Section title={t('membership.pricing')} className="mb-4" />
+        <Section title={t('membership.pricing')} className="mb-2" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">
           <View className="mb-4 flex-row items-center justify-between">
             <View>
@@ -451,7 +472,7 @@ export default function MembershipScreen() {
         {/* Payment Method */}
         {paymentMethod && (
           <>
-            <Section title={t('membership.paymentMethod')} className="mb-4" />
+            <Section title={t('membership.paymentMethod')} className="mb-2" />
             <View className="mb-6 rounded-2xl bg-secondary p-5">
               <View className="flex-row items-center">
                 <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-background">
@@ -482,7 +503,7 @@ export default function MembershipScreen() {
         )}
 
         {/* Policies */}
-        <Section title={t('membership.policies')} className="mb-4" />
+        <Section title={t('membership.policies')} className="mb-2" />
         <View className="mb-6 rounded-2xl bg-secondary p-5">
           <View className="mb-4">
             <View className="mb-2 flex-row items-start">
@@ -540,6 +561,7 @@ export default function MembershipScreen() {
               icon="Download"
               variant="outline"
               onPress={handleDownloadContract}
+              loading={downloadingPdf}
               disabled={downloadingPdf}
             />
           </View>

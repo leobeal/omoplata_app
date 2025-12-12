@@ -19,20 +19,23 @@ describe('Invoices API', () => {
     jest.clearAllMocks();
   });
 
-  const createMockInvoice = (overrides?: Partial<Invoice>): Invoice => ({
+  // Snake_case mock invoice (as API returns)
+  const createMockApiInvoice = (overrides?: Record<string, unknown>) => ({
     id: 'INV9e68962ad0',
     date: '2025-11-10',
-    dueDate: '2025-11-11',
+    due_date: '2025-11-11',
     status: 'pending',
     amount: 6.77,
-    paymentMethod: 'Manual',
-    paymentDetails: null,
-    lineItems: [
+    currency: 'EUR',
+    payment_method: 'Manual',
+    payment_details: null,
+    line_items: [
       {
         id: '1000007',
         description: 'Mitgliedschaft Leo Beal - plan',
         quantity: 1,
-        unitPrice: 6.77,
+        unit_price: 6.77,
+        tax_rate: 0,
         total: 6.77,
       },
     ],
@@ -42,7 +45,34 @@ describe('Invoices API', () => {
     ...overrides,
   });
 
-  const createMockApiResponse = (invoices: Invoice[], meta?: any) => ({
+  // CamelCase expected invoice (after transformation)
+  const createExpectedInvoice = (overrides?: Partial<Invoice>): Invoice => ({
+    id: 'INV9e68962ad0',
+    date: '2025-11-10',
+    dueDate: '2025-11-11',
+    status: 'pending',
+    amount: 6.77,
+    currency: 'EUR',
+    paymentMethod: 'Manual',
+    paymentDetails: null,
+    lineItems: [
+      {
+        id: '1000007',
+        description: 'Mitgliedschaft Leo Beal - plan',
+        quantity: 1,
+        unitPrice: 6.77,
+        taxRate: 0,
+        total: 6.77,
+      },
+    ],
+    subtotal: 6.77,
+    tax: 0,
+    total: 6.77,
+    ...overrides,
+  });
+
+  // Snake_case API response (as API returns)
+  const createMockApiResponse = (invoices: ReturnType<typeof createMockApiInvoice>[], meta?: Record<string, unknown>) => ({
     data: {
       success: true,
       data: invoices,
@@ -50,7 +80,7 @@ describe('Invoices API', () => {
         page: 1,
         limit: 20,
         total: invoices.length,
-        lastPage: 1,
+        last_page: 1,
         ...meta,
       },
     },
@@ -58,9 +88,10 @@ describe('Invoices API', () => {
   });
 
   describe('getInvoices', () => {
-    it('should fetch invoices without parameters', async () => {
-      const mockInvoices = [createMockInvoice()];
-      const mockResponse = createMockApiResponse(mockInvoices);
+    it('should fetch invoices without parameters and transform snake_case to camelCase', async () => {
+      const mockApiInvoices = [createMockApiInvoice()];
+      const mockResponse = createMockApiResponse(mockApiInvoices);
+      const expectedInvoice = createExpectedInvoice();
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -69,13 +100,19 @@ describe('Invoices API', () => {
       expect(mockApi.get).toHaveBeenCalledWith(ENDPOINTS.INVOICES.LIST);
       expect(result.success).toBe(true);
       expect(result.data).toHaveLength(1);
-      expect(result.data[0]).toEqual(mockInvoices[0]);
+      // Verify snake_case was transformed to camelCase
+      expect(result.data[0]).toEqual(expectedInvoice);
+      expect(result.data[0].dueDate).toBe('2025-11-11');
+      expect(result.data[0].paymentMethod).toBe('Manual');
+      expect(result.data[0].lineItems[0].unitPrice).toBe(6.77);
+      expect(result.data[0].lineItems[0].taxRate).toBe(0);
       expect(result.meta.total).toBe(1);
+      expect(result.meta.lastPage).toBe(1);
     });
 
     it('should fetch invoices with pagination parameters', async () => {
-      const mockInvoices = [createMockInvoice()];
-      const mockResponse = createMockApiResponse(mockInvoices, {
+      const mockApiInvoices = [createMockApiInvoice()];
+      const mockResponse = createMockApiResponse(mockApiInvoices, {
         page: 2,
         limit: 10,
       });
@@ -88,8 +125,8 @@ describe('Invoices API', () => {
     });
 
     it('should fetch invoices with status filter', async () => {
-      const mockInvoices = [createMockInvoice({ status: 'paid' })];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockApiInvoices = [createMockApiInvoice({ status: 'paid' })];
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -99,8 +136,8 @@ describe('Invoices API', () => {
     });
 
     it('should fetch invoices with date range', async () => {
-      const mockInvoices = [createMockInvoice()];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockApiInvoices = [createMockApiInvoice()];
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -115,8 +152,8 @@ describe('Invoices API', () => {
     });
 
     it('should fetch invoices with combined filters', async () => {
-      const mockInvoices = [createMockInvoice()];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockApiInvoices = [createMockApiInvoice()];
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -133,12 +170,12 @@ describe('Invoices API', () => {
     });
 
     it('should handle multiple invoices', async () => {
-      const mockInvoices = [
-        createMockInvoice({ id: 'INV001', amount: 10.0 }),
-        createMockInvoice({ id: 'INV002', amount: 20.0 }),
-        createMockInvoice({ id: 'INV003', amount: 30.0 }),
+      const mockApiInvoices = [
+        createMockApiInvoice({ id: 'INV001', amount: 10.0 }),
+        createMockApiInvoice({ id: 'INV002', amount: 20.0 }),
+        createMockApiInvoice({ id: 'INV003', amount: 30.0 }),
       ];
-      const mockResponse = createMockApiResponse(mockInvoices, { total: 3 });
+      const mockResponse = createMockApiResponse(mockApiInvoices, { total: 3 });
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -162,8 +199,8 @@ describe('Invoices API', () => {
       ];
 
       for (const status of statuses) {
-        const mockInvoices = [createMockInvoice({ status })];
-        const mockResponse = createMockApiResponse(mockInvoices);
+        const mockApiInvoices = [createMockApiInvoice({ status })];
+        const mockResponse = createMockApiResponse(mockApiInvoices);
 
         mockApi.get.mockResolvedValue(mockResponse);
 
@@ -174,21 +211,23 @@ describe('Invoices API', () => {
     });
 
     it('should handle invoices with multiple line items', async () => {
-      const mockInvoices = [
-        createMockInvoice({
-          lineItems: [
+      const mockApiInvoices = [
+        createMockApiInvoice({
+          line_items: [
             {
               id: '1',
               description: 'Membership',
               quantity: 1,
-              unitPrice: 50.0,
+              unit_price: 50.0,
+              tax_rate: 19.0,
               total: 50.0,
             },
             {
               id: '2',
               description: 'Training Fee',
               quantity: 2,
-              unitPrice: 10.0,
+              unit_price: 10.0,
+              tax_rate: 19.0,
               total: 20.0,
             },
           ],
@@ -197,42 +236,46 @@ describe('Invoices API', () => {
           total: 75.6,
         }),
       ];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
       const result = await getInvoices();
 
+      // Verify transformation from snake_case to camelCase
       expect(result.data[0].lineItems).toHaveLength(2);
+      expect(result.data[0].lineItems[0].unitPrice).toBe(50.0);
+      expect(result.data[0].lineItems[0].taxRate).toBe(19.0);
       expect(result.data[0].subtotal).toBe(70.0);
       expect(result.data[0].total).toBe(75.6);
     });
 
     it('should handle invoices with payment details', async () => {
-      const mockInvoices = [
-        createMockInvoice({
-          paymentMethod: 'Credit Card',
-          paymentDetails: '**** **** **** 1234',
+      const mockApiInvoices = [
+        createMockApiInvoice({
+          payment_method: 'Credit Card',
+          payment_details: '**** **** **** 1234',
         }),
       ];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
       const result = await getInvoices();
 
+      // Verify transformation from snake_case to camelCase
       expect(result.data[0].paymentMethod).toBe('Credit Card');
       expect(result.data[0].paymentDetails).toBe('**** **** **** 1234');
     });
 
     it('should handle invoices with null payment details', async () => {
-      const mockInvoices = [
-        createMockInvoice({
-          paymentMethod: 'Manual',
-          paymentDetails: null,
+      const mockApiInvoices = [
+        createMockApiInvoice({
+          payment_method: 'Manual',
+          payment_details: null,
         }),
       ];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -261,29 +304,32 @@ describe('Invoices API', () => {
   });
 
   describe('getInvoiceById', () => {
-    it('should find invoice by ID', async () => {
-      const targetInvoice = createMockInvoice({ id: 'INV123' });
-      const mockInvoices = [
-        createMockInvoice({ id: 'INV001' }),
-        targetInvoice,
-        createMockInvoice({ id: 'INV456' }),
+    it('should find invoice by ID and transform to camelCase', async () => {
+      const targetApiInvoice = createMockApiInvoice({ id: 'INV123' });
+      const mockApiInvoices = [
+        createMockApiInvoice({ id: 'INV001' }),
+        targetApiInvoice,
+        createMockApiInvoice({ id: 'INV456' }),
       ];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
       const result = await getInvoiceById('INV123');
 
-      expect(result).toEqual(targetInvoice);
       expect(result?.id).toBe('INV123');
+      // Verify snake_case was transformed to camelCase
+      expect(result?.dueDate).toBe('2025-11-11');
+      expect(result?.paymentMethod).toBe('Manual');
+      expect(result?.lineItems[0].unitPrice).toBe(6.77);
     });
 
     it('should return null when invoice not found', async () => {
-      const mockInvoices = [
-        createMockInvoice({ id: 'INV001' }),
-        createMockInvoice({ id: 'INV002' }),
+      const mockApiInvoices = [
+        createMockApiInvoice({ id: 'INV001' }),
+        createMockApiInvoice({ id: 'INV002' }),
       ];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -305,12 +351,12 @@ describe('Invoices API', () => {
 
   describe('getInvoicesPaginated', () => {
     it('should fetch paginated invoices with default parameters', async () => {
-      const mockInvoices = [createMockInvoice()];
-      const mockResponse = createMockApiResponse(mockInvoices, {
+      const mockApiInvoices = [createMockApiInvoice()];
+      const mockResponse = createMockApiResponse(mockApiInvoices, {
         page: 1,
         limit: 10,
         total: 1,
-        lastPage: 1,
+        last_page: 1,
       });
 
       mockApi.get.mockResolvedValue(mockResponse);
@@ -321,17 +367,19 @@ describe('Invoices API', () => {
       expect(result.invoices).toHaveLength(1);
       expect(result.hasMore).toBe(false);
       expect(result.total).toBe(1);
+      // Verify transformation to camelCase
+      expect(result.invoices[0].dueDate).toBe('2025-11-11');
     });
 
     it('should fetch paginated invoices with custom parameters', async () => {
-      const mockInvoices = Array(20)
+      const mockApiInvoices = Array(20)
         .fill(null)
-        .map((_, i) => createMockInvoice({ id: `INV${i}` }));
-      const mockResponse = createMockApiResponse(mockInvoices, {
+        .map((_, i) => createMockApiInvoice({ id: `INV${i}` }));
+      const mockResponse = createMockApiResponse(mockApiInvoices, {
         page: 2,
         limit: 20,
         total: 50,
-        lastPage: 3,
+        last_page: 3,
       });
 
       mockApi.get.mockResolvedValue(mockResponse);
@@ -345,12 +393,12 @@ describe('Invoices API', () => {
     });
 
     it('should indicate no more pages on last page', async () => {
-      const mockInvoices = [createMockInvoice()];
-      const mockResponse = createMockApiResponse(mockInvoices, {
+      const mockApiInvoices = [createMockApiInvoice()];
+      const mockResponse = createMockApiResponse(mockApiInvoices, {
         page: 3,
         limit: 10,
         total: 25,
-        lastPage: 3,
+        last_page: 3,
       });
 
       mockApi.get.mockResolvedValue(mockResponse);
@@ -361,14 +409,14 @@ describe('Invoices API', () => {
     });
 
     it('should handle first page with multiple pages available', async () => {
-      const mockInvoices = Array(10)
+      const mockApiInvoices = Array(10)
         .fill(null)
-        .map((_, i) => createMockInvoice({ id: `INV${i}` }));
-      const mockResponse = createMockApiResponse(mockInvoices, {
+        .map((_, i) => createMockApiInvoice({ id: `INV${i}` }));
+      const mockResponse = createMockApiResponse(mockApiInvoices, {
         page: 1,
         limit: 10,
         total: 100,
-        lastPage: 10,
+        last_page: 10,
       });
 
       mockApi.get.mockResolvedValue(mockResponse);
@@ -381,21 +429,24 @@ describe('Invoices API', () => {
   });
 
   describe('getNextInvoice', () => {
-    it('should fetch the next pending invoice', async () => {
-      const nextInvoice = createMockInvoice({
+    it('should fetch the next pending invoice and transform to camelCase', async () => {
+      const nextApiInvoice = createMockApiInvoice({
         id: 'INV_NEXT',
         status: 'pending',
-        dueDate: '2025-12-01',
+        due_date: '2025-12-01',
       });
-      const mockResponse = createMockApiResponse([nextInvoice]);
+      const mockResponse = createMockApiResponse([nextApiInvoice]);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
       const result = await getNextInvoice();
 
       expect(mockApi.get).toHaveBeenCalledWith(`${ENDPOINTS.INVOICES.LIST}?status=pending&limit=1`);
-      expect(result).toEqual(nextInvoice);
+      expect(result?.id).toBe('INV_NEXT');
       expect(result?.status).toBe('pending');
+      // Verify transformation to camelCase
+      expect(result?.dueDate).toBe('2025-12-01');
+      expect(result?.paymentMethod).toBe('Manual');
     });
 
     it('should return null when no pending invoices exist', async () => {
@@ -409,13 +460,13 @@ describe('Invoices API', () => {
     });
 
     it('should return only the first pending invoice', async () => {
-      const firstInvoice = createMockInvoice({
+      const firstApiInvoice = createMockApiInvoice({
         id: 'INV_FIRST',
         status: 'pending',
-        dueDate: '2025-12-01',
+        due_date: '2025-12-01',
       });
       // API should only return 1 due to limit=1, but testing our code handles it
-      const mockResponse = createMockApiResponse([firstInvoice]);
+      const mockResponse = createMockApiResponse([firstApiInvoice]);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -427,14 +478,14 @@ describe('Invoices API', () => {
 
   describe('Invoice data validation', () => {
     it('should handle invoices with zero tax', async () => {
-      const mockInvoices = [
-        createMockInvoice({
+      const mockApiInvoices = [
+        createMockApiInvoice({
           subtotal: 100.0,
           tax: 0,
           total: 100.0,
         }),
       ];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -445,14 +496,14 @@ describe('Invoices API', () => {
     });
 
     it('should handle invoices with tax', async () => {
-      const mockInvoices = [
-        createMockInvoice({
+      const mockApiInvoices = [
+        createMockApiInvoice({
           subtotal: 100.0,
           tax: 19.0,
           total: 119.0,
         }),
       ];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -463,15 +514,15 @@ describe('Invoices API', () => {
     });
 
     it('should handle invoices with decimal amounts', async () => {
-      const mockInvoices = [
-        createMockInvoice({
+      const mockApiInvoices = [
+        createMockApiInvoice({
           subtotal: 6.77,
           tax: 0,
           total: 6.77,
           amount: 6.77,
         }),
       ];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
@@ -481,15 +532,16 @@ describe('Invoices API', () => {
       expect(result.data[0].total).toBe(6.77);
     });
 
-    it('should handle line items with quantity > 1', async () => {
-      const mockInvoices = [
-        createMockInvoice({
-          lineItems: [
+    it('should handle line items with quantity > 1 and transform to camelCase', async () => {
+      const mockApiInvoices = [
+        createMockApiInvoice({
+          line_items: [
             {
               id: '1',
               description: 'Class Pass',
               quantity: 5,
-              unitPrice: 15.0,
+              unit_price: 15.0,
+              tax_rate: 0,
               total: 75.0,
             },
           ],
@@ -497,35 +549,38 @@ describe('Invoices API', () => {
           total: 75.0,
         }),
       ];
-      const mockResponse = createMockApiResponse(mockInvoices);
+      const mockResponse = createMockApiResponse(mockApiInvoices);
 
       mockApi.get.mockResolvedValue(mockResponse);
 
       const result = await getInvoices();
 
+      // Verify transformation to camelCase
       const lineItem = result.data[0].lineItems[0];
       expect(lineItem.quantity).toBe(5);
       expect(lineItem.unitPrice).toBe(15.0);
+      expect(lineItem.taxRate).toBe(0);
       expect(lineItem.total).toBe(75.0);
     });
   });
 
   describe('Meta pagination data', () => {
-    it('should return correct pagination meta', async () => {
-      const mockInvoices = Array(20)
+    it('should return correct pagination meta and transform to camelCase', async () => {
+      const mockApiInvoices = Array(20)
         .fill(null)
-        .map((_, i) => createMockInvoice({ id: `INV${i}` }));
-      const mockResponse = createMockApiResponse(mockInvoices, {
+        .map((_, i) => createMockApiInvoice({ id: `INV${i}` }));
+      const mockResponse = createMockApiResponse(mockApiInvoices, {
         page: 2,
         limit: 20,
         total: 100,
-        lastPage: 5,
+        last_page: 5,
       });
 
       mockApi.get.mockResolvedValue(mockResponse);
 
       const result = await getInvoices({ page: 2, limit: 20 });
 
+      // Verify meta is transformed to camelCase
       expect(result.meta).toEqual({
         page: 2,
         limit: 20,
@@ -535,12 +590,12 @@ describe('Invoices API', () => {
     });
 
     it('should handle single page result', async () => {
-      const mockInvoices = [createMockInvoice()];
-      const mockResponse = createMockApiResponse(mockInvoices, {
+      const mockApiInvoices = [createMockApiInvoice()];
+      const mockResponse = createMockApiResponse(mockApiInvoices, {
         page: 1,
         limit: 20,
         total: 1,
-        lastPage: 1,
+        last_page: 1,
       });
 
       mockApi.get.mockResolvedValue(mockResponse);

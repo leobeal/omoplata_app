@@ -27,7 +27,9 @@
       "Bash(npm why:*)",
       "Bash(npm ls:*)",
       "Bash(grep:*)",
-      "mcp__mcp-react-native-expo__analyze_codebase_performance"
+      "mcp__mcp-react-native-expo__analyze_codebase_performance",
+      "Bash(node -e:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

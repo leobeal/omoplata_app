@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useRef } from 'react';
 
 interface ScrollToTopContextType {
   scrollToTop: (routeName: string) => void;
@@ -11,27 +11,27 @@ const ScrollToTopContext = createContext<ScrollToTopContextType | undefined>(und
 export function ScrollToTopProvider({ children }: { children: React.ReactNode }) {
   const scrollHandlers = useRef<Map<string, () => void>>(new Map());
 
-  const registerScrollHandler = (routeName: string, handler: () => void) => {
+  const registerScrollHandler = useCallback((routeName: string, handler: () => void) => {
     scrollHandlers.current.set(routeName, handler);
-  };
+  }, []);
 
-  const unregisterScrollHandler = (routeName: string) => {
+  const unregisterScrollHandler = useCallback((routeName: string) => {
     scrollHandlers.current.delete(routeName);
-  };
+  }, []);
 
-  const scrollToTop = (routeName: string) => {
+  const scrollToTop = useCallback((routeName: string) => {
     const handler = scrollHandlers.current.get(routeName);
     if (handler) {
       handler();
     }
-  };
+  }, []);
 
-  return (
-    <ScrollToTopContext.Provider
-      value={{ scrollToTop, registerScrollHandler, unregisterScrollHandler }}>
-      {children}
-    </ScrollToTopContext.Provider>
+  const value = useMemo(
+    () => ({ scrollToTop, registerScrollHandler, unregisterScrollHandler }),
+    [scrollToTop, registerScrollHandler, unregisterScrollHandler]
   );
+
+  return <ScrollToTopContext.Provider value={value}>{children}</ScrollToTopContext.Provider>;
 }
 
 export function useScrollToTop() {

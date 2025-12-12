@@ -1,0 +1,73 @@
+{
+  "graduations": [
+    {
+      "id": 1,
+      "discipline": "Brazilian Jiu-Jitsu",
+      "belt_system": "bjj",
+      "current_belt": "blue",
+      "next_belt": "purple",
+      "stripes": 2,
+      "max_stripes": 4,
+      "last_promotion": "2024-06-15"
+    },
+    {
+      "id": 2,
+      "discipline": "No-Gi",
+      "belt_system": "bjj",
+      "current_belt": "purple",
+      "next_belt": "brown",
+      "stripes": 4,
+      "max_stripes": 4,
+      "last_promotion": "2024-03-20"
+    }
+  ],
+  "children": [
+    {
+      "id": 123,
+      "prefixed_id": "USR-abc123",
+      "first_name": "Emma",
+      "last_name": "Silva",
+      "full_name": "Emma Silva",
+      "graduations": [
+        {
+          "id": 5,
+          "discipline": "Kids BJJ",
+          "belt_system": "bjj",
+          "current_belt": "grey_white",
+          "next_belt": "yellow",
+          "stripes": 3,
+          "max_stripes": 5,
+          "last_promotion": "2024-09-01"
+        },
+        {
+          "id": 6,
+          "discipline": "Judo",
+          "belt_system": "judo",
+          "current_belt": "orange",
+          "stripes": 0,
+          "max_stripes": 0,
+          "last_promotion": "2024-08-10"
+        }
+      ]
+    },
+    {
+      "id": 124,
+      "prefixed_id": "USR-def456",
+      "first_name": "Lucas",
+      "last_name": "Silva",
+      "full_name": "Lucas Silva",
+      "graduations": [
+        {
+          "id": 7,
+          "discipline": "Kids BJJ",
+          "belt_system": "bjj",
+          "current_belt": "grey_white",
+          "next_belt": "yellow",
+          "stripes": 1,
+          "max_stripes": 5,
+          "last_promotion": "2024-07-15"
+        }
+      ]
+    }
+  ]
+}
