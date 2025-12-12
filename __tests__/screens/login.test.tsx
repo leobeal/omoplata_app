@@ -37,6 +37,34 @@ jest.mock('@/contexts/TenantContext', () => ({
   }),
 }));
 
+const mockTranslate = (key: string) => {
+  const translations: Record<string, string> = {
+    'login.title': 'Login',
+    'login.subtitle': 'Sign in to your account',
+    'login.email': 'Email',
+    'login.password': 'Password',
+    'login.login': 'Login',
+    'login.forgotPassword': 'Forgot Password?',
+    'login.emailRequired': 'Email is required',
+    'login.invalidEmail': 'Please enter a valid email',
+    'login.passwordRequired': 'Password is required',
+    'login.passwordTooShort': 'Password must be at least 6 characters',
+    'login.invalidCredentials': 'Invalid email or password',
+    'login.loginFailed': 'Login failed. Please try again.',
+  };
+  return translations[key] || key;
+};
+
+jest.mock('@/contexts/LocalizationContext', () => ({
+  useT: () => mockTranslate,
+  useTranslation: () => ({
+    t: mockTranslate,
+    locale: 'en',
+    setLocale: jest.fn(),
+    isLoading: false,
+  }),
+}));
+
 // Mock the API
 jest.mock('@/api', () => ({
   authApi: {
