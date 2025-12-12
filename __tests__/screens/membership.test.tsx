@@ -2,7 +2,7 @@ import { render, waitFor, fireEvent } from '@testing-library/react-native';
 import React from 'react';
 import { Alert } from 'react-native';
 
-import MembershipScreen from '../../app/(tabs)/membership';
+import MembershipScreen from '../../app/screens/membership';
 
 // Mock expo-document-picker
 jest.mock('expo-document-picker', () => ({
@@ -122,6 +122,22 @@ jest.mock('@/contexts/ScrollToTopContext', () => ({
   }),
 }));
 
+jest.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      id: 1,
+      name: 'John Doe',
+      email: 'john@example.com',
+    },
+    token: 'mock-auth-token',
+    isAuthenticated: true,
+    isLoading: false,
+    login: jest.fn(),
+    logout: jest.fn(),
+    refreshToken: jest.fn(),
+  }),
+}));
+
 jest.mock('@/contexts/AppConfigContext', () => ({
   useMembershipSettings: () => ({
     allowCancellation: true,
@@ -201,9 +217,7 @@ jest.mock('@/api/membership', () => ({
       ],
     })
   ),
-  downloadContract: jest.fn(() =>
-    Promise.resolve('https://api.omoplata.com/memberships/1000031/contract/download')
-  ),
+  downloadContract: jest.fn(() => Promise.resolve()),
   getPrimaryMember: jest.fn((membership: any) => membership.members[0]),
   getMonthlyEquivalent: jest.fn((plan: any) => {
     // Parse ISO duration to get months
@@ -403,11 +417,24 @@ describe('MembershipScreen', () => {
 
       await waitFor(() => {
         expect(downloadContract).toHaveBeenCalledWith(1000031);
-        expect(mockAlert).toHaveBeenCalledWith(
-          'Contract PDF',
-          'Contract PDF available at: https://api.omoplata.com/memberships/1000031/contract/download',
-          expect.any(Array)
-        );
+      });
+    });
+
+    it('shows error alert when download fails', async () => {
+      const { downloadContract } = require('@/api/membership');
+      downloadContract.mockRejectedValueOnce(new Error('Download failed'));
+
+      const { getByText } = render(<MembershipScreen />);
+
+      await waitFor(() => {
+        expect(getByText('Download Contract PDF')).toBeTruthy();
+      });
+
+      const downloadButton = getByText('Download Contract PDF');
+      fireEvent.press(downloadButton);
+
+      await waitFor(() => {
+        expect(mockAlert).toHaveBeenCalled();
       });
     });
   });

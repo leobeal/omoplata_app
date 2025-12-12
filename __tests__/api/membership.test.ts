@@ -11,8 +11,53 @@ import {
 import api from '../../api/client';
 import { ENDPOINTS } from '../../api/config';
 
+// Mock expo-file-system/next
+jest.mock('expo-file-system/next', () => ({
+  File: jest.fn().mockImplementation(() => ({
+    uri: 'file://mock/path/contract.pdf',
+    write: jest.fn().mockResolvedValue(undefined),
+  })),
+  Paths: {
+    cache: '/mock/cache',
+  },
+}));
+
+// Mock expo-sharing
+jest.mock('expo-sharing', () => ({
+  isAvailableAsync: jest.fn().mockResolvedValue(true),
+  shareAsync: jest.fn().mockResolvedValue(undefined),
+}));
+
+// Mock global fetch
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
+
+// Mock FileReader
+class MockFileReader {
+  result: string = '';
+  onloadend: (() => void) | null = null;
+  onerror: ((error: Error) => void) | null = null;
+
+  readAsDataURL() {
+    this.result = 'data:application/pdf;base64,mockBase64Data';
+    if (this.onloadend) {
+      this.onloadend();
+    }
+  }
+}
+(global as any).FileReader = MockFileReader;
+
 // Mock API client
-jest.mock('../../api/client');
+jest.mock('../../api/client', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+  },
+  getAuthToken: jest.fn(() => 'mock-auth-token'),
+}));
 
 const mockApi = api as jest.Mocked<typeof api>;
 
@@ -165,30 +210,53 @@ describe('Membership API', () => {
   });
 
   describe('downloadContract', () => {
-    it('should return contract PDF URL', async () => {
-      const membershipId = '1000031';
-      const pdfUrl = await downloadContract(membershipId);
-
-      expect(pdfUrl).toBeDefined();
-      expect(typeof pdfUrl).toBe('string');
-      expect(pdfUrl).toContain(membershipId);
-      expect(pdfUrl).toContain('/download');
+    beforeEach(() => {
+      mockFetch.mockReset();
+      mockFetch.mockResolvedValue({
+        ok: true,
+        blob: jest.fn().mockResolvedValue(new Blob(['mock pdf content'])),
+      });
     });
 
-    it('should simulate API delay for download', async () => {
-      const startTime = Date.now();
-      await downloadContract('1000031');
-      const endTime = Date.now();
+    it('should download and share contract PDF', async () => {
+      const Sharing = require('expo-sharing');
+      const membershipId = 1000031;
 
-      const delay = endTime - startTime;
-      expect(delay).toBeGreaterThanOrEqual(1000);
+      await downloadContract(membershipId);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining(String(membershipId)),
+        expect.objectContaining({
+          headers: {
+            Authorization: 'Bearer mock-auth-token',
+          },
+        })
+      );
+      expect(Sharing.shareAsync).toHaveBeenCalled();
     });
 
-    it('should generate unique URLs for different memberships', async () => {
-      const url1 = await downloadContract('1000031');
-      const url2 = await downloadContract('1000032');
+    it('should throw error when not authenticated', async () => {
+      const { getAuthToken } = require('../../api/client');
+      getAuthToken.mockReturnValueOnce(null);
 
-      expect(url1).not.toBe(url2);
+      await expect(downloadContract(1000031)).rejects.toThrow('Not authenticated');
+    });
+
+    it('should throw error when download fails', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        text: jest.fn().mockResolvedValue('Server error'),
+      });
+
+      await expect(downloadContract(1000031)).rejects.toThrow('Failed to download contract');
+    });
+
+    it('should throw error when sharing is not available', async () => {
+      const Sharing = require('expo-sharing');
+      Sharing.isAvailableAsync.mockResolvedValueOnce(false);
+
+      await expect(downloadContract(1000031)).rejects.toThrow('Sharing is not available');
     });
   });
 
