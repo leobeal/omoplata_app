@@ -30,7 +30,7 @@ module.exports = {
   language: 'de', // de, en, pt-BR
 
   // Universal Links (production only)
-  universalLinkDomain: 'app.omoplata.de',
+  universalLinkDomain: 'omoplata.de',
 
   // Tenant is undefined for generic build - users select at runtime
   tenant: undefined,
