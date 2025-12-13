@@ -16,7 +16,13 @@ interface CalendarClassCardProps {
 export default function CalendarClassCard({ classData, onPress }: CalendarClassCardProps) {
   const colors = useThemeColors();
 
-  const getCategoryColor = (category: string) => {
+  // Early return if classData is null/undefined
+  if (!classData) {
+    return null;
+  }
+
+  const getCategoryColor = (category: string | undefined) => {
+    if (!category) return colors.highlight;
     const categoryColors: { [key: string]: string } = {
       BJJ: '#9333EA',
       'Muay Thai': '#DC2626',
@@ -48,19 +54,21 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
                 style={{ backgroundColor: categoryColor }}
               />
               <ThemedText className="text-xs font-semibold opacity-60">
-                {classData.category}
+                {classData.category || ''}
               </ThemedText>
             </View>
             <ThemedText className="text-lg font-bold" numberOfLines={2}>
-              {classData.title}
+              {classData.title || ''}
             </ThemedText>
           </View>
         </View>
 
         {/* Instructor */}
         <View className="mb-3 flex-row items-center">
-          <Avatar name={classData.instructor} size="xs" />
-          <ThemedText className="ml-2 text-sm opacity-70">{classData.instructor}</ThemedText>
+          <Avatar name={classData.instructor || ''} size="xs" />
+          <ThemedText className="ml-2 text-sm opacity-70">
+            {classData.instructor || ''}
+          </ThemedText>
         </View>
 
         {/* Details */}
@@ -68,13 +76,13 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
           <View className="flex-row items-center">
             <Icon name="Clock" size={14} color={colors.text} className="opacity-50" />
             <ThemedText className="ml-1 text-sm opacity-70">
-              {classData.startTime} - {classData.endTime}
+              {classData.startTime || ''} - {classData.endTime || ''}
             </ThemedText>
           </View>
 
           <View className="flex-row items-center">
             <Icon name="MapPin" size={14} color={colors.text} className="opacity-50" />
-            <ThemedText className="ml-1 text-sm opacity-70">{classData.location}</ThemedText>
+            <ThemedText className="ml-1 text-sm opacity-70">{classData.location || ''}</ThemedText>
           </View>
         </View>
 
@@ -83,22 +91,24 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
           <View
             className="rounded-full px-3 py-1"
             style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
-            <ThemedText className="text-xs font-semibold">{classData.level}</ThemedText>
+            <ThemedText className="text-xs font-semibold">{classData.level || ''}</ThemedText>
           </View>
 
           {/* Participants Avatars */}
           <View className="flex-row items-center">
-            {classData.participants.length > 0 ? (
+            {classData.participants && classData.participants.length > 0 ? (
               <View className="flex-row items-center">
-                {classData.participants.slice(0, 4).map((participant, index) => (
-                  <View key={index} style={{ marginLeft: index > 0 ? -8 : 0, zIndex: 4 - index }}>
-                    <Avatar
-                      name={`${participant.firstName} ${participant.lastName}`}
-                      src={participant.avatar}
-                      size="xs"
-                    />
-                  </View>
-                ))}
+                {classData.participants.slice(0, 4).map((participant, index) => {
+                  if (!participant) return null;
+                  const name =
+                    [participant.firstName, participant.lastName].filter(Boolean).join(' ') ||
+                    'Unknown';
+                  return (
+                    <View key={index} style={{ marginLeft: index > 0 ? -8 : 0, zIndex: 4 - index }}>
+                      <Avatar name={name} src={participant.avatar} size="xs" />
+                    </View>
+                  );
+                })}
                 {classData.participants.length > 4 && (
                   <View
                     className="h-6 w-6 items-center justify-center rounded-full"
@@ -116,7 +126,7 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
               <View className="flex-row items-center">
                 <Icon name="Users" size={14} color={colors.text} className="opacity-50" />
                 <ThemedText className="ml-1 text-sm opacity-70">
-                  {classData.enrolled}/{classData.capacity.max ?? '∞'}
+                  {classData.enrolled ?? 0}/{classData.capacity?.max ?? '∞'}
                 </ThemedText>
               </View>
             )}
