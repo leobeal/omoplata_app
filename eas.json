@@ -34,6 +34,7 @@
       }
     },
     "main": {
+      "autoIncrement": true,
       "env": {
         "APP_ENV": "production",
         "TENANT": "main"
@@ -41,12 +42,14 @@
       "channel": "production"
     },
     "evolve-grappling": {
+      "autoIncrement": true,
       "env": {
         "TENANT": "evolve-grappling"
       },
       "channel": "evolve-grappling"
     },
     "sparta-aachen": {
+      "autoIncrement": true,
       "env": {
         "TENANT": "sparta-aachen"
       },
