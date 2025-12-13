@@ -9,7 +9,7 @@ import React, {
 
 import { switchToChild as switchToChildApi } from '@/api/account-switch';
 import { authApi } from '@/api/auth';
-import { setAuthToken as setApiAuthToken } from '@/api/client';
+import { setAuthToken as setApiAuthToken, setOnUnauthorized } from '@/api/client';
 import { Child, getProfile } from '@/api/profile';
 import { useTenant } from '@/contexts/TenantContext';
 import {
@@ -191,6 +191,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
       };
     }
   };
+
+  /**
+   * Handle unauthorized (401) response - clears local auth without calling API
+   * This is called by the API client when a 401 is received
+   */
+  const handleUnauthorized = useCallback(async () => {
+    console.log('[Auth] Handling 401 - clearing local auth data');
+    const tenantSlug = tenant?.slug || null;
+
+    // Clear storage, state, and user-specific cache
+    // Don't call logout API since we already got a 401
+    await Promise.all([
+      clearAllAuthData(tenantSlug),
+      clearParentSession(tenantSlug),
+      clearUserCache(),
+    ]);
+
+    setToken(null);
+    setUser(null);
+    setApiAuthToken(null);
+    setOnUnauthorized(null); // Prevent re-triggering while clearing
+    setIsViewingAsChild(false);
+    setParentUser(null);
+    setChildren([]);
+  }, [tenant?.slug]);
+
+  // Register 401 handler with API client
+  useEffect(() => {
+    setOnUnauthorized(handleUnauthorized);
+    return () => setOnUnauthorized(null);
+  }, [handleUnauthorized]);
 
   const logout = async () => {
     try {

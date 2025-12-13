@@ -176,7 +176,7 @@ export function isGraphEnabled(data: AnalyticsData, type: GraphType): boolean {
 export async function getAnalytics(): Promise<{
   data: AnalyticsData;
   fromCache: boolean;
-}> {
+} | null> {
   const result = await fetchWithCacheFallback<AnalyticsResponse>(
     CACHE_KEYS.STATISTICS,
     async () => {
@@ -185,6 +185,11 @@ export async function getAnalytics(): Promise<{
     },
     { maxAge: CACHE_DURATIONS.SHORT }
   );
+
+  // Handle null response (e.g., after 401 logout)
+  if (!result.data) {
+    return null;
+  }
 
   return {
     data: result.data.data,

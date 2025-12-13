@@ -66,9 +66,7 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
         {/* Instructor */}
         <View className="mb-3 flex-row items-center">
           <Avatar name={classData.instructor || ''} size="xs" />
-          <ThemedText className="ml-2 text-sm opacity-70">
-            {classData.instructor || ''}
-          </ThemedText>
+          <ThemedText className="ml-2 text-sm opacity-70">{classData.instructor || ''}</ThemedText>
         </View>
 
         {/* Details */}

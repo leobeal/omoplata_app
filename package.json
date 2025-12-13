@@ -16,17 +16,13 @@
     "eas-simulator": "eas build --profile ios-simulator --platform ios",
     "eas-android-simulator": "eas build --profile android-simulator --platform android",
     "check": "npx expo install --check",
-
     "build:main:android": "eas build --profile main --platform android",
     "build:main:ios": "eas build --profile main --platform ios",
     "build:main:all": "eas build --profile main --platform all",
-
     "submit:android:internal": "eas submit --platform android --latest --profile internal",
     "submit:android:alpha": "eas submit --platform android --latest --profile alpha",
     "submit:android:production": "eas submit --platform android --latest --profile release",
-
     "submit:ios": "eas submit --platform ios --latest",
-
     "release:android:internal": "npm run build:main:android && npm run submit:android:internal",
     "release:android:production": "npm run build:main:android && npm run submit:android:production"
   },

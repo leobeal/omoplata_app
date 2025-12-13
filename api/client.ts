@@ -23,11 +23,23 @@ interface ApiResponse<T> {
 // Token storage (will be replaced with secure storage later)
 let authToken: string | null = null;
 
+// Callback for handling 401 responses (set by AuthProvider)
+let onUnauthorizedCallback: (() => void) | null = null;
+let isHandling401 = false; // Prevent multiple 401 handlers from firing
+
 export const setAuthToken = (token: string | null) => {
   authToken = token;
 };
 
 export const getAuthToken = () => authToken;
+
+/**
+ * Register a callback to be called when a 401 response is received.
+ * This is used by AuthProvider to trigger logout on invalid tokens.
+ */
+export const setOnUnauthorized = (callback: (() => void) | null) => {
+  onUnauthorizedCallback = callback;
+};
 
 // Check if running in development mode
 const __DEV__ = process.env.NODE_ENV === 'development' || __DEV__;
@@ -75,6 +87,20 @@ export async function apiRequest<T>(
 
     if (!response.ok) {
       if (__DEV__) console.log(`[API] ${method} ${url} - ${response.status} (${duration}ms)`);
+
+      // Handle 401 Unauthorized - trigger logout callback
+      // Only trigger if we had a token (user was logged in), not for failed login attempts
+      // Use flag to prevent multiple parallel 401s from triggering multiple logouts
+      if (response.status === 401 && authToken && onUnauthorizedCallback && !isHandling401) {
+        isHandling401 = true;
+        console.log('[API] 401 Unauthorized - triggering logout');
+        onUnauthorizedCallback();
+        // Reset flag after a short delay to allow for future 401s (e.g., after re-login)
+        setTimeout(() => {
+          isHandling401 = false;
+        }, 1000);
+      }
+
       return {
         data: null,
         error: data?.message || `Request failed with status ${response.status}`,
