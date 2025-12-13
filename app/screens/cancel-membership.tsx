@@ -259,7 +259,7 @@ export default function CancelMembershipScreen() {
   // Not cancelled yet - show cancellation form
   return (
     <View className="flex-1 bg-background">
-      <Header showBackButton title={t('membership.cancelMembership')} />
+      <Header showBackButton title={t('membership.cancelMembership')} showTitle />
       <ThemedScroller className="px-6 pt-4">
         {/* Warning Card */}
         <View className="mb-6 rounded-2xl bg-red-500/10 p-6">

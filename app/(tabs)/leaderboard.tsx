@@ -122,7 +122,6 @@ export default function LeaderboardScreen() {
     return (
       <View className="flex-1 bg-background">
         <Header
-          title={t('leaderboard.title')}
           rightComponents={[
             <Avatar
               key="avatar"
@@ -144,7 +143,6 @@ export default function LeaderboardScreen() {
     return (
       <View className="flex-1 bg-background">
         <Header
-          title={t('leaderboard.title')}
           rightComponents={[
             <Avatar
               key="avatar"
@@ -165,8 +163,7 @@ export default function LeaderboardScreen() {
   return (
     <View className="flex-1 bg-background">
       <Header
-        title={t('leaderboard.title')}
-        showTitle={showHeaderTitle}
+        title={showHeaderTitle ? t('leaderboard.title') : undefined}
         rightComponents={[
           <Avatar
             key="avatar"
@@ -216,10 +213,10 @@ export default function LeaderboardScreen() {
         )}
 
         {/* Leaderboard List - Remaining entries */}
-        <Section title={t('leaderboard.rankings')} titleSize="lg" noTopMargin>
-          {leaderboard?.entries.length === 0 ? (
-            <EmptyState />
-          ) : (
+        {leaderboard?.entries.length === 0 ? (
+          <EmptyState hasFilters={activeFilterCount > 0} />
+        ) : (
+          <Section title={t('leaderboard.rankings')} titleSize="lg" noTopMargin>
             <View className="rounded-2xl bg-secondary">
               {leaderboard?.entries.slice(3).map((entry, index, arr) => (
                 <LeaderboardEntryCard
@@ -230,8 +227,8 @@ export default function LeaderboardScreen() {
                 />
               ))}
             </View>
-          )}
-        </Section>
+          </Section>
+        )}
       </ThemedScroller>
 
       {/* Filter Bottom Sheet */}
@@ -253,22 +250,22 @@ export default function LeaderboardScreen() {
   );
 }
 
-const EmptyState = memo(() => {
+const EmptyState = memo(({ hasFilters }: { hasFilters: boolean }) => {
   const { t } = useTranslation();
   const colors = useThemeColors();
 
   return (
-    <View className="mb-4 items-center justify-center rounded-2xl bg-secondary py-12">
+    <View className="flex-1 items-center justify-center py-16">
       <View
-        className="mb-4 h-16 w-16 items-center justify-center rounded-full"
-        style={{ backgroundColor: colors.highlight + '20' }}>
-        <Icon name="Trophy" size={32} color={colors.highlight} />
+        className="mb-4 rounded-full p-6"
+        style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+        <Icon name="Trophy" size={48} color={colors.text} className="opacity-30" />
       </View>
-      <ThemedText className="mb-2 text-center font-semibold">
+      <ThemedText className="text-center text-xl font-bold opacity-80">
         {t('leaderboard.noResults')}
       </ThemedText>
-      <ThemedText className="text-center text-sm opacity-70">
-        {t('leaderboard.tryDifferentFilters')}
+      <ThemedText className="mt-2 px-8 text-center opacity-50">
+        {hasFilters ? t('leaderboard.tryDifferentFilters') : t('leaderboard.beTheFirst')}
       </ThemedText>
     </View>
   );

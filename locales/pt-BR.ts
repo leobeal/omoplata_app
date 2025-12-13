@@ -108,7 +108,9 @@ export default {
     onTrack: 'no caminho certo',
     total: 'total',
     streak: 'Sequência',
+    weeklyStreak: 'Sequência Semanal',
     currentStreak: 'Sequência atual',
+    current: 'Atual',
     weeks: 'semanas',
     week: 'semana',
     best: 'Melhor',
@@ -162,6 +164,14 @@ export default {
     cacheRefreshed: 'Dados Atualizados',
     cacheRefreshedMessage: 'Configuração e dados do app foram atualizados.',
     cacheRefreshError: 'Falha ao atualizar dados. Por favor, tente novamente.',
+    enableNotifications: 'Ativar Notificações',
+    enableNotificationsDescription: 'Receba lembretes de aulas e atualizações',
+    notificationsEnabled: 'Notificações Ativadas',
+    notificationsEnabledMessage: 'Você receberá notificações de aulas e atualizações.',
+    notificationsDenied: 'Permissão Negada',
+    notificationsDeniedMessage:
+      'Por favor, ative as notificações nas configurações do dispositivo.',
+    notificationsError: 'Falha ao ativar notificações. Por favor, tente novamente.',
   },
 
   // Configurações de Privacidade
@@ -330,7 +340,7 @@ export default {
 
   // Tela de Assinatura
   membership: {
-    title: 'Minha Assinatura',
+    title: 'Assinatura',
     currentPlan: 'Plano Atual',
     memberId: 'ID do Membro',
     membershipId: 'ID da Assinatura',
@@ -357,6 +367,7 @@ export default {
     limit: 'Limite',
     paymentMethod: 'Forma de Pagamento',
     accountHolder: 'Titular da Conta',
+    fromResponsible: 'Responsável',
     policies: 'Políticas de Assinatura',
     cancellationPolicy: 'Política de Cancelamento',
     freezePolicy: 'Política de Congelamento',
@@ -364,7 +375,7 @@ export default {
     downloadContract: 'Baixar Contrato PDF',
     cancelMembership: 'Cancelar Assinatura',
     noMembership: 'Nenhuma assinatura encontrada',
-    supportMessage: 'Para dúvidas sobre sua assinatura, entre em contato com support@omoplata.com',
+    supportMessage: 'Para dúvidas sobre sua assinatura, entre em contato com app@omoplata.com',
 
     // Download messages
     contractPdfTitle: 'Contrato PDF',
@@ -624,6 +635,7 @@ export default {
     outOf: 'de {{total}} membros',
     topPercentile: 'Você está entre os {{percent}}% melhores membros!',
     noResults: 'Sem Resultados',
+    beTheFirst: 'O tatame está vazio! Seja o primeiro a fazer check-in e conquiste o topo.',
     tryDifferentFilters: 'Tente ajustar seus filtros para ver mais resultados',
     errorTitle: 'Não foi possível carregar o ranking',
     errorMessage: 'Verifique sua conexão e tente novamente',

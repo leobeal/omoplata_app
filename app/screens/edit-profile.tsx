@@ -1,12 +1,21 @@
 import { router } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, ActivityIndicator, Alert, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  View,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 
 import { getProfile, updateProfile, Profile } from '@/api/profile';
 import Avatar from '@/components/Avatar';
 import { Button } from '@/components/Button';
 import Header from '@/components/Header';
+import LargeTitle from '@/components/LargeTitle';
 import Section from '@/components/Section';
+import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -17,6 +26,15 @@ export default function EditProfileScreen() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  // Scroll state for collapsible title
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
+  const LARGE_TITLE_HEIGHT = 44;
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
+  }, []);
 
   // Form fields
   const [firstName, setFirstName] = useState('');
@@ -121,7 +139,7 @@ export default function EditProfileScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-background">
-        <Header showBackButton title={t('editProfile.title')} />
+        <Header showBackButton />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" />
         </View>
@@ -131,12 +149,10 @@ export default function EditProfileScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header showBackButton title={t('editProfile.title')} />
-      <ScrollView
-        className="flex-1 px-6 pt-4"
-        bounces
-        alwaysBounceVertical
-        showsVerticalScrollIndicator={false}>
+      <Header showBackButton title={showHeaderTitle ? t('editProfile.title') : undefined} />
+      <ThemedScroller className="flex-1 px-6" onScroll={handleScroll} scrollEventThrottle={16}>
+        <LargeTitle title={t('editProfile.title')} className="pt-2" />
+
         {/* Profile Avatar */}
         <View className="mb-6 items-center">
           <Avatar
@@ -344,7 +360,7 @@ export default function EditProfileScreen() {
             disabled={saving}
           />
         </View>
-      </ScrollView>
+      </ThemedScroller>
     </View>
   );
 }

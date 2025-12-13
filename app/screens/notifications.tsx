@@ -1,11 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Image, Pressable, RefreshControl } from 'react-native';
+import {
+  View,
+  Image,
+  Pressable,
+  RefreshControl,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { Chip } from '@/components/Chip';
 import Header from '@/components/Header';
 import Icon, { IconName } from '@/components/Icon';
+import LargeTitle from '@/components/LargeTitle';
 import SkeletonLoader from '@/components/SkeletonLoader';
+import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -129,6 +138,15 @@ export default function NotificationsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  // Scroll state for collapsible title
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
+  const LARGE_TITLE_HEIGHT = 44;
+
+  const handleScrollForTitle = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
+  }, []);
+
   const loadNotifications = useCallback(async () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 800));
@@ -208,44 +226,13 @@ export default function NotificationsScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header showBackButton title={t('notifications.title')} />
-
-      {/* Filter Chips */}
-      <View className="border-b border-border px-4 py-3">
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View className="flex-row gap-2">
-            {filterChips.map((chip) => (
-              <Chip
-                key={chip.type}
-                label={chip.label}
-                isSelected={selectedType === chip.type}
-                onPress={() => setSelectedType(chip.type)}
-              />
-            ))}
-          </View>
-        </ScrollView>
-      </View>
-
-      {/* Unread count banner */}
-      {unreadCount > 0 && !isLoading && (
-        <View
-          className="flex-row items-center justify-between px-4 py-2"
-          style={{ backgroundColor: colors.highlight + '10' }}>
-          <ThemedText className="text-sm">
-            {t('notifications.unreadCount', { count: unreadCount })}
-          </ThemedText>
-          <Pressable
-            onPress={() => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))}>
-            <ThemedText className="text-sm font-semibold" style={{ color: colors.highlight }}>
-              {t('notifications.markAllRead')}
-            </ThemedText>
-          </Pressable>
-        </View>
-      )}
+      <Header showBackButton title={showHeaderTitle ? t('notifications.title') : undefined} />
 
       {/* Notifications List */}
-      <ScrollView
+      <ThemedScroller
         className="flex-1"
+        onScroll={handleScrollForTitle}
+        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -255,6 +242,41 @@ export default function NotificationsScreen() {
             progressBackgroundColor={colors.bg}
           />
         }>
+        <LargeTitle title={t('notifications.title')} className="px-6 pt-2" />
+
+        {/* Filter Chips */}
+        <View className="border-b border-border px-4 py-3">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View className="flex-row gap-2">
+              {filterChips.map((chip) => (
+                <Chip
+                  key={chip.type}
+                  label={chip.label}
+                  isSelected={selectedType === chip.type}
+                  onPress={() => setSelectedType(chip.type)}
+                />
+              ))}
+            </View>
+          </ScrollView>
+        </View>
+
+        {/* Unread count banner */}
+        {unreadCount > 0 && !isLoading && (
+          <View
+            className="flex-row items-center justify-between px-4 py-2"
+            style={{ backgroundColor: colors.highlight + '10' }}>
+            <ThemedText className="text-sm">
+              {t('notifications.unreadCount', { count: unreadCount })}
+            </ThemedText>
+            <Pressable
+              onPress={() => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))}>
+              <ThemedText className="text-sm font-semibold" style={{ color: colors.highlight }}>
+                {t('notifications.markAllRead')}
+              </ThemedText>
+            </Pressable>
+          </View>
+        )}
+
         {isLoading ? (
           <View className="px-4">
             <SkeletonLoader variant="list" count={6} />
@@ -276,7 +298,7 @@ export default function NotificationsScreen() {
             </ThemedText>
           </View>
         )}
-      </ScrollView>
+      </ThemedScroller>
     </View>
   );
 }

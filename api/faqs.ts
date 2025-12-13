@@ -1,4 +1,5 @@
-import faqsData from '@/data/faqs.json';
+import { api } from './client';
+import { ENDPOINTS } from './config';
 
 export interface FAQ {
   question: string;
@@ -19,20 +20,80 @@ export interface FAQsResponse {
   lastUpdated: string;
 }
 
+// API Response types (snake_case from backend)
+interface ApiFAQ {
+  question: string;
+  answer: string;
+}
+
+interface ApiFAQCategory {
+  id: string;
+  title: string;
+  faqs: ApiFAQ[];
+}
+
+interface ApiFAQsResponse {
+  categories: ApiFAQCategory[];
+  last_updated?: string;
+}
+
 /**
- * Fetch FAQs from the API
- * In production, this would call your backend API
+ * Transform API response to app format
+ */
+const transformCategory = (category: ApiFAQCategory, type: FAQType): FAQCategory => ({
+  id: category.id,
+  title: category.title,
+  type,
+  faqs: category.faqs.map((faq) => ({
+    question: faq.question,
+    answer: faq.answer,
+  })),
+});
+
+/**
+ * Fetch club FAQs from the API
+ */
+export const getClubFAQs = async (): Promise<FAQCategory[]> => {
+  try {
+    const response = await api.get<ApiFAQsResponse>(ENDPOINTS.FAQS.CLUB);
+    if (response.error || !response.data) {
+      console.error('Failed to fetch club FAQs:', response.error);
+      return [];
+    }
+    return response.data.categories?.map((cat) => transformCategory(cat, 'club')) || [];
+  } catch (error) {
+    console.error('Failed to fetch club FAQs:', error);
+    return [];
+  }
+};
+
+/**
+ * Fetch app FAQs from the API
+ */
+export const getAppFAQs = async (): Promise<FAQCategory[]> => {
+  try {
+    const response = await api.get<ApiFAQsResponse>(ENDPOINTS.FAQS.APP);
+    if (response.error || !response.data) {
+      console.error('Failed to fetch app FAQs:', response.error);
+      return [];
+    }
+    return response.data.categories?.map((cat) => transformCategory(cat, 'app')) || [];
+  } catch (error) {
+    console.error('Failed to fetch app FAQs:', error);
+    return [];
+  }
+};
+
+/**
+ * Fetch all FAQs (club + app) from the API
  */
 export const getFAQs = async (): Promise<FAQsResponse> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  const [clubCategories, appCategories] = await Promise.all([getClubFAQs(), getAppFAQs()]);
 
-  // In production, replace this with actual API call:
-  // const response = await fetch(`${API_BASE_URL}/faqs`);
-  // const data = await response.json();
-  // return data;
-
-  return faqsData as FAQsResponse;
+  return {
+    categories: [...clubCategories, ...appCategories],
+    lastUpdated: new Date().toISOString(),
+  };
 };
 
 /**

@@ -151,7 +151,8 @@ export const getGraduations = async (
   const cacheKey = buildCacheKey(includeChildren);
 
   // Try to get from cache first
-  const cached = await getFromCache<GraduationResponse>(cacheKey, CACHE_DURATIONS.MEDIUM);
+  // TODO: Change back to CACHE_DURATIONS.MEDIUM before production
+  const cached = await getFromCache<GraduationResponse>(cacheKey, 1000);
   if (cached) {
     return cached;
   }
@@ -169,10 +170,8 @@ export const getGraduations = async (
 
   if (response.error || !response.data) {
     // On error, try to use stale cache as fallback
-    const { data: staleData } = await getFromCacheWithStale<GraduationResponse>(
-      cacheKey,
-      CACHE_DURATIONS.MEDIUM
-    );
+    // TODO: Change back to CACHE_DURATIONS.MEDIUM before production
+    const { data: staleData } = await getFromCacheWithStale<GraduationResponse>(cacheKey, 1000);
     if (staleData) {
       console.warn('[Graduations] API failed, using stale cache:', response.error);
       return staleData;

@@ -34,16 +34,16 @@ export const defaultNavigation: NavigationConfig = {
       href: '/',
     },
     {
-      name: 'leaderboard',
-      icon: 'Trophy',
-      label: 'nav.leaderboard',
-      href: '/leaderboard',
-    },
-    {
       name: 'calendar',
       icon: 'Calendar',
       label: 'nav.classes',
       href: '/calendar',
+    },
+    {
+      name: 'leaderboard',
+      icon: 'Trophy',
+      label: 'nav.leaderboard',
+      href: '/leaderboard',
     },
     {
       name: 'billing',

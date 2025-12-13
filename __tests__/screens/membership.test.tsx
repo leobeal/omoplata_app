@@ -38,7 +38,7 @@ jest.mock('@/contexts/ThemeColors', () => ({
 jest.mock('@/contexts/LocalizationContext', () => ({
   useT: () => (key: string, params?: any) => {
     const translations: Record<string, string | ((p: any) => string)> = {
-      'membership.title': 'My Membership',
+      'membership.title': 'Membership',
       'membership.currentPlan': 'Current Plan',
       'membership.memberId': 'Member ID',
       'membership.membershipId': 'Membership ID',

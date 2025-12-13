@@ -1,9 +1,10 @@
 import Constants from 'expo-constants';
 import * as WebBrowser from 'expo-web-browser';
-import React from 'react';
-import { View, Image, Linking } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Image, Linking, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 
 import Header from '@/components/Header';
+import LargeTitle from '@/components/LargeTitle';
 import ListLink from '@/components/ListLink';
 import Section from '@/components/Section';
 import ThemedScroller from '@/components/ThemedScroller';
@@ -18,6 +19,15 @@ export default function AboutScreen() {
   const { t } = useTranslation();
   const { tenant } = useTenant();
 
+  // Scroll state for collapsible title
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
+  const LARGE_TITLE_HEIGHT = 44;
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
+  }, []);
+
   // Check if this is a tenant-specific build (not the main Omoplata app)
   const configuredTenant = Constants.expoConfig?.extra?.tenant;
   const isTenantBuild = !!configuredTenant;
@@ -25,8 +35,10 @@ export default function AboutScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title={t('about.title')} showBackButton />
-      <ThemedScroller className="flex-1 px-6">
+      <Header title={showHeaderTitle ? t('about.title') : undefined} showBackButton />
+      <ThemedScroller className="flex-1 px-6" onScroll={handleScroll} scrollEventThrottle={16}>
+        <LargeTitle title={t('about.title')} className="pt-2" />
+
         {/* Logo and Powered By */}
         <View className="items-center py-8">
           <Image

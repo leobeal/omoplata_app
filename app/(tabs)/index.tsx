@@ -1,5 +1,15 @@
-import React, { memo, useState, useCallback, useMemo, useEffect } from 'react';
-import { View, Pressable, RefreshControl, useWindowDimensions, Alert } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { memo, useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import {
+  View,
+  Pressable,
+  RefreshControl,
+  useWindowDimensions,
+  Alert,
+  ImageBackground,
+  Animated,
+  Platform,
+} from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 
 import { confirmAttendance, denyAttendance, ChildWithClasses } from '@/api/classes';
@@ -16,11 +26,11 @@ import SepaForm from '@/components/SepaForm';
 import { SmallChartCard } from '@/components/SmallChartCard';
 import { SmallDonutCard } from '@/components/SmallDonutCard';
 import { SmallStreakCard } from '@/components/SmallStreakCard';
-import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useTranslation } from '@/contexts/LocalizationContext';
+import { useScrollToTop } from '@/contexts/ScrollToTopContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 export default function HomeScreen() {
@@ -124,26 +134,94 @@ export default function HomeScreen() {
     }
   }, [refreshData]);
 
+  // Scroll-to-top functionality
+  const scrollViewRef = useRef<Animated.ScrollView>(null);
+  const { registerScrollHandler, unregisterScrollHandler } = useScrollToTop();
+
+  useEffect(() => {
+    const handleScrollToTop = () => {
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    };
+
+    registerScrollHandler('/', handleScrollToTop);
+    registerScrollHandler('/index', handleScrollToTop);
+
+    return () => {
+      unregisterScrollHandler('/');
+      unregisterScrollHandler('/index');
+    };
+  }, [registerScrollHandler, unregisterScrollHandler]);
+
+  // Animated scroll tracking for header
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 500],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
+
   return (
-    <>
+    <View className="flex-1 bg-background">
+      {/* Fixed Background Image - Dark mode only */}
+      {colors.isDark && (
+        <ImageBackground
+          source={require('@/assets/_global/img/onboarding-1.jpg')}
+          className="absolute left-0 right-0 top-0 h-[700px]"
+          resizeMode="cover">
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(20,20,20,0.85)', colors.bg]}
+            locations={[0, 0.35, 0.7, 1]}
+            style={{ flex: 1 }}
+          />
+        </ImageBackground>
+      )}
+
+      {/* Animated Header with background transition */}
       <Header
-        className="bg-secondary"
-        leftComponent={<HeaderIcon icon="Bell" hasBadge href="/screens/notifications" />}
+        transparent
+        leftComponent={
+          <HeaderIcon icon="Bell" hasBadge href="/screens/notifications" isWhite={colors.isDark} />
+        }
         rightComponents={[
           <Avatar name={userName} size="sm" link="/screens/settings" src={user?.profilePicture} />,
-        ]}
-      />
-      <ThemedScroller
-        className="flex-1 bg-background !px-0"
+        ]}>
+        <Animated.View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: colors.bg,
+            opacity: headerOpacity,
+            zIndex: -1,
+          }}
+        />
+      </Header>
+
+      <Animated.ScrollView
+        ref={scrollViewRef}
+        style={{ flex: 1, backgroundColor: 'transparent' }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 24 }}
+        scrollEventThrottle={16}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: true,
+        })}
+        contentInset={Platform.OS === 'ios' ? { top: 100 } : undefined}
+        contentOffset={Platform.OS === 'ios' ? { x: 0, y: -100 } : undefined}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
             tintColor="#FFFFFF"
             colors={['#FFFFFF', colors.highlight]}
-            progressBackgroundColor={colors.bg}
+            progressViewOffset={Platform.OS === 'android' ? 100 : 0}
           />
         }>
+        {/* Spacer for fixed header - smaller on iOS due to contentInset */}
+        <View style={{ height: Platform.OS === 'ios' ? 12 : 112 }} />
+
         {/* Cached Data Banner */}
         {classesFromCache && (
           <View
@@ -155,12 +233,14 @@ export default function HomeScreen() {
             </ThemedText>
           </View>
         )}
-        <View className="bg-secondary px-6">
+
+        {/* Hero Content */}
+        <View className="px-6 pb-6">
           <Section
             title={t('home.welcomeBack')}
             titleSize="4xl"
             subtitle={today}
-            className="mb-8 mt-8"
+            className="mb-8 mt-4"
           />
           <MembershipOverview membership={membership} />
         </View>
@@ -233,8 +313,8 @@ export default function HomeScreen() {
             onDeny={handleDeny}
           />
         )}
-      </ThemedScroller>
-    </>
+      </Animated.ScrollView>
+    </View>
   );
 }
 
@@ -299,8 +379,9 @@ const ActivityStats = memo(() => {
       <View className="flex-row items-stretch gap-4">
         <View className="flex-1">
           <SmallStreakCard
-            title={t('home.streak')}
-            subtitle={t('home.currentStreak')}
+            title={t('home.weeklyStreak')}
+            currentLabel={t('home.current')}
+            bestLabel={t('home.best')}
             streakWeeks={currentStreak}
             goalWeeks={longestStreak}
           />
@@ -344,9 +425,9 @@ const MembershipOverview = memo(({ membership }: MembershipOverviewProps) => {
   }
 
   return (
-    <View className="dark:bg-dark-secondary mb-6 rounded-xl bg-secondary pt-14">
+    <View className="mb-6 rounded-xl pb-6 pt-14">
       <View className="mb-12 items-center">
-        <View className="relative h-32 w-32 items-center justify-center rounded-full bg-background">
+        <View className="relative h-32 w-32 items-center justify-center rounded-full bg-white/20">
           <View className="items-center">
             <ThemedText className="text-3xl font-bold">{membership.plan.name}</ThemedText>
             <ThemedText className="text-sm opacity-50">
@@ -360,9 +441,9 @@ const MembershipOverview = memo(({ membership }: MembershipOverviewProps) => {
         <ThemedText className="text-lg font-bold">{t('home.membershipStatus')}</ThemedText>
       </View>
 
-      <View className="mt-4 flex-row justify-between gap-4 rounded-2xl border-t border-border px-6 pt-4">
+      <View className="mt-4 flex-row justify-between gap-4 rounded-2xl border-t border-white/20 px-6 pt-4">
         <View className="flex-1 items-center">
-          <ThemedText className="text-light-subtext dark:text-dark-subtext text-center text-sm">
+          <ThemedText className="text-center text-sm opacity-70">
             {t('home.classesLeft')}
           </ThemedText>
           <View className="flex-row items-center">
@@ -371,7 +452,7 @@ const MembershipOverview = memo(({ membership }: MembershipOverviewProps) => {
           </View>
         </View>
         <View className="flex-1 items-center">
-          <ThemedText className="text-light-subtext dark:text-dark-subtext text-center text-sm">
+          <ThemedText className="text-center text-sm opacity-70">
             {t('home.nextBilling')}
           </ThemedText>
           <View className="flex-row items-center">
@@ -382,7 +463,7 @@ const MembershipOverview = memo(({ membership }: MembershipOverviewProps) => {
           </View>
         </View>
         <View className="flex-1 items-center">
-          <ThemedText className="text-light-subtext dark:text-dark-subtext text-center text-sm">
+          <ThemedText className="text-center text-sm opacity-70">
             {t('home.memberSince')}
           </ThemedText>
           <View className="flex-row items-center">

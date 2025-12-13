@@ -1,5 +1,5 @@
 import { TabTriggerSlotProps } from 'expo-router/ui';
-import { forwardRef, useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { Text, Pressable, View, Animated } from 'react-native';
 
 import Icon, { IconName } from '@/components/Icon';
@@ -15,8 +15,6 @@ export const TabButton = forwardRef<View, TabButtonProps>(
   ({ icon, children, isFocused, onPress, href, labelAnimated = true, ...props }, ref) => {
     const colors = useThemeColors();
     const { scrollToTop } = useScrollToTop();
-    const lastTapTime = useRef<number>(0);
-    const DOUBLE_TAP_DELAY = 300; // ms
 
     const [labelOpacity] = useState(new Animated.Value(isFocused ? 1 : 0));
     const [labelMarginBottom] = useState(new Animated.Value(isFocused ? 0 : 10));
@@ -37,23 +35,12 @@ export const TabButton = forwardRef<View, TabButtonProps>(
     }, [isFocused]);
 
     const handlePress = (e: any) => {
-      const now = Date.now();
-      const isDoubleTap = now - lastTapTime.current < DOUBLE_TAP_DELAY;
-      lastTapTime.current = now;
-
-      if (isFocused && isDoubleTap) {
-        // Double tap on active tab - scroll to top
+      if (isFocused) {
+        // Single tap on active tab - scroll to top
         e.preventDefault?.();
         e.stopPropagation?.();
         const path = typeof href === 'string' ? href : '/';
         scrollToTop(path);
-        return;
-      }
-
-      if (isFocused) {
-        // Single tap on active tab - do nothing (wait for potential double tap)
-        e.preventDefault?.();
-        e.stopPropagation?.();
         return;
       }
 

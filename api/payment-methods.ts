@@ -46,6 +46,7 @@ export interface PaymentMethod {
   code: string;
   isActive: boolean;
   isCorrectlyConfigured: boolean;
+  isFromResponsible: boolean;
   last4: string;
   details: PaymentMethodDetails;
   createdAt: string;
@@ -74,6 +75,7 @@ interface PaymentMethodsApiResponse {
     code: string;
     is_active: boolean;
     is_correctly_configured: boolean;
+    is_from_responsible: boolean;
     last4: string;
     details: {
       account_holder: string;

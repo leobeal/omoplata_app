@@ -7,9 +7,11 @@ import { useThemeColors } from '@/contexts/ThemeColors';
 
 interface SmallStreakCardProps {
   title: string;
-  subtitle?: string;
+  currentLabel?: string;
+  bestLabel?: string;
   streakWeeks: number;
   goalWeeks: number;
+  color?: string;
 }
 
 const HexagonBadge = ({
@@ -65,15 +67,16 @@ const HexagonBadge = ({
 
 export const SmallStreakCard = ({
   title,
-  subtitle,
+  currentLabel = 'Current',
+  bestLabel = 'Best',
   streakWeeks,
   goalWeeks,
+  color,
 }: SmallStreakCardProps) => {
   const colors = useThemeColors();
 
-  const progress = Math.min(streakWeeks / goalWeeks, 1);
-  const isHotStreak = streakWeeks >= 4;
-  const badgeColor = isHotStreak ? '#f97316' : colors.highlight;
+  const progress = goalWeeks > 0 ? Math.min(streakWeeks / goalWeeks, 1) : 0;
+  const badgeColor = color || '#f97316';
 
   return (
     <View className="min-w-0 rounded-lg bg-secondary p-4">
@@ -83,16 +86,20 @@ export const SmallStreakCard = ({
 
         {/* Content */}
         <View className="ml-4 flex-1">
-          {/* Title with fraction */}
-          <View className="flex-row items-baseline">
-            <ThemedText className="text-base font-bold">
-              {streakWeeks} / {goalWeeks}
-            </ThemedText>
-            <ThemedText className="ml-2 text-base font-bold">{title}</ThemedText>
-          </View>
+          {/* Title */}
+          <ThemedText className="text-base font-bold">{title}</ThemedText>
 
-          {/* Subtitle */}
-          {subtitle && <ThemedText className="text-sm opacity-50">{subtitle}</ThemedText>}
+          {/* Current and Best labels */}
+          <View className="flex-row items-center gap-3">
+            <ThemedText className="text-sm opacity-50">
+              {currentLabel}:{' '}
+              <ThemedText className="font-semibold opacity-100">{streakWeeks}w</ThemedText>
+            </ThemedText>
+            <ThemedText className="text-sm opacity-50">
+              {bestLabel}:{' '}
+              <ThemedText className="font-semibold opacity-100">{goalWeeks}w</ThemedText>
+            </ThemedText>
+          </View>
 
           {/* Progress bar */}
           <View className="mt-2 flex-row items-center">

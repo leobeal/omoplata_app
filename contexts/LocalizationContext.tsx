@@ -1,9 +1,36 @@
 import Constants from 'expo-constants';
+import * as Localization from 'expo-localization';
 import { I18n } from 'i18n-js';
 import React, { createContext, useContext, useMemo, useState, useCallback, useEffect } from 'react';
 
-import { translations, SupportedLanguages } from '@/locales';
+import { translations, SupportedLanguages, SUPPORTED_LANGUAGES } from '@/locales';
 import { loadLanguage, saveLanguage } from '@/utils/language-storage';
+
+/**
+ * Get the device's preferred language, mapped to a supported language
+ */
+const getDeviceLanguage = (): SupportedLanguages => {
+  const deviceLocale = Localization.getLocales()[0]?.languageTag || 'en';
+
+  // Check for exact match first (e.g., 'pt-BR')
+  if (SUPPORTED_LANGUAGES.includes(deviceLocale as SupportedLanguages)) {
+    return deviceLocale as SupportedLanguages;
+  }
+
+  // Check for language code match (e.g., 'de' from 'de-DE')
+  const languageCode = deviceLocale.split('-')[0];
+  if (SUPPORTED_LANGUAGES.includes(languageCode as SupportedLanguages)) {
+    return languageCode as SupportedLanguages;
+  }
+
+  // Special case: any Portuguese variant -> pt-BR
+  if (languageCode === 'pt') {
+    return 'pt-BR';
+  }
+
+  // Default to English
+  return 'en';
+};
 
 interface LocalizationContextType {
   t: (key: string, params?: Record<string, string | number>) => string;
@@ -28,10 +55,12 @@ export const LocalizationProvider: React.FC<LocalizationProviderProps> = ({
   children,
   tenantSlug = null,
 }) => {
-  // Get default language from tenant config
-  const tenantLanguage = (Constants.expoConfig?.extra?.language as SupportedLanguages) || 'en';
+  // Priority: device language > tenant config > English
+  const deviceLanguage = getDeviceLanguage();
+  const tenantLanguage = (Constants.expoConfig?.extra?.language as SupportedLanguages) || null;
+  const defaultLanguage = deviceLanguage || tenantLanguage || 'en';
 
-  const [locale, setLocaleState] = useState<SupportedLanguages>(tenantLanguage);
+  const [locale, setLocaleState] = useState<SupportedLanguages>(defaultLanguage);
   const [isLoading, setIsLoading] = useState(true);
 
   // Create i18n instance - recreate when locale changes to ensure proper updates

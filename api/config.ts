@@ -157,6 +157,11 @@ export const ENDPOINTS = {
   LEADERBOARD: {
     LIST: '/leaderboard',
   },
+  // FAQs
+  FAQS: {
+    CLUB: '/faqs/club',
+    APP: '/faqs/app',
+  },
 } as const;
 
 export default API_CONFIG;

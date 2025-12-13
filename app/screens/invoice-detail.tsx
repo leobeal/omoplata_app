@@ -157,7 +157,9 @@ export default function InvoiceDetailScreen() {
               <ThemedText className="mb-1 text-sm opacity-50">
                 {t('billing.invoiceNumber')}
               </ThemedText>
-              <ThemedText className="text-2xl font-bold">{invoice.id}</ThemedText>
+              <ThemedText className="text-2xl font-bold" selectable>
+                {invoice.id}
+              </ThemedText>
             </View>
             <View
               className="rounded-full px-3 py-1"
@@ -186,7 +188,9 @@ export default function InvoiceDetailScreen() {
             {invoice.paymentDetails && (
               <View className="flex-row justify-between">
                 <ThemedText className="opacity-50">{t('billing.account')}</ThemedText>
-                <ThemedText className="font-semibold">{invoice.paymentDetails}</ThemedText>
+                <ThemedText className="font-semibold" selectable>
+                  {invoice.paymentDetails}
+                </ThemedText>
               </View>
             )}
           </View>
@@ -227,7 +231,9 @@ export default function InvoiceDetailScreen() {
             </View>
             <View className="flex-row justify-between border-t border-border pt-3">
               <ThemedText className="text-lg font-bold">{t('billing.total')}</ThemedText>
-              <ThemedText className="text-2xl font-bold">{formatAmount(invoice.total)}</ThemedText>
+              <ThemedText className="text-2xl font-bold" selectable>
+                {formatAmount(invoice.total)}
+              </ThemedText>
             </View>
           </View>
         </View>
@@ -240,21 +246,23 @@ export default function InvoiceDetailScreen() {
         </View>
 
         <View className="mb-6 rounded-2xl bg-secondary p-5">
-          <ThemedText className="font-semibold">
+          <ThemedText className="font-semibold" selectable>
             {user ? `${user.firstName} ${user.lastName}`.trim() : 'User'}
           </ThemedText>
-          <ThemedText className="mt-1 text-sm opacity-70">
+          <ThemedText className="mt-1 text-sm opacity-70" selectable>
             {user?.email || 'user@example.com'}
           </ThemedText>
           {invoice.payerAddress ? (
             <>
-              <ThemedText className="mt-1 text-sm opacity-70">
+              <ThemedText className="mt-1 text-sm opacity-70" selectable>
                 {invoice.payerAddress.street}
               </ThemedText>
-              <ThemedText className="text-sm opacity-70">
+              <ThemedText className="text-sm opacity-70" selectable>
                 {invoice.payerAddress.postalCode} {invoice.payerAddress.city}
               </ThemedText>
-              <ThemedText className="text-sm opacity-70">{invoice.payerAddress.country}</ThemedText>
+              <ThemedText className="text-sm opacity-70" selectable>
+                {invoice.payerAddress.country}
+              </ThemedText>
             </>
           ) : (
             <ThemedText className="mt-1 text-sm opacity-70">
@@ -279,7 +287,7 @@ export default function InvoiceDetailScreen() {
 
         <View className="mb-8">
           <ThemedText className="text-center text-xs opacity-50">
-            {t('billing.supportContact', { email: 'support@omoplata.com' })}
+            {t('billing.supportContact', { email: 'app@omoplata.com' })}
           </ThemedText>
         </View>
       </ThemedScroller>

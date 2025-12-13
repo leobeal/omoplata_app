@@ -195,7 +195,7 @@ const PodiumPlace = memo(
 
         {/* Podium Stand */}
         <View
-          className="mt-3 w-full rounded-t-xl"
+          className="mt-3 w-full rounded-xl"
           style={{
             height,
             backgroundColor: medalColor.bg,

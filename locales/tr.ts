@@ -110,7 +110,9 @@ export default {
     onTrack: 'yolunda',
     total: 'toplam',
     streak: 'Seri',
+    weeklyStreak: 'Haftalık Seri',
     currentStreak: 'Mevcut seri',
+    current: 'Mevcut',
     weeks: 'hafta',
     week: 'hafta',
     best: 'En iyi',
@@ -164,6 +166,13 @@ export default {
     cacheRefreshed: 'Veriler Yenilendi',
     cacheRefreshedMessage: 'Uygulama yapılandırması ve verileri yenilendi.',
     cacheRefreshError: 'Veriler yenilenemedi. Lütfen tekrar deneyin.',
+    enableNotifications: 'Bildirimleri Etkinleştir',
+    enableNotificationsDescription: 'Ders hatırlatıcıları ve güncellemeler alın',
+    notificationsEnabled: 'Bildirimler Etkinleştirildi',
+    notificationsEnabledMessage: 'Artık dersler ve güncellemeler için bildirim alacaksınız.',
+    notificationsDenied: 'İzin Reddedildi',
+    notificationsDeniedMessage: 'Lütfen cihaz ayarlarından bildirimleri etkinleştirin.',
+    notificationsError: 'Bildirimler etkinleştirilemedi. Lütfen tekrar deneyin.',
   },
 
   // Privacy Settings
@@ -358,6 +367,7 @@ export default {
     limit: 'Limit',
     paymentMethod: 'Ödeme Yöntemi',
     accountHolder: 'Hesap Sahibi',
+    fromResponsible: 'Veli',
     policies: 'Üyelik Politikaları',
     cancellationPolicy: 'İptal Politikası',
     freezePolicy: 'Dondurma Politikası',
@@ -365,8 +375,7 @@ export default {
     downloadContract: 'Sözleşme PDF İndir',
     cancelMembership: 'Üyeliği İptal Et',
     noMembership: 'Üyelik bulunamadı',
-    supportMessage:
-      'Üyeliğinizle ilgili sorular için lütfen support@omoplata.com ile iletişime geçin',
+    supportMessage: 'Üyeliğinizle ilgili sorular için lütfen app@omoplata.com ile iletişime geçin',
 
     // Download messages
     contractPdfTitle: 'Sözleşme PDF',
@@ -657,6 +666,7 @@ export default {
     outOf: '{{total}} üyeden',
     topPercentile: 'Üyelerin ilk %{{percent}}lik dilimindesin!',
     noResults: 'Sonuç Yok',
+    beTheFirst: 'Matlar boş! İlk giriş yapan siz olun ve zirveyi ele geçirin.',
     tryDifferentFilters: 'Daha fazla sonuç görmek için filtrelerinizi ayarlayın',
     errorTitle: 'Sıralama yüklenemedi',
     errorMessage: 'Lütfen bağlantınızı kontrol edin ve tekrar deneyin',

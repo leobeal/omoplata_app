@@ -41,6 +41,12 @@ interface ApiUserStatus {
   can_register: boolean;
 }
 
+interface ApiIntention {
+  first_name: string;
+  last_name: string;
+  avatar: string | null;
+}
+
 interface ApiClassSession {
   id: number;
   class: ApiClassInfo;
@@ -50,6 +56,7 @@ interface ApiClassSession {
   venue: ApiVenue;
   capacity: ApiCapacity;
   user_status: ApiUserStatus;
+  intentions: ApiIntention[];
 }
 
 interface ApiChildWithClasses {
@@ -79,6 +86,12 @@ export interface ClassCapacity {
   available_spots: number | null;
 }
 
+export interface ClassParticipant {
+  firstName: string;
+  lastName: string;
+  avatar: string | null;
+}
+
 export interface Class {
   id: string;
   title: string;
@@ -95,6 +108,7 @@ export interface Class {
   description: string;
   level: string;
   category?: string;
+  participants: ClassParticipant[];
 }
 
 export interface ClassFilters {
@@ -174,6 +188,11 @@ const transformApiClass = (apiClass: ApiClassSession): Class => {
     description: apiClass.class.description || '',
     level: apiClass.class.level || '',
     category: apiClass.class.discipline,
+    participants: (apiClass.intentions || []).map((i) => ({
+      firstName: i.first_name,
+      lastName: i.last_name,
+      avatar: i.avatar,
+    })),
   };
 };
 

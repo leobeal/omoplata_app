@@ -232,7 +232,7 @@ export default function MembershipScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-background">
-        <Header title={t('membership.title')} showBackButton />
+        <Header showBackButton />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" testID="activity-indicator" />
         </View>
@@ -243,7 +243,7 @@ export default function MembershipScreen() {
   if (!membership) {
     return (
       <View className="flex-1 bg-background">
-        <Header title={t('membership.title')} showBackButton />
+        <Header showBackButton />
         <View className="flex-1 items-center justify-center px-6">
           <Icon name="UserX" size={64} className="mb-4 opacity-30" />
           <ThemedText className="text-center text-lg">{t('membership.noMembership')}</ThemedText>
@@ -258,7 +258,7 @@ export default function MembershipScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title={t('membership.title')} showTitle={showHeaderTitle} showBackButton />
+      <Header title={showHeaderTitle ? t('membership.title') : undefined} showBackButton />
       <ThemedScroller
         className="px-6"
         onScroll={handleScrollForTitle}
@@ -479,12 +479,19 @@ export default function MembershipScreen() {
                   <Icon name={getPaymentMethodIcon(paymentMethod.type)} size={20} />
                 </View>
                 <View className="flex-1">
-                  <View className="flex-row items-center">
+                  <View className="flex-row flex-wrap items-center gap-2">
                     <ThemedText className="font-semibold">{paymentMethod.name}</ThemedText>
                     {paymentMethod.isActive && paymentMethod.isCorrectlyConfigured && (
-                      <View className="ml-2 rounded-full bg-green-500/20 px-2 py-0.5">
+                      <View className="rounded-full bg-green-500/20 px-2 py-0.5">
                         <ThemedText className="text-xs text-green-500">
                           {t('membership.active')}
+                        </ThemedText>
+                      </View>
+                    )}
+                    {paymentMethod.isFromResponsible && (
+                      <View className="rounded-full bg-blue-500/20 px-2 py-0.5">
+                        <ThemedText className="text-xs text-blue-500">
+                          {t('membership.fromResponsible')}
                         </ThemedText>
                       </View>
                     )}

@@ -109,7 +109,9 @@ export default {
     onTrack: 'auf Kurs',
     total: 'gesamt',
     streak: 'Serie',
+    weeklyStreak: 'Wöchentliche Serie',
     currentStreak: 'Aktuelle Serie',
+    current: 'Aktuell',
     weeks: 'Wochen',
     week: 'Woche',
     best: 'Beste',
@@ -163,6 +165,14 @@ export default {
     cacheRefreshed: 'Daten aktualisiert',
     cacheRefreshedMessage: 'App-Konfiguration und Daten wurden aktualisiert.',
     cacheRefreshError: 'Daten konnten nicht aktualisiert werden. Bitte versuche es erneut.',
+    enableNotifications: 'Benachrichtigungen aktivieren',
+    enableNotificationsDescription: 'Erinnerungen für Kurse und Updates erhalten',
+    notificationsEnabled: 'Benachrichtigungen aktiviert',
+    notificationsEnabledMessage: 'Du erhältst jetzt Benachrichtigungen für Kurse und Updates.',
+    notificationsDenied: 'Berechtigung verweigert',
+    notificationsDeniedMessage: 'Bitte aktiviere Benachrichtigungen in deinen Geräteeinstellungen.',
+    notificationsError:
+      'Benachrichtigungen konnten nicht aktiviert werden. Bitte versuche es erneut.',
   },
 
   // Datenschutz-Einstellungen
@@ -358,6 +368,7 @@ export default {
     limit: 'Limit',
     paymentMethod: 'Zahlungsmethode',
     accountHolder: 'Kontoinhaber',
+    fromResponsible: 'Eltern',
     policies: 'Mitgliedschaftsrichtlinien',
     cancellationPolicy: 'Kündigungsrichtlinie',
     freezePolicy: 'Einfrieren-Richtlinie',
@@ -365,7 +376,7 @@ export default {
     downloadContract: 'Vertrag PDF herunterladen',
     cancelMembership: 'Mitgliedschaft kündigen',
     noMembership: 'Keine Mitgliedschaft gefunden',
-    supportMessage: 'Bei Fragen zu deiner Mitgliedschaft wende dich bitte an support@omoplata.com',
+    supportMessage: 'Bei Fragen zu deiner Mitgliedschaft wende dich bitte an app@omoplata.com',
 
     // Download messages
     contractPdfTitle: 'Vertrag PDF',
@@ -626,6 +637,7 @@ export default {
     outOf: 'von {{total}} Mitgliedern',
     topPercentile: 'Du bist unter den Top {{percent}}% der Mitglieder!',
     noResults: 'Keine Ergebnisse',
+    beTheFirst: 'Die Matten sind leer! Sei der Erste, der eincheckt und den Spitzenplatz erobert.',
     tryDifferentFilters: 'Versuche, deine Filter anzupassen, um mehr Ergebnisse zu sehen',
     errorTitle: 'Rangliste konnte nicht geladen werden',
     errorMessage: 'Bitte überprüfe deine Verbindung und versuche es erneut',

@@ -1,8 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Switch, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Switch,
+  View,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 
 import { api } from '@/api/client';
 import Header from '@/components/Header';
+import LargeTitle from '@/components/LargeTitle';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
@@ -48,6 +55,15 @@ export default function PrivacyScreen() {
     show_in_leaderboard: false,
   });
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  // Scroll state for collapsible title
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
+  const LARGE_TITLE_HEIGHT = 44;
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
+  }, []);
 
   useEffect(() => {
     const fetchPrivacySettings = async () => {
@@ -98,7 +114,7 @@ export default function PrivacyScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-background">
-        <Header title={t('privacy.title')} showBackButton />
+        <Header showBackButton />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={colors.highlight} />
         </View>
@@ -108,8 +124,9 @@ export default function PrivacyScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title={t('privacy.title')} showBackButton />
-      <ThemedScroller className="flex-1 px-6">
+      <Header title={showHeaderTitle ? t('privacy.title') : undefined} showBackButton />
+      <ThemedScroller className="flex-1 px-6" onScroll={handleScroll} scrollEventThrottle={16}>
+        <LargeTitle title={t('privacy.title')} className="pt-2" />
         <View className="mt-4 rounded-2xl bg-secondary">
           {PRIVACY_SETTINGS.map((setting, index) => (
             <View

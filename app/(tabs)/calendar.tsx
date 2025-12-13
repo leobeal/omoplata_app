@@ -445,7 +445,7 @@ export default function CalendarScreen() {
     <SafeAreaView edges={['top']} className="flex-1 bg-secondary">
       <View className="flex-1 bg-background">
         {/* Month/Year Header */}
-        <View className="border-b border-border bg-secondary px-6 pb-3 pt-4">
+        <View className="border-b border-border bg-secondary px-6 pb-3 pt-2">
           <View className="flex-row items-center justify-between">
             {/* Title */}
             <ThemedText className="text-xl font-bold">{t('nav.classes')}</ThemedText>

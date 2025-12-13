@@ -1,264 +1,72 @@
 # Omoplata - Fitness Club Management App
 
-A comprehensive fitness club/gym management mobile application built with React Native and Expo.
-
-## Overview
-
-Omoplata is a multi-tenant React Native mobile application designed for fitness club members and administrators. It provides member portal features including class booking, check-in capabilities, membership management, and billing integration.
+A multi-tenant fitness club mobile application built with React Native and Expo.
 
 ## Tech Stack
 
-- **React Native** (0.81.4) with **Expo** (v54)
-- **TypeScript** for type safety
-- **Expo Router** for file-based navigation
-- **NativeWind** (Tailwind CSS for React Native)
-- **Lucide Icons** for iconography
-- **Jest** & **React Native Testing Library** for testing
-
-## Features
-
-- ✅ User authentication (login/register)
-- ✅ Dark/light mode with multi-tenant theming
-- ✅ Form validation and error handling
-- ✅ API client with token management
-- ✅ Comprehensive test suite (50+ tests)
-- 🚧 Member profile management
-- 🚧 Membership plans and subscriptions
-- 🚧 Class scheduling and booking
-- 🚧 QR code check-in system
-- 🚧 Payment processing
-- 🚧 Push notifications
+- **React Native** with **Expo** (SDK 54)
+- **TypeScript** / **Expo Router** / **NativeWind**
+- **Jest** for testing
 
 ## Getting Started
 
 ```bash
-# Use Node.js v20 (or v16+ with structuredClone support)
-nvm use 20
-
 # Install dependencies
 npm install --legacy-peer-deps
 
-# Start the Expo development server (TENANT is required)
-TENANT=evolve npx expo start -c     # For Evolve gym
-TENANT=MAIN npx expo start -c       # For generic build with tenant selection
+# Start development server (TENANT is required)
+TENANT=evolve npx expo start -c
 
-# Or run on specific platform
-TENANT=evolve npm run ios      # iOS simulator
-TENANT=evolve npm run android  # Android emulator
+# Run on simulator
+TENANT=evolve npm run ios
+TENANT=evolve npm run android
 ```
-
-## Available Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm start` | Start Expo development server |
-| `npm run ios` | Run iOS development build |
-| `npm run android` | Run Android development build |
-| `npm test` | Run all tests |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:coverage` | Run tests with coverage report |
-| `npm run lint` | Check code quality |
-| `npm run format` | Auto-format code |
 
 ## Tenant Configuration
 
-The app is **single-tenant** from the user's perspective but supports two deployment modes via the `TENANT` environment variable:
+The app supports two deployment modes:
 
-### 1. Club-Specific Build
-- Set `TENANT=evolve` (or any gym slug)
-- White-labeled app for a specific gym
-- Users skip tenant selection - it's pre-configured
-- Perfect for gym-branded apps
+| Mode | Command | Description |
+|------|---------|-------------|
+| Club-specific | `TENANT=evolve npm start` | White-labeled for a specific gym |
+| Generic | `TENANT=MAIN npm start` | Users select gym on first launch |
 
-### 2. Generic Build with One-Time Selection
-- Set `TENANT=MAIN`
-- Users select their gym once on first launch
-- Selection is permanent until app reinstall
-- Perfect for SaaS model with single App Store listing
+Available tenants: `evolve`, `sparta`, `MAIN`
 
-**Important:** Once a tenant is selected (either way), the app is locked to that tenant. Users cannot switch gyms within the app.
+📖 See [Tenant Configuration Guide](./docs/TENANT_CONFIGURATION.md) for details.
 
-### Quick Start
+## Scripts
 
-```bash
-# Club-specific build (Evolve gym)
-TENANT=evolve npm start
+| Script | Description |
+|--------|-------------|
+| `npm start` | Start Expo dev server |
+| `npm run ios` / `android` | Run on simulator |
+| `npm test` | Run tests |
+| `npm run lint:fix` | Fix lint issues |
 
-# Generic build with tenant selection
-TENANT=MAIN npm start
+## Pre-Production TODO
 
-# If you've previously selected a tenant, clear AsyncStorage via Expo dev menu
-```
+Before deploying to production:
 
-### All Commands
+### Cache Durations
+- [ ] `api/graduations.ts` - Change cache from `1000ms` back to `CACHE_DURATIONS.MEDIUM`
 
-```bash
-# Development
-TENANT=evolve npm start      # Evolve gym
-TENANT=sparta npm start      # Sparta gym
-TENANT=MAIN npm start        # Generic - users select gym
-
-# iOS
-TENANT=evolve npm run ios
-TENANT=MAIN npm run ios
-
-# Android
-TENANT=evolve npm run android
-TENANT=MAIN npm run android
-```
-
-📖 **[Full Tenant Configuration Guide](./docs/TENANT_CONFIGURATION.md)**
-
-## Testing
-
-Comprehensive test suite with 50+ tests covering:
-- ✅ Component rendering
-- ✅ Form validation
-- ✅ User interactions
-- ✅ API client functionality
-- ✅ Navigation flows
-
-Run tests:
-```bash
-npm test                # Run all tests
-npm run test:watch      # Watch mode
-npm run test:coverage   # With coverage report
-```
-
-## Important: React Version Constraint
-
-⚠️ **CRITICAL**: This project requires **React 19.1.0** (not 19.2.0+)
-
-React Native 0.81.4 includes `react-native-renderer@19.1.0`, which requires an **exact version match** with React. Using React 19.2.0 will cause runtime errors:
-
-```
-Error: Incompatible React versions: The "react" and "react-native-renderer"
-packages must have the exact same version.
-```
-
-**Current locked versions:**
-- `react@19.1.0` ✅
-- `react-test-renderer@19.1.0` ✅
-- `react-native@0.81.4` (includes react-native-renderer@19.1.0) ✅
-
-**When installing new packages, always use:**
-```bash
-npm install <package> --legacy-peer-deps
-```
-
-You may see peer dependency warnings about React 19.2.0 from upstream packages - these can be safely ignored as long as the tests pass.
-
-## Project Structure
-
-```
-omoplata_app/
-├── app/                    # Application screens (Expo Router)
-│   ├── _layout.tsx        # Root layout with theme provider
-│   ├── index.tsx          # Home/Dashboard
-│   └── screens/
-│       ├── login.tsx               # Login screen
-│       └── tenant-selection.tsx    # Gym selection (generic builds)
-├── api/                   # API client and services
-│   ├── config.ts         # API config with dynamic tenant support
-│   ├── client.ts         # HTTP client with auth
-│   ├── auth.ts           # Authentication service
-│   ├── classes.ts        # Classes API
-│   ├── checkin.ts        # Check-in API
-│   └── invoices.ts       # Invoices API
-├── components/           # Reusable UI components
-│   ├── Button.tsx
-│   ├── Icon.tsx
-│   ├── ThemedText.tsx
-│   ├── AnimatedView.tsx
-│   └── forms/
-│       └── Input.tsx
-├── contexts/            # React contexts
-│   ├── ThemeContext.tsx   # Theme provider
-│   ├── ThemeColors.tsx    # Theme colors hook
-│   └── TenantContext.tsx  # Tenant state management
-├── utils/              # Utility functions
-│   ├── color-theme.ts      # Theme definitions
-│   └── tenant-storage.ts   # Persistent tenant storage
-├── backend_apis/       # Backend API documentation
-├── configs/            # Multi-tenant configurations
-│   ├── evolve-grappling.js      # Evolve brand
-│   └── sparta-aachen.js      # Sparta brand
-├── __tests__/         # Test suite
-│   ├── screens/
-│   ├── navigation/
-│   └── api/
-└── docs/              # Documentation
-    └── TENANT_CONFIGURATION.md  # Tenant setup guide
-```
-
-## API Integration
-
-Backend API documentation is in `backend_apis/`:
-
-- **Authentication**: Login, register, password reset
-- **User Management**: Profile, settings
-- **Memberships**: Plans, subscriptions, pauses
-- **Classes**: Scheduling, booking, waitlists
-- **Check-in**: QR code system, history
-- **Payments**: Methods, invoices, processing
-- **Notifications**: Push notifications, preferences
-
-API client configuration: `api/config.ts`
-
-## Development
-
-### Adding New Screens
-
-1. Create screen in `app/screens/`
-2. Add navigation route if needed
-3. Write tests in `__tests__/screens/`
-4. Run tests: `npm test`
-
-### Theme Customization
-
-Themes defined in `utils/color-theme.ts`:
-- Light/dark mode support
-- CSS variables for consistency
-- Per-tenant color schemes
-
-### Form Components
-
-Use components from `components/forms/`:
-- `Input` - Text input with variants (inline, classic, animated)
-- Validation support
-- Error handling
-- Password toggle
-
-## Troubleshooting
-
-### Common Issues
-
-**"structuredClone is not defined"**
-- Use Node.js 17+ or the polyfill is applied in `jest.setupBefore.js`
-
-**"Incompatible React versions"**
-- Ensure React 19.1.0 is installed (not 19.2.0)
-- Run: `npm install react@19.1.0 react-test-renderer@19.1.0 --legacy-peer-deps`
-
-**Tests failing**
-- Clear Jest cache: `npx jest --clearCache`
-- Reinstall dependencies: `rm -rf node_modules && npm install --legacy-peer-deps`
+### Other Checks
+- [ ] Remove debug `console.log` statements
+- [ ] Verify API endpoints point to production
+- [ ] Test push notifications with production credentials
+- [ ] Update app version numbers
 
 ## Deployment
 
-Build for production with EAS:
-
 ```bash
-# iOS
+# Build with EAS
 npx eas build --platform ios
-
-# Android
 npx eas build --platform android
 ```
 
-Configure EAS in `app.config.js`.
+## Important Notes
 
-## License
-
-[Add your license information]
-
+- Always use `--legacy-peer-deps` when installing packages
+- Requires **React 19.1.0** (not 19.2.0+) due to React Native compatibility
+- Clear Metro cache with `npx expo start -c` if issues arise

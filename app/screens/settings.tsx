@@ -24,6 +24,7 @@ import { useAppConfig } from '@/contexts/AppConfigContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useTranslation } from '@/contexts/LocalizationContext';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 import { LANGUAGE_OPTIONS } from '@/locales';
 
@@ -42,11 +43,16 @@ export default function SettingsScreen() {
   } = useAuth();
   const { membership, refreshData } = useAppData();
   const { refreshConfig } = useAppConfig();
+  const { permissionStatus, requestPermission, registerToken } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
   const [refreshingCache, setRefreshingCache] = useState(false);
   const [ratingApp, setRatingApp] = useState(false);
+  const [enablingNotifications, setEnablingNotifications] = useState(false);
   const [switchingChildId, setSwitchingChildId] = useState<string | null>(null);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+
+  // Check if notifications need to be enabled
+  const showEnableNotifications = permissionStatus !== 'granted';
 
   // Get current language display info
   const currentLanguage = LANGUAGE_OPTIONS.find((l) => l.code === locale);
@@ -126,6 +132,24 @@ export default function SettingsScreen() {
     }
   };
 
+  const handleEnableNotifications = async () => {
+    setEnablingNotifications(true);
+    try {
+      const granted = await requestPermission();
+      if (granted) {
+        await registerToken();
+        Alert.alert(t('settings.notificationsEnabled'), t('settings.notificationsEnabledMessage'));
+      } else {
+        Alert.alert(t('settings.notificationsDenied'), t('settings.notificationsDeniedMessage'));
+      }
+    } catch (error) {
+      console.error('Failed to enable notifications:', error);
+      Alert.alert(t('common.error'), t('settings.notificationsError'));
+    } finally {
+      setEnablingNotifications(false);
+    }
+  };
+
   const handleSwitchToChild = async (childId: string) => {
     setSwitchingChildId(childId);
     try {
@@ -148,8 +172,7 @@ export default function SettingsScreen() {
   return (
     <>
       <Header
-        title={t('settings.title')}
-        showTitle={showHeaderTitle}
+        title={showHeaderTitle ? t('settings.title') : undefined}
         showBackButton
         rightComponents={[<ThemeToggle />]}
       />
@@ -278,6 +301,17 @@ export default function SettingsScreen() {
             icon="CreditCard"
             href="/screens/membership"
           />
+          {showEnableNotifications && (
+            <ListLink
+              className="px-5"
+              hasBorder
+              title={t('settings.enableNotifications')}
+              description={t('settings.enableNotificationsDescription')}
+              icon="BellRing"
+              onPress={handleEnableNotifications}
+              isLoading={enablingNotifications}
+            />
+          )}
           <ListLink
             className="px-5"
             hasBorder

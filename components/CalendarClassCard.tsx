@@ -78,7 +78,7 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
           </View>
         </View>
 
-        {/* Level Badge */}
+        {/* Level Badge and Participants */}
         <View className="mt-3 flex-row items-center justify-between">
           <View
             className="rounded-full px-3 py-1"
@@ -86,11 +86,40 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
             <ThemedText className="text-xs font-semibold">{classData.level}</ThemedText>
           </View>
 
+          {/* Participants Avatars */}
           <View className="flex-row items-center">
-            <Icon name="Users" size={14} color={colors.text} className="opacity-50" />
-            <ThemedText className="ml-1 text-sm opacity-70">
-              {classData.enrolled}/{classData.capacity.max ?? '∞'}
-            </ThemedText>
+            {classData.participants.length > 0 ? (
+              <View className="flex-row items-center">
+                {classData.participants.slice(0, 4).map((participant, index) => (
+                  <View key={index} style={{ marginLeft: index > 0 ? -8 : 0, zIndex: 4 - index }}>
+                    <Avatar
+                      name={`${participant.firstName} ${participant.lastName}`}
+                      src={participant.avatar}
+                      size="xs"
+                    />
+                  </View>
+                ))}
+                {classData.participants.length > 4 && (
+                  <View
+                    className="h-6 w-6 items-center justify-center rounded-full"
+                    style={{
+                      marginLeft: -8,
+                      backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5',
+                    }}>
+                    <ThemedText className="text-[10px] font-semibold">
+                      +{classData.participants.length - 4}
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
+            ) : (
+              <View className="flex-row items-center">
+                <Icon name="Users" size={14} color={colors.text} className="opacity-50" />
+                <ThemedText className="ml-1 text-sm opacity-70">
+                  {classData.enrolled}/{classData.capacity.max ?? '∞'}
+                </ThemedText>
+              </View>
+            )}
           </View>
         </View>
       </View>

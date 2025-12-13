@@ -21,6 +21,7 @@ type HeaderProps = {
   className?: string;
   style?: ViewStyle;
   showTitle?: boolean; // For collapsible title behavior
+  transparent?: boolean;
 };
 
 const Header: React.FC<HeaderProps> = ({
@@ -34,6 +35,7 @@ const Header: React.FC<HeaderProps> = ({
   className,
   style,
   showTitle = true,
+  transparent = false,
 }) => {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
@@ -48,8 +50,8 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <View
-      style={[{ paddingTop: insets.top }, style]}
-      className={`relative z-50 w-full bg-background px-6 pb-2 ${className}`}>
+      style={[{ paddingTop: insets.top }, transparent && { backgroundColor: 'transparent' }, style]}
+      className={`${transparent ? 'absolute left-0 right-0 top-0' : 'relative'} z-50 w-full ${transparent ? '' : 'bg-background'} px-6 pb-2 ${className}`}>
       <View className="h-14 flex-row items-center justify-between">
         {/* Left side - back button or left component */}
         <View className="z-10 min-w-[40px] flex-row items-center">
@@ -67,9 +69,7 @@ const Header: React.FC<HeaderProps> = ({
             className="absolute inset-x-0 -z-10 items-center justify-center"
             style={{ height: 56 }}
             pointerEvents="none">
-            <ThemedText className="text-lg font-semibold" style={{ opacity: showTitle ? 1 : 0 }}>
-              {title}
-            </ThemedText>
+            <ThemedText className="text-lg font-semibold">{title}</ThemedText>
           </View>
         )}
 

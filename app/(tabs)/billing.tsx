@@ -1,20 +1,20 @@
 import { router } from 'expo-router';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View,
-  Pressable,
   ActivityIndicator,
-  RefreshControl,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Pressable,
+  RefreshControl,
+  View,
 } from 'react-native';
 
 import {
   getInvoicesPaginated,
-  getNextInvoice,
-  Invoice,
   getInvoiceStatusColor,
   getInvoiceStatusTranslationKey,
+  getNextInvoice,
+  Invoice,
 } from '@/api/invoices';
 import { formatCurrency } from '@/api/membership';
 import { getPaymentMethodIcon, getPaymentMethodTypeName } from '@/api/payment-methods';
@@ -123,7 +123,6 @@ export default function BillingScreen() {
     return (
       <View className="flex-1 bg-background">
         <Header
-          title={t('billing.title')}
           rightComponents={[
             <Avatar
               key="avatar"
@@ -145,7 +144,6 @@ export default function BillingScreen() {
     return (
       <View className="flex-1 bg-background">
         <Header
-          title={t('billing.title')}
           rightComponents={[
             <Avatar
               key="avatar"
@@ -172,8 +170,7 @@ export default function BillingScreen() {
   return (
     <View className="flex-1 bg-background">
       <Header
-        title={t('billing.title')}
-        showTitle={showHeaderTitle}
+        title={showHeaderTitle ? t('billing.title') : undefined}
         rightComponents={[
           <Avatar
             key="avatar"
@@ -248,22 +245,27 @@ export default function BillingScreen() {
                 </View>
 
                 <View className="flex-1">
-                  <ThemedText className="font-semibold">{invoice.id}</ThemedText>
-                  <ThemedText className="text-sm opacity-50">{formatDate(invoice.date)}</ThemedText>
-                </View>
-
-                <View className="items-end">
-                  <ThemedText className="font-bold">
-                    {formatAmount(invoice.amount, invoice.currency)}
-                  </ThemedText>
-                  <View
-                    className="mt-1 rounded-full px-2 py-0.5"
-                    style={{ backgroundColor: `${getStatusColor(invoice.status)}20` }}>
-                    <ThemedText
-                      className="text-xs font-semibold"
-                      style={{ color: getStatusColor(invoice.status) }}>
-                      {getStatusLabel(invoice.status)}
+                  <View className="flex-row justify-between gap-2">
+                    <View>
+                      <ThemedText className="font-semibold">{invoice.id}</ThemedText>
+                    </View>
+                    <ThemedText className="font-bold">
+                      {formatAmount(invoice.amount, invoice.currency)}
                     </ThemedText>
+                  </View>
+                  <View className="flex-row justify-between gap-2">
+                    <ThemedText className="text-sm opacity-50">
+                      {formatDate(invoice.date)}
+                    </ThemedText>
+                    <View
+                      className="mt-1 rounded-full px-2 py-0.5"
+                      style={{ backgroundColor: `${getStatusColor(invoice.status)}20` }}>
+                      <ThemedText
+                        className="text-xs font-semibold"
+                        style={{ color: getStatusColor(invoice.status) }}>
+                        {getStatusLabel(invoice.status)}
+                      </ThemedText>
+                    </View>
                   </View>
                 </View>
 

@@ -1,8 +1,9 @@
 import '../global.css';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { Stack, Redirect, useSegments } from 'expo-router';
+import { Stack, Redirect, useSegments, usePathname, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Image, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -22,8 +23,14 @@ import { cacheImage, getCachedImage } from '@/utils/image-cache';
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
+const LAST_ROUTE_KEY = '@omoplata:lastRoute';
+
+// Routes that should not be persisted
+const EXCLUDED_ROUTES = ['/screens/login', '/screens/tenant-selection', '/screens/forgot-password'];
+
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const pathname = usePathname();
   const { tenant, isLoading: isTenantLoading, isTenantRequired, clearTenant } = useTenant();
   const { loading: isConfigLoading, error: configError } = useAppConfig();
   const { isDashboardReady } = useDashboardReady();
@@ -31,6 +38,8 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   const [isLoginBackgroundReady, setIsLoginBackgroundReady] = useState(false);
   const [isPreloadingBackground, setIsPreloadingBackground] = useState(false);
   const [splashHidden, setSplashHidden] = useState(false);
+  const [hasRestoredRoute, setHasRestoredRoute] = useState(false);
+  const previousAuthState = useRef<boolean | null>(null);
 
   const isOnLoginScreen = segments.join('/').includes('login');
   const isOnTenantScreen = segments.join('/').includes('tenant-selection');
@@ -51,6 +60,47 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     !isOnTenantScreen &&
     !isOnForgotPasswordScreen &&
     (!isTenantRequired || tenant);
+
+  // Route persistence: Save current route when it changes
+  useEffect(() => {
+    if (!isAuthenticated || !pathname) return;
+    if (EXCLUDED_ROUTES.some((route) => pathname.startsWith(route))) return;
+
+    AsyncStorage.setItem(LAST_ROUTE_KEY, pathname);
+  }, [pathname, isAuthenticated]);
+
+  // Route persistence: Restore last route on app launch
+  useEffect(() => {
+    if (hasRestoredRoute || !isAuthenticated || !isDashboardReady) return;
+
+    const restoreRoute = async () => {
+      try {
+        const lastRoute = await AsyncStorage.getItem(LAST_ROUTE_KEY);
+        if (lastRoute && lastRoute !== '/' && lastRoute !== pathname) {
+          router.replace(lastRoute);
+        }
+      } catch (error) {
+        console.error('Failed to restore route:', error);
+      } finally {
+        setHasRestoredRoute(true);
+      }
+    };
+
+    restoreRoute();
+  }, [isAuthenticated, isDashboardReady, hasRestoredRoute, pathname]);
+
+  // Route persistence: Clear saved route on logout
+  useEffect(() => {
+    const wasAuthenticated = previousAuthState.current;
+    const isNowAuthenticated = isAuthenticated;
+
+    if (wasAuthenticated === true && isNowAuthenticated === false) {
+      AsyncStorage.removeItem(LAST_ROUTE_KEY);
+      setHasRestoredRoute(false);
+    }
+
+    previousAuthState.current = isAuthenticated;
+  }, [isAuthenticated]);
 
   // Preload login background when tenant is available and user is not authenticated
   const preloadLoginBackground = useCallback(async () => {

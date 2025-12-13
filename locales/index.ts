@@ -13,6 +13,9 @@ export const translations = {
 export type TranslationKeys = typeof en;
 export type SupportedLanguages = keyof typeof translations;
 
+// Array of supported language codes for runtime checking
+export const SUPPORTED_LANGUAGES: SupportedLanguages[] = ['en', 'de', 'pt-BR', 'tr'];
+
 // Language metadata for UI display
 export const LANGUAGE_OPTIONS: {
   code: SupportedLanguages;

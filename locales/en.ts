@@ -109,7 +109,9 @@ export default {
     onTrack: 'on track',
     total: 'total',
     streak: 'Streak',
+    weeklyStreak: 'Weekly Streak',
     currentStreak: 'Current streak',
+    current: 'Current',
     weeks: 'weeks',
     week: 'week',
     best: 'Best',
@@ -163,6 +165,13 @@ export default {
     cacheRefreshed: 'Data Refreshed',
     cacheRefreshedMessage: 'App configuration and data have been refreshed.',
     cacheRefreshError: 'Failed to refresh data. Please try again.',
+    enableNotifications: 'Enable Notifications',
+    enableNotificationsDescription: 'Get reminders for classes and updates',
+    notificationsEnabled: 'Notifications Enabled',
+    notificationsEnabledMessage: 'You will now receive notifications for classes and updates.',
+    notificationsDenied: 'Permission Denied',
+    notificationsDeniedMessage: 'Please enable notifications in your device settings.',
+    notificationsError: 'Failed to enable notifications. Please try again.',
   },
 
   // Privacy Settings
@@ -329,7 +338,7 @@ export default {
 
   // Membership Screen
   membership: {
-    title: 'My Membership',
+    title: 'Membership',
     currentPlan: 'Current Plan',
     memberId: 'Member ID',
     membershipId: 'Membership ID',
@@ -356,6 +365,7 @@ export default {
     limit: 'Limit',
     paymentMethod: 'Payment Method',
     accountHolder: 'Account Holder',
+    fromResponsible: 'Parent',
     policies: 'Membership Policies',
     cancellationPolicy: 'Cancellation Policy',
     freezePolicy: 'Freeze Policy',
@@ -363,7 +373,7 @@ export default {
     downloadContract: 'Download Contract PDF',
     cancelMembership: 'Cancel Membership',
     noMembership: 'No membership found',
-    supportMessage: 'For questions about your membership, please contact support@omoplata.com',
+    supportMessage: 'For questions about your membership, please contact app@omoplata.com',
 
     // Download messages
     contractPdfTitle: 'Contract PDF',
@@ -656,6 +666,7 @@ export default {
     outOf: 'of {{total}} members',
     topPercentile: "You're in the top {{percent}}% of members!",
     noResults: 'No Results',
+    beTheFirst: 'The mats are empty! Be the first to check in and claim the top spot.',
     tryDifferentFilters: 'Try adjusting your filters to see more results',
     errorTitle: 'Unable to Load Leaderboard',
     errorMessage: 'Please check your connection and try again',

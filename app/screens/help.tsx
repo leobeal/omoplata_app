@@ -1,9 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { View, ActivityIndicator, Pressable, Linking } from 'react-native';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import {
+  View,
+  ActivityIndicator,
+  Pressable,
+  Linking,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 
 import { getFAQs, FAQCategory } from '@/api/faqs';
 import Header from '@/components/Header';
 import Icon from '@/components/Icon';
+import LargeTitle from '@/components/LargeTitle';
 import Section from '@/components/Section';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
@@ -15,6 +23,15 @@ export default function HelpScreen() {
   const [loading, setLoading] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [expandedFAQs, setExpandedFAQs] = useState<Set<string>>(new Set());
+
+  // Scroll state for collapsible title
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
+  const LARGE_TITLE_HEIGHT = 44;
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
+  }, []);
 
   // Separate categories by type
   const clubCategories = useMemo(
@@ -71,11 +88,7 @@ export default function HelpScreen() {
   };
 
   const handleContactSupport = () => {
-    Linking.openURL('mailto:support@omoplata.com');
-  };
-
-  const handleCallSupport = () => {
-    Linking.openURL('tel:+15551234567');
+    Linking.openURL('mailto:app@omoplata.com');
   };
 
   const renderCategoryList = (categoryList: FAQCategory[]) => {
@@ -146,7 +159,7 @@ export default function HelpScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-background">
-        <Header showBackButton title={t('settings.helpAndSupport')} />
+        <Header showBackButton />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" />
         </View>
@@ -156,36 +169,23 @@ export default function HelpScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header showBackButton title={t('settings.helpAndSupport')} />
-      <ThemedScroller className="px-6 pt-4">
+      <Header showBackButton title={showHeaderTitle ? t('settings.helpAndSupport') : undefined} />
+      <ThemedScroller className="px-6" onScroll={handleScroll} scrollEventThrottle={16}>
+        <LargeTitle title={t('settings.helpAndSupport')} className="pt-2" />
+
         {/* Contact Support Section */}
         <Section title={t('help.contactSupport')} titleSize="lg" noTopMargin />
         <View className="mb-6 rounded-2xl bg-secondary">
           <Pressable
             onPress={handleContactSupport}
-            className="flex-row items-center justify-between border-b border-border p-5">
+            className="flex-row items-center justify-between p-5">
             <View className="flex-1 flex-row items-center">
               <View className="mr-4 h-10 w-10 items-center justify-center rounded-full bg-highlight">
                 <Icon name="Mail" size={20} color="white" />
               </View>
               <View className="flex-1">
                 <ThemedText className="font-semibold">{t('help.emailSupport')}</ThemedText>
-                <ThemedText className="text-sm opacity-50">support@omoplata.com</ThemedText>
-              </View>
-            </View>
-            <Icon name="ChevronRight" size={20} className="opacity-30" />
-          </Pressable>
-
-          <Pressable
-            onPress={handleCallSupport}
-            className="flex-row items-center justify-between p-5">
-            <View className="flex-1 flex-row items-center">
-              <View className="mr-4 h-10 w-10 items-center justify-center rounded-full bg-highlight">
-                <Icon name="Phone" size={20} color="white" />
-              </View>
-              <View className="flex-1">
-                <ThemedText className="font-semibold">{t('help.callSupport')}</ThemedText>
-                <ThemedText className="text-sm opacity-50">(555) 123-4567</ThemedText>
+                <ThemedText className="text-sm opacity-50">app@omoplata.com</ThemedText>
               </View>
             </View>
             <Icon name="ChevronRight" size={20} className="opacity-30" />
@@ -207,24 +207,6 @@ export default function HelpScreen() {
             {renderCategoryList(appCategories)}
           </>
         )}
-
-        {/* Still Need Help */}
-        <View className="mb-8 rounded-2xl bg-secondary p-6">
-          <View className="mb-3 flex-row items-center">
-            <Icon name="HelpCircle" size={24} className="mr-3 opacity-50" />
-            <ThemedText className="text-lg font-bold">{t('help.stillNeedHelp')}</ThemedText>
-          </View>
-          <ThemedText className="mb-4 text-sm opacity-70">
-            {t('help.stillNeedHelpDescription')}
-          </ThemedText>
-          <Pressable
-            onPress={handleContactSupport}
-            className="items-center rounded-xl bg-highlight py-3">
-            <ThemedText className="font-semibold text-white">
-              {t('help.contactSupportTeam')}
-            </ThemedText>
-          </Pressable>
-        </View>
       </ThemedScroller>
     </View>
   );
