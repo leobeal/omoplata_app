@@ -286,7 +286,9 @@ export default function CalendarScreen() {
                   ? colors.isDark
                     ? '#2A2A2A'
                     : '#E5E5E5'
-                  : 'transparent',
+                  : colors.isDark
+                    ? '#1A1A1A'
+                    : '#F5F5F5',
             }}>
             {/* Day name */}
             <ThemedText
