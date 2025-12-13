@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 10.0.2"
+    "version": ">= 10.0.2",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
@@ -65,7 +66,31 @@
       },
       "android": {
         "serviceAccountKeyPath": "./secrets/google-service-account.json",
-        "track": "internal"
+        "track": "production"
+      }
+    },
+    "internal": {
+      "android": {
+        "serviceAccountKeyPath": "./secrets/google-service-account.json",
+        "track": "internal",
+        "releaseStatus": "completed"
+      }
+    },
+    "alpha": {
+      "android": {
+        "serviceAccountKeyPath": "./secrets/google-service-account.json",
+        "track": "alpha"
+      }
+    },
+    "release": {
+      "ios": {
+        "appleId": "your-apple-id@example.com",
+        "ascAppId": "1234567890",
+        "appleTeamId": "ABCDE12345"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./secrets/google-service-account.json",
+        "track": "production"
       }
     }
   }

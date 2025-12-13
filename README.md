@@ -43,6 +43,10 @@ Available tenants: `evolve`, `sparta`, `MAIN`
 | `npm run ios` / `android` | Run on simulator |
 | `npm test` | Run tests |
 | `npm run lint:fix` | Fix lint issues |
+| `npm run build:main:android` | Build Android with EAS |
+| `npm run build:main:ios` | Build iOS with EAS |
+| `npm run submit:android:internal` | Submit to Play Store internal testing |
+| `npm run release:android:internal` | Build + submit to internal testing |
 
 ## Pre-Production TODO
 
@@ -59,11 +63,63 @@ Before deploying to production:
 
 ## Deployment
 
+### Build Commands
+
 ```bash
-# Build with EAS
-npx eas build --platform ios
-npx eas build --platform android
+npm run build:main:android    # Build Android
+npm run build:main:ios        # Build iOS
+npm run build:main:all        # Build both platforms
 ```
+
+### Google Play Testing Tracks
+
+| Track | Who Can Access | Approval Time | Use Case |
+|-------|---------------|---------------|----------|
+| **Internal** | Up to 100 invited testers | Instant | QA team, developers |
+| **Closed (alpha)** | Invite-only via email lists | Minutes | Beta testers, early adopters |
+| **Open (beta)** | Anyone via opt-in link | Minutes | Public beta, wider feedback |
+| **Production** | Everyone on Play Store | Hours to days (review) | Live release |
+
+### Release Flow
+
+```
+Internal → Closed → Open → Production
+   ↓         ↓        ↓         ↓
+  QA      Beta     Public    Live!
+ team    testers    beta
+```
+
+### Submit Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run submit:android:internal` | Submit to internal testing |
+| `npm run submit:android:alpha` | Submit to closed testing |
+| `npm run submit:android:beta` | Submit to open testing |
+| `npm run submit:android:production` | Submit to production |
+| `npm run submit:ios` | Submit to App Store Connect |
+
+### Combined Build + Submit
+
+```bash
+npm run release:android:internal     # Build & submit to internal testing
+npm run release:android:production   # Build & submit to production
+```
+
+### Before Production Release
+
+Complete these in Google Play Console:
+- [ ] App title & description
+- [ ] Screenshots (phone + tablet)
+- [ ] Feature graphic (1024x500)
+- [ ] Privacy policy URL
+- [ ] Content rating questionnaire
+- [ ] Target audience & content
+- [ ] App category
+
+### Version Management
+
+Version codes auto-increment on each EAS build (configured in `eas.json`).
 
 ## Important Notes
 
