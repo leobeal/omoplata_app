@@ -249,6 +249,7 @@ export default {
     welcomeBack: 'Welcome back, {{name}}!',
     checkInNumber: 'Check-in #{{count}} this month',
     keepUpStreak: 'Keep up the streak!',
+    location: 'Location',
 
     // Errors
     invalidQRCode: 'Invalid QR code',

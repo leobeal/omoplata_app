@@ -1,6 +1,7 @@
 import '../global.css';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
+import * as Linking from 'expo-linking';
 import { Stack, Redirect, useSegments, usePathname, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -18,6 +19,12 @@ import { NotificationProvider } from '@/contexts/NotificationContext';
 import { ScrollToTopProvider } from '@/contexts/ScrollToTopContext';
 import { TenantProvider, useTenant } from '@/contexts/TenantContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import {
+  savePendingCheckin,
+  getPendingCheckin,
+  clearPendingCheckin,
+  extractTenantFromHost,
+} from '@/utils/deep-link-storage';
 import { cacheImage, getCachedImage } from '@/utils/image-cache';
 
 // Keep the splash screen visible while we fetch resources
@@ -31,7 +38,13 @@ const EXCLUDED_ROUTES = ['/screens/login', '/screens/tenant-selection', '/screen
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const pathname = usePathname();
-  const { tenant, isLoading: isTenantLoading, isTenantRequired, clearTenant } = useTenant();
+  const {
+    tenant,
+    isLoading: isTenantLoading,
+    isTenantRequired,
+    clearTenant,
+    selectTenantBySlug,
+  } = useTenant();
   const { loading: isConfigLoading, error: configError } = useAppConfig();
   const { isDashboardReady } = useDashboardReady();
   const segments = useSegments();
@@ -40,6 +53,8 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   const [splashHidden, setSplashHidden] = useState(false);
   const [hasRestoredRoute, setHasRestoredRoute] = useState(false);
   const previousAuthState = useRef<boolean | null>(null);
+  const hasHandledDeepLink = useRef(false);
+  const url = Linking.useURL();
 
   const isOnLoginScreen = segments.join('/').includes('login');
   const isOnTenantScreen = segments.join('/').includes('tenant-selection');
@@ -101,6 +116,69 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
     previousAuthState.current = isAuthenticated;
   }, [isAuthenticated]);
+
+  // Deep link handling: Handle check-in URLs from QR code scans
+  useEffect(() => {
+    if (!url || hasHandledDeepLink.current) return;
+    if (isCoreLoading) return; // Wait for auth/tenant to load
+
+    const handleDeepLink = async () => {
+      try {
+        const parsed = Linking.parse(url);
+        const path = parsed.path?.replace(/^\//, ''); // Remove leading slash
+
+        // Only handle checkin path
+        if (path !== 'checkin') return;
+
+        hasHandledDeepLink.current = true;
+
+        const location = parsed.queryParams?.location as string | undefined;
+        const code = parsed.queryParams?.code as string | undefined;
+        const tenantSlug = extractTenantFromHost(parsed.hostname);
+
+        // If multi-tenant app and no tenant selected, auto-select from URL
+        if (isTenantRequired && !tenant && tenantSlug) {
+          await selectTenantBySlug(tenantSlug);
+          // After tenant selection, we need to wait for re-render
+          // The auth check will happen on next cycle
+        }
+
+        if (isAuthenticated) {
+          // User is logged in, go directly to check-in
+          router.push({
+            pathname: '/screens/checkin',
+            params: { location, code, direct: 'true' },
+          });
+        } else if (location) {
+          // User needs to log in first, save pending check-in
+          await savePendingCheckin({ location, code, tenantSlug: tenantSlug || undefined });
+          // Auth redirect will happen naturally via shouldRedirectToLogin
+        }
+      } catch (error) {
+        console.error('Failed to handle deep link:', error);
+      }
+    };
+
+    handleDeepLink();
+  }, [url, isCoreLoading, isAuthenticated, tenant, isTenantRequired, selectTenantBySlug]);
+
+  // Handle pending check-in after login
+  useEffect(() => {
+    if (!isAuthenticated || !isDashboardReady) return;
+
+    const handlePendingCheckin = async () => {
+      const pending = await getPendingCheckin();
+      if (pending) {
+        await clearPendingCheckin();
+        router.push({
+          pathname: '/screens/checkin',
+          params: { location: pending.location, code: pending.code, direct: 'true' },
+        });
+      }
+    };
+
+    handlePendingCheckin();
+  }, [isAuthenticated, isDashboardReady]);
 
   // Preload login background when tenant is available and user is not authenticated
   const preloadLoginBackground = useCallback(async () => {

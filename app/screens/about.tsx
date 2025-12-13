@@ -1,14 +1,18 @@
 import Constants from 'expo-constants';
+import * as StoreReview from 'expo-store-review';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useState, useCallback } from 'react';
-import { View, Image, Linking, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { View, Image, Alert, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 
+import { clearConfigCache } from '@/api/app-config';
 import Header from '@/components/Header';
 import LargeTitle from '@/components/LargeTitle';
 import ListLink from '@/components/ListLink';
 import Section from '@/components/Section';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
+import { useAppConfig } from '@/contexts/AppConfigContext';
+import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useTranslation } from '@/contexts/LocalizationContext';
 import { useTenant } from '@/contexts/TenantContext';
 
@@ -18,6 +22,10 @@ const PRIVACY_POLICY_URL = 'https://omoplata.de/datenschutz';
 export default function AboutScreen() {
   const { t } = useTranslation();
   const { tenant } = useTenant();
+  const { refreshConfig } = useAppConfig();
+  const { refreshData } = useAppData();
+  const [refreshingCache, setRefreshingCache] = useState(false);
+  const [ratingApp, setRatingApp] = useState(false);
 
   // Scroll state for collapsible title
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
@@ -27,6 +35,35 @@ export default function AboutScreen() {
     const offsetY = event.nativeEvent.contentOffset.y;
     setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
   }, []);
+
+  const handleRateApp = async () => {
+    setRatingApp(true);
+    try {
+      if (await StoreReview.hasAction()) {
+        await StoreReview.requestReview();
+      }
+    } catch (error) {
+      console.error('Error requesting review:', error);
+      Alert.alert(t('common.error'), t('settings.rateAppError'));
+    } finally {
+      setRatingApp(false);
+    }
+  };
+
+  const handleRefreshCache = async () => {
+    setRefreshingCache(true);
+    try {
+      // Clear config cache and refresh all data
+      await clearConfigCache();
+      await Promise.all([refreshConfig(), refreshData()]);
+      Alert.alert(t('settings.cacheRefreshed'), t('settings.cacheRefreshedMessage'));
+    } catch (error) {
+      console.error('Failed to refresh cache:', error);
+      Alert.alert(t('common.error'), t('settings.cacheRefreshError'));
+    } finally {
+      setRefreshingCache(false);
+    }
+  };
 
   // Check if this is a tenant-specific build (not the main Omoplata app)
   const configuredTenant = Constants.expoConfig?.extra?.tenant;
@@ -65,10 +102,20 @@ export default function AboutScreen() {
           />
           <ListLink
             className="px-5"
-            title={t('about.versionHistory')}
-            description={t('about.versionHistoryDescription')}
-            icon="History"
-            onPress={() => Linking.openURL('https://omoplata.com/changelog')}
+            hasBorder
+            title={t('settings.rateApp')}
+            description={t('settings.rateAppDescription')}
+            icon="Star"
+            onPress={handleRateApp}
+            isLoading={ratingApp}
+          />
+          <ListLink
+            className="px-5"
+            title={t('settings.refreshCache')}
+            description={t('settings.refreshCacheDescription')}
+            icon="RefreshCw"
+            onPress={handleRefreshCache}
+            isLoading={refreshingCache}
           />
         </View>
 

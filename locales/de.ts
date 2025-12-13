@@ -252,6 +252,7 @@ export default {
     welcomeBack: 'Willkommen zurück, {{name}}!',
     checkInNumber: 'Check-in #{{count}} diesen Monat',
     keepUpStreak: 'Weiter so!',
+    location: 'Standort',
 
     // Fehler
     invalidQRCode: 'Ungültiger QR-Code',

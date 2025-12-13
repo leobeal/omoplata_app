@@ -26,6 +26,7 @@ export const CACHE_KEYS = {
   INVOICES: '@omoplata/cache/invoices',
   LEADERBOARD: '@omoplata/cache/leaderboard',
   MEMBERSHIP: '@omoplata/cache/membership',
+  NOTIFICATIONS: '@omoplata/cache/notifications',
   PROFILE: '@omoplata/cache/profile',
   PAYMENT_METHODS: '@omoplata/cache/payment_methods',
   STATISTICS: '@omoplata/cache/statistics',

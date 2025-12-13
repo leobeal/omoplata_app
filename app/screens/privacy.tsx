@@ -144,7 +144,7 @@ export default function PrivacyScreen() {
                 value={values[setting.id]}
                 onValueChange={(value) => handleToggle(setting, value)}
                 disabled={updatingId === setting.id}
-                trackColor={{ false: colors.border, true: colors.highlight }}
+                trackColor={{ false: colors.border, true: '#4CAF50' }}
                 thumbColor="#FFFFFF"
               />
             </View>

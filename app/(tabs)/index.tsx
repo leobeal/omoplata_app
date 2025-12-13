@@ -493,16 +493,22 @@ interface ChildClassesScrollProps {
 const ChildClassesScroll = memo(({ child, onConfirm, onDeny }: ChildClassesScrollProps) => {
   const { width } = useWindowDimensions();
   const cardWidth = width - 40; // Full width minus padding (20 on each side)
+  const gap = 12;
+  const horizontalPadding = 20;
+
+  // Calculate snap offsets for each card
+  const classesToShow = child.classes.slice(0, 3);
+  const snapOffsets = classesToShow.map((_, index) => index * (cardWidth + gap));
 
   return (
     <GHScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       decelerationRate="fast"
-      snapToInterval={cardWidth + 12}
-      snapToAlignment="start"
-      contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}>
-      {child.classes.slice(0, 3).map((classItem) => (
+      snapToOffsets={snapOffsets}
+      snapToEnd={false}
+      contentContainerStyle={{ paddingHorizontal: horizontalPadding, gap }}>
+      {classesToShow.map((classItem) => (
         <View key={classItem.id} style={{ width: cardWidth }}>
           <ClassCard
             classData={classItem}
@@ -512,7 +518,6 @@ const ChildClassesScroll = memo(({ child, onConfirm, onDeny }: ChildClassesScrol
           />
         </View>
       ))}
-      <View style={{ width: 8 }} />
     </GHScrollView>
   );
 });
@@ -530,6 +535,9 @@ const ChildrenClassesTabs = memo(({ children, onConfirm, onDeny }: ChildrenClass
     return null;
   }
 
+  // Use slider only when more than 1 child has classes
+  const useSlider = childrenWithClassesFiltered.length > 1;
+
   return (
     <>
       {childrenWithClassesFiltered.map((child) => (
@@ -537,11 +545,29 @@ const ChildrenClassesTabs = memo(({ children, onConfirm, onDeny }: ChildrenClass
           {/* Child header with avatar and name */}
           <View className="mb-2 flex-row items-center px-5">
             <Avatar name={child.fullName} size="sm" />
-            <Section title={t('home.childClasses', { name: child.firstName })} className="ml-3" />
+            <Section
+              title={t('home.childClasses', { name: child.firstName })}
+              className="ml-3"
+              noTopMargin
+            />
           </View>
 
-          {/* Child's classes in horizontal scroll */}
-          <ChildClassesScroll child={child} onConfirm={onConfirm} onDeny={onDeny} />
+          {/* Child's classes - slider if multiple children, vertical list if single child */}
+          {useSlider ? (
+            <ChildClassesScroll child={child} onConfirm={onConfirm} onDeny={onDeny} />
+          ) : (
+            <View className="px-5">
+              {child.classes.slice(0, 3).map((classItem) => (
+                <ClassCard
+                  key={classItem.id}
+                  classData={classItem}
+                  childId={child.id}
+                  onConfirm={onConfirm}
+                  onDeny={onDeny}
+                />
+              ))}
+            </View>
+          )}
         </View>
       ))}
     </>

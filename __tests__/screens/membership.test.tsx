@@ -449,8 +449,8 @@ describe('MembershipScreen', () => {
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalled();
-        // The screen should not crash
-        expect(queryByText('My Membership')).toBeTruthy();
+        // The screen should not crash - shows "No membership found" on error
+        expect(queryByText('No membership found')).toBeTruthy();
       });
 
       consoleError.mockRestore();

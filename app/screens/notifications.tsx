@@ -9,9 +9,16 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import {
+  getNotifications,
+  markAsRead,
+  markAllAsRead,
+  Notification,
+  NotificationType,
+} from '@/api/notifications';
 import { Chip } from '@/components/Chip';
 import Header from '@/components/Header';
-import Icon, { IconName } from '@/components/Icon';
+import Icon from '@/components/Icon';
 import LargeTitle from '@/components/LargeTitle';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import ThemedScroller from '@/components/ThemedScroller';
@@ -19,124 +26,18 @@ import ThemedText from '@/components/ThemedText';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
-type NotificationType = 'class' | 'achievement' | 'reminder' | 'billing' | 'all';
-
-interface Notification {
-  id: number;
-  type: NotificationType;
-  title: string;
-  message: string;
-  time: string;
-  read: boolean;
-  icon: IconName;
-  user?: {
-    id: number;
-    name: string;
-    avatar: string;
-  };
-}
-
-// Simulated notification data
-const generateNotifications = (): Notification[] => [
-  {
-    id: 1,
-    type: 'class',
-    title: 'Class Confirmed',
-    message: 'Your attendance for BJJ Fundamentals has been confirmed',
-    time: '2 min ago',
-    read: false,
-    icon: 'CheckCircle',
-  },
-  {
-    id: 2,
-    type: 'achievement',
-    title: 'New Achievement!',
-    message: "You've reached a 7-day training streak!",
-    time: '1 hour ago',
-    read: false,
-    icon: 'Award',
-  },
-  {
-    id: 3,
-    type: 'class',
-    title: 'Class Reminder',
-    message: 'No-Gi class starts in 1 hour',
-    time: '2 hours ago',
-    read: true,
-    icon: 'Clock',
-  },
-  {
-    id: 4,
-    type: 'reminder',
-    title: 'Training Reminder',
-    message: "Don't forget your scheduled MMA class today at 6 PM",
-    time: '3 hours ago',
-    read: false,
-    icon: 'Bell',
-  },
-  {
-    id: 5,
-    type: 'billing',
-    title: 'Payment Processed',
-    message: 'Your monthly membership payment has been processed',
-    time: '4 hours ago',
-    read: true,
-    icon: 'CreditCard',
-  },
-  {
-    id: 6,
-    type: 'class',
-    title: 'Class Cancelled',
-    message: 'Wrestling class on Friday has been cancelled',
-    time: '1 day ago',
-    read: true,
-    icon: 'XCircle',
-  },
-  {
-    id: 7,
-    type: 'achievement',
-    title: 'Monthly Goal Reached!',
-    message: "You've attended 20 classes this month!",
-    time: '1 day ago',
-    read: false,
-    icon: 'Trophy',
-  },
-  {
-    id: 8,
-    type: 'reminder',
-    title: 'Schedule Update',
-    message: 'New BJJ Advanced class added on Saturdays at 10 AM',
-    time: '2 days ago',
-    read: true,
-    icon: 'Calendar',
-  },
-  {
-    id: 9,
-    type: 'billing',
-    title: 'Invoice Available',
-    message: 'Your January invoice is ready to view',
-    time: '3 days ago',
-    read: true,
-    icon: 'FileText',
-  },
-  {
-    id: 10,
-    type: 'achievement',
-    title: 'Personal Record!',
-    message: "You've trained 4 days in a row this week",
-    time: '4 days ago',
-    read: true,
-    icon: 'TrendingUp',
-  },
-];
+type FilterType = NotificationType | 'all';
 
 export default function NotificationsScreen() {
   const t = useT();
   const colors = useThemeColors();
-  const [selectedType, setSelectedType] = useState<NotificationType>('all');
+  const [selectedType, setSelectedType] = useState<FilterType>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Scroll state for collapsible title
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
@@ -147,10 +48,25 @@ export default function NotificationsScreen() {
     setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
   }, []);
 
-  const loadNotifications = useCallback(async () => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setNotifications(generateNotifications());
+  const loadNotifications = useCallback(async (cursor?: string) => {
+    try {
+      const result = await getNotifications({
+        limit: 20,
+        cursor,
+      });
+
+      if (cursor) {
+        // Appending more results
+        setNotifications((prev) => [...prev, ...result.notifications]);
+      } else {
+        // Fresh load
+        setNotifications(result.notifications);
+      }
+      setUnreadCount(result.unreadCount);
+      setNextCursor(result.nextCursor);
+    } catch (error) {
+      console.error('Failed to load notifications:', error);
+    }
   }, []);
 
   useEffect(() => {
@@ -173,20 +89,60 @@ export default function NotificationsScreen() {
     }
   }, [loadNotifications]);
 
-  const markAsRead = (notificationId: number) => {
+  const handleLoadMore = useCallback(async () => {
+    if (!nextCursor || isLoadingMore) return;
+
+    setIsLoadingMore(true);
+    try {
+      await loadNotifications(nextCursor);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [nextCursor, isLoadingMore, loadNotifications]);
+
+  const handleMarkAsRead = useCallback(async (notificationId: string) => {
+    // Optimistic update
     setNotifications((prev) =>
       prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
     );
-  };
+    setUnreadCount((prev) => Math.max(0, prev - 1));
+
+    try {
+      await markAsRead(notificationId);
+    } catch (error) {
+      // Revert on failure
+      console.error('Failed to mark as read:', error);
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, read: false } : n))
+      );
+      setUnreadCount((prev) => prev + 1);
+    }
+  }, []);
+
+  const handleMarkAllAsRead = useCallback(async () => {
+    const previousNotifications = [...notifications];
+    const previousUnreadCount = unreadCount;
+
+    // Optimistic update
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    setUnreadCount(0);
+
+    try {
+      await markAllAsRead();
+    } catch (error) {
+      // Revert on failure
+      console.error('Failed to mark all as read:', error);
+      setNotifications(previousNotifications);
+      setUnreadCount(previousUnreadCount);
+    }
+  }, [notifications, unreadCount]);
 
   // Filter notifications based on selected type
   const filteredNotifications = notifications.filter((notification) =>
     selectedType === 'all' ? true : notification.type === selectedType
   );
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const filterChips: { type: NotificationType; label: string }[] = [
+  const filterChips: { type: FilterType; label: string }[] = [
     { type: 'all', label: t('notifications.all') },
     { type: 'class', label: t('notifications.classes') },
     { type: 'achievement', label: t('notifications.achievements') },
@@ -197,11 +153,14 @@ export default function NotificationsScreen() {
   const renderNotification = (notification: Notification) => (
     <Pressable
       key={notification.id}
-      onPress={() => markAsRead(notification.id)}
+      onPress={() => !notification.read && handleMarkAsRead(notification.id)}
       className={`flex-row border-b border-border p-4 ${!notification.read ? 'bg-secondary/30' : ''}`}>
       {/* Icon or Avatar */}
       {notification.user ? (
-        <Image source={{ uri: notification.user.avatar }} className="h-10 w-10 rounded-full" />
+        <Image
+          source={{ uri: notification.user.avatar || '' }}
+          className="h-10 w-10 rounded-full"
+        />
       ) : (
         <View
           className="h-10 w-10 items-center justify-center rounded-full"
@@ -219,9 +178,24 @@ export default function NotificationsScreen() {
           {!notification.read && <View className="h-2 w-2 rounded-full bg-highlight" />}
         </View>
         <ThemedText className="mb-1 text-sm opacity-70">{notification.message}</ThemedText>
-        <ThemedText className="text-xs opacity-50">{notification.time}</ThemedText>
+        <ThemedText className="text-xs opacity-50">{notification.timeAgo}</ThemedText>
       </View>
     </Pressable>
+  );
+
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      handleScrollForTitle(event);
+
+      // Check if near bottom for infinite scroll
+      const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+      const isNearBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 200;
+
+      if (isNearBottom && nextCursor && !isLoadingMore) {
+        handleLoadMore();
+      }
+    },
+    [handleScrollForTitle, nextCursor, isLoadingMore, handleLoadMore]
   );
 
   return (
@@ -231,7 +205,7 @@ export default function NotificationsScreen() {
       {/* Notifications List */}
       <ThemedScroller
         className="flex-1"
-        onScroll={handleScrollForTitle}
+        onScroll={handleScroll}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
@@ -268,8 +242,7 @@ export default function NotificationsScreen() {
             <ThemedText className="text-sm">
               {t('notifications.unreadCount', { count: unreadCount })}
             </ThemedText>
-            <Pressable
-              onPress={() => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))}>
+            <Pressable onPress={handleMarkAllAsRead}>
               <ThemedText className="text-sm font-semibold" style={{ color: colors.highlight }}>
                 {t('notifications.markAllRead')}
               </ThemedText>
@@ -282,7 +255,14 @@ export default function NotificationsScreen() {
             <SkeletonLoader variant="list" count={6} />
           </View>
         ) : filteredNotifications.length > 0 ? (
-          filteredNotifications.map(renderNotification)
+          <>
+            {filteredNotifications.map(renderNotification)}
+            {isLoadingMore && (
+              <View className="py-4">
+                <SkeletonLoader variant="list" count={2} />
+              </View>
+            )}
+          </>
         ) : (
           <View className="flex-1 items-center justify-center py-20">
             <View

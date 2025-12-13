@@ -1,6 +1,6 @@
 import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
-import { router } from 'expo-router';
-import React, { useState, useEffect } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, Animated } from 'react-native';
 
 import { checkinApi } from '@/api';
@@ -21,6 +21,15 @@ export default function CheckInScreen() {
   const [successMessage, setSuccessMessage] = useState('');
   const [scanned, setScanned] = useState(false);
   const [enableTorch, setEnableTorch] = useState(false);
+  const hasHandledDirectCheckin = useRef(false);
+
+  // Route params for direct check-in (from deep link)
+  const { location, code, direct } = useLocalSearchParams<{
+    location?: string;
+    code?: string;
+    direct?: string;
+  }>();
+  const isDirectMode = direct === 'true' && !!location;
 
   // Animation values
   const [successOpacity] = useState(new Animated.Value(0));
@@ -127,14 +136,154 @@ export default function CheckInScreen() {
     }
   };
 
-  // Request permissions on mount
+  // Request permissions on mount (only for camera mode)
   useEffect(() => {
-    if (!permission?.granted) {
+    if (!isDirectMode && !permission?.granted) {
       requestPermission();
     }
-  }, [permission]);
+  }, [permission, isDirectMode]);
 
-  // Permission not granted yet
+  // Handle direct check-in from deep link
+  useEffect(() => {
+    if (!isDirectMode || hasHandledDirectCheckin.current) return;
+    hasHandledDirectCheckin.current = true;
+    handleDirectCheckin();
+  }, [isDirectMode]);
+
+  const handleDirectCheckin = async () => {
+    setScanState('scanning');
+
+    try {
+      // Call check-in API directly with location from deep link
+      const response = await checkinApi.checkin({
+        locationId: location!,
+        code: code || undefined,
+      });
+
+      if (response.data && response.data.success) {
+        // Success!
+        const greeting = response.data.data.greeting || t('checkin.welcomeBack', { name: '' });
+        const streak = response.data.data.monthlyVisits;
+        setSuccessMessage(`${greeting}\n\n${t('checkin.checkInNumber', { count: streak })}`);
+        setScanState('success');
+
+        // Animate success
+        Animated.parallel([
+          Animated.timing(successOpacity, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.spring(successScale, {
+            toValue: 1,
+            tension: 50,
+            friction: 7,
+            useNativeDriver: true,
+          }),
+        ]).start();
+
+        // Auto-close after 2.5 seconds
+        setTimeout(() => {
+          router.back();
+        }, 2500);
+      } else {
+        throw new Error(t('checkin.checkInFailed'));
+      }
+    } catch (error: any) {
+      console.error('Direct check-in error:', error);
+
+      let errorMsg = t('checkin.checkInFailed');
+
+      if (error.message) {
+        errorMsg = error.message;
+      }
+
+      if (error.response?.data?.error) {
+        const apiError = error.response.data.error;
+
+        switch (apiError) {
+          case 'invalid_code':
+            errorMsg = t('checkin.invalidQRCode');
+            break;
+          case 'already_checked_in':
+            errorMsg = t('checkin.alreadyCheckedIn');
+            break;
+          case 'membership_inactive':
+            errorMsg = t('checkin.membershipInactive');
+            break;
+          default:
+            errorMsg = error.response.data.message || t('checkin.checkInFailed');
+        }
+      }
+
+      setErrorMessage(errorMsg);
+      setScanState('error');
+
+      // Allow retry/close after 3 seconds
+      setTimeout(() => {
+        router.back();
+      }, 3000);
+    }
+  };
+
+  // Direct mode: Show loading/result UI without camera
+  if (isDirectMode) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+        <View style={[styles.directModeContainer]}>
+          {/* Top bar */}
+          <View style={[styles.directModeTopBar]}>
+            <Pressable onPress={handleClose} style={styles.closeButton}>
+              <Icon name="X" size={24} color={colors.text} />
+            </Pressable>
+            <ThemedText className="text-lg font-bold">{t('checkin.title')}</ThemedText>
+            <View style={styles.closeButton} />
+          </View>
+
+          {/* Content */}
+          <View style={styles.directModeContent}>
+            {scanState === 'scanning' && (
+              <>
+                <ActivityIndicator size="large" color={colors.highlight} />
+                <ThemedText className="mt-6 text-center text-lg">
+                  {t('checkin.checkingIn')}
+                </ThemedText>
+                {location && (
+                  <ThemedText className="mt-2 text-center opacity-70">
+                    {t('checkin.location')}: {location}
+                  </ThemedText>
+                )}
+              </>
+            )}
+
+            {scanState === 'error' && (
+              <>
+                <Icon name="XCircle" size={64} color="#EF4444" />
+                <ThemedText className="mt-6 text-center text-lg">{errorMessage}</ThemedText>
+              </>
+            )}
+
+            {scanState === 'success' && (
+              <Animated.View
+                style={{
+                  alignItems: 'center',
+                  opacity: successOpacity,
+                  transform: [{ scale: successScale }],
+                }}>
+                <Icon name="CheckCircle" size={80} color="#10B981" />
+                <ThemedText className="mt-6 text-center text-2xl font-bold">
+                  {t('checkin.checkInSuccess')}
+                </ThemedText>
+                <ThemedText className="mt-4 text-center text-lg">{successMessage}</ThemedText>
+              </Animated.View>
+            )}
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  // Camera mode: Permission not granted yet
   if (!permission) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
@@ -144,7 +293,7 @@ export default function CheckInScreen() {
     );
   }
 
-  // Permission denied
+  // Camera mode: Permission denied
   if (!permission.granted) {
     return (
       <View className="flex-1 items-center justify-center bg-background px-8">
@@ -165,6 +314,7 @@ export default function CheckInScreen() {
     );
   }
 
+  // Camera mode: Show camera scanner
   return (
     <View style={styles.container}>
       {/* Camera View - No children */}
@@ -354,6 +504,23 @@ const styles = StyleSheet.create({
   },
   successContent: {
     alignItems: 'center',
+    padding: 40,
+  },
+  directModeContainer: {
+    flex: 1,
+  },
+  directModeTopBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    paddingTop: 60,
+  },
+  directModeContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 40,
   },
 });

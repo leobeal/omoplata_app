@@ -130,6 +130,7 @@ describe('Classes API', () => {
         description: 'Learn the basics of BJJ',
         level: 'Beginner',
         category: 'Brazilian Jiu-Jitsu',
+        participants: [],
       });
 
       // Verify second class transformation (with nulls)
@@ -153,6 +154,7 @@ describe('Classes API', () => {
         description: '',
         level: '',
         category: 'Brazilian Jiu-Jitsu',
+        participants: [],
       });
     });
 

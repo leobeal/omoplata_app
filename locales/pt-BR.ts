@@ -250,6 +250,7 @@ export default {
     welcomeBack: 'Bem-vindo de volta, {{name}}!',
     checkInNumber: 'Check-in #{{count}} este mês',
     keepUpStreak: 'Continue assim!',
+    location: 'Local',
 
     // Erros
     invalidQRCode: 'Código QR inválido',

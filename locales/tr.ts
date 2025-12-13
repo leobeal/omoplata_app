@@ -251,6 +251,7 @@ export default {
     welcomeBack: 'Tekrar hoş geldin, {{name}}!',
     checkInNumber: 'Bu ay {{count}}. giriş',
     keepUpStreak: 'Serini sürdür!',
+    location: 'Konum',
 
     // Errors
     invalidQRCode: 'Geçersiz QR kodu',

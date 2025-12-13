@@ -10,6 +10,7 @@ interface TenantContextType {
   isTenantRequired: boolean;
   setTenant: (tenant: TenantInfo) => Promise<void>;
   clearTenant: () => Promise<void>;
+  selectTenantBySlug: (slug: string) => Promise<void>;
 }
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
@@ -93,6 +94,30 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * Select tenant by slug (for deep link auto-selection)
+   * Creates a TenantInfo from just the slug and sets it
+   */
+  const selectTenantBySlug = async (slug: string) => {
+    const tenantInfo: TenantInfo = {
+      slug,
+      name: formatTenantName(slug),
+      domain: getDomainForTenant(slug),
+    };
+    await setTenant(tenantInfo);
+  };
+
+  /**
+   * Format tenant slug to display name
+   * e.g., "evolve-grappling" -> "Evolve Grappling"
+   */
+  const formatTenantName = (slug: string): string => {
+    return slug
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   return (
     <TenantContext.Provider
       value={{
@@ -101,6 +126,7 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
         isTenantRequired,
         setTenant,
         clearTenant: clearTenantHandler,
+        selectTenantBySlug,
       }}>
       {children}
     </TenantContext.Provider>
