@@ -33,7 +33,7 @@
         "TENANT": "main"
       }
     },
-    "production": {
+    "main": {
       "env": {
         "APP_ENV": "production",
         "TENANT": "main"
