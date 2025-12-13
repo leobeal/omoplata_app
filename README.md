@@ -28,19 +28,22 @@ The app supports two deployment modes:
 
 | Mode | Command | Description |
 |------|---------|-------------|
-| Club-specific | `TENANT=evolve npm start` | White-labeled for a specific gym |
-| Generic | `TENANT=MAIN npm start` | Users select gym on first launch |
+| Club-specific | `TENANT=evolve npx expo start` | White-labeled for a specific gym |
+| Generic | `TENANT=main npx expo start` | Users select gym on first launch |
 
-Available tenants: `evolve`, `sparta`, `MAIN`
+Available tenants: `main`, `evolve`, `sparta`
 
 📖 See [Tenant Configuration Guide](./docs/TENANT_CONFIGURATION.md) for details.
 
 ## Scripts
 
+> ⚠️ **Important:** Always specify a tenant when running Expo commands.
+
 | Script | Description |
 |--------|-------------|
-| `npm start` | Start Expo dev server |
-| `npm run ios` / `android` | Run on simulator |
+| `TENANT=main npx expo start` | Start Expo dev server |
+| `TENANT=main npx expo start -c` | Start with cache cleared |
+| `TENANT=main npm run ios` / `android` | Run on simulator |
 | `npm test` | Run tests |
 | `npm run lint:fix` | Fix lint issues |
 | `npm run build:main:android` | Build Android with EAS |
@@ -123,6 +126,7 @@ Version codes auto-increment on each EAS build (configured in `eas.json`).
 
 ## Important Notes
 
+- **Always specify TENANT** when running Expo commands (e.g., `TENANT=main npx expo start`)
 - Always use `--legacy-peer-deps` when installing packages
 - Requires **React 19.1.0** (not 19.2.0+) due to React Native compatibility
-- Clear Metro cache with `npx expo start -c` if issues arise
+- Clear Metro cache with `TENANT=main npx expo start -c` if issues arise

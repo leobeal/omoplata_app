@@ -50,6 +50,9 @@ Thumbs.db
 .env.test.local
 .env.production.local
 
+#dummy data
+data/
+
 # Secrets (should use EAS secrets instead)
 secrets/
 
