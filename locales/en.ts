@@ -120,6 +120,13 @@ export default {
     noUpcomingClasses: 'No upcoming classes scheduled',
     childClasses: "{{name}}'s Classes",
     childrenClasses: "Children's Classes",
+    moodQuestion: 'How motivated are you today?',
+    moodMega: 'Super',
+    moodMotivated: 'Motivated',
+    moodOkay: 'Okay',
+    moodLow: 'Low',
+    moodNone: 'Not at all',
+    dailyMotivation: 'Daily Motivation',
   },
 
   // Settings Screen

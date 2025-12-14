@@ -59,7 +59,7 @@ module.exports = {
     splash: config.splash,
     assetBundlePatterns: ['assets/_global/**/*', `assets/${config.slug}/**/*`],
     ios: {
-      supportsTablet: true,
+      supportsTablet: false,
       bundleIdentifier: config.bundleIdentifier,
       associatedDomains: [`applinks:${config.universalLinkDomain}`],
       infoPlist: {

@@ -121,6 +121,13 @@ export default {
     noUpcomingClasses: 'Planlanmış ders bulunmuyor',
     childClasses: '{{name}} Dersleri',
     childrenClasses: 'Çocuk Dersleri',
+    moodQuestion: 'Bugün ne kadar motive hissediyorsun?',
+    moodMega: 'Süper',
+    moodMotivated: 'Motive',
+    moodOkay: 'İdare eder',
+    moodLow: 'Az',
+    moodNone: 'Hiç',
+    dailyMotivation: 'Günün Motivasyonu',
   },
 
   // Settings Screen

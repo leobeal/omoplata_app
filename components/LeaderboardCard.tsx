@@ -11,9 +11,9 @@ import { useThemeColors } from '@/contexts/ThemeColors';
 
 // Medal colors for top 3 - using transparent versions that work in both light and dark modes
 const MEDAL_COLORS = {
-  1: { bg: 'rgba(245, 158, 11, 0.25)', border: '#F59E0B', text: '#F59E0B' }, // Gold
-  2: { bg: 'rgba(156, 163, 175, 0.25)', border: '#9CA3AF', text: '#9CA3AF' }, // Silver
-  3: { bg: 'rgba(234, 88, 12, 0.25)', border: '#EA580C', text: '#EA580C' }, // Bronze
+  1: { bg: 'rgba(245, 158, 11, 0.5)', border: '#F59E0B', text: '#F59E0B' }, // Gold
+  2: { bg: 'rgba(156, 163, 175, 0.5)', border: '#9CA3AF', text: '#9CA3AF' }, // Silver
+  3: { bg: 'rgba(234, 88, 12, 0.5)', border: '#EA580C', text: '#EA580C' }, // Bronze
 };
 
 // Podium heights (relative)

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Alert,
@@ -38,7 +38,7 @@ export default function SettingsScreen() {
     switchBackToParent,
     parentUser,
   } = useAuth();
-  const { membership } = useAppData();
+  const { membership, analytics } = useAppData();
   const { permissionStatus, requestPermission, registerToken } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
   const [enablingNotifications, setEnablingNotifications] = useState(false);
@@ -50,6 +50,15 @@ export default function SettingsScreen() {
 
   // Get current language display info
   const currentLanguage = LANGUAGE_OPTIONS.find((l) => l.code === locale);
+
+  // Calculate total classes this month from analytics
+  const classesThisMonth = useMemo(() => {
+    const disciplineBreakdown = analytics.graphs.find((g) => g.type === 'discipline_breakdown');
+    if (disciplineBreakdown && disciplineBreakdown.type === 'discipline_breakdown') {
+      return disciplineBreakdown.data.reduce((sum, value) => sum + value, 0);
+    }
+    return 0;
+  }, [analytics]);
 
   // Scroll state for collapsible title
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
@@ -174,7 +183,7 @@ export default function SettingsScreen() {
                 <ThemedText className="font-xs opacity-50">{t('settings.currentPlan')}</ThemedText>
               </View>
               <View className="flex-1 flex-col justify-center">
-                <ThemedText className="text-xl font-bold">-</ThemedText>
+                <ThemedText className="text-xl font-bold">{classesThisMonth}</ThemedText>
                 <ThemedText className="font-xs opacity-50">
                   {t('settings.classesThisMonth')}
                 </ThemedText>

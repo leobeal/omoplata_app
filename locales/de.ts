@@ -120,6 +120,13 @@ export default {
     noUpcomingClasses: 'Keine kommenden Kurse geplant',
     childClasses: '{{name}}s Kurse',
     childrenClasses: 'Kurse der Kinder',
+    moodQuestion: 'Wie motiviert bist du heute?',
+    moodMega: 'Mega',
+    moodMotivated: 'Motiviert',
+    moodOkay: 'Geht so',
+    moodLow: 'Wenig',
+    moodNone: 'Gar nicht',
+    dailyMotivation: 'Tägliche Motivation',
   },
 
   // Einstellungen

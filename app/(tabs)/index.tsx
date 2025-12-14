@@ -15,6 +15,7 @@ import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 import { confirmAttendance, denyAttendance, ChildWithClasses } from '@/api/classes';
 import { getGraduationsWithChildren, Graduation, ChildWithGraduations } from '@/api/graduations';
 import { getStatusTranslationKey, Membership } from '@/api/membership';
+import { getTodayMood, submitMood, MoodLevel } from '@/api/mood';
 import { isSepaAvailable, PaymentMethod } from '@/api/payment-methods';
 import Avatar from '@/components/Avatar';
 import ClassCard from '@/components/ClassCard';
@@ -242,7 +243,8 @@ export default function HomeScreen() {
             subtitle={today}
             className="mb-8 mt-4"
           />
-          <MembershipOverview membership={membership} />
+          <MoodCheck />
+          <DailyMotivation />
         </View>
         {showSepaForm && (
           <View className="bg-background p-5">
@@ -323,17 +325,18 @@ const ActivityStats = memo(() => {
   const { analytics } = useAppData();
 
   // Extract graphs by type using helper
-  const classTypeBreakdown = analytics.graphs.find((g) => g.type === 'class_type_breakdown');
+  const disciplineBreakdown = analytics.graphs.find((g) => g.type === 'discipline_breakdown');
   const weeklyAttendance = analytics.graphs.find((g) => g.type === 'weekly_attendance');
   const trainingStreak = analytics.graphs.find((g) => g.type === 'training_streak');
 
-  // Transform class type breakdown to donut segments format
+  // Transform discipline breakdown to donut segments format
   const donutSegments =
-    classTypeBreakdown && classTypeBreakdown.type === 'class_type_breakdown'
-      ? classTypeBreakdown.labels.map((label, i) => ({
+    disciplineBreakdown && disciplineBreakdown.type === 'discipline_breakdown'
+      ? disciplineBreakdown.labels.map((label, i) => ({
           label,
-          value: classTypeBreakdown.data[i],
-          color: ['#3b82f6', '#8b5cf6', '#ef4444', '#f59e0b'][i % 4], // Default colors
+          value: disciplineBreakdown.data[i],
+          color:
+            disciplineBreakdown.colors?.[i] || ['#3b82f6', '#8b5cf6', '#ef4444', '#f59e0b'][i % 4],
         }))
       : [];
 
@@ -387,6 +390,135 @@ const ActivityStats = memo(() => {
           />
         </View>
       </View>
+    </View>
+  );
+});
+
+const MOTIVATIONAL_QUOTES = [
+  // Keep strong impact in English
+  { text: 'A black belt is a white belt who never quit.', author: 'Unknown' },
+  { text: 'Fall seven times, stand up eight.', author: 'Japanese Proverb' },
+  { text: 'Discipline beats motivation when motivation fades.', author: 'Unknown' },
+  { text: 'Technique conquers strength.', author: 'Helio Gracie' },
+  { text: 'Position before submission.', author: 'Jiu-Jitsu Principle' },
+  { text: 'Your toughest opponent is the one in the mirror.', author: 'Unknown' },
+  { text: 'You don’t win fights in the ring. You win them in the gym.', author: 'Unknown' },
+  { text: 'Pain is temporary. Skill is forever.', author: 'Unknown' },
+
+  // Translated to German
+  {
+    text: 'Ein Schwarzgurt ist nur ein Weißgurt, der niemals aufgegeben hat.',
+    author: 'Unbekannt',
+  },
+  { text: 'Der wahre Kampf beginnt lange vor dem ersten Schlag.', author: 'Unbekannt' },
+  { text: 'Trainiere hart, kämpfe leicht.', author: 'Traditionelles Sprichwort' },
+  { text: 'Technik schlägt Kraft.', author: 'Helio Gracie' },
+  { text: 'Stärke kommt nicht aus dem Körper, sondern aus dem Willen.', author: 'Mahatma Gandhi' },
+  { text: 'Der härteste Gegner ist der, den du im Spiegel siehst.', author: 'Unbekannt' },
+  { text: 'Jede Einheit auf der Matte macht dich besser.', author: 'Unbekannt' },
+  { text: 'Respektiere den Weg, nicht nur den Gürtel.', author: 'Unbekannt' },
+  {
+    text: 'Disziplin bedeutet, das zu tun, was schwer ist – auch wenn niemand zusieht.',
+    author: 'Unbekannt',
+  },
+  { text: 'Erfolg wird auf der Matte aufgebaut, nicht am Wettkampftag.', author: 'Unbekannt' },
+  { text: 'Der Schmerz vergeht. Die Technik bleibt.', author: 'Unbekannt' },
+  { text: 'Selbstvertrauen entsteht durch Stunden auf der Matte.', author: 'Unbekannt' },
+  { text: 'Du verdienst deinen Gürtel an jedem einzelnen Trainingstag.', author: 'Unbekannt' },
+];
+
+const MOODS = [
+  { icon: 'Rocket', labelKey: 'home.moodMega', color: '#ef4444' },
+  { icon: 'Zap', labelKey: 'home.moodMotivated', color: '#22c55e' },
+  { icon: 'Meh', labelKey: 'home.moodOkay', color: '#f59e0b' },
+  { icon: 'TrendingDown', labelKey: 'home.moodLow', color: '#8b5cf6' },
+  { icon: 'BatteryLow', labelKey: 'home.moodNone', color: '#6b7280' },
+] as const;
+
+const MoodCheck = memo(() => {
+  const { t } = useTranslation();
+  const colors = useThemeColors();
+  const [selectedMood, setSelectedMood] = useState<number | null>(null);
+
+  // Load saved mood on mount (resets daily)
+  useEffect(() => {
+    const loadSavedMood = async () => {
+      const savedMood = await getTodayMood();
+      if (savedMood !== null) {
+        setSelectedMood(savedMood);
+      }
+    };
+    loadSavedMood();
+  }, []);
+
+  // Handle mood selection with debounced API call
+  const handleMoodSelect = useCallback((index: number) => {
+    setSelectedMood(index);
+    submitMood(index as MoodLevel);
+  }, []);
+
+  return (
+    <View className="mb-6 rounded-xl pb-6 pt-6">
+      {/* Title */}
+      <View className="mb-4 items-center justify-center">
+        <ThemedText className="text-2xl font-bold">{t('home.moodQuestion')}</ThemedText>
+      </View>
+
+      {/* Mood selector row */}
+      <View className="flex-row justify-between px-4">
+        {MOODS.map((mood, index) => (
+          <Pressable
+            key={index}
+            onPress={() => handleMoodSelect(index)}
+            className="flex-1 items-center">
+            <View
+              className="mb-1 h-14 w-14 items-center justify-center rounded-full"
+              style={{
+                backgroundColor: selectedMood === index ? mood.color + '30' : 'transparent',
+              }}>
+              <Icon
+                name={mood.icon}
+                size={28}
+                color={selectedMood === index ? mood.color : colors.text}
+                style={{ opacity: selectedMood === index ? 1 : 0.5 }}
+              />
+            </View>
+            <ThemedText
+              className="text-center text-xs"
+              style={{
+                opacity: selectedMood === index ? 1 : 0.5,
+                color: selectedMood === index ? mood.color : colors.text,
+              }}>
+              {t(mood.labelKey)}
+            </ThemedText>
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+});
+
+const DailyMotivation = memo(() => {
+  const { t } = useTranslation();
+  const colors = useThemeColors();
+
+  // Get a quote based on the day of the year (changes daily)
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24)
+  );
+  const quote = MOTIVATIONAL_QUOTES[dayOfYear % MOTIVATIONAL_QUOTES.length];
+
+  return (
+    <View
+      className="mb-6 rounded-2xl p-6"
+      style={{ backgroundColor: colors.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }}>
+      <ThemedText className="mb-3 text-sm font-semibold uppercase tracking-wider opacity-60">
+        {t('home.dailyMotivation')}
+      </ThemedText>
+      <ThemedText className="mb-3 text-xl font-semibold italic leading-7">
+        "{quote.text}"
+      </ThemedText>
+      <ThemedText className="text-sm opacity-50">— {quote.author}</ThemedText>
     </View>
   );
 });

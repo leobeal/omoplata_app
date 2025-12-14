@@ -119,6 +119,13 @@ export default {
     noUpcomingClasses: 'Nenhuma aula agendada',
     childClasses: 'Aulas de {{name}}',
     childrenClasses: 'Aulas dos Filhos',
+    moodQuestion: 'Quão motivado você está hoje?',
+    moodMega: 'Demais',
+    moodMotivated: 'Motivado',
+    moodOkay: 'Normal',
+    moodLow: 'Pouco',
+    moodNone: 'Nada',
+    dailyMotivation: 'Motivação do Dia',
   },
 
   // Tela de Configurações

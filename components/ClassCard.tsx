@@ -119,12 +119,13 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
   const endTimeFormatted = formatTime(classData.endTime);
   const hasTimeInfo = startTimeFormatted && endTimeFormatted;
 
-  // Check if instructor is available and not a placeholder
-  const hasInstructor =
-    classData.instructor && classData.instructor !== 'TBA' && classData.instructor.trim() !== '';
+  // Check if instructor is available
+  const instructor = typeof classData.instructor === 'string' ? classData.instructor : '';
+  const hasInstructor = instructor && instructor.trim() !== '';
 
   // Check if location is available
-  const hasLocation = classData.location && classData.location.trim() !== '';
+  const location = typeof classData.location === 'string' ? classData.location : '';
+  const hasLocation = location && location.trim() !== '';
 
   // Check if we should show enrollment info
   const hasEnrollmentInfo = classData.capacity.max !== null || classData.enrolled > 0;
@@ -138,7 +139,7 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
           {hasInstructor && (
             <View className="flex-row items-center">
               <Icon name="User" size={14} className="mr-1 opacity-50" />
-              <ThemedText className="text-sm opacity-70">{classData.instructor}</ThemedText>
+              <ThemedText className="text-sm opacity-70">{instructor}</ThemedText>
             </View>
           )}
         </View>
@@ -166,7 +167,7 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
           {hasLocation && (
             <View className="flex-row items-center">
               <Icon name="MapPin" size={16} className="mr-2 opacity-50" />
-              <ThemedText className="text-sm opacity-70">{classData.location}</ThemedText>
+              <ThemedText className="text-sm opacity-70">{location}</ThemedText>
             </View>
           )}
           {hasEnrollmentInfo && (

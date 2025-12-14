@@ -73,7 +73,7 @@
       "android": {
         "serviceAccountKeyPath": "./secrets/google-service-account.json",
         "track": "internal",
-        "releaseStatus": "completed"
+        "releaseStatus": "draft"
       }
     },
     "alpha": {

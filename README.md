@@ -96,17 +96,17 @@ Internal → Closed → Open → Production
 
 | Command | Description |
 |---------|-------------|
-| `npm run submit:android:internal` | Submit to internal testing |
-| `npm run submit:android:alpha` | Submit to closed testing |
-| `npm run submit:android:beta` | Submit to open testing |
-| `npm run submit:android:production` | Submit to production |
-| `npm run submit:ios` | Submit to App Store Connect |
+| `TENANT=main npm run submit:android:internal` | Submit to internal testing |
+| `TENANT=main npm run submit:android:alpha` | Submit to closed testing |
+| `TENANT=main npm run submit:android:beta` | Submit to open testing |
+| `TENANT=main npm run submit:android:production` | Submit to production |
+| `TENANT=main npm run submit:ios` | Submit to App Store Connect |
 
 ### Combined Build + Submit
 
 ```bash
-npm run release:android:internal     # Build & submit to internal testing
-npm run release:android:production   # Build & submit to production
+TENANT=main npm run release:android:internal     # Build & submit to internal testing
+TENANT=main npm run release:android:production   # Build & submit to production
 ```
 
 ### Before Production Release

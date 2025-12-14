@@ -162,6 +162,10 @@ export const ENDPOINTS = {
     CLUB: '/faqs/club',
     APP: '/faqs/app',
   },
+  // Mood
+  MOOD: {
+    SUBMIT: '/mood',
+  },
 } as const;
 
 export default API_CONFIG;

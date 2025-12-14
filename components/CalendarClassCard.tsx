@@ -39,64 +39,57 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
 
   const categoryColor = getCategoryColor(classData.category);
 
+  // Check for valid instructor (not null or empty)
+  const instructor = typeof classData.instructor === 'string' ? classData.instructor : '';
+  const hasInstructor = instructor && instructor.trim() !== '';
+
+  // Check for valid location
+  const location = typeof classData.location === 'string' ? classData.location : '';
+  const hasLocation = location && location.trim() !== '';
+
+  // Check for valid level
+  const level = typeof classData.level === 'string' ? classData.level : '';
+  const hasLevel = level && level.trim() !== '';
+
   return (
     <Pressable
       onPress={onPress}
       className="mb-3 overflow-hidden rounded-2xl bg-secondary"
       style={{ borderLeftWidth: 4, borderLeftColor: categoryColor }}>
-      <View className="p-4">
-        {/* Header */}
-        <View className="mb-3 flex-row items-start justify-between">
-          <View className="flex-1">
-            <View className="mb-1 flex-row items-center">
-              <View
-                className="mr-2 h-2 w-2 rounded-full"
-                style={{ backgroundColor: categoryColor }}
-              />
-              <ThemedText className="text-xs font-semibold opacity-60">
-                {classData.category || ''}
-              </ThemedText>
-            </View>
-            <ThemedText className="text-lg font-bold" numberOfLines={2}>
-              {classData.title || ''}
-            </ThemedText>
+      <View className="px-4 py-4">
+        {/* Header: Category & Title */}
+        <View className="mb-2 flex-row items-center">
+          <View className="mr-2 h-2 w-2 rounded-full" style={{ backgroundColor: categoryColor }} />
+          <ThemedText className="text-xs font-semibold opacity-60">
+            {classData.category || ''}
+          </ThemedText>
+        </View>
+        <ThemedText className="text-lg font-bold" numberOfLines={2}>
+          {classData.title || ''}
+        </ThemedText>
+
+        {/* Instructor - only show if available */}
+        {hasInstructor && (
+          <View className="mt-3 flex-row items-center">
+            <Avatar name={instructor} src={classData.instructorAvatar} size="xs" />
+            <ThemedText className="ml-2 text-sm opacity-70">{instructor}</ThemedText>
           </View>
-        </View>
+        )}
 
-        {/* Instructor */}
-        <View className="mb-3 flex-row items-center">
-          <Avatar name={classData.instructor || ''} size="xs" />
-          <ThemedText className="ml-2 text-sm opacity-70">{classData.instructor || ''}</ThemedText>
-        </View>
-
-        {/* Details */}
-        <View className="flex-row items-center justify-between">
+        {/* Time & Participants */}
+        <View className="mt-4 flex-row items-center justify-between">
           <View className="flex-row items-center">
             <Icon name="Clock" size={14} color={colors.text} className="opacity-50" />
-            <ThemedText className="ml-1 text-sm opacity-70">
+            <ThemedText className="ml-1.5 text-sm opacity-70">
               {classData.startTime || ''} - {classData.endTime || ''}
             </ThemedText>
-          </View>
-
-          <View className="flex-row items-center">
-            <Icon name="MapPin" size={14} color={colors.text} className="opacity-50" />
-            <ThemedText className="ml-1 text-sm opacity-70">{classData.location || ''}</ThemedText>
-          </View>
-        </View>
-
-        {/* Level Badge and Participants */}
-        <View className="mt-3 flex-row items-center justify-between">
-          <View
-            className="rounded-full px-3 py-1"
-            style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
-            <ThemedText className="text-xs font-semibold">{classData.level || ''}</ThemedText>
           </View>
 
           {/* Participants Avatars */}
           <View className="flex-row items-center">
             {classData.participants && classData.participants.length > 0 ? (
               <View className="flex-row items-center">
-                {classData.participants.slice(0, 4).map((participant, index) => {
+                {classData.participants.map((participant, index) => {
                   if (!participant) return null;
                   const name =
                     [participant.firstName, participant.lastName].filter(Boolean).join(' ') ||
@@ -107,7 +100,7 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
                     </View>
                   );
                 })}
-                {classData.participants.length > 4 && (
+                {classData.remainingParticipants > 0 && (
                   <View
                     className="h-6 w-6 items-center justify-center rounded-full"
                     style={{
@@ -115,21 +108,43 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
                       backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5',
                     }}>
                     <ThemedText className="text-[10px] font-semibold">
-                      +{classData.participants.length - 4}
+                      +{classData.remainingParticipants}
                     </ThemedText>
                   </View>
                 )}
               </View>
-            ) : (
+            ) : classData.totalParticipants > 0 || classData.capacity?.max ? (
               <View className="flex-row items-center">
                 <Icon name="Users" size={14} color={colors.text} className="opacity-50" />
-                <ThemedText className="ml-1 text-sm opacity-70">
-                  {classData.enrolled ?? 0}/{classData.capacity?.max ?? '∞'}
+                <ThemedText className="ml-1.5 text-sm opacity-70">
+                  {classData.totalParticipants ?? classData.enrolled ?? 0}/
+                  {classData.capacity?.max ?? '∞'}
                 </ThemedText>
+              </View>
+            ) : null}
+          </View>
+        </View>
+
+        {/* Location & Level */}
+        {(hasLocation || hasLevel) && (
+          <View className="mt-3 flex-row items-center justify-between">
+            {hasLocation && (
+              <View className="flex-row items-center">
+                <Icon name="MapPin" size={14} color={colors.text} className="opacity-50" />
+                <ThemedText className="ml-1.5 text-sm opacity-70">{location}</ThemedText>
+              </View>
+            )}
+            {!hasLocation && <View />}
+
+            {hasLevel && (
+              <View
+                className="rounded-full px-3 py-1"
+                style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+                <ThemedText className="text-xs font-semibold">{level}</ThemedText>
               </View>
             )}
           </View>
-        </View>
+        )}
       </View>
     </Pressable>
   );

@@ -41,10 +41,22 @@ interface ApiUserStatus {
   can_register: boolean;
 }
 
-interface ApiIntention {
-  first_name: string;
-  last_name: string;
+interface ApiIntentionMember {
+  user_id: number;
+  name: string | null;
   avatar: string | null;
+}
+
+interface ApiIntentions {
+  members: ApiIntentionMember[];
+  total: number;
+  remaining: number;
+}
+
+interface ApiTrainer {
+  id: number;
+  name: string;
+  avatar?: string | null;
 }
 
 interface ApiClassSession {
@@ -52,11 +64,11 @@ interface ApiClassSession {
   class: ApiClassInfo;
   starts_at: string;
   ends_at: string;
-  trainer: string | null;
+  trainer: ApiTrainer | null;
   venue: ApiVenue;
   capacity: ApiCapacity;
   user_status: ApiUserStatus;
-  intentions: ApiIntention[];
+  intentions: ApiIntentions;
 }
 
 interface ApiChildWithClasses {
@@ -109,6 +121,8 @@ export interface Class {
   level: string;
   category?: string;
   participants: ClassParticipant[];
+  remainingParticipants: number; // For "+X" display
+  totalParticipants: number;
 }
 
 export interface ClassFilters {
@@ -169,30 +183,57 @@ const transformApiClass = (apiClass: ApiClassSession): Class => {
     status = apiClass.user_status.intention.status === 'yes' ? 'confirmed' : 'denied';
   }
 
+  const capacity = apiClass.capacity || { max: null, is_full: false, available_spots: null };
+
   return {
     id: apiClass.id.toString(),
-    title: apiClass.class.name,
-    instructor: apiClass.trainer || 'TBA',
-    instructorAvatar: '', // Not provided by API
+    title: apiClass.class?.name || '',
+    instructor: apiClass.trainer?.name || '',
+    instructorAvatar: apiClass.trainer?.avatar || '',
     date: apiClass.starts_at,
     startTime: extractTime(apiClass.starts_at),
     endTime: extractTime(apiClass.ends_at),
     duration,
-    location: apiClass.venue.name,
-    capacity: apiClass.capacity,
+    location: apiClass.venue?.name || '',
+    capacity,
     enrolled:
-      apiClass.capacity.max && apiClass.capacity.available_spots !== null
-        ? apiClass.capacity.max - apiClass.capacity.available_spots
+      capacity.max && capacity.available_spots !== null
+        ? capacity.max - capacity.available_spots
         : 0,
     status,
-    description: apiClass.class.description || '',
-    level: apiClass.class.level || '',
-    category: apiClass.class.discipline,
-    participants: (apiClass.intentions || []).map((i) => ({
-      firstName: i.first_name,
-      lastName: i.last_name,
-      avatar: i.avatar,
-    })),
+    description: apiClass.class?.description || '',
+    level: apiClass.class?.level || '',
+    category: apiClass.class?.discipline,
+    ...transformIntentions(apiClass.intentions),
+  };
+};
+
+/**
+ * Transform intentions from API format to internal format
+ */
+const transformIntentions = (
+  intentions: ApiIntentions | null | undefined
+): {
+  participants: ClassParticipant[];
+  remainingParticipants: number;
+  totalParticipants: number;
+} => {
+  if (!intentions) {
+    return { participants: [], remainingParticipants: 0, totalParticipants: 0 };
+  }
+
+  const members = intentions.members || [];
+  return {
+    participants: members.map((member) => {
+      const [firstName, ...lastParts] = (member.name || '').trim().split(' ');
+      return {
+        firstName: firstName || '',
+        lastName: lastParts.join(' ') || '',
+        avatar: member.avatar,
+      };
+    }),
+    remainingParticipants: intentions.remaining || 0,
+    totalParticipants: intentions.total || members.length,
   };
 };
 
@@ -240,6 +281,7 @@ export const getClasses = async (filters?: ClassFilters): Promise<ClassesRespons
     const result = await fetchWithCacheFallback(cacheKey, fetchFromApi);
     return { classes: result.data, fromCache: result.fromCache };
   } catch (error) {
+    console.error('[Classes] Error fetching classes:', error);
     // Try to get cached data as fallback (allow stale for offline)
     const { data: cachedClasses } = await getFromCacheWithStale<Class[]>(
       cacheKey,
