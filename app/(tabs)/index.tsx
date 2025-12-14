@@ -511,7 +511,9 @@ const DailyMotivation = memo(() => {
   return (
     <View
       className="mb-6 rounded-2xl p-6"
-      style={{ backgroundColor: colors.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }}>
+      style={{
+        backgroundColor: colors.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)',
+      }}>
       <ThemedText className="mb-3 text-sm font-semibold uppercase tracking-wider opacity-60">
         {t('home.dailyMotivation')}
       </ThemedText>

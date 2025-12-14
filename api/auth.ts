@@ -4,6 +4,8 @@
 import { api, setAuthToken } from './client';
 import { ENDPOINTS } from './config';
 
+import { DeviceInfo } from '@/utils/device-info';
+
 /**
  * Convert snake_case keys to camelCase
  */
@@ -32,6 +34,7 @@ function transformToCamelCase(obj: any): any {
 export interface LoginRequest {
   email: string;
   password: string;
+  device?: DeviceInfo;
 }
 
 export interface LoginResponse {

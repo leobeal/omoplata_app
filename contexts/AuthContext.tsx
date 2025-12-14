@@ -29,6 +29,7 @@ import {
   storedUserIsMember,
   storedUserIsResponsibleOnly,
 } from '@/utils/auth-storage';
+import { getDeviceInfo } from '@/utils/device-info';
 import { clearUserCache } from '@/utils/local-cache';
 
 interface AuthContextType {
@@ -139,7 +140,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
     password: string
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      const response = await authApi.login({ email, password });
+      // Collect device info for login
+      const device = await getDeviceInfo();
+      const response = await authApi.login({ email, password, device });
 
       if (response.error || !response.data) {
         return {
