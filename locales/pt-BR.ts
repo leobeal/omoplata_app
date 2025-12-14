@@ -28,6 +28,7 @@ export default {
     retry: 'Tentar novamente',
     viewPlans: 'Ver Planos',
     logout: 'Sair',
+    skip: 'Pular',
   },
 
   // Onboarding Slides
@@ -675,6 +676,9 @@ export default {
     noNotificationsMessage: 'Você está em dia! Volte mais tarde para ver atualizações.',
     unreadCount: '{{count}} não lidas',
     markAllRead: 'Marcar todas como lidas',
+    enablePushTitle: 'Ativar Notificações Push',
+    enablePushDescription: 'Receba notificações sobre aulas, lembretes e atualizações',
+    enablePush: 'Ativar',
   },
 
   // Club não encontrado

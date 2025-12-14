@@ -29,6 +29,7 @@ export default {
     tryAgain: 'Tekrar Dene',
     viewPlans: 'Planları Görüntüle',
     logout: 'Çıkış Yap',
+    skip: 'Atla',
   },
 
   // Onboarding Slides
@@ -706,6 +707,9 @@ export default {
     noNotificationsMessage: 'Her şey güncel! Güncellemeler için daha sonra tekrar kontrol edin.',
     unreadCount: '{{count}} okunmamış',
     markAllRead: 'Tümünü okundu işaretle',
+    enablePushTitle: 'Push Bildirimlerini Etkinleştir',
+    enablePushDescription: 'Dersler, hatırlatıcılar ve güncellemeler hakkında bildirim alın',
+    enablePush: 'Etkinleştir',
   },
 
   // Club Not Found

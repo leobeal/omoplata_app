@@ -198,16 +198,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     };
   }, [handleNotification, handleNotificationResponse]);
 
-  // Auto-register token when user logs in
+  // Handle logout - unregister token when user logs out
   useEffect(() => {
     const wasAuthenticated = previousAuthToken.current !== null;
     const isNowAuthenticated = authToken !== null;
-
-    // User just logged in
-    if (!wasAuthenticated && isNowAuthenticated && tenant) {
-      console.log('[Notifications] User logged in, registering push token...');
-      registerToken();
-    }
 
     // User just logged out - unregister token
     if (wasAuthenticated && !isNowAuthenticated && expoPushToken) {
@@ -218,7 +212,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     }
 
     previousAuthToken.current = authToken;
-  }, [authToken, tenant, registerToken, unregisterToken, expoPushToken]);
+  }, [authToken, unregisterToken, expoPushToken]);
 
   // Re-register when tenant changes (for multi-tenant builds)
   useEffect(() => {

@@ -16,6 +16,7 @@ import {
   Notification,
   NotificationType,
 } from '@/api/notifications';
+import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import Header from '@/components/Header';
 import Icon from '@/components/Icon';
@@ -24,6 +25,7 @@ import SkeletonLoader from '@/components/SkeletonLoader';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useT } from '@/contexts/LocalizationContext';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 type FilterType = NotificationType | 'all';
@@ -31,6 +33,7 @@ type FilterType = NotificationType | 'all';
 export default function NotificationsScreen() {
   const t = useT();
   const colors = useThemeColors();
+  const { permissionStatus, requestPermission, registerToken } = useNotifications();
   const [selectedType, setSelectedType] = useState<FilterType>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -38,10 +41,20 @@ export default function NotificationsScreen() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [permissionRequested, setPermissionRequested] = useState(false);
 
   // Scroll state for collapsible title
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
   const LARGE_TITLE_HEIGHT = 44;
+
+  // Request push notification permission when user first accesses this screen
+  const handleEnableNotifications = useCallback(async () => {
+    const granted = await requestPermission();
+    setPermissionRequested(true);
+    if (granted) {
+      await registerToken();
+    }
+  }, [requestPermission, registerToken]);
 
   const handleScrollForTitle = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetY = event.nativeEvent.contentOffset.y;
@@ -217,6 +230,41 @@ export default function NotificationsScreen() {
           />
         }>
         <LargeTitle title={t('notifications.title')} className="px-6 pt-2" />
+
+        {/* Push Notification Permission Banner */}
+        {permissionStatus !== 'granted' && !permissionRequested && (
+          <View className="mx-4 mb-4 rounded-2xl bg-secondary p-4">
+            <View className="mb-3 flex-row items-center">
+              <View
+                className="mr-3 h-10 w-10 items-center justify-center rounded-full"
+                style={{ backgroundColor: colors.highlight + '20' }}>
+                <Icon name="BellRing" size={20} color={colors.highlight} />
+              </View>
+              <View className="flex-1">
+                <ThemedText className="font-semibold">
+                  {t('notifications.enablePushTitle')}
+                </ThemedText>
+                <ThemedText className="text-sm opacity-70">
+                  {t('notifications.enablePushDescription')}
+                </ThemedText>
+              </View>
+            </View>
+            <View className="flex-row gap-2">
+              <Button
+                title={t('notifications.enablePush')}
+                onPress={handleEnableNotifications}
+                size="small"
+                className="flex-1"
+              />
+              <Button
+                title={t('common.skip')}
+                onPress={() => setPermissionRequested(true)}
+                variant="ghost"
+                size="small"
+              />
+            </View>
+          </View>
+        )}
 
         {/* Filter Chips */}
         <View className="border-b border-border px-4 py-3">

@@ -405,17 +405,8 @@ describe('HomeScreen (Dashboard)', () => {
       });
     });
 
-    it('renders membership overview', async () => {
-      const { getByText } = render(<HomeScreen />);
-
-      await waitFor(() => {
-        expect(getByText('Unbegrenzt')).toBeTruthy(); // Plan name from mock data
-        expect(getByText('New')).toBeTruthy(); // Status from mock data (translated)
-        expect(getByText('Membership Status')).toBeTruthy();
-      });
-    });
-
-    // Note: Activity stats cards use SVG components (SmallDonutCard, SmallChartCard, SmallStreakCard)
+    // Note: MembershipOverview component is defined but currently not rendered in the dashboard.
+    // Activity stats cards use SVG components (SmallDonutCard, SmallChartCard, SmallStreakCard)
     // that don't render properly in the test environment. The activity stats functionality
     // is tested implicitly through integration tests.
   });

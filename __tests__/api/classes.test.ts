@@ -44,7 +44,11 @@ describe('Classes API', () => {
               },
               starts_at: '2025-11-30T10:00:00.000000Z',
               ends_at: '2025-11-30T11:00:00.000000Z',
-              trainer: 'John Doe',
+              trainer: {
+                id: 1000001,
+                name: 'John Doe',
+                avatar: null,
+              },
               venue: {
                 id: 1000000,
                 name: 'Main Venue',
@@ -131,13 +135,15 @@ describe('Classes API', () => {
         level: 'Beginner',
         category: 'Brazilian Jiu-Jitsu',
         participants: [],
+        remainingParticipants: 0,
+        totalParticipants: 0,
       });
 
       // Verify second class transformation (with nulls)
       expect(result[1]).toEqual({
         id: '1000033',
         title: 'Advanced Grappling',
-        instructor: 'TBA',
+        instructor: '', // trainer is null
         instructorAvatar: '',
         date: '2025-12-01T14:00:00.000000Z',
         startTime: '14:00',
@@ -155,6 +161,8 @@ describe('Classes API', () => {
         level: '',
         category: 'Brazilian Jiu-Jitsu',
         participants: [],
+        remainingParticipants: 0,
+        totalParticipants: 0,
       });
     });
 

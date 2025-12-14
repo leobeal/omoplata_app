@@ -28,6 +28,7 @@ export default {
     retry: 'Erneut versuchen',
     viewPlans: 'Pläne ansehen',
     logout: 'Abmelden',
+    skip: 'Überspringen',
   },
 
   // Onboarding Slides
@@ -677,6 +678,9 @@ export default {
     noNotificationsMessage: 'Du bist auf dem neuesten Stand! Schau später wieder vorbei.',
     unreadCount: '{{count}} ungelesen',
     markAllRead: 'Alle als gelesen markieren',
+    enablePushTitle: 'Push-Benachrichtigungen aktivieren',
+    enablePushDescription: 'Erhalte Benachrichtigungen über Kurse, Erinnerungen und Updates',
+    enablePush: 'Aktivieren',
   },
 
   // Club nicht gefunden

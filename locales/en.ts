@@ -29,6 +29,7 @@ export default {
     tryAgain: 'Try Again',
     viewPlans: 'View Plans',
     logout: 'Logout',
+    skip: 'Skip',
   },
 
   // Onboarding Slides
@@ -706,6 +707,9 @@ export default {
     noNotificationsMessage: "You're all caught up! Check back later for updates.",
     unreadCount: '{{count}} unread',
     markAllRead: 'Mark all read',
+    enablePushTitle: 'Enable Push Notifications',
+    enablePushDescription: 'Get notified about classes, reminders, and updates',
+    enablePush: 'Enable',
   },
 
   // Club Not Found
