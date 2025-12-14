@@ -280,7 +280,7 @@ export default function CalendarScreen() {
           className="mx-1"
           style={{ width: DAY_ITEM_WIDTH }}>
           <View
-            className="items-center rounded-xl px-2 py-2"
+            className="items-center overflow-hidden rounded-xl px-2 py-2"
             style={{
               backgroundColor: isSelected
                 ? colors.highlight
@@ -288,9 +288,7 @@ export default function CalendarScreen() {
                   ? colors.isDark
                     ? '#2A2A2A'
                     : '#E5E5E5'
-                  : colors.isDark
-                    ? '#1A1A1A'
-                    : '#F5F5F5',
+                  : 'transparent',
             }}>
             {/* Day name */}
             <ThemedText

@@ -472,7 +472,7 @@ const MoodCheck = memo(() => {
             onPress={() => handleMoodSelect(index)}
             className="flex-1 items-center">
             <View
-              className="mb-1 h-14 w-14 items-center justify-center rounded-full"
+              className="mb-1 h-14 w-14 items-center justify-center overflow-hidden rounded-full"
               style={{
                 backgroundColor: selectedMood === index ? mood.color + '30' : 'transparent',
               }}>
