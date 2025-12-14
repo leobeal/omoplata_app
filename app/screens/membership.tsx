@@ -66,9 +66,11 @@ export default function MembershipScreen() {
     setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
   }, []);
 
+  // Reload when user changes (profile switch)
   useEffect(() => {
+    setLoading(true);
     loadData();
-  }, []);
+  }, [user?.id]);
 
   const loadData = async () => {
     try {

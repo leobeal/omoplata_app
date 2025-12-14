@@ -527,6 +527,12 @@ export default {
     downloadFailed: 'Download Failed',
     downloadFailedMessage: 'Failed to download invoice. Please try again.',
     supportContact: 'For questions about this invoice, please contact {{email}}',
+
+    // Empty state - billing managed by responsible
+    managedByResponsible: 'Billing Managed by Parent',
+    billingManagedByResponsible:
+      'Billing information is managed by your parent or guardian account.',
+    billingManagedByName: 'Billing information is managed by {{name}}.',
   },
 
   // SEPA Form

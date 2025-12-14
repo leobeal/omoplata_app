@@ -527,6 +527,12 @@ export default {
     downloadFailed: 'İndirme Başarısız',
     downloadFailedMessage: 'Fatura indirilemedi. Lütfen tekrar deneyin.',
     supportContact: 'Bu faturayla ilgili sorular için lütfen {{email}} ile iletişime geçin',
+
+    // Empty state - billing managed by responsible
+    managedByResponsible: 'Faturalama Veli Tarafından Yönetiliyor',
+    billingManagedByResponsible:
+      'Faturalama bilgileri veli veya vasi hesabınız tarafından yönetilmektedir.',
+    billingManagedByName: 'Faturalama bilgileri {{name}} tarafından yönetilmektedir.',
   },
 
   // SEPA Form

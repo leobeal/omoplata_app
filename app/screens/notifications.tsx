@@ -24,6 +24,7 @@ import LargeTitle from '@/components/LargeTitle';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
+import { useAuth } from '@/contexts/AuthContext';
 import { useT } from '@/contexts/LocalizationContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -33,6 +34,7 @@ type FilterType = NotificationType | 'all';
 export default function NotificationsScreen() {
   const t = useT();
   const colors = useThemeColors();
+  const { user } = useAuth();
   const { permissionStatus, requestPermission, registerToken } = useNotifications();
   const [selectedType, setSelectedType] = useState<FilterType>('all');
   const [isLoading, setIsLoading] = useState(true);
@@ -82,8 +84,11 @@ export default function NotificationsScreen() {
     }
   }, []);
 
+  // Reload when user changes (profile switch)
   useEffect(() => {
     const load = async () => {
+      setIsLoading(true);
+      setNotifications([]); // Clear old user's notifications
       try {
         await loadNotifications();
       } finally {
@@ -91,7 +96,7 @@ export default function NotificationsScreen() {
       }
     };
     load();
-  }, [loadNotifications]);
+  }, [loadNotifications, user?.id]);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);

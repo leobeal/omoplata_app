@@ -77,9 +77,11 @@ export default function CalendarScreen() {
   const [error, setError] = useState<string | null>(null);
   const [usingCachedData, setUsingCachedData] = useState(false);
 
+  // Reload when user changes (profile switch)
   useEffect(() => {
+    setLoading(true);
     loadClasses();
-  }, []);
+  }, [user?.id]);
 
   // Register scroll-to-top handler
   useEffect(() => {

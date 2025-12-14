@@ -6,10 +6,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ThemedText from './ThemedText';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useT } from '@/contexts/LocalizationContext';
 
 export default function ViewingAsChildBanner() {
   const { isViewingAsChild, user, parentUser, switchBackToParent } = useAuth();
+  const { resetAndRefreshData } = useAppData();
   const insets = useSafeAreaInsets();
   const t = useT();
   const [isSwitching, setIsSwitching] = useState(false);
@@ -21,7 +23,10 @@ export default function ViewingAsChildBanner() {
   const handleSwitchBack = async () => {
     setIsSwitching(true);
     try {
-      await switchBackToParent();
+      const result = await switchBackToParent();
+      if (result.success) {
+        await resetAndRefreshData();
+      }
     } finally {
       setIsSwitching(false);
     }

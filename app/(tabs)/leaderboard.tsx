@@ -32,6 +32,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
+// Cache key generator for leaderboard data
+const getCacheKey = (discipline: string, timePeriod: string, demographic: string) =>
+  `${discipline}|${timePeriod}|${demographic}`;
+
+// Type for cached leaderboard data
+interface CachedLeaderboardData {
+  leaderboard: Leaderboard;
+  filters: LeaderboardFilters;
+}
+
 export default function LeaderboardScreen() {
   const { t } = useTranslation();
   const colors = useThemeColors();
@@ -43,6 +53,9 @@ export default function LeaderboardScreen() {
   const [error, setError] = useState<string | null>(null);
   const [leaderboard, setLeaderboard] = useState<Leaderboard | null>(null);
   const [filters, setFilters] = useState<LeaderboardFilters | null>(null);
+
+  // Cache for leaderboard data by filter combination
+  const cacheRef = useRef<Map<string, CachedLeaderboardData>>(new Map());
 
   // Filter state
   const [selectedDiscipline, setSelectedDiscipline] = useState('all');
@@ -81,8 +94,23 @@ export default function LeaderboardScreen() {
   }, []);
 
   const loadLeaderboard = useCallback(
-    async (showLoading = true) => {
-      if (showLoading) setLoading(true);
+    async (forceRefresh = false) => {
+      const cacheKey = getCacheKey(selectedDiscipline, selectedTimePeriod, selectedDemographic);
+
+      // Check cache first (unless force refresh)
+      if (!forceRefresh) {
+        const cached = cacheRef.current.get(cacheKey);
+        if (cached) {
+          setLeaderboard(cached.leaderboard);
+          setFilters(cached.filters);
+          setError(null);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Show loader when fetching from API (keep filters visible)
+      setLoading(true);
       setError(null);
       try {
         const params: LeaderboardParams = {
@@ -91,6 +119,13 @@ export default function LeaderboardScreen() {
           demographic: selectedDemographic,
         };
         const { data } = await getLeaderboard(params);
+
+        // Store in cache
+        cacheRef.current.set(cacheKey, {
+          leaderboard: data.leaderboard,
+          filters: data.filters,
+        });
+
         setLeaderboard(data.leaderboard);
         setFilters(data.filters);
       } catch (err) {
@@ -103,22 +138,29 @@ export default function LeaderboardScreen() {
     [selectedDiscipline, selectedTimePeriod, selectedDemographic]
   );
 
-  // Track if initial load is done
-  const isInitialLoad = useRef(true);
+  // Track previous user ID to detect profile switches
+  const previousUserIdRef = useRef<string | undefined>(user?.id);
 
+  // Reload when filters change or user changes (profile switch)
   useEffect(() => {
-    // Skip showing loading spinner on filter changes (not initial load)
-    loadLeaderboard(isInitialLoad.current);
-    isInitialLoad.current = false;
-  }, [loadLeaderboard]);
+    // Clear cache when user changes
+    if (previousUserIdRef.current !== user?.id) {
+      cacheRef.current.clear();
+      previousUserIdRef.current = user?.id;
+    }
+
+    loadLeaderboard();
+  }, [loadLeaderboard, user?.id]);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    await loadLeaderboard(false);
+    // Force refresh bypasses cache and fetches fresh data
+    await loadLeaderboard(true);
     setRefreshing(false);
   }, [loadLeaderboard]);
 
-  if (loading && !leaderboard) {
+  // Show full-screen loader only on initial load (no filters yet)
+  if (loading && !filters) {
     return (
       <View className="flex-1 bg-background">
         <Header
@@ -207,27 +249,34 @@ export default function LeaderboardScreen() {
           </View>
         )}
 
-        {/* Podium - Top 3 (or fewer) */}
-        {leaderboard && leaderboard.entries.length > 0 && (
-          <Podium entries={leaderboard.entries} currentUserId="current-user" />
-        )}
-
-        {/* Leaderboard List - Remaining entries */}
-        {leaderboard?.entries.length === 0 ? (
+        {/* Content area - show loader or leaderboard */}
+        {loading ? (
+          <View className="flex-1 items-center justify-center py-16">
+            <ActivityIndicator size="large" color={colors.highlight} />
+          </View>
+        ) : leaderboard?.entries.length === 0 ? (
           <EmptyState hasFilters={activeFilterCount > 0} />
         ) : (
-          <Section title={t('leaderboard.rankings')} titleSize="lg" noTopMargin>
-            <View className="rounded-2xl bg-secondary">
-              {leaderboard?.entries.slice(3).map((entry, index, arr) => (
-                <LeaderboardEntryCard
-                  key={entry.id}
-                  entry={entry}
-                  isCurrentUser={entry.id === 'current-user'}
-                  isLast={index === arr.length - 1}
-                />
-              ))}
-            </View>
-          </Section>
+          <>
+            {/* Podium - Top 3 (or fewer) */}
+            {leaderboard && leaderboard.entries.length > 0 && (
+              <Podium entries={leaderboard.entries} currentUserId="current-user" />
+            )}
+
+            {/* Leaderboard List - Remaining entries */}
+            <Section title={t('leaderboard.rankings')} titleSize="lg" noTopMargin>
+              <View className="rounded-2xl bg-secondary">
+                {leaderboard?.entries.slice(3).map((entry, index, arr) => (
+                  <LeaderboardEntryCard
+                    key={entry.id}
+                    entry={entry}
+                    isCurrentUser={entry.id === 'current-user'}
+                    isLast={index === arr.length - 1}
+                  />
+                ))}
+              </View>
+            </Section>
+          </>
         )}
       </ThemedScroller>
 

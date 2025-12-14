@@ -527,6 +527,12 @@ export default {
     downloadFailed: 'Falha no download',
     downloadFailedMessage: 'Não foi possível baixar a fatura. Por favor, tente novamente.',
     supportContact: 'Para dúvidas sobre esta fatura, entre em contato com {{email}}',
+
+    // Empty state - billing managed by responsible
+    managedByResponsible: 'Cobrança Gerenciada pelo Responsável',
+    billingManagedByResponsible:
+      'As informações de cobrança são gerenciadas pela conta do seu responsável.',
+    billingManagedByName: 'As informações de cobrança são gerenciadas por {{name}}.',
   },
 
   // Formulário SEPA

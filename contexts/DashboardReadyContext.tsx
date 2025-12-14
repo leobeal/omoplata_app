@@ -38,6 +38,7 @@ interface AppDataContextType {
 
   // Actions
   refreshData: () => Promise<void>;
+  resetAndRefreshData: () => Promise<void>;
   setClasses: React.Dispatch<React.SetStateAction<Class[]>>;
   setPaymentMethods: React.Dispatch<React.SetStateAction<PaymentMethod[]>>;
 }
@@ -54,6 +55,7 @@ const AppDataContext = createContext<AppDataContextType>({
   analytics: DEFAULT_ANALYTICS_DATA,
   analyticsFromCache: false,
   refreshData: async () => {},
+  resetAndRefreshData: async () => {},
   setClasses: () => {},
   setPaymentMethods: () => {},
 });
@@ -177,6 +179,25 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     await loadAllData();
   }, [loadAllData]);
 
+  // Reset all data immediately then refresh - use when switching profiles
+  const resetAndRefreshData = useCallback(async () => {
+    // Immediately clear old data so UI doesn't show stale info
+    setIsAppDataReady(false);
+    setClasses([]);
+    setChildrenWithClasses([]);
+    setClassesError(null);
+    setClassesFromCache(false);
+    setMembership(null);
+    setPaymentMethods([]);
+    setAvailablePaymentMethods([]);
+    setAnalytics(DEFAULT_ANALYTICS_DATA);
+    setAnalyticsFromCache(false);
+    hasLoadedData.current = false;
+
+    // Now load fresh data for the new profile
+    await loadAllData();
+  }, [loadAllData]);
+
   // Reset when user logs out
   useEffect(() => {
     if (!isAuthenticated && !isAuthLoading) {
@@ -205,6 +226,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       analytics,
       analyticsFromCache,
       refreshData,
+      resetAndRefreshData,
       setClasses,
       setPaymentMethods,
     }),
@@ -220,6 +242,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       analytics,
       analyticsFromCache,
       refreshData,
+      resetAndRefreshData,
       setClasses,
       setPaymentMethods,
     ]

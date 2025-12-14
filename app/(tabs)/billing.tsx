@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   NativeScrollEvent,
@@ -31,11 +31,60 @@ import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
+// Empty state component for when billing is managed by a responsible
+function BillingEmptyState({ responsibleName }: { responsibleName?: string }) {
+  const t = useT();
+  const colors = useThemeColors();
+
+  return (
+    <View className="flex-1 items-center justify-center px-6">
+      <View
+        className="mb-4 rounded-full p-6"
+        style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+        <Icon name="Receipt" size={48} color={colors.text} style={{ opacity: 0.3 }} />
+      </View>
+      <ThemedText className="text-center text-xl font-bold opacity-80">
+        {t('billing.managedByResponsible')}
+      </ThemedText>
+      <ThemedText className="mt-2 px-8 text-center opacity-50">
+        {responsibleName
+          ? t('billing.billingManagedByName', { name: responsibleName })
+          : t('billing.billingManagedByResponsible')}
+      </ThemedText>
+    </View>
+  );
+}
+
 export default function BillingScreen() {
   const t = useT();
   const colors = useThemeColors();
-  const { user } = useAuth();
-  const { paymentMethods } = useAppData();
+  const { user, isViewingAsChild, parentUser } = useAuth();
+  const { paymentMethods, membership } = useAppData();
+
+  // Check if billing is managed by a responsible (parent)
+  const billingManagedByResponsible = useMemo(() => {
+    // Case 1: Parent is viewing child's profile
+    if (isViewingAsChild && parentUser) {
+      return {
+        isManaged: true,
+        responsibleName: `${parentUser.firstName} ${parentUser.lastName}`,
+      };
+    }
+
+    // Case 2: User has a membership with a different payer
+    if (membership && user) {
+      const payerPrefixedId = membership.payer?.prefixedId;
+      const userPrefixedId = user.prefixedId;
+      if (payerPrefixedId && userPrefixedId && payerPrefixedId !== userPrefixedId) {
+        return {
+          isManaged: true,
+          responsibleName: membership.payer.fullName,
+        };
+      }
+    }
+
+    return { isManaged: false, responsibleName: undefined };
+  }, [isViewingAsChild, parentUser, membership, user]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [nextInvoice, setNextInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,9 +103,11 @@ export default function BillingScreen() {
     setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
   }, []);
 
+  // Reload invoices when user changes (profile switch)
   useEffect(() => {
+    setLoading(true);
     loadInvoices();
-  }, []);
+  }, [user?.id]);
 
   const loadInvoices = async (isRefreshing: boolean = false) => {
     try {
@@ -163,6 +214,29 @@ export default function BillingScreen() {
           }}
           retryButtonText={t('common.tryAgain') || 'Try Again'}
         />
+      </View>
+    );
+  }
+
+  // Show empty state when billing is managed by a responsible
+  if (billingManagedByResponsible.isManaged) {
+    return (
+      <View className="flex-1 bg-background">
+        <Header
+          rightComponents={[
+            <Avatar
+              key="avatar"
+              name={user ? `${user.firstName} ${user.lastName}` : ''}
+              size="sm"
+              link="/screens/settings"
+              src={user?.profilePicture}
+            />,
+          ]}
+        />
+        <View className="px-6">
+          <LargeTitle title={t('billing.title')} className="pt-2" />
+        </View>
+        <BillingEmptyState responsibleName={billingManagedByResponsible.responsibleName} />
       </View>
     );
   }

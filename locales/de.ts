@@ -529,6 +529,12 @@ export default {
     downloadFailed: 'Download fehlgeschlagen',
     downloadFailedMessage: 'Rechnung konnte nicht heruntergeladen werden. Bitte erneut versuchen.',
     supportContact: 'Bei Fragen zu dieser Rechnung kontaktieren Sie bitte {{email}}',
+
+    // Empty state - billing managed by responsible
+    managedByResponsible: 'Abrechnung durch Eltern',
+    billingManagedByResponsible:
+      'Die Abrechnungsinformationen werden vom Eltern- oder Vormundkonto verwaltet.',
+    billingManagedByName: 'Die Abrechnungsinformationen werden von {{name}} verwaltet.',
   },
 
   // SEPA-Formular
