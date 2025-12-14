@@ -38,7 +38,7 @@ export default function SettingsScreen() {
     switchBackToParent,
     parentUser,
   } = useAuth();
-  const { membership, analytics } = useAppData();
+  const { membership, analytics, refreshData } = useAppData();
   const { permissionStatus, requestPermission, registerToken } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
   const [enablingNotifications, setEnablingNotifications] = useState(false);
@@ -128,7 +128,10 @@ export default function SettingsScreen() {
     setSwitchingChildId(childId);
     try {
       const result = await switchToChild(childId);
-      if (!result.success) {
+      if (result.success) {
+        // Force refresh all cached data for the new user
+        await refreshData();
+      } else {
         Alert.alert(t('common.error'), result.error || t('family.switchError'));
       }
     } finally {
@@ -138,7 +141,10 @@ export default function SettingsScreen() {
 
   const handleSwitchBackToParent = async () => {
     const result = await switchBackToParent();
-    if (!result.success) {
+    if (result.success) {
+      // Force refresh all cached data for the parent user
+      await refreshData();
+    } else {
       Alert.alert(t('common.error'), result.error || t('family.switchBackError'));
     }
   };

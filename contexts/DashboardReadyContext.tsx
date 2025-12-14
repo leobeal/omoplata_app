@@ -112,6 +112,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       }),
     ]);
 
+    // If statisticsResult is null, it means we got a 401 and logout was triggered
+    // Don't update state - the logout flow will reset everything
+    // well well, that's an opinion here.
+    if (!statisticsResult) {
+      return;
+    }
+
     setClasses(classesResult.classes);
     setChildrenWithClasses(classesResult.children);
     setClassesFromCache(classesResult.fromCache ?? false);
