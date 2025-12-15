@@ -776,4 +776,28 @@ export default {
     versionHistoryDescription: 'Veja as novidades',
     poweredBy: '{{appName}} é desenvolvido pela Omoplata',
   },
+
+  // Wallet / Cartão de Membro
+  wallet: {
+    membershipCard: 'Cartão de Membro',
+    addToWalletDescription: 'Adicionar ao Apple ou Google Wallet',
+    addToAppleWallet: 'Adicionar ao Apple Wallet',
+    addToGoogleWallet: 'Adicionar ao Google Wallet',
+    saveToPhotos: 'Salvar em Fotos',
+    share: 'Compartilhar',
+    shareCard: 'Compartilhar Cartão de Membro',
+    validUntil: 'Válido até',
+    memberId: 'ID do Membro',
+    scanAtReception: 'Mostre este QR code na recepção para fazer check-in',
+    instructions:
+      'Apresente este cartão na recepção ou escaneie o QR code para um check-in rápido. Salve-o na sua wallet para acesso fácil.',
+    savedToPhotos: 'Cartão salvo em Fotos',
+    saveFailed: 'Falha ao salvar cartão',
+    shareFailed: 'Falha ao compartilhar cartão',
+    sharingNotAvailable: 'Compartilhamento não disponível neste dispositivo',
+    permissionDenied: 'Permissão negada. Por favor, permita o acesso para salvar fotos.',
+    comingSoon: 'Em breve',
+    comingSoonMessage:
+      'A integração com Wallet está chegando! Por enquanto, você pode salvar o cartão em suas fotos.',
+  },
 };

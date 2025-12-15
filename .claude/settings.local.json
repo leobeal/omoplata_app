@@ -32,7 +32,9 @@
       "WebSearch",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "WebFetch(domain:docs.expo.dev)"
+      "WebFetch(domain:docs.expo.dev)",
+      "Bash(xargs ls:*)",
+      "mcp__mcp-react-native-expo__expo_dev_start"
     ],
     "deny": [],
     "ask": []
