@@ -69,7 +69,7 @@ const saveMoodLocally = async (moodLevel: MoodLevel, synced: boolean): Promise<v
 const submitMoodToApi = async (moodLevel: MoodLevel): Promise<boolean> => {
   try {
     const response = await api.post<{ mood: number }>(ENDPOINTS.MOOD.SUBMIT, {
-      mood_level: moodLevel,
+      mood: moodLevel,
     });
 
     return !response.error;
