@@ -775,5 +775,7 @@ export default {
     versionHistory: 'Histórico de Versões',
     versionHistoryDescription: 'Veja as novidades',
     poweredBy: '{{appName}} é desenvolvido pela Omoplata',
+    followInstagram: 'Siga-nos no Instagram',
+    followInstagramDescription: '@omoplatadeutschland',
   },
 };

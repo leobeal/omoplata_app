@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import * as StoreReview from 'expo-store-review';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useState, useCallback } from 'react';
-import { View, Image, Alert, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { View, Image, Alert, Linking, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 
 import { clearConfigCache } from '@/api/app-config';
 import Header from '@/components/Header';
@@ -18,6 +18,7 @@ import { useTenant } from '@/contexts/TenantContext';
 
 const omoplataLogo = require('@/assets/_global/icon.png');
 const PRIVACY_POLICY_URL = 'https://omoplata.de/datenschutz';
+const INSTAGRAM_URL = 'https://instagram.com/omoplatadeutschland';
 
 export default function AboutScreen() {
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ export default function AboutScreen() {
   const { refreshData } = useAppData();
   const [refreshingCache, setRefreshingCache] = useState(false);
   const [ratingApp, setRatingApp] = useState(false);
+  const [openingInstagram, setOpeningInstagram] = useState(false);
 
   // Scroll state for collapsible title
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
@@ -41,12 +43,39 @@ export default function AboutScreen() {
     try {
       if (await StoreReview.hasAction()) {
         await StoreReview.requestReview();
+      } else {
+        // Fallback to store URL
+        const storeUrl = await StoreReview.storeUrl();
+        if (storeUrl) {
+          await Linking.openURL(storeUrl);
+        }
       }
     } catch (error) {
       console.error('Error requesting review:', error);
-      Alert.alert(t('common.error'), t('settings.rateAppError'));
+      // Try fallback to store URL on error
+      try {
+        const storeUrl = await StoreReview.storeUrl();
+        if (storeUrl) {
+          await Linking.openURL(storeUrl);
+        } else {
+          Alert.alert(t('common.error'), t('settings.rateAppError'));
+        }
+      } catch {
+        Alert.alert(t('common.error'), t('settings.rateAppError'));
+      }
     } finally {
       setRatingApp(false);
+    }
+  };
+
+  const handleOpenInstagram = async () => {
+    setOpeningInstagram(true);
+    try {
+      await Linking.openURL(INSTAGRAM_URL);
+    } catch (error) {
+      console.error('Error opening Instagram:', error);
+    } finally {
+      setOpeningInstagram(false);
     }
   };
 
@@ -95,19 +124,28 @@ export default function AboutScreen() {
           <ListLink
             className="px-5"
             hasBorder
-            title={t('about.privacyPolicy')}
-            description={t('about.privacyPolicyDescription')}
-            icon="FileText"
-            onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
-          />
-          <ListLink
-            className="px-5"
-            hasBorder
             title={t('settings.rateApp')}
             description={t('settings.rateAppDescription')}
             icon="Star"
             onPress={handleRateApp}
             isLoading={ratingApp}
+          />
+          <ListLink
+            className="px-5"
+            hasBorder
+            title={t('about.followInstagram')}
+            description={t('about.followInstagramDescription')}
+            icon="Instagram"
+            onPress={handleOpenInstagram}
+            isLoading={openingInstagram}
+          />
+          <ListLink
+            className="px-5"
+            hasBorder
+            title={t('about.privacyPolicy')}
+            description={t('about.privacyPolicyDescription')}
+            icon="FileText"
+            onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
           />
           <ListLink
             className="px-5"

@@ -776,5 +776,7 @@ export default {
     versionHistory: 'Sürüm Geçmişi',
     versionHistoryDescription: 'Yeniliklere göz atın',
     poweredBy: '{{appName}}, Omoplata tarafından desteklenmektedir',
+    followInstagram: "Instagram'da bizi takip edin",
+    followInstagramDescription: '@omoplatadeutschland',
   },
 };

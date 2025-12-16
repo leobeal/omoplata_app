@@ -776,5 +776,7 @@ export default {
     versionHistory: 'Version History',
     versionHistoryDescription: "See what's new",
     poweredBy: '{{appName}} is powered by Omoplata',
+    followInstagram: 'Follow us on Instagram',
+    followInstagramDescription: '@omoplatadeutschland',
   },
 };
