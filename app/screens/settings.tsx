@@ -180,9 +180,9 @@ export default function SettingsScreen() {
           <View className="w-1/2 flex-col items-center">
             <Avatar name={userName} size="xl" src={user?.profilePicture} />
             <View className="mt-4 flex-1 items-center">
-              <ThemedText className="text-2xl font-bold">{userName}</ThemedText>
+              <ThemedText className="text-center text-2xl font-bold">{userName}</ThemedText>
               <View className="flex flex-row items-center">
-                <ThemedText className="text-light-subtext dark:text-dark-subtext text-sm">
+                <ThemedText className="text-light-subtext dark:text-dark-subtext text-center text-sm">
                   {userEmail}
                 </ThemedText>
               </View>

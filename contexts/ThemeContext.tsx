@@ -76,9 +76,9 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     setThemeMode(newMode);
   };
 
-  // Don't render until theme is loaded to avoid flash
+  // Don't render until theme is loaded - show dark background to avoid white flash
   if (!isLoaded) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: '#141414' }} />;
   }
 
   return (

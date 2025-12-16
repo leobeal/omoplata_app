@@ -286,9 +286,9 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     }
   }, [canHideSplash, splashHidden]);
 
-  // Keep children hidden while not ready to render
+  // Keep children hidden while not ready to render - show dark background instead of white flash
   if (!canRenderChildren) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: '#141414' }} />;
   }
 
   // Priority 0: If config error (including club not found) and tenant is required, redirect to tenant selection
@@ -315,7 +315,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#141414' }}>
       <OfflineBanner />
       <ViewingAsChildBanner />
       {children}
@@ -325,7 +325,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#141414' }}>
       <NetworkProvider>
         <LocalizationProvider>
           <ThemeProvider>
