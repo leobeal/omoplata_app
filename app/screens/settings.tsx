@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
@@ -26,6 +27,7 @@ import { useThemeColors } from '@/contexts/ThemeColors';
 import { LANGUAGE_OPTIONS } from '@/locales';
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const { t, locale } = useTranslation();
   const colors = useThemeColors();
   const {
@@ -131,6 +133,8 @@ export default function SettingsScreen() {
       if (result.success) {
         // Reset old data immediately and refresh for the new user
         await resetAndRefreshData();
+        // Redirect to dashboard
+        router.replace('/');
       } else {
         Alert.alert(t('common.error'), result.error || t('family.switchError'));
       }
@@ -144,6 +148,8 @@ export default function SettingsScreen() {
     if (result.success) {
       // Reset old data immediately and refresh for the parent user
       await resetAndRefreshData();
+      // Redirect to dashboard
+      router.replace('/');
     } else {
       Alert.alert(t('common.error'), result.error || t('family.switchBackError'));
     }

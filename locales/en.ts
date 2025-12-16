@@ -87,7 +87,7 @@ export default {
 
   // Home/Dashboard Screen
   home: {
-    welcomeBack: 'Welcome back!',
+    welcomeBack: 'Welcome back',
     goodMorning: 'Good morning!',
     goodAfternoon: 'Good afternoon!',
     goodEvening: 'Good evening!',
@@ -464,6 +464,7 @@ export default {
     // Revert cancellation
     alreadyCancelled: 'Membership Cancelled',
     membershipEndsOn: 'Your membership will end on {{date}}.',
+    scheduledForCancellation: 'Cancellation Scheduled',
     changeYourMind: 'Changed Your Mind?',
     revertDescription:
       'If you would like to continue your membership, you can revert the cancellation before it takes effect.',

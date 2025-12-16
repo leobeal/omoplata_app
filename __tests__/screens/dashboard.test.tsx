@@ -171,7 +171,7 @@ jest.mock('@/contexts/ThemeColors', () => ({
 
 const mockTranslate = (key: string, params?: Record<string, string | number>) => {
   const translations: Record<string, string> = {
-    'home.welcomeBack': 'Welcome back!',
+    'home.welcomeBack': 'Welcome back',
     'home.activeMember': 'Active Member',
     'home.classes': 'Classes',
     'home.checkins': 'Check-ins',
@@ -397,11 +397,11 @@ describe('HomeScreen (Dashboard)', () => {
   });
 
   describe('Rendering', () => {
-    it('renders welcome message', async () => {
+    it('renders welcome message with user name', async () => {
       const { getByText } = render(<HomeScreen />);
 
       await waitFor(() => {
-        expect(getByText('Welcome back!')).toBeTruthy();
+        expect(getByText('Welcome back, John!')).toBeTruthy();
       });
     });
 

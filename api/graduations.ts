@@ -9,16 +9,19 @@ import {
   saveToCache,
 } from '@/utils/local-cache';
 
-export type BeltSystem =
-  | 'bjj'
-  | 'judo'
-  | 'karate'
-  | 'taekwondo'
-  | 'muay-thai'
-  | 'wrestling'
-  | 'default';
-
 // API response types (snake_case - matches backend JSON)
+interface ApiStripeLayer {
+  count: number;
+  color: string;
+}
+
+interface ApiBeltConfig {
+  colors: string[];
+  stripe_layers?: ApiStripeLayer[];
+  has_graduation_bar?: boolean;
+  split_vertical?: boolean;
+}
+
 interface ApiPromotion {
   date: string;
   from_belt: string;
@@ -29,9 +32,11 @@ interface ApiPromotion {
 interface ApiGraduation {
   id: number;
   discipline: string;
-  belt_system: BeltSystem;
   current_belt: string;
+  belt_key: string;
+  belt_config: ApiBeltConfig;
   next_belt?: string;
+  next_belt_config?: ApiBeltConfig;
   stripes: number;
   max_stripes: number;
   classes_attended?: number;
@@ -56,6 +61,18 @@ interface ApiGraduationResponse {
 }
 
 // Internal types (camelCase - used in app)
+export interface StripeLayer {
+  count: number;
+  color: string;
+}
+
+export interface BeltConfig {
+  colors: string[];
+  stripeLayers?: StripeLayer[];
+  hasGraduationBar?: boolean;
+  splitVertical?: boolean;
+}
+
 export interface Promotion {
   date: string;
   fromBelt: string;
@@ -66,9 +83,11 @@ export interface Promotion {
 export interface Graduation {
   id: number;
   discipline: string;
-  beltSystem: BeltSystem;
   currentBelt: string;
+  beltKey: string;
+  beltConfig: BeltConfig;
   nextBelt?: string;
+  nextBeltConfig?: BeltConfig;
   stripes: number;
   maxStripes: number;
   classesAttended?: number;
@@ -100,12 +119,21 @@ const transformPromotion = (api: ApiPromotion): Promotion => ({
   stripes: api.stripes,
 });
 
+const transformBeltConfig = (api: ApiBeltConfig): BeltConfig => ({
+  colors: api.colors,
+  stripeLayers: api.stripe_layers,
+  hasGraduationBar: api.has_graduation_bar,
+  splitVertical: api.split_vertical,
+});
+
 const transformGraduation = (api: ApiGraduation): Graduation => ({
   id: api.id,
   discipline: api.discipline,
-  beltSystem: api.belt_system,
   currentBelt: api.current_belt,
+  beltKey: api.belt_key,
+  beltConfig: transformBeltConfig(api.belt_config),
   nextBelt: api.next_belt,
+  nextBeltConfig: api.next_belt_config ? transformBeltConfig(api.next_belt_config) : undefined,
   stripes: api.stripes,
   maxStripes: api.max_stripes,
   classesAttended: api.classes_attended,

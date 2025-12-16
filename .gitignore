@@ -3,6 +3,8 @@ node_modules
 android/
 ios/
 
+.env
+
 # Expo build artifacts
 dist/
 .expo/

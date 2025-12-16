@@ -86,7 +86,7 @@ export default {
 
   // Tela Inicial/Painel
   home: {
-    welcomeBack: 'Bem-vindo de volta!',
+    welcomeBack: 'Bem-vindo de volta',
     goodMorning: 'Bom dia!',
     goodAfternoon: 'Boa tarde!',
     goodEvening: 'Boa noite!',
@@ -465,6 +465,7 @@ export default {
     // Reverter cancelamento
     alreadyCancelled: 'Assinatura Cancelada',
     membershipEndsOn: 'Sua assinatura terminará em {{date}}.',
+    scheduledForCancellation: 'Cancelamento Agendado',
     changeYourMind: 'Mudou de Ideia?',
     revertDescription:
       'Se você deseja continuar sua assinatura, pode reverter o cancelamento antes que ele entre em vigor.',

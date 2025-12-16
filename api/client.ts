@@ -4,6 +4,7 @@
 import { API_CONFIG } from './config';
 
 import { getCurrentLocale } from '@/contexts/LocalizationContext';
+import { generateSignatureHeaders, extractPath } from '@/utils/request-signing';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -65,6 +66,12 @@ export async function apiRequest<T>(
   if (authToken) {
     requestHeaders['Authorization'] = `Bearer ${authToken}`;
   }
+
+  // Add request signature headers for security
+  const path = extractPath(endpoint);
+  const signatureHeaders = generateSignatureHeaders(method, path, body);
+  requestHeaders['X-Timestamp'] = signatureHeaders['X-Timestamp'];
+  requestHeaders['X-Signature'] = signatureHeaders['X-Signature'];
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);

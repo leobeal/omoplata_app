@@ -1,6 +1,6 @@
 import { api } from './client';
 import { ENDPOINTS } from './config';
-import { BeltSystem } from './graduations';
+import { BeltConfig } from './graduations';
 
 import { CACHE_KEYS, CACHE_DURATIONS, fetchWithCacheFallback } from '@/utils/local-cache';
 
@@ -11,6 +11,13 @@ interface ApiUserRank {
   points: number;
   classes_attended: number;
   streak_weeks: number;
+}
+
+interface ApiBeltConfig {
+  colors: string[];
+  stripe_layers?: { count: number; color: string }[];
+  has_graduation_bar?: boolean;
+  split_vertical?: boolean;
 }
 
 interface ApiLeaderboardEntry {
@@ -24,7 +31,7 @@ interface ApiLeaderboardEntry {
   streak_weeks: number;
   top_discipline: string;
   belt: string | null;
-  belt_system: BeltSystem | null;
+  belt_config: ApiBeltConfig | null;
   trend: 'up' | 'down' | 'same';
   rank_change: number;
   is_opted_in?: boolean;
@@ -73,7 +80,7 @@ export interface LeaderboardEntry {
   streakWeeks: number;
   topDiscipline: string;
   belt: string | null;
-  beltSystem: BeltSystem | null;
+  beltConfig: BeltConfig | null;
   trend: 'up' | 'down' | 'same';
   rankChange: number;
   isOptedIn: boolean;
@@ -118,6 +125,16 @@ const transformUserRank = (api: ApiUserRank): UserRank => ({
   streakWeeks: api.streak_weeks,
 });
 
+const transformBeltConfig = (api: ApiBeltConfig | null): BeltConfig | null => {
+  if (!api) return null;
+  return {
+    colors: api.colors,
+    stripeLayers: api.stripe_layers,
+    hasGraduationBar: api.has_graduation_bar,
+    splitVertical: api.split_vertical,
+  };
+};
+
 const transformEntry = (api: ApiLeaderboardEntry): LeaderboardEntry => ({
   id: api.id,
   rank: api.rank,
@@ -130,7 +147,7 @@ const transformEntry = (api: ApiLeaderboardEntry): LeaderboardEntry => ({
   streakWeeks: api.streak_weeks,
   topDiscipline: api.top_discipline,
   belt: api.belt,
-  beltSystem: api.belt_system,
+  beltConfig: transformBeltConfig(api.belt_config),
   trend: api.trend,
   rankChange: api.rank_change,
   isOptedIn: api.is_opted_in !== false, // Default to true if not specified

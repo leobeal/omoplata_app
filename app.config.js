@@ -95,6 +95,7 @@ module.exports = {
       // If club-specific build (TENANT=evolve), tenant is set here
       tenant: isGenericBuild ? undefined : tenantEnv,
       env: process.env.APP_ENV || 'development',
+      apiSigningSecret: process.env.API_SIGNING_SECRET,
       eas: {
         projectId: config.easProjectId,
       },

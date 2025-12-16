@@ -88,7 +88,7 @@ export default {
 
   // Home/Dashboard Screen
   home: {
-    welcomeBack: 'Tekrar hoş geldin!',
+    welcomeBack: 'Tekrar hoş geldin',
     goodMorning: 'Günaydın!',
     goodAfternoon: 'İyi günler!',
     goodEvening: 'İyi akşamlar!',
@@ -465,6 +465,7 @@ export default {
     // Revert cancellation
     alreadyCancelled: 'Üyelik İptal Edildi',
     membershipEndsOn: 'Üyeliğiniz {{date}} tarihinde sona erecek.',
+    scheduledForCancellation: 'İptal Planlandı',
     changeYourMind: 'Fikrinizi mi değiştirdiniz?',
     revertDescription:
       'Üyeliğinize devam etmek istiyorsanız, yürürlüğe girmeden önce iptali geri alabilirsiniz.',

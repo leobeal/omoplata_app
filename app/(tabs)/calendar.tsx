@@ -65,6 +65,8 @@ export default function CalendarScreen() {
   const isScrollingFromSwipe = useRef(false);
   const scrollHandlerRef = useRef<() => void>(() => {});
   const selectedDateRef = useRef<string>('');
+  const isScrolledToTop = useRef(true);
+  const lastTabTapTime = useRef<number>(0);
 
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
@@ -250,20 +252,31 @@ export default function CalendarScreen() {
   // Keep selectedDateRef in sync
   selectedDateRef.current = selectedDate;
 
-  // Scroll to top (go to today and scroll content to top)
+  // Scroll to top handler with two-step behavior:
+  // - First tap: scroll content to top
+  // - Second tap (if already at top): go to today
   const scrollToTop = useCallback(() => {
-    // Scroll current day's content to top
-    currentDayScrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTabTapTime.current;
+    const isDoubleTap = timeSinceLastTap < 500; // 500ms window for double tap
+    lastTabTapTime.current = now;
 
-    // Go to today
-    goToToday();
+    // If already scrolled to top and this is a quick second tap, go to today
+    if (isScrolledToTop.current && isDoubleTap) {
+      // Go to today
+      goToToday();
 
-    // Also scroll the days list to the beginning (today)
-    daysListRef.current?.scrollToIndex({
-      index: 0,
-      animated: true,
-      viewPosition: 0.5,
-    });
+      // Also scroll the days list to the beginning (today)
+      daysListRef.current?.scrollToIndex({
+        index: 0,
+        animated: true,
+        viewPosition: 0.5,
+      });
+    } else {
+      // First tap: scroll current day's content to top
+      currentDayScrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
+      isScrolledToTop.current = true;
+    }
   }, []);
 
   // Keep scroll handler ref updated
@@ -375,6 +388,12 @@ export default function CalendarScreen() {
     []
   );
 
+  // Track content scroll position to reset isScrolledToTop flag
+  const handleContentScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    isScrolledToTop.current = offsetY < 10; // Consider "at top" if within 10px
+  }, []);
+
   // Render each day page
   const renderDayPage: ListRenderItem<DayData> = useCallback(
     ({ item: day }) => (
@@ -383,6 +402,8 @@ export default function CalendarScreen() {
           ref={day.dateString === selectedDateRef.current ? currentDayScrollViewRef : undefined}
           className="flex-1 px-6 pt-6"
           showsVerticalScrollIndicator={false}
+          onScroll={handleContentScroll}
+          scrollEventThrottle={16}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -440,7 +461,7 @@ export default function CalendarScreen() {
         </ScrollView>
       </View>
     ),
-    [refreshing, handleRefresh, colors, t, dateLocale]
+    [refreshing, handleRefresh, handleContentScroll, colors, t, dateLocale]
   );
 
   return (

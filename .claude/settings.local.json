@@ -32,7 +32,8 @@
       "WebSearch",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "WebFetch(domain:docs.expo.dev)"
+      "WebFetch(domain:docs.expo.dev)",
+      "Bash(openssl rand:*)"
     ],
     "deny": [],
     "ask": []

@@ -2,7 +2,6 @@ import {
   getGraduations,
   getGraduationsWithChildren,
   Graduation,
-  BeltSystem,
   GraduationResponse,
 } from '@/api/graduations';
 
@@ -37,9 +36,18 @@ const mockApiResponse = {
     {
       id: 1,
       discipline: 'Brazilian Jiu-Jitsu',
-      belt_system: 'bjj' as const,
-      current_belt: 'blue',
-      next_belt: 'purple',
+      current_belt: 'Blue Belt',
+      belt_key: 'blue',
+      belt_config: {
+        colors: ['#1E40AF'],
+        has_graduation_bar: true,
+        stripe_layers: [{ count: 2, color: '#FFFFFF' }],
+      },
+      next_belt: 'Purple Belt',
+      next_belt_config: {
+        colors: ['#6B21A8'],
+        has_graduation_bar: true,
+      },
       stripes: 2,
       max_stripes: 4,
       last_promotion: '2024-06-15',
@@ -47,9 +55,18 @@ const mockApiResponse = {
     {
       id: 2,
       discipline: 'No-Gi',
-      belt_system: 'bjj' as const,
-      current_belt: 'purple',
-      next_belt: 'brown',
+      current_belt: 'Purple Belt',
+      belt_key: 'purple',
+      belt_config: {
+        colors: ['#6B21A8'],
+        has_graduation_bar: true,
+        stripe_layers: [{ count: 4, color: '#FFFFFF' }],
+      },
+      next_belt: 'Brown Belt',
+      next_belt_config: {
+        colors: ['#78350F'],
+        has_graduation_bar: true,
+      },
       stripes: 4,
       max_stripes: 4,
       last_promotion: '2024-03-20',
@@ -66,9 +83,18 @@ const mockApiResponse = {
         {
           id: 5,
           discipline: 'Kids BJJ',
-          belt_system: 'bjj' as const,
-          current_belt: 'grey_white',
-          next_belt: 'yellow',
+          current_belt: 'Grey-White Belt',
+          belt_key: 'grey_white_kids',
+          belt_config: {
+            colors: ['#6B7280', '#FFFFFF', '#6B7280'],
+            has_graduation_bar: true,
+            stripe_layers: [{ count: 3, color: '#FFFFFF' }],
+          },
+          next_belt: 'Yellow Belt',
+          next_belt_config: {
+            colors: ['#EAB308'],
+            has_graduation_bar: true,
+          },
           stripes: 3,
           max_stripes: 5,
           last_promotion: '2024-09-01',
@@ -102,7 +128,8 @@ describe('Graduations API', () => {
 
       expect(graduation).toHaveProperty('id');
       expect(graduation).toHaveProperty('discipline');
-      expect(graduation).toHaveProperty('beltSystem');
+      expect(graduation).toHaveProperty('beltKey');
+      expect(graduation).toHaveProperty('beltConfig');
       expect(graduation).toHaveProperty('currentBelt');
       expect(graduation).toHaveProperty('stripes');
       expect(graduation).toHaveProperty('maxStripes');
@@ -113,18 +140,34 @@ describe('Graduations API', () => {
       const graduation = response.graduations[0];
 
       // These should be camelCase in the response
-      expect(graduation).toHaveProperty('beltSystem');
+      expect(graduation).toHaveProperty('beltKey');
+      expect(graduation).toHaveProperty('beltConfig');
       expect(graduation).toHaveProperty('currentBelt');
       expect(graduation).toHaveProperty('nextBelt');
       expect(graduation).toHaveProperty('maxStripes');
       expect(graduation).toHaveProperty('lastPromotion');
 
       // These should NOT exist (they are the snake_case versions)
-      expect(graduation).not.toHaveProperty('belt_system');
+      expect(graduation).not.toHaveProperty('belt_key');
+      expect(graduation).not.toHaveProperty('belt_config');
       expect(graduation).not.toHaveProperty('current_belt');
       expect(graduation).not.toHaveProperty('next_belt');
       expect(graduation).not.toHaveProperty('max_stripes');
       expect(graduation).not.toHaveProperty('last_promotion');
+    });
+
+    it('should transform beltConfig properly', async () => {
+      const response = await getGraduations();
+      const graduation = response.graduations[0];
+
+      expect(graduation.beltConfig).toHaveProperty('colors');
+      expect(Array.isArray(graduation.beltConfig.colors)).toBe(true);
+      expect(graduation.beltConfig).toHaveProperty('hasGraduationBar');
+
+      // Verify stripe layers are transformed
+      if (graduation.beltConfig.stripeLayers) {
+        expect(Array.isArray(graduation.beltConfig.stripeLayers)).toBe(true);
+      }
     });
 
     it('should have valid stripe values', async () => {
@@ -196,22 +239,24 @@ describe('Graduations API', () => {
     });
   });
 
-  describe('Belt system validation', () => {
-    const validBeltSystems: BeltSystem[] = [
-      'bjj',
-      'judo',
-      'karate',
-      'taekwondo',
-      'muay-thai',
-      'wrestling',
-      'default',
-    ];
-
-    it('should have valid belt system', async () => {
+  describe('Belt config validation', () => {
+    it('should have valid belt config with colors array', async () => {
       const response = await getGraduations();
 
       response.graduations.forEach((graduation: Graduation) => {
-        expect(validBeltSystems).toContain(graduation.beltSystem);
+        expect(graduation.beltConfig).toBeDefined();
+        expect(graduation.beltConfig.colors).toBeDefined();
+        expect(graduation.beltConfig.colors.length).toBeGreaterThan(0);
+      });
+    });
+
+    it('should have valid beltKey for translations', async () => {
+      const response = await getGraduations();
+
+      response.graduations.forEach((graduation: Graduation) => {
+        expect(graduation.beltKey).toBeDefined();
+        expect(typeof graduation.beltKey).toBe('string');
+        expect(graduation.beltKey.length).toBeGreaterThan(0);
       });
     });
   });

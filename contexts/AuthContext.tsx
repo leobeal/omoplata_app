@@ -160,6 +160,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
         email: userData.email,
         firstName: userData.firstName,
         lastName: userData.lastName,
+        nickname: userData.nickname,
         phone: userData.phone,
         profilePicture: userData.profilePicture,
         membershipId: userData.membershipId,
@@ -363,6 +364,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
         email: result.user.email,
         firstName: result.user.firstName,
         lastName: result.user.lastName,
+        nickname: result.user.nickname,
         roles: ['member'] as UserRole[],
       };
 

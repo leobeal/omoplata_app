@@ -87,7 +87,7 @@ export default {
 
   // Startseite/Dashboard
   home: {
-    welcomeBack: 'Willkommen zurück!',
+    welcomeBack: 'Willkommen zurück',
     goodMorning: 'Guten Morgen!',
     goodAfternoon: 'Guten Tag!',
     goodEvening: 'Guten Abend!',
@@ -466,6 +466,7 @@ export default {
     // Kündigung rückgängig machen
     alreadyCancelled: 'Mitgliedschaft gekündigt',
     membershipEndsOn: 'Deine Mitgliedschaft endet am {{date}}.',
+    scheduledForCancellation: 'Kündigung eingereicht',
     changeYourMind: 'Doch anders entschieden?',
     revertDescription:
       'Wenn du deine Mitgliedschaft fortsetzen möchtest, kannst du die Kündigung rückgängig machen, bevor sie wirksam wird.',

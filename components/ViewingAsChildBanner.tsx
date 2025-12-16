@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { Users, X } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
@@ -10,6 +11,7 @@ import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useT } from '@/contexts/LocalizationContext';
 
 export default function ViewingAsChildBanner() {
+  const router = useRouter();
   const { isViewingAsChild, user, parentUser, switchBackToParent } = useAuth();
   const { resetAndRefreshData } = useAppData();
   const insets = useSafeAreaInsets();
@@ -26,6 +28,8 @@ export default function ViewingAsChildBanner() {
       const result = await switchBackToParent();
       if (result.success) {
         await resetAndRefreshData();
+        // Redirect to dashboard
+        router.replace('/');
       }
     } finally {
       setIsSwitching(false);

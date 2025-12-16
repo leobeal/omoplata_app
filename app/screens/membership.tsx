@@ -576,18 +576,47 @@ export default function MembershipScreen() {
           </View>
         )}
 
-        {/* Cancel Membership */}
+        {/* Cancel Membership / Changed Your Mind */}
         {featureFlags.membershipCancellationEnabled && (
-          <View className="mb-8">
-            <Button
-              title={t('membership.cancelMembership')}
-              icon="XCircle"
-              variant="outline"
-              onPress={() => router.push('/screens/cancel-membership')}
-              className="border-red-500"
-              textClassName="text-red-500"
-            />
-          </View>
+          <>
+            {membership.endsAt ? (
+              // Membership is already scheduled for cancellation - show "changed your mind" card
+              <View className="mb-6">
+                <Section title={t('membership.changeYourMind')} className="mb-2" />
+                <View className="rounded-2xl bg-amber-500/10 p-5">
+                  <View className="mb-4 flex-row items-center">
+                    <Icon name="AlertCircle" size={20} color="#F59E0B" className="mr-3" />
+                    <View className="flex-1">
+                      <ThemedText className="font-semibold" style={{ color: '#F59E0B' }}>
+                        {t('membership.scheduledForCancellation')}
+                      </ThemedText>
+                      <ThemedText className="mt-1 text-sm opacity-70">
+                        {t('membership.membershipEndsOn', { date: formatDate(membership.endsAt) })}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  <Button
+                    title={t('membership.revertCancellation')}
+                    icon="RotateCcw"
+                    variant="solid"
+                    onPress={() => router.push('/screens/cancel-membership')}
+                  />
+                </View>
+              </View>
+            ) : (
+              // Membership is active - show cancellation button
+              <View className="mb-8">
+                <Button
+                  title={t('membership.cancelMembership')}
+                  icon="XCircle"
+                  variant="outline"
+                  onPress={() => router.push('/screens/cancel-membership')}
+                  className="border-red-500"
+                  textClassName="text-red-500"
+                />
+              </View>
+            )}
+          </>
         )}
 
         {/* Support */}

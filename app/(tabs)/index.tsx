@@ -238,7 +238,7 @@ export default function HomeScreen() {
         {/* Hero Content */}
         <View className="px-6 pb-6">
           <Section
-            title={t('home.welcomeBack')}
+            title={`${t('home.welcomeBack')}, ${user?.nickname || user?.firstName || ''}!`}
             titleSize="4xl"
             subtitle={today}
             className="mb-8 mt-4"
@@ -438,24 +438,30 @@ const MOODS = [
 const MoodCheck = memo(() => {
   const { t } = useTranslation();
   const colors = useThemeColors();
+  const { user } = useAuth();
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
 
-  // Load saved mood on mount (resets daily)
+  // Load saved mood on mount or when user changes (resets daily, isolated per user)
   useEffect(() => {
     const loadSavedMood = async () => {
-      const savedMood = await getTodayMood();
+      const savedMood = await getTodayMood(user?.id);
       if (savedMood !== null) {
         setSelectedMood(savedMood);
+      } else {
+        setSelectedMood(null);
       }
     };
     loadSavedMood();
-  }, []);
+  }, [user?.id]);
 
   // Handle mood selection with debounced API call
-  const handleMoodSelect = useCallback((index: number) => {
-    setSelectedMood(index);
-    submitMood(index as MoodLevel);
-  }, []);
+  const handleMoodSelect = useCallback(
+    (index: number) => {
+      setSelectedMood(index);
+      submitMood(index as MoodLevel, user?.id);
+    },
+    [user?.id]
+  );
 
   return (
     <View className="mb-6 rounded-xl pb-6 pt-6">

@@ -15,6 +15,7 @@ export interface StoredUser {
   email: string;
   firstName: string;
   lastName: string;
+  nickname?: string | null;
   phone?: string;
   profilePicture?: string;
   membershipId?: string;
