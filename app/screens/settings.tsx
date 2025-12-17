@@ -39,6 +39,7 @@ export default function SettingsScreen() {
     switchToChild,
     switchBackToParent,
     parentUser,
+    isMember,
   } = useAuth();
   const { membership, analytics, resetAndRefreshData } = useAppData();
   const { permissionStatus, requestPermission, registerToken } = useNotifications();
@@ -287,6 +288,16 @@ export default function SettingsScreen() {
             icon="CreditCard"
             href="/screens/membership"
           />
+          {isMember && (
+            <ListLink
+              className="px-5"
+              hasBorder
+              title={t('wallet.membershipCard')}
+              description={t('wallet.addToWalletDescription')}
+              icon="Wallet"
+              href="/screens/membership-card"
+            />
+          )}
           {showEnableNotifications && (
             <ListLink
               className="px-5"

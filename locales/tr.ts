@@ -798,4 +798,28 @@ export default {
     followInstagram: "Instagram'da bizi takip edin",
     followInstagramDescription: '@omoplatadeutschland',
   },
+
+  // Cüzdan / Üyelik Kartı
+  wallet: {
+    membershipCard: 'Üyelik Kartı',
+    addToWalletDescription: "Apple veya Google Wallet'a ekle",
+    addToAppleWallet: "Apple Wallet'a Ekle",
+    addToGoogleWallet: "Google Wallet'a Ekle",
+    saveToPhotos: 'Fotoğraflara Kaydet',
+    share: 'Paylaş',
+    shareCard: 'Üyelik Kartını Paylaş',
+    validUntil: 'Geçerlilik',
+    memberId: 'Üye ID',
+    scanAtReception: 'Giriş için bu QR kodunu resepsiyonda gösterin',
+    instructions:
+      'Bu kartı resepsiyonda gösterin veya hızlı giriş için QR kodunu okutun. Kolay erişim için cüzdanınıza kaydedin.',
+    savedToPhotos: 'Kart Fotoğraflara kaydedildi',
+    saveFailed: 'Kart kaydedilemedi',
+    shareFailed: 'Kart paylaşılamadı',
+    sharingNotAvailable: 'Bu cihazda paylaşım kullanılamıyor',
+    permissionDenied: 'İzin reddedildi. Lütfen fotoğraf kaydetme izni verin.',
+    comingSoon: 'Yakında',
+    comingSoonMessage:
+      'Cüzdan entegrasyonu yakında geliyor! Şimdilik kartı fotoğraflarınıza kaydedebilirsiniz.',
+  },
 };

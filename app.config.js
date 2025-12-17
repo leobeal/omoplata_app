@@ -35,6 +35,15 @@ module.exports = {
       'expo-router',
       'expo-font',
       'expo-splash-screen',
+      './plugins/withIosInfoPlistLocalization',
+      [
+        'expo-media-library',
+        {
+          photosPermission: 'Allow $(PRODUCT_NAME) to access your photos.',
+          savePhotosPermission:
+            'Allow $(PRODUCT_NAME) to save your membership card to your photo library.',
+        },
+      ],
       [
         'expo-camera',
         {
@@ -64,6 +73,8 @@ module.exports = {
       associatedDomains: [`applinks:${config.universalLinkDomain}`],
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
+        NSPhotoLibraryAddUsageDescription:
+          'Allow $(PRODUCT_NAME) to save your membership card to your photo library',
       },
     },
     android: {

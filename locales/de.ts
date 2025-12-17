@@ -799,4 +799,29 @@ export default {
     followInstagram: 'Folge uns auf Instagram',
     followInstagramDescription: '@omoplatadeutschland',
   },
+
+  // Wallet / Mitgliedskarte
+  wallet: {
+    membershipCard: 'Mitgliedskarte',
+    addToWalletDescription: 'Zu Apple oder Google Wallet hinzufügen',
+    addToAppleWallet: 'Zu Apple Wallet hinzufügen',
+    addToGoogleWallet: 'Zu Google Wallet hinzufügen',
+    saveToPhotos: 'In Fotos speichern',
+    share: 'Teilen',
+    shareCard: 'Mitgliedskarte teilen',
+    validUntil: 'Gültig bis',
+    memberId: 'Mitglieds-ID',
+    scanAtReception: 'Zeigen Sie diesen QR-Code an der Rezeption zum Einchecken',
+    instructions:
+      'Zeigen Sie diese Karte an der Rezeption oder scannen Sie den QR-Code für einen schnellen Check-in. Speichern Sie sie in Ihrer Wallet für einfachen Zugriff.',
+    savedToPhotos: 'Karte in Fotos gespeichert',
+    saveFailed: 'Speichern fehlgeschlagen',
+    shareFailed: 'Teilen fehlgeschlagen',
+    sharingNotAvailable: 'Teilen ist auf diesem Gerät nicht verfügbar',
+    permissionDenied:
+      'Berechtigung verweigert. Bitte erlauben Sie den Zugriff zum Speichern von Fotos.',
+    comingSoon: 'Demnächst verfügbar',
+    comingSoonMessage:
+      'Die Wallet-Integration kommt bald! Vorerst können Sie die Karte in Ihren Fotos speichern.',
+  },
 };
