@@ -42,6 +42,7 @@ module.exports = {
           photosPermission: 'Allow $(PRODUCT_NAME) to access your photos.',
           savePhotosPermission:
             'Allow $(PRODUCT_NAME) to save your membership card to your photo library.',
+          granularPermissions: ['photo'],
         },
       ],
       [
