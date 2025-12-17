@@ -170,7 +170,7 @@ export default function MembershipCardScreen() {
         </View>
 
         {/* Add to Wallet Button */}
-        <Button
+        {/* <Button
           title={t('wallet.addToAppleWallet')}
           onPress={handleAddToWallet}
           loading={addingToWallet}
@@ -178,7 +178,7 @@ export default function MembershipCardScreen() {
           size="large"
           icon="Wallet"
           className="mb-4"
-        />
+        /> */}
 
         {/* Save to Photos */}
         <Button
