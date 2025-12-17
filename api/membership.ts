@@ -488,31 +488,76 @@ export const getDocumentTypeTranslationKey = (documentTypeName: string): string 
   return documentTypeName.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 };
 
+// Upload document response type
+export interface UploadDocumentResponse {
+  success: boolean;
+  message: string;
+  documentRequest?: DocumentRequest;
+}
+
 /**
- * Upload document for a document request (simulated)
+ * Upload document for a document request
  * @param documentRequestId - The document request ID
- * @param file - The file to upload (URI or base64)
+ * @param file - The file to upload with uri, name, and type
  */
 export const uploadDocument = async (
   documentRequestId: number,
   file: { uri: string; name: string; type: string }
-): Promise<{ success: boolean; message: string }> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+): Promise<UploadDocumentResponse> => {
+  const token = getAuthToken();
 
-  // In a real app, this would upload to your backend:
-  // const formData = new FormData();
-  // formData.append('file', file);
-  // const response = await fetch(`${API_BASE_URL}/document-requests/${documentRequestId}/upload`, {
-  //   method: 'POST',
-  //   body: formData,
-  // });
-  // return response.json();
+  if (!token) {
+    throw new Error('Not authenticated');
+  }
 
-  console.log('Uploading document:', documentRequestId, file.name);
+  const uploadUrl = `${getBaseUrl()}${ENDPOINTS.DOCUMENT_REQUESTS.UPLOAD(documentRequestId)}`;
 
-  return {
-    success: true,
-    message: 'Document uploaded successfully',
-  };
+  // Create FormData for multipart/form-data upload
+  const formData = new FormData();
+
+  // Append file - React Native expects this format for file uploads
+  formData.append('file', {
+    uri: file.uri,
+    name: file.name,
+    type: file.type,
+  } as unknown as Blob);
+
+  console.log('[Document Upload] Starting upload for request:', documentRequestId);
+  console.log('[Document Upload] File:', file.name, file.type);
+  console.log('[Document Upload] URL:', uploadUrl);
+
+  try {
+    const response = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // Note: Don't set Content-Type header - fetch will set it automatically
+        // with the correct boundary for multipart/form-data
+      },
+      body: formData,
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      console.error('[Document Upload] Failed:', response.status, data);
+      throw new Error(data?.message || `Upload failed with status ${response.status}`);
+    }
+
+    console.log('[Document Upload] Success:', data);
+
+    // Clear membership cache to refresh document requests status
+    await saveToCache(CACHE_KEYS.MEMBERSHIP, null);
+
+    return {
+      success: true,
+      message: data?.message || 'Document uploaded successfully',
+      documentRequest: data?.documentRequest
+        ? transformToCamelCase<DocumentRequest>(data.documentRequest)
+        : undefined,
+    };
+  } catch (error) {
+    console.error('[Document Upload] Error:', error);
+    throw error;
+  }
 };

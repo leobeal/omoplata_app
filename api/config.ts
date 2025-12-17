@@ -104,6 +104,10 @@ export const ENDPOINTS = {
     RESUME: (id: string) => `/memberships/${id}/resume`,
     DOWNLOAD_CONTRACT: (id: number) => `/memberships/${id}/contract/download`,
   },
+  // Document Requests
+  DOCUMENT_REQUESTS: {
+    UPLOAD: (id: number) => `/document-requests/${id}/upload`,
+  },
   // Classes
   CLASSES: {
     LIST: '/classes',
