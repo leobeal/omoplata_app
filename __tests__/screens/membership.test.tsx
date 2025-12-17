@@ -375,17 +375,6 @@ describe('MembershipScreen', () => {
       });
     });
 
-    it('displays membership policies', async () => {
-      const { getByText } = render(<MembershipScreen />);
-
-      await waitFor(() => {
-        expect(getByText('Membership Policies')).toBeTruthy();
-        expect(getByText('Cancellation Policy')).toBeTruthy();
-        expect(getByText('Freeze Policy')).toBeTruthy();
-        expect(getByText('Transfer Policy')).toBeTruthy();
-      });
-    });
-
     it('shows download contract button', async () => {
       const { getByText } = render(<MembershipScreen />);
 

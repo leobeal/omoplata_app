@@ -375,6 +375,8 @@ jest.mock('@/contexts/DashboardReadyContext', () => ({
       available_types: [],
     },
     analyticsFromCache: false,
+    graduations: [],
+    childrenWithGraduations: [],
     refreshData: jest.fn().mockResolvedValue(undefined),
     setClasses: jest.fn(),
     setPaymentMethods: jest.fn(),
