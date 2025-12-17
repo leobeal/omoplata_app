@@ -10,11 +10,11 @@ module.exports = {
   icon: './assets/_global/icon.png',
   adaptiveIcon: {
     foregroundImage: './assets/_global/adaptive-icon.png',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#000000',
   },
   splash: {
     image: './assets/_global/splash.png',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
     backgroundColor: '#000000',
   },
 
