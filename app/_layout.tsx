@@ -117,7 +117,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     previousAuthState.current = isAuthenticated;
   }, [isAuthenticated]);
 
-  // Deep link handling: Handle check-in URLs from QR code scans
+  // Deep link handling: Handle Universal Links for tenant selection and check-in
   useEffect(() => {
     if (!url || hasHandledDeepLink.current) return;
     if (isCoreLoading) return; // Wait for auth/tenant to load
@@ -126,33 +126,34 @@ function AuthGate({ children }: { children: React.ReactNode }) {
       try {
         const parsed = Linking.parse(url);
         const path = parsed.path?.replace(/^\//, ''); // Remove leading slash
-
-        // Only handle checkin path
-        if (path !== 'checkin') return;
-
-        hasHandledDeepLink.current = true;
-
-        const location = parsed.queryParams?.location as string | undefined;
-        const code = parsed.queryParams?.code as string | undefined;
         const tenantSlug = extractTenantFromHost(parsed.hostname);
 
         // If multi-tenant app and no tenant selected, auto-select from URL
         if (isTenantRequired && !tenant && tenantSlug) {
+          hasHandledDeepLink.current = true;
           await selectTenantBySlug(tenantSlug);
-          // After tenant selection, we need to wait for re-render
-          // The auth check will happen on next cycle
+          // After tenant selection, AuthGate will redirect to login if not authenticated
+          // No further action needed - the normal auth flow handles it
         }
 
-        if (isAuthenticated) {
-          // User is logged in, go directly to check-in
-          router.push({
-            pathname: '/screens/checkin',
-            params: { location, code, direct: 'true' },
-          });
-        } else if (location) {
-          // User needs to log in first, save pending check-in
-          await savePendingCheckin({ location, code, tenantSlug: tenantSlug || undefined });
-          // Auth redirect will happen naturally via shouldRedirectToLogin
+        // Handle specific paths (e.g., checkin)
+        if (path === 'checkin') {
+          hasHandledDeepLink.current = true;
+
+          const location = parsed.queryParams?.location as string | undefined;
+          const code = parsed.queryParams?.code as string | undefined;
+
+          if (isAuthenticated) {
+            // User is logged in, go directly to check-in
+            router.push({
+              pathname: '/screens/checkin',
+              params: { location, code, direct: 'true' },
+            });
+          } else if (location) {
+            // User needs to log in first, save pending check-in
+            await savePendingCheckin({ location, code, tenantSlug: tenantSlug || undefined });
+            // Auth redirect will happen naturally via shouldRedirectToLogin
+          }
         }
       } catch (error) {
         console.error('Failed to handle deep link:', error);

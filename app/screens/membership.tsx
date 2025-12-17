@@ -540,57 +540,6 @@ export default function MembershipScreen() {
           </>
         )}
 
-        {/* Policies */}
-        <Section title={t('membership.policies')} className="mb-2" />
-        <View className="mb-6 rounded-2xl bg-secondary p-5">
-          <View className="mb-4">
-            <View className="mb-2 flex-row items-start">
-              <Icon name="XCircle" size={16} className="mr-2 mt-1 opacity-50" />
-              <View className="flex-1">
-                <ThemedText className="font-semibold">
-                  {t('membership.cancellationPolicy')}
-                </ThemedText>
-                <ThemedText className="mt-1 text-sm opacity-70">
-                  {membershipSettings.cancellationNoticeDays
-                    ? t('membership.daysNoticeRequired', {
-                        count: membershipSettings.cancellationNoticeDays,
-                      })
-                    : t('membership.defaultCancellationPolicy')}
-                </ThemedText>
-              </View>
-            </View>
-          </View>
-          {membershipSettings.allowFreeze && (
-            <View className="mb-4 border-t border-border pt-4">
-              <View className="mb-2 flex-row items-start">
-                <Icon name="Pause" size={16} className="mr-2 mt-1 opacity-50" />
-                <View className="flex-1">
-                  <ThemedText className="font-semibold">{t('membership.freezePolicy')}</ThemedText>
-                  <ThemedText className="mt-1 text-sm opacity-70">
-                    {membershipSettings.maxFreezeDaysPerYear
-                      ? `${t('membership.upTo')} ${t('membership.daysPerYear', {
-                          count: membershipSettings.maxFreezeDaysPerYear,
-                        })}`
-                      : t('membership.defaultFreezePolicy')}
-                  </ThemedText>
-                </View>
-              </View>
-            </View>
-          )}
-          <View
-            className={`${membershipSettings.allowFreeze ? 'border-t border-border pt-4' : ''}`}>
-            <View className="flex-row items-start">
-              <Icon name="UserX" size={16} className="mr-2 mt-1 opacity-50" />
-              <View className="flex-1">
-                <ThemedText className="font-semibold">{t('membership.transferPolicy')}</ThemedText>
-                <ThemedText className="mt-1 text-sm opacity-70">
-                  {t('membership.defaultTransferPolicy')}
-                </ThemedText>
-              </View>
-            </View>
-          </View>
-        </View>
-
         {/* Download Contract */}
         {membershipSettings.showContractDownload && (
           <View className="mb-6">
