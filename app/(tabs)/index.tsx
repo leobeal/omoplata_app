@@ -118,7 +118,9 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const handleScrollToTop = () => {
-      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+      // On iOS, account for contentInset when scrolling to top
+      const topOffset = Platform.OS === 'ios' ? -100 : 0;
+      scrollViewRef.current?.scrollTo({ y: topOffset, animated: true });
     };
 
     registerScrollHandler('/', handleScrollToTop);
