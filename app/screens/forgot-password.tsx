@@ -68,7 +68,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <ImageBackground source={require('@/assets/_global/img/onboarding-1.jpg')} style={{ flex: 1 }}>
+    <ImageBackground source={require('@/assets/_global/img/1.jpg')} style={{ flex: 1 }}>
       <LinearGradient colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.5)']} style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}

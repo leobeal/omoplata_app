@@ -40,21 +40,21 @@ const slides: SlideData[] = [
   {
     id: '1',
     titleKey: 'onboarding.slide1.title',
-    image: require('@/assets/_global/img/onboarding-1.jpg'),
+    image: require('@/assets/_global/img/1.jpg'),
     descriptionKey: 'onboarding.slide1.description',
     icon: 'Dumbbell',
   },
   {
     id: '2',
     titleKey: 'onboarding.slide2.title',
-    image: require('@/assets/_global/img/onboarding-2.jpg'),
+    image: require('@/assets/_global/img/2.jpg'),
     descriptionKey: 'onboarding.slide2.description',
     icon: 'Bell',
   },
   {
     id: '3',
     titleKey: 'onboarding.slide3.title',
-    image: require('@/assets/_global/img/wallpaper-3.jpg'),
+    image: require('@/assets/_global/img/3.jpg'),
     descriptionKey: 'onboarding.slide3.description',
     icon: 'Target',
   },
@@ -154,7 +154,7 @@ export default function TenantSelectionScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-black">
       {/* Full-screen Slider */}
       <FlatList
         className="flex-1"
@@ -170,7 +170,7 @@ export default function TenantSelectionScreen() {
         renderItem={({ item }) => (
           <View style={{ width, flex: 1 }}>
             <ImageBackground source={item.image} style={{ flex: 1 }}>
-              <LinearGradient colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.75)']} style={{ flex: 1 }}>
+              <LinearGradient colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.85)']} style={{ flex: 1 }}>
                 {/* Slide Content */}
                 <View
                   style={{

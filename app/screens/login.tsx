@@ -17,7 +17,7 @@ import { useTenant } from '@/contexts/TenantContext';
 import { getCachedImage } from '@/utils/image-cache';
 
 // Default background image
-const DEFAULT_BACKGROUND = require('@/assets/_global/img/onboarding-1.jpg');
+const DEFAULT_BACKGROUND = require('@/assets/_global/img/2.jpg');
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
@@ -30,7 +30,9 @@ export default function LoginScreen() {
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [generalError, setGeneralError] = useState('');
-  const [backgroundUri, setBackgroundUri] = useState<string | null>(null);
+  const [backgroundSource, setBackgroundSource] = useState<
+    { uri: string } | ReturnType<typeof require> | null
+  >(null);
 
   // Load cached background image (preloaded by _layout.tsx during splash)
   useEffect(() => {
@@ -45,17 +47,22 @@ export default function LoginScreen() {
 
       if (!backgroundUrl) {
         // No remote background configured, use default
+        setBackgroundSource(DEFAULT_BACKGROUND);
         return;
       }
 
       // Check cache (should be preloaded by _layout.tsx)
       const cachedUri = await getCachedImage(backgroundUrl);
       if (cachedUri) {
-        setBackgroundUri(cachedUri);
+        setBackgroundSource({ uri: cachedUri });
+      } else {
+        // Fallback to default if cache miss
+        setBackgroundSource(DEFAULT_BACKGROUND);
       }
     } catch (error) {
       console.error('Failed to load cached background:', error);
-      // Will use default background
+      // Fallback to default on error
+      setBackgroundSource(DEFAULT_BACKGROUND);
     }
   };
 
@@ -118,8 +125,10 @@ export default function LoginScreen() {
     }
   };
 
-  // Determine which background to use (cached or default)
-  const backgroundSource = backgroundUri ? { uri: backgroundUri } : DEFAULT_BACKGROUND;
+  // Show dark background until we determine which image to use
+  if (!backgroundSource) {
+    return <View style={{ flex: 1, backgroundColor: '#141414' }} />;
+  }
 
   return (
     <ImageBackground source={backgroundSource} style={{ flex: 1 }}>
