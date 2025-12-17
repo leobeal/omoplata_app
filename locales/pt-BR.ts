@@ -465,6 +465,7 @@ export default {
     // Reverter cancelamento
     alreadyCancelled: 'Assinatura Cancelada',
     membershipEndsOn: 'Sua assinatura terminará em {{date}}.',
+    accessUntilDate: 'Você terá acesso até esta data.',
     scheduledForCancellation: 'Cancelamento Agendado',
     changeYourMind: 'Mudou de Ideia?',
     revertDescription:
@@ -623,7 +624,7 @@ export default {
       yellow: 'Faixa Amarela',
       orange: 'Faixa Laranja',
       green: 'Faixa Verde',
-      // Faixas infantis - duas cores
+      // Faixas infantis - duas cores (hífen)
       'white-grey': 'Faixa Branca-Cinza',
       'grey-white': 'Faixa Cinza-Branca',
       'grey-black': 'Faixa Cinza-Preta',
@@ -633,9 +634,26 @@ export default {
       'orange-black': 'Faixa Laranja-Preta',
       'green-white': 'Faixa Verde-Branca',
       'green-black': 'Faixa Verde-Preta',
+      // Faixas infantis - duas cores (underscore com _kids)
+      white_grey_kids: 'Faixa Branca-Cinza',
+      grey_white_kids: 'Faixa Cinza-Branca',
+      grey_black_kids: 'Faixa Cinza-Preta',
+      yellow_white_kids: 'Faixa Amarela-Branca',
+      yellow_black_kids: 'Faixa Amarela-Preta',
+      orange_white_kids: 'Faixa Laranja-Branca',
+      orange_black_kids: 'Faixa Laranja-Preta',
+      green_white_kids: 'Faixa Verde-Branca',
+      green_black_kids: 'Faixa Verde-Preta',
+      // Faixas infantis - sólidas (underscore com _kids)
+      grey_kids: 'Faixa Cinza',
+      yellow_kids: 'Faixa Amarela',
+      orange_kids: 'Faixa Laranja',
+      green_kids: 'Faixa Verde',
       // Faixas coral e vermelha
       'red-black': 'Faixa Coral (Vermelha/Preta)',
       'red-white': 'Faixa Coral (Vermelha/Branca)',
+      red_black: 'Faixa Coral (Vermelha/Preta)',
+      red_white: 'Faixa Coral (Vermelha/Branca)',
       red: 'Faixa Vermelha',
     },
   },

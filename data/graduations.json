@@ -3,21 +3,53 @@
     {
       "id": 1,
       "discipline": "Brazilian Jiu-Jitsu",
-      "belt_system": "bjj",
-      "current_belt": "blue",
-      "next_belt": "purple",
+      "current_belt": "Blue Belt",
+      "current_belt_key": "blue",
+      "belt_config": {
+        "colors": [{ "color": "#1E40AF", "stop": [0, 1] }],
+        "has_graduation_bar": true,
+        "stripe_layers": [
+          { "max_count": 4, "color": "#FFFFFF", "positions": [0.15, 0.35, 0.55, 0.75] }
+        ],
+        "total_stripes": 4
+      },
+      "next_belt": "Purple Belt",
+      "next_belt_key": "purple",
+      "next_belt_config": {
+        "colors": [{ "color": "#7C3AED", "stop": [0, 1] }],
+        "has_graduation_bar": true
+      },
       "stripes": 2,
       "max_stripes": 4,
+      "classes_attended": 45,
+      "classes_required": 60,
+      "show_progress": true,
       "last_promotion": "2024-06-15"
     },
     {
       "id": 2,
       "discipline": "No-Gi",
-      "belt_system": "bjj",
-      "current_belt": "purple",
-      "next_belt": "brown",
+      "current_belt": "Purple Belt",
+      "current_belt_key": "purple",
+      "belt_config": {
+        "colors": [{ "color": "#7C3AED", "stop": [0, 1] }],
+        "has_graduation_bar": true,
+        "stripe_layers": [
+          { "max_count": 4, "color": "#FFFFFF", "positions": [0.15, 0.35, 0.55, 0.75] }
+        ],
+        "total_stripes": 4
+      },
+      "next_belt": "Brown Belt",
+      "next_belt_key": "brown",
+      "next_belt_config": {
+        "colors": [{ "color": "#78350F", "stop": [0, 1] }],
+        "has_graduation_bar": true
+      },
       "stripes": 4,
       "max_stripes": 4,
+      "classes_attended": 80,
+      "classes_required": 100,
+      "show_progress": true,
       "last_promotion": "2024-03-20"
     }
   ],
@@ -32,20 +64,55 @@
         {
           "id": 5,
           "discipline": "Kids BJJ",
-          "belt_system": "bjj",
-          "current_belt": "grey_white",
-          "next_belt": "yellow",
-          "stripes": 3,
-          "max_stripes": 5,
+          "current_belt": "Grey/White Belt",
+          "current_belt_key": "grey-white",
+          "belt_config": {
+            "colors": [
+              { "color": "#6B7280", "stop": [0, 0.3] },
+              { "color": "#FFFFFF", "stop": [0.3, 0.7] },
+              { "color": "#6B7280", "stop": [0.7, 1] }
+            ],
+            "has_graduation_bar": true,
+            "stripe_layers": [
+              { "max_count": 4, "color": "#FFFFFF", "positions": [0.15, 0.35, 0.55, 0.75] },
+              { "max_count": 4, "color": "#DA1F26", "positions": [0.15, 0.35, 0.55, 0.75] },
+              { "max_count": 3, "color": "#FFD700", "positions": [0.15, 0.35, 0.55] }
+            ],
+            "total_stripes": 11
+          },
+          "next_belt": "Yellow Belt",
+          "next_belt_key": "yellow",
+          "next_belt_config": {
+            "colors": [{ "color": "#FFD700", "stop": [0, 1] }],
+            "has_graduation_bar": true
+          },
+          "stripes": 6,
+          "max_stripes": 11,
+          "classes_attended": 20,
+          "classes_required": 30,
+          "show_progress": true,
           "last_promotion": "2024-09-01"
         },
         {
           "id": 6,
           "discipline": "Judo",
-          "belt_system": "judo",
-          "current_belt": "orange",
+          "current_belt": "Orange Belt",
+          "current_belt_key": "orange",
+          "belt_config": {
+            "colors": [{ "color": "#F97316", "stop": [0, 1] }],
+            "has_graduation_bar": false,
+            "stripe_layers": [],
+            "total_stripes": 0
+          },
+          "next_belt": "Green Belt",
+          "next_belt_key": "green",
+          "next_belt_config": {
+            "colors": [{ "color": "#22C55E", "stop": [0, 1] }],
+            "has_graduation_bar": false
+          },
           "stripes": 0,
           "max_stripes": 0,
+          "show_progress": false,
           "last_promotion": "2024-08-10"
         }
       ]
@@ -60,11 +127,33 @@
         {
           "id": 7,
           "discipline": "Kids BJJ",
-          "belt_system": "bjj",
-          "current_belt": "grey_white",
-          "next_belt": "yellow",
+          "current_belt": "Grey/White Belt",
+          "current_belt_key": "grey-white",
+          "belt_config": {
+            "colors": [
+              { "color": "#6B7280", "stop": [0, 0.3] },
+              { "color": "#FFFFFF", "stop": [0.3, 0.7] },
+              { "color": "#6B7280", "stop": [0.7, 1] }
+            ],
+            "has_graduation_bar": true,
+            "stripe_layers": [
+              { "max_count": 4, "color": "#FFFFFF", "positions": [0.15, 0.35, 0.55, 0.75] },
+              { "max_count": 4, "color": "#DA1F26", "positions": [0.15, 0.35, 0.55, 0.75] },
+              { "max_count": 3, "color": "#FFD700", "positions": [0.15, 0.35, 0.55] }
+            ],
+            "total_stripes": 11
+          },
+          "next_belt": "Yellow Belt",
+          "next_belt_key": "yellow",
+          "next_belt_config": {
+            "colors": [{ "color": "#FFD700", "stop": [0, 1] }],
+            "has_graduation_bar": true
+          },
           "stripes": 1,
-          "max_stripes": 5,
+          "max_stripes": 11,
+          "classes_attended": 5,
+          "classes_required": 30,
+          "show_progress": true,
           "last_promotion": "2024-07-15"
         }
       ]

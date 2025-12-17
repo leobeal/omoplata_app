@@ -116,7 +116,7 @@ export const Section: React.FC<SectionProps> = ({
         </View>
       )}
 
-      <View>{children}</View>
+      {children && <View>{children}</View>}
 
       {footer && <View className="mt-4">{footer}</View>}
     </View>

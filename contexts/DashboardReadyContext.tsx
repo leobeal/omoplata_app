@@ -12,6 +12,7 @@ import { useAuth } from './AuthContext';
 import { useTenant } from './TenantContext';
 
 import { getMyClassesWithChildren, Class, ChildWithClasses } from '@/api/classes';
+import { getGraduationsWithChildren, Graduation, ChildWithGraduations } from '@/api/graduations';
 import { getMembership, Membership } from '@/api/membership';
 import {
   getPaymentMethods,
@@ -35,6 +36,8 @@ interface AppDataContextType {
   availablePaymentMethods: AvailablePaymentMethod[];
   analytics: AnalyticsData;
   analyticsFromCache: boolean;
+  graduations: Graduation[];
+  childrenWithGraduations: ChildWithGraduations[];
 
   // Actions
   refreshData: () => Promise<void>;
@@ -54,6 +57,8 @@ const AppDataContext = createContext<AppDataContextType>({
   availablePaymentMethods: [],
   analytics: DEFAULT_ANALYTICS_DATA,
   analyticsFromCache: false,
+  graduations: [],
+  childrenWithGraduations: [],
   refreshData: async () => {},
   resetAndRefreshData: async () => {},
   setClasses: () => {},
@@ -75,7 +80,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   );
   const [analytics, setAnalytics] = useState<AnalyticsData>(DEFAULT_ANALYTICS_DATA);
   const [analyticsFromCache, setAnalyticsFromCache] = useState(false);
+  const [graduations, setGraduations] = useState<Graduation[]>([]);
+  const [childrenWithGraduations, setChildrenWithGraduations] = useState<ChildWithGraduations[]>(
+    []
+  );
   const hasLoadedData = useRef(false);
+
+  // Check if user has responsible role (for loading children's data)
+  const isResponsible = user?.roles?.includes('responsible') ?? false;
 
   const loadAllData = useCallback(async () => {
     setClassesError(null);
@@ -86,6 +98,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       paymentMethodsData,
       availablePaymentMethodsData,
       statisticsResult,
+      graduationsResult,
     ] = await Promise.all([
       getMyClassesWithChildren().catch((error) => {
         console.error('Error loading classes:', error);
@@ -112,6 +125,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         console.error('Error loading analytics:', error);
         return { data: DEFAULT_ANALYTICS_DATA, fromCache: false };
       }),
+      getGraduationsWithChildren({ includeChildren: isResponsible }).catch((error) => {
+        console.error('Error loading graduations:', error);
+        return { graduations: [], children: [] };
+      }),
     ]);
 
     // If statisticsResult is null, it means we got a 401 and logout was triggered
@@ -129,9 +146,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setAvailablePaymentMethods(availablePaymentMethodsData);
     setAnalytics(statisticsResult.data);
     setAnalyticsFromCache(statisticsResult.fromCache ?? false);
+    setGraduations(graduationsResult.graduations);
+    setChildrenWithGraduations(graduationsResult.children || []);
     setIsAppDataReady(true);
     hasLoadedData.current = true;
-  }, []);
+  }, [isResponsible]);
 
   // Track user ID to detect profile switches
   const previousUserIdRef = useRef<string | null>(null);
@@ -192,6 +211,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setAvailablePaymentMethods([]);
     setAnalytics(DEFAULT_ANALYTICS_DATA);
     setAnalyticsFromCache(false);
+    setGraduations([]);
+    setChildrenWithGraduations([]);
     hasLoadedData.current = false;
 
     // Now load fresh data for the new profile
@@ -210,6 +231,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       setAvailablePaymentMethods([]);
       setAnalytics(DEFAULT_ANALYTICS_DATA);
       setAnalyticsFromCache(false);
+      setGraduations([]);
+      setChildrenWithGraduations([]);
     }
   }, [isAuthenticated, isAuthLoading]);
 
@@ -225,6 +248,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       availablePaymentMethods,
       analytics,
       analyticsFromCache,
+      graduations,
+      childrenWithGraduations,
       refreshData,
       resetAndRefreshData,
       setClasses,
@@ -241,6 +266,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       availablePaymentMethods,
       analytics,
       analyticsFromCache,
+      graduations,
+      childrenWithGraduations,
       refreshData,
       resetAndRefreshData,
       setClasses,

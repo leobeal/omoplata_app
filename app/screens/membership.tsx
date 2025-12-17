@@ -16,6 +16,7 @@ import {
   getMembership,
   downloadContract,
   uploadDocument,
+  revertCancellation,
   Membership as MembershipType,
   DocumentRequest,
   getPrimaryMember,
@@ -56,6 +57,7 @@ export default function MembershipScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [uploadingDocumentId, setUploadingDocumentId] = useState<number | null>(null);
+  const [revertingCancellation, setRevertingCancellation] = useState(false);
 
   // Scroll state for collapsible title
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
@@ -116,6 +118,33 @@ export default function MembershipScreen() {
     } finally {
       setRefreshing(false);
     }
+  };
+
+  const handleRevertCancellation = () => {
+    if (!membership) return;
+
+    Alert.alert(t('membership.revertCancellation'), t('membership.confirmRevertMessage'), [
+      {
+        text: t('common.cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('membership.revertCancellation'),
+        onPress: async () => {
+          setRevertingCancellation(true);
+          try {
+            await revertCancellation(membership.id);
+            Alert.alert(t('membership.revertSuccess'), t('membership.revertSuccessMessage'));
+            await loadData();
+          } catch (error) {
+            console.error('Error reverting cancellation:', error);
+            Alert.alert(t('common.error'), t('membership.revertError'));
+          } finally {
+            setRevertingCancellation(false);
+          }
+        },
+      },
+    ]);
   };
 
   const getDocumentTypeLabel = (documentTypeName: string) => {
@@ -580,29 +609,45 @@ export default function MembershipScreen() {
         {featureFlags.membershipCancellationEnabled && (
           <>
             {membership.endsAt ? (
-              // Membership is already scheduled for cancellation - show "changed your mind" card
-              <View className="mb-6">
-                <Section title={t('membership.changeYourMind')} className="mb-2" />
-                <View className="rounded-2xl bg-amber-500/10 p-5">
-                  <View className="mb-4 flex-row items-center">
-                    <Icon name="AlertCircle" size={20} color="#F59E0B" className="mr-3" />
+              // Membership is already scheduled for cancellation
+              <>
+                {/* Scheduled Cancellation Info */}
+                <Section title={t('membership.scheduledForCancellation')} className="mb-2" />
+                <View className="mb-6 rounded-2xl bg-amber-500/10 p-5">
+                  <View className="flex-row items-center">
+                    <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-amber-500/20">
+                      <Icon name="CalendarX" size={24} color="#F59E0B" />
+                    </View>
                     <View className="flex-1">
-                      <ThemedText className="font-semibold" style={{ color: '#F59E0B' }}>
-                        {t('membership.scheduledForCancellation')}
+                      <ThemedText className="font-semibold">
+                        {t('membership.membershipEndsOn', { date: formatDate(membership.endsAt) })}
                       </ThemedText>
                       <ThemedText className="mt-1 text-sm opacity-70">
-                        {t('membership.membershipEndsOn', { date: formatDate(membership.endsAt) })}
+                        {t('membership.accessUntilDate')}
                       </ThemedText>
                     </View>
                   </View>
+                </View>
+
+                {/* Changed Your Mind Section */}
+                <Section title={t('membership.changeYourMind')} className="mb-2" />
+                <View className="mb-6 rounded-2xl bg-secondary p-5">
+                  <ThemedText className="mb-4 text-sm opacity-70">
+                    {t('membership.revertDescription')}
+                  </ThemedText>
                   <Button
                     title={t('membership.revertCancellation')}
                     icon="RotateCcw"
-                    variant="solid"
-                    onPress={() => router.push('/screens/cancel-membership')}
+                    variant="primary"
+                    className={colors.isDark ? 'bg-white' : 'bg-black'}
+                    textClassName={colors.isDark ? 'text-black' : 'text-white'}
+                    iconColor={colors.isDark ? '#000000' : '#FFFFFF'}
+                    onPress={handleRevertCancellation}
+                    loading={revertingCancellation}
+                    disabled={revertingCancellation}
                   />
                 </View>
-              </View>
+              </>
             ) : (
               // Membership is active - show cancellation button
               <View className="mb-8">

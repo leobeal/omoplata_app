@@ -13,7 +13,7 @@ import {
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 
 import { confirmAttendance, denyAttendance, ChildWithClasses } from '@/api/classes';
-import { getGraduationsWithChildren, Graduation, ChildWithGraduations } from '@/api/graduations';
+import { Graduation, ChildWithGraduations } from '@/api/graduations';
 import { getStatusTranslationKey, Membership } from '@/api/membership';
 import { getTodayMood, submitMood, MoodLevel } from '@/api/mood';
 import { isSepaAvailable, PaymentMethod } from '@/api/payment-methods';
@@ -46,38 +46,15 @@ export default function HomeScreen() {
     membership,
     paymentMethods,
     availablePaymentMethods,
+    graduations,
+    childrenWithGraduations,
     refreshData,
     setClasses,
     setPaymentMethods,
   } = useAppData();
   const [refreshing, setRefreshing] = useState(false);
-  const [graduations, setGraduations] = useState<Graduation[]>([]);
-  const [childrenWithGraduations, setChildrenWithGraduations] = useState<ChildWithGraduations[]>(
-    []
-  );
 
   const userName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';
-
-  // Check if user has responsible role
-  const isResponsible = user?.roles?.includes('responsible') ?? false;
-
-  // Load graduations (including children's)
-  useEffect(() => {
-    const loadGraduations = async () => {
-      try {
-        const data = await getGraduationsWithChildren({
-          includeChildren: isResponsible,
-        });
-        setGraduations(data.graduations);
-        setChildrenWithGraduations(data.children || []);
-      } catch (error) {
-        console.error('Failed to load graduations:', error);
-      }
-    };
-    if (isMember) {
-      loadGraduations();
-    }
-  }, [isMember, isResponsible]);
 
   // Map locale to proper locale string for date formatting
   const dateLocale =

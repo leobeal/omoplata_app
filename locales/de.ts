@@ -466,6 +466,7 @@ export default {
     // Kündigung rückgängig machen
     alreadyCancelled: 'Mitgliedschaft gekündigt',
     membershipEndsOn: 'Deine Mitgliedschaft endet am {{date}}.',
+    accessUntilDate: 'Du hast bis zu diesem Datum Zugang.',
     scheduledForCancellation: 'Kündigung eingereicht',
     changeYourMind: 'Doch anders entschieden?',
     revertDescription:
@@ -625,7 +626,7 @@ export default {
       yellow: 'Gelbgurt',
       orange: 'Orangegurt',
       green: 'Grüngurt',
-      // Kinder-Gürtel - zweifarbig
+      // Kinder-Gürtel - zweifarbig (Bindestrich)
       'white-grey': 'Weiß-Grau Gurt',
       'grey-white': 'Grau-Weiß Gurt',
       'grey-black': 'Grau-Schwarz Gurt',
@@ -635,9 +636,26 @@ export default {
       'orange-black': 'Orange-Schwarz Gurt',
       'green-white': 'Grün-Weiß Gurt',
       'green-black': 'Grün-Schwarz Gurt',
+      // Kinder-Gürtel - zweifarbig (Unterstrich mit _kids)
+      white_grey_kids: 'Weiß-Grau Gurt',
+      grey_white_kids: 'Grau-Weiß Gurt',
+      grey_black_kids: 'Grau-Schwarz Gurt',
+      yellow_white_kids: 'Gelb-Weiß Gurt',
+      yellow_black_kids: 'Gelb-Schwarz Gurt',
+      orange_white_kids: 'Orange-Weiß Gurt',
+      orange_black_kids: 'Orange-Schwarz Gurt',
+      green_white_kids: 'Grün-Weiß Gurt',
+      green_black_kids: 'Grün-Schwarz Gurt',
+      // Kinder-Gürtel - einfarbig (Unterstrich mit _kids)
+      grey_kids: 'Graugurt',
+      yellow_kids: 'Gelbgurt',
+      orange_kids: 'Orangegurt',
+      green_kids: 'Grüngurt',
       // Korall- & Rotgurte
       'red-black': 'Korallgurt (Rot/Schwarz)',
       'red-white': 'Korallgurt (Rot/Weiß)',
+      red_black: 'Korallgurt (Rot/Schwarz)',
+      red_white: 'Korallgurt (Rot/Weiß)',
       red: 'Rotgurt',
     },
   },

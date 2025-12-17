@@ -3,12 +3,13 @@ import { Animated, Easing, View } from 'react-native';
 
 import ThemedText from './ThemedText';
 
-import { BeltConfig, Graduation, StripeLayer } from '@/api/graduations';
+import { BeltConfig, ColorStop, Graduation, StripeLayer } from '@/api/graduations';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
 interface BeltVisualProps {
   config: BeltConfig;
+  stripes?: number; // Current stripe count to display
   size?: 'sm' | 'md' | 'lg';
   borderColor?: string;
 }
@@ -21,28 +22,69 @@ const SIZE_CONFIG = {
 };
 
 // Check if belt needs a border (light colors)
-const needsBorder = (colors: string[]): boolean => {
-  return colors.some((color) => {
-    const hex = color.toUpperCase();
+const needsBorder = (colors: ColorStop[]): boolean => {
+  return colors.some((colorStop) => {
+    const hex = colorStop.color.toUpperCase();
     return hex === '#FFFFFF' || hex === '#FFF' || hex.includes('FFFF');
   });
 };
 
+// Calculate which stripes to render based on total stripes and layer config
+// Layers stack on top of each other at the same positions (left to right)
+// Example: 6 stripes with layers [4 white, 4 red, 3 yellow]
+// - Layer 0: 4 white stripes at positions [0.15, 0.35, 0.55, 0.75]
+// - Layer 1: 2 red stripes at positions [0.15, 0.35] (covering white from left)
+// Result: [red, red, white, white] - 2 red on left + 2 white on right
+const calculateStripesToRender = (
+  stripeLayers: StripeLayer[],
+  totalStripes: number
+): { color: string; position: number }[] => {
+  if (!stripeLayers.length || totalStripes === 0) return [];
+
+  // Get max positions from first layer
+  const maxPositions = stripeLayers[0]?.positions?.length || 4;
+
+  // Build array of colors per position, stacking layers from left to right
+  const positionColors: string[] = new Array(maxPositions).fill('');
+  let remainingStripes = totalStripes;
+
+  for (const layer of stripeLayers) {
+    if (remainingStripes <= 0) break;
+
+    const stripesInThisLayer = Math.min(remainingStripes, layer.maxCount);
+    // Fill from LEFT (position 0) to RIGHT
+    for (let i = 0; i < stripesInThisLayer; i++) {
+      if (i < maxPositions) {
+        positionColors[i] = layer.color; // Overwrite with newer layer color
+      }
+    }
+    remainingStripes -= stripesInThisLayer;
+  }
+
+  // Get positions from first layer
+  const positions = stripeLayers[0]?.positions || [];
+
+  // Convert to result array, filtering out empty positions
+  return positionColors
+    .map((color, index) => ({
+      color,
+      position: positions[index] || 0,
+    }))
+    .filter((stripe) => stripe.color !== '');
+};
+
 // Reusable Belt Visual Component - API driven
-export const BeltVisual = ({ config, size = 'md', borderColor }: BeltVisualProps) => {
-  const { colors, stripeLayers = [], hasGraduationBar = false, splitVertical = false } = config;
+export const BeltVisual = ({ config, stripes = 0, size = 'md', borderColor }: BeltVisualProps) => {
+  const { colors, stripeLayers = [], hasGraduationBar = false } = config;
   const { width, height, stripeHeight, stripeWidth } = SIZE_CONFIG[size];
 
   const showBorder = needsBorder(colors);
-  const visibleStripesCount = Math.min(
-    4,
-    stripeLayers.reduce((sum, layer) => sum + layer.count, 0)
-  );
-  const stripeSectionWidth = Math.max(visibleStripesCount * (stripeWidth + 2) + 8, width * 0.3);
+  const stripesToRender = calculateStripesToRender(stripeLayers, stripes);
+  const stripeSectionWidth = Math.max(stripesToRender.length * (stripeWidth + 2) + 8, width * 0.3);
 
-  // Graduation bar with stripe layers (BJJ style)
+  // Graduation bar with stripes (BJJ style)
   const GraduationBar = () => {
-    if (!hasGraduationBar || stripeLayers.length === 0) return null;
+    if (!hasGraduationBar) return null;
 
     return (
       <View
@@ -53,39 +95,48 @@ export const BeltVisual = ({ config, size = 'md', borderColor }: BeltVisualProps
           backgroundColor: '#18181B',
           left: (width - stripeSectionWidth) / 2,
         }}>
-        {stripeLayers.map((layer: StripeLayer, layerIndex: number) => (
-          <View
-            key={layerIndex}
-            className="absolute flex-row items-center justify-center"
-            style={{
-              width: stripeSectionWidth,
-              height: '100%',
-              gap: 2,
-            }}>
-            {Array.from({ length: layer.count }).map((_, i) => (
-              <View
-                key={i}
-                style={{
-                  width: stripeWidth,
-                  height: stripeHeight,
-                  backgroundColor: layer.color,
-                  borderRadius: 1,
-                }}
-              />
-            ))}
-          </View>
-        ))}
+        <View
+          className="flex-row items-center justify-center"
+          style={{
+            width: stripeSectionWidth,
+            height: '100%',
+            gap: 2,
+          }}>
+          {stripesToRender.map((stripe, i) => (
+            <View
+              key={i}
+              style={{
+                width: stripeWidth,
+                height: stripeHeight,
+                backgroundColor: stripe.color,
+                borderRadius: 1,
+              }}
+            />
+          ))}
+        </View>
       </View>
     );
   };
 
-  // Render belt bands
+  // Render belt bands based on color stops
   const renderBands = () => {
     if (colors.length === 1) {
-      return <View style={{ flex: 1, backgroundColor: colors[0] }} />;
+      return <View style={{ flex: 1, backgroundColor: colors[0].color }} />;
     }
 
-    return colors.map((color, i) => <View key={i} style={{ flex: 1, backgroundColor: color }} />);
+    // Calculate flex values based on stop ranges
+    return colors.map((colorStop: ColorStop, i: number) => {
+      const flexValue = colorStop.stop[1] - colorStop.stop[0];
+      return (
+        <View
+          key={i}
+          style={{
+            flex: flexValue,
+            backgroundColor: colorStop.color,
+          }}
+        />
+      );
+    });
   };
 
   return (
@@ -94,7 +145,7 @@ export const BeltVisual = ({ config, size = 'md', borderColor }: BeltVisualProps
       style={{
         width,
         height,
-        flexDirection: splitVertical ? 'row' : 'column',
+        flexDirection: 'column',
         borderWidth: showBorder ? 1 : 0,
         borderColor: borderColor || '#D1D5DB',
       }}>
@@ -133,8 +184,8 @@ export const GraduationCard = ({ graduation, animate = true }: GraduationCardPro
 
   // Progress bar color - use current belt primary for stripe progress, next belt for belt progress
   const progressBarColor = isProgressingToStripe
-    ? beltConfig.colors[0]
-    : nextBeltConfig?.colors[0] || beltConfig.colors[0];
+    ? beltConfig.colors[0].color
+    : nextBeltConfig?.colors[0].color || beltConfig.colors[0].color;
 
   useEffect(() => {
     if (!animate) {
@@ -143,12 +194,17 @@ export const GraduationCard = ({ graduation, animate = true }: GraduationCardPro
     }
 
     animationProgress.setValue(0);
-    Animated.timing(animationProgress, {
+    const animation = Animated.timing(animationProgress, {
       toValue: 1,
       duration: 800,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false,
-    }).start();
+    });
+    animation.start();
+
+    return () => {
+      animation.stop();
+    };
   }, [graduation, animate, animationProgress]);
 
   return (
@@ -163,7 +219,7 @@ export const GraduationCard = ({ graduation, animate = true }: GraduationCardPro
           </ThemedText>
         </View>
         {/* Belt visualization */}
-        <BeltVisual config={beltConfig} size="lg" borderColor={colors.border} />
+        <BeltVisual config={beltConfig} stripes={stripes} size="lg" borderColor={colors.border} />
       </View>
 
       {/* Progress Section - only show if showProgress is true and we have progress data */}

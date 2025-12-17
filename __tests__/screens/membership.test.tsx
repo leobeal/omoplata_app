@@ -271,6 +271,7 @@ jest.mock('@/api/membership', () => ({
     name.replace(/_([a-z])/g, (_: string, letter: string) => letter.toUpperCase())
   ),
   uploadDocument: jest.fn(() => Promise.resolve({ success: true, message: 'Uploaded' })),
+  revertCancellation: jest.fn(() => Promise.resolve({ success: true })),
 }));
 
 // Mock the payment methods API

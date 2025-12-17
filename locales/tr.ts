@@ -465,6 +465,7 @@ export default {
     // Revert cancellation
     alreadyCancelled: 'Üyelik İptal Edildi',
     membershipEndsOn: 'Üyeliğiniz {{date}} tarihinde sona erecek.',
+    accessUntilDate: 'Bu tarihe kadar erişiminiz olacak.',
     scheduledForCancellation: 'İptal Planlandı',
     changeYourMind: 'Fikrinizi mi değiştirdiniz?',
     revertDescription:
@@ -654,7 +655,7 @@ export default {
       yellow: 'Sarı Kuşak',
       orange: 'Turuncu Kuşak',
       green: 'Yeşil Kuşak',
-      // Kids belts - two-color - Çocuk kuşakları - iki renkli
+      // Kids belts - two-color (hyphen) - Çocuk kuşakları - iki renkli (tire)
       'white-grey': 'Beyaz-Gri Kuşak',
       'grey-white': 'Gri-Beyaz Kuşak',
       'grey-black': 'Gri-Siyah Kuşak',
@@ -664,9 +665,26 @@ export default {
       'orange-black': 'Turuncu-Siyah Kuşak',
       'green-white': 'Yeşil-Beyaz Kuşak',
       'green-black': 'Yeşil-Siyah Kuşak',
+      // Kids belts - two-color (underscore with _kids) - Çocuk kuşakları - iki renkli (alt çizgi ile _kids)
+      white_grey_kids: 'Beyaz-Gri Kuşak',
+      grey_white_kids: 'Gri-Beyaz Kuşak',
+      grey_black_kids: 'Gri-Siyah Kuşak',
+      yellow_white_kids: 'Sarı-Beyaz Kuşak',
+      yellow_black_kids: 'Sarı-Siyah Kuşak',
+      orange_white_kids: 'Turuncu-Beyaz Kuşak',
+      orange_black_kids: 'Turuncu-Siyah Kuşak',
+      green_white_kids: 'Yeşil-Beyaz Kuşak',
+      green_black_kids: 'Yeşil-Siyah Kuşak',
+      // Kids belts - solid (underscore with _kids) - Çocuk kuşakları - düz (alt çizgi ile _kids)
+      grey_kids: 'Gri Kuşak',
+      yellow_kids: 'Sarı Kuşak',
+      orange_kids: 'Turuncu Kuşak',
+      green_kids: 'Yeşil Kuşak',
       // Coral & Red belts - Mercan ve Kırmızı kuşaklar
       'red-black': 'Mercan Kuşak (Kırmızı/Siyah)',
       'red-white': 'Mercan Kuşak (Kırmızı/Beyaz)',
+      red_black: 'Mercan Kuşak (Kırmızı/Siyah)',
+      red_white: 'Mercan Kuşak (Kırmızı/Beyaz)',
       red: 'Kırmızı Kuşak',
     },
   },

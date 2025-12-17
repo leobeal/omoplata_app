@@ -464,6 +464,7 @@ export default {
     // Revert cancellation
     alreadyCancelled: 'Membership Cancelled',
     membershipEndsOn: 'Your membership will end on {{date}}.',
+    accessUntilDate: 'You will have access until this date.',
     scheduledForCancellation: 'Cancellation Scheduled',
     changeYourMind: 'Changed Your Mind?',
     revertDescription:
@@ -654,7 +655,7 @@ export default {
       yellow: 'Yellow Belt',
       orange: 'Orange Belt',
       green: 'Green Belt',
-      // Kids belts - two-color
+      // Kids belts - two-color (hyphen format)
       'white-grey': 'White-Grey Belt',
       'grey-white': 'Grey-White Belt',
       'grey-black': 'Grey-Black Belt',
@@ -664,9 +665,26 @@ export default {
       'orange-black': 'Orange-Black Belt',
       'green-white': 'Green-White Belt',
       'green-black': 'Green-Black Belt',
+      // Kids belts - two-color (underscore format with _kids suffix)
+      white_grey_kids: 'White-Grey Belt',
+      grey_white_kids: 'Grey-White Belt',
+      grey_black_kids: 'Grey-Black Belt',
+      yellow_white_kids: 'Yellow-White Belt',
+      yellow_black_kids: 'Yellow-Black Belt',
+      orange_white_kids: 'Orange-White Belt',
+      orange_black_kids: 'Orange-Black Belt',
+      green_white_kids: 'Green-White Belt',
+      green_black_kids: 'Green-Black Belt',
+      // Kids belts - solid (underscore format with _kids suffix)
+      grey_kids: 'Grey Belt',
+      yellow_kids: 'Yellow Belt',
+      orange_kids: 'Orange Belt',
+      green_kids: 'Green Belt',
       // Coral & Red belts
       'red-black': 'Coral Belt (Red/Black)',
       'red-white': 'Coral Belt (Red/White)',
+      red_black: 'Coral Belt (Red/Black)',
+      red_white: 'Coral Belt (Red/White)',
       red: 'Red Belt',
     },
   },

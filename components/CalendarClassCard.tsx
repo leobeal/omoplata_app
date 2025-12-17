@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Pressable } from 'react-native';
 
 import Avatar from './Avatar';
@@ -13,7 +13,10 @@ interface CalendarClassCardProps {
   onPress?: () => void;
 }
 
-export default function CalendarClassCard({ classData, onPress }: CalendarClassCardProps) {
+const CalendarClassCard = memo(function CalendarClassCard({
+  classData,
+  onPress,
+}: CalendarClassCardProps) {
   const colors = useThemeColors();
 
   // Early return if classData is null/undefined
@@ -148,4 +151,6 @@ export default function CalendarClassCard({ classData, onPress }: CalendarClassC
       </View>
     </Pressable>
   );
-}
+});
+
+export default CalendarClassCard;

@@ -5,7 +5,6 @@ import { View, ActivityIndicator, Alert, TextInput } from 'react-native';
 import {
   getMembership,
   cancelMembership,
-  revertCancellation,
   Membership as MembershipType,
   getPrimaryMember,
   formatCurrency,
@@ -17,6 +16,7 @@ import Section from '@/components/Section';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
 import { useMembershipSettings } from '@/contexts/AppConfigContext';
+import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 import { clearMembershipCache } from '@/utils/local-cache';
@@ -26,18 +26,16 @@ export default function CancelMembershipScreen() {
   const t = useT();
   const colors = useThemeColors();
   const membershipSettings = useMembershipSettings();
+  const { refreshData } = useAppData();
   const [membership, setMembership] = useState<MembershipType | null>(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
-  const [reverting, setReverting] = useState(false);
   const [cancellationDate, setCancellationDate] = useState<string>('');
   const [reason, setReason] = useState('');
 
   // Check if membership is already cancelled (endsAt is set and in the future)
   const isCancelled = membership?.endsAt !== null && membership?.endsAt !== undefined;
   const cancellationEndDate = membership?.endsAt;
-  const canRevertCancellation =
-    isCancelled && cancellationEndDate && new Date(cancellationEndDate) > new Date();
 
   // Get earliest cancellation date from backend (cancellableAt)
   const getEarliestCancellationDate = useCallback(
@@ -100,6 +98,10 @@ export default function CancelMembershipScreen() {
               await cancelMembership(membership.id, cancellationDate, reason || undefined);
               // Refresh membership data to get updated endsAt
               await loadMembership(true);
+              // Also refresh the shared app data so membership page shows updated state
+              await refreshData();
+              // Navigate back to membership page
+              router.back();
             } catch (error) {
               console.error('Error cancelling membership:', error);
               Alert.alert(
@@ -113,34 +115,6 @@ export default function CancelMembershipScreen() {
         },
       ]
     );
-  };
-
-  const handleRevertCancellation = async () => {
-    if (!membership) return;
-
-    Alert.alert(t('membership.confirmRevert'), t('membership.confirmRevertMessage'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('membership.yesRevert'),
-        onPress: async () => {
-          setReverting(true);
-          try {
-            await revertCancellation(membership.id);
-            // Refresh membership data
-            await loadMembership(true);
-            Alert.alert(t('membership.revertSuccess'), t('membership.revertSuccessMessage'));
-          } catch (error) {
-            console.error('Error reverting cancellation:', error);
-            Alert.alert(
-              t('common.error'),
-              error instanceof Error ? error.message : t('membership.revertError')
-            );
-          } finally {
-            setReverting(false);
-          }
-        },
-      },
-    ]);
   };
 
   const primaryMember = membership ? getPrimaryMember(membership) : null;
@@ -215,33 +189,12 @@ export default function CancelMembershipScreen() {
             </View>
           </View>
 
-          {/* Revert Option */}
-          {canRevertCancellation && (
-            <>
-              <Section title={t('membership.changeYourMind')} className="mb-4" />
-              <View className="mb-6 rounded-2xl bg-secondary p-5">
-                <ThemedText className="mb-4 text-sm opacity-70">
-                  {t('membership.revertDescription')}
-                </ThemedText>
-                <Button
-                  title={t('membership.revertCancellation')}
-                  icon="RotateCcw"
-                  variant="solid"
-                  onPress={handleRevertCancellation}
-                  loading={reverting}
-                  disabled={reverting}
-                />
-              </View>
-            </>
-          )}
-
           {/* Back Button */}
           <View className="mb-4">
             <Button
               title={t('common.back')}
               variant="outline"
               onPress={() => router.back()}
-              disabled={reverting}
             />
           </View>
 
@@ -320,7 +273,7 @@ export default function CancelMembershipScreen() {
             </View>
           </View>
 
-          {membershipSettings.cancellationNoticeDays && (
+          {!!membershipSettings.cancellationNoticeDays && (
             <View className="border-t border-border pt-4">
               <View className="mb-2 flex-row items-center">
                 <Icon name="Clock" size={16} className="mr-2 opacity-50" />
@@ -370,7 +323,7 @@ export default function CancelMembershipScreen() {
           <Button
             title={t('membership.cancelMyMembership')}
             icon="XCircle"
-            variant="solid"
+            variant="primary"
             onPress={handleCancel}
             loading={cancelling}
             disabled={cancelling}

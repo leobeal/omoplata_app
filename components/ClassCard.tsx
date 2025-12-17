@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { View, Pressable, ActivityIndicator } from 'react-native';
 
 import Icon from './Icon';
@@ -14,7 +14,12 @@ interface ClassCardProps {
   onDeny?: (classId: string, childId?: string) => Promise<void>;
 }
 
-export default function ClassCard({ classData, childId, onConfirm, onDeny }: ClassCardProps) {
+const ClassCard = memo(function ClassCard({
+  classData,
+  childId,
+  onConfirm,
+  onDeny,
+}: ClassCardProps) {
   const t = useT();
   const [loading, setLoading] = useState(false);
   const [localStatus, setLocalStatus] = useState(classData.status);
@@ -268,4 +273,6 @@ export default function ClassCard({ classData, childId, onConfirm, onDeny }: Cla
       )}
     </View>
   );
-}
+});
+
+export default ClassCard;

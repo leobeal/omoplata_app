@@ -10,16 +10,22 @@ import {
 } from '@/utils/local-cache';
 
 // API response types (snake_case - matches backend JSON)
-interface ApiStripeLayer {
-  count: number;
+interface ApiColorStop {
   color: string;
+  stop: [number, number]; // [start, end] as percentages 0-1
+}
+
+interface ApiStripeLayer {
+  max_count: number;
+  color: string;
+  positions: number[]; // positions as percentages 0-1
 }
 
 interface ApiBeltConfig {
-  colors: string[];
+  colors: ApiColorStop[];
   stripe_layers?: ApiStripeLayer[];
   has_graduation_bar?: boolean;
-  split_vertical?: boolean;
+  total_stripes?: number;
 }
 
 interface ApiPromotion {
@@ -33,9 +39,10 @@ interface ApiGraduation {
   id: number;
   discipline: string;
   current_belt: string;
-  belt_key: string;
+  current_belt_key: string;
   belt_config: ApiBeltConfig;
   next_belt?: string;
+  next_belt_key?: string;
   next_belt_config?: ApiBeltConfig;
   stripes: number;
   max_stripes: number;
@@ -61,16 +68,22 @@ interface ApiGraduationResponse {
 }
 
 // Internal types (camelCase - used in app)
-export interface StripeLayer {
-  count: number;
+export interface ColorStop {
   color: string;
+  stop: [number, number]; // [start, end] as percentages 0-1
+}
+
+export interface StripeLayer {
+  maxCount: number;
+  color: string;
+  positions: number[]; // positions as percentages 0-1
 }
 
 export interface BeltConfig {
-  colors: string[];
+  colors: ColorStop[];
   stripeLayers?: StripeLayer[];
   hasGraduationBar?: boolean;
-  splitVertical?: boolean;
+  totalStripes?: number;
 }
 
 export interface Promotion {
@@ -87,6 +100,7 @@ export interface Graduation {
   beltKey: string;
   beltConfig: BeltConfig;
   nextBelt?: string;
+  nextBeltKey?: string;
   nextBeltConfig?: BeltConfig;
   stripes: number;
   maxStripes: number;
@@ -120,19 +134,24 @@ const transformPromotion = (api: ApiPromotion): Promotion => ({
 });
 
 const transformBeltConfig = (api: ApiBeltConfig): BeltConfig => ({
-  colors: api.colors,
-  stripeLayers: api.stripe_layers,
+  colors: api.colors, // ColorStop[] is the same structure
+  stripeLayers: api.stripe_layers?.map((layer) => ({
+    maxCount: layer.max_count,
+    color: layer.color,
+    positions: layer.positions,
+  })),
   hasGraduationBar: api.has_graduation_bar,
-  splitVertical: api.split_vertical,
+  totalStripes: api.total_stripes,
 });
 
 const transformGraduation = (api: ApiGraduation): Graduation => ({
   id: api.id,
   discipline: api.discipline,
   currentBelt: api.current_belt,
-  beltKey: api.belt_key,
+  beltKey: api.current_belt_key,
   beltConfig: transformBeltConfig(api.belt_config),
   nextBelt: api.next_belt,
+  nextBeltKey: api.next_belt_key,
   nextBeltConfig: api.next_belt_config ? transformBeltConfig(api.next_belt_config) : undefined,
   stripes: api.stripes,
   maxStripes: api.max_stripes,

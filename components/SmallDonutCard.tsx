@@ -86,12 +86,17 @@ export const SmallDonutCard: React.FC<SmallDonutCardProps> = ({
 
     animationProgress.setValue(0);
 
-    Animated.timing(animationProgress, {
+    const animation = Animated.timing(animationProgress, {
       toValue: 1,
       duration: animationDuration,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false, // we're animating SVG props, not transforms
-    }).start();
+    });
+    animation.start();
+
+    return () => {
+      animation.stop();
+    };
   }, [segments, animate, animationDuration, animationProgress]);
 
   return (
