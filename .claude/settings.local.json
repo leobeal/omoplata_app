@@ -37,7 +37,8 @@
       "Bash(xargs ls:*)",
       "mcp__mcp-react-native-expo__expo_dev_start",
       "Bash(git stash:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

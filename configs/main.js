@@ -13,9 +13,14 @@ module.exports = {
     backgroundColor: '#000000',
   },
   splash: {
-    image: './assets/_global/splash.png',
+    image: './assets/_global/splash-icon-light.png',
+    imageWidth: 200,
     resizeMode: 'contain',
-    backgroundColor: '#000000',
+    backgroundColor: '#ffffff',
+    dark: {
+      image: './assets/_global/splash-icon-dark.png',
+      backgroundColor: '#000000',
+    },
   },
 
   // Theme colors - Neutral/generic
