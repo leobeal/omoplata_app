@@ -191,11 +191,7 @@ export default function CancelMembershipScreen() {
 
           {/* Back Button */}
           <View className="mb-4">
-            <Button
-              title={t('common.back')}
-              variant="outline"
-              onPress={() => router.back()}
-            />
+            <Button title={t('common.back')} variant="outline" onPress={() => router.back()} />
           </View>
 
           {/* Support */}

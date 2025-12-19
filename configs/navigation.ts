@@ -51,6 +51,12 @@ export const defaultNavigation: NavigationConfig = {
       label: 'nav.billing',
       href: '/billing',
     },
+    {
+      name: 'messages',
+      icon: 'MessageCircle',
+      label: 'nav.messages',
+      href: '/messages',
+    },
   ],
   showCheckInButton: true,
 };

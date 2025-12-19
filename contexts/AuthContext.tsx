@@ -11,6 +11,7 @@ import { switchToChild as switchToChildApi } from '@/api/account-switch';
 import { authApi } from '@/api/auth';
 import { setAuthToken as setApiAuthToken, setOnUnauthorized } from '@/api/client';
 import { Child, getProfile } from '@/api/profile';
+import reverbClient from '@/api/pusher';
 import { useTenant } from '@/contexts/TenantContext';
 import {
   saveAuthToken,
@@ -112,6 +113,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
         setUser(storedUser);
         setApiAuthToken(storedToken);
 
+        // Connect Reverb for real-time messages
+        reverbClient.connect(storedUser.prefixedId);
+
         // Check if we're viewing as child (parent session exists)
         if (storedParentSession) {
           setIsViewingAsChild(true);
@@ -186,6 +190,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
       setUser(userToStore);
       setApiAuthToken(authToken);
 
+      // Connect Reverb for real-time messages
+      reverbClient.connect(userToStore.prefixedId);
+
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
@@ -202,6 +209,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
    */
   const handleUnauthorized = useCallback(async () => {
     console.log('[Auth] Handling 401 - clearing local auth data');
+
+    // Disconnect Reverb
+    reverbClient.disconnect();
+
     const tenantSlug = tenant?.slug || null;
 
     // Clear storage, state, and user-specific cache
@@ -235,6 +246,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
       console.error('Logout API error:', error);
       // Continue with logout even if API call fails
     } finally {
+      // Disconnect Reverb
+      reverbClient.disconnect();
+
       const tenantSlug = tenant?.slug || null;
       // Clear storage, state, and user-specific cache for current tenant
       await Promise.all([

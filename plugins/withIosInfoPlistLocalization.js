@@ -51,7 +51,7 @@ function withIosInfoPlistLocalization(config) {
       const groupPath = lprojFolder;
 
       // Find or create the localization group
-      let group = project.pbxGroupByName(groupName);
+      const group = project.pbxGroupByName(groupName);
       if (!group) {
         // Add the .lproj folder to the project
         project.addLocalizationVariantGroup('InfoPlist.strings');

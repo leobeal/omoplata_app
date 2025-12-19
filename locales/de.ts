@@ -8,6 +8,7 @@ export default {
     membership: 'Mitgliedschaft',
     billing: 'Abrechnung',
     settings: 'Einstellungen',
+    messages: 'Nachrichten',
   },
 
   // Allgemein
@@ -823,5 +824,24 @@ export default {
     comingSoon: 'Demnächst verfügbar',
     comingSoonMessage:
       'Die Wallet-Integration kommt bald! Vorerst können Sie die Karte in Ihren Fotos speichern.',
+  },
+
+  // Nachrichten
+  messages: {
+    title: 'Nachrichten',
+    you: 'Du',
+    errorTitle: 'Nachrichten konnten nicht geladen werden',
+    noMessages: 'Noch keine Nachrichten',
+    noMessagesDescription: 'Nachrichten von deinen Trainern und Gruppen werden hier angezeigt.',
+    unreadCount: '{{count}} ungelesen',
+    threadNotFound: 'Unterhaltung nicht gefunden',
+    loading: 'Wird geladen...',
+    placeholder: 'Nachricht eingeben...',
+    members: '{{count}} Mitglieder',
+    instructor: 'Trainer',
+    admin: 'Admin',
+    sent: 'Gesendet',
+    delivered: 'Zugestellt',
+    read: 'Gelesen',
   },
 };

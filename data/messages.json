@@ -1,0 +1,390 @@
+{
+  "threads": [
+    {
+      "id": "thread_1",
+      "type": "direct",
+      "name": "Coach Marcus",
+      "avatar": "https://randomuser.me/api/portraits/men/32.jpg",
+      "participants": [
+        {
+          "id": "user_coach_marcus",
+          "name": "Coach Marcus",
+          "avatar": "https://randomuser.me/api/portraits/men/32.jpg",
+          "role": "instructor"
+        }
+      ],
+      "lastMessage": {
+        "id": "msg_1_5",
+        "text": "Great job in class today! Keep up the good work.",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-19T14:30:00Z",
+        "status": "read"
+      },
+      "unreadCount": 0,
+      "updatedAt": "2025-12-19T14:30:00Z"
+    },
+    {
+      "id": "thread_2",
+      "type": "group",
+      "name": "BJJ Fundamentals Class",
+      "avatar": null,
+      "participants": [
+        {
+          "id": "user_coach_sarah",
+          "name": "Coach Sarah",
+          "avatar": "https://randomuser.me/api/portraits/women/44.jpg",
+          "role": "instructor"
+        },
+        {
+          "id": "user_john",
+          "name": "John Smith",
+          "avatar": "https://randomuser.me/api/portraits/men/22.jpg",
+          "role": "member"
+        },
+        {
+          "id": "user_emily",
+          "name": "Emily Johnson",
+          "avatar": "https://randomuser.me/api/portraits/women/28.jpg",
+          "role": "member"
+        },
+        {
+          "id": "user_mike",
+          "name": "Mike Williams",
+          "avatar": "https://randomuser.me/api/portraits/men/45.jpg",
+          "role": "member"
+        }
+      ],
+      "memberCount": 12,
+      "lastMessage": {
+        "id": "msg_2_8",
+        "text": "Reminder: Tomorrow's class will focus on guard passing techniques.",
+        "senderId": "user_coach_sarah",
+        "timestamp": "2025-12-19T10:15:00Z",
+        "status": "delivered"
+      },
+      "unreadCount": 2,
+      "updatedAt": "2025-12-19T10:15:00Z"
+    },
+    {
+      "id": "thread_3",
+      "type": "direct",
+      "name": "Admin Support",
+      "avatar": "https://randomuser.me/api/portraits/women/65.jpg",
+      "participants": [
+        {
+          "id": "user_admin",
+          "name": "Admin Support",
+          "avatar": "https://randomuser.me/api/portraits/women/65.jpg",
+          "role": "admin"
+        }
+      ],
+      "lastMessage": {
+        "id": "msg_3_3",
+        "text": "Your membership renewal has been processed successfully.",
+        "senderId": "user_admin",
+        "timestamp": "2025-12-18T09:00:00Z",
+        "status": "read"
+      },
+      "unreadCount": 0,
+      "updatedAt": "2025-12-18T09:00:00Z"
+    },
+    {
+      "id": "thread_4",
+      "type": "group",
+      "name": "Competition Team",
+      "avatar": null,
+      "participants": [
+        {
+          "id": "user_coach_marcus",
+          "name": "Coach Marcus",
+          "avatar": "https://randomuser.me/api/portraits/men/32.jpg",
+          "role": "instructor"
+        },
+        {
+          "id": "user_alex",
+          "name": "Alex Turner",
+          "avatar": "https://randomuser.me/api/portraits/men/52.jpg",
+          "role": "member"
+        },
+        {
+          "id": "user_lisa",
+          "name": "Lisa Chen",
+          "avatar": "https://randomuser.me/api/portraits/women/33.jpg",
+          "role": "member"
+        }
+      ],
+      "memberCount": 8,
+      "lastMessage": {
+        "id": "msg_4_12",
+        "text": "Registration for the upcoming tournament closes next Friday!",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-17T16:45:00Z",
+        "status": "read"
+      },
+      "unreadCount": 0,
+      "updatedAt": "2025-12-17T16:45:00Z"
+    }
+  ],
+  "messages": {
+    "thread_1": [
+      {
+        "id": "msg_1_0a",
+        "text": "Hey! Welcome to the gym. I'm Coach Marcus.",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-10T09:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0b",
+        "text": "Hi Coach! Thanks for the warm welcome.",
+        "senderId": "current_user",
+        "timestamp": "2025-12-10T09:05:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0c",
+        "text": "How was your first class?",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-10T18:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0d",
+        "text": "It was challenging but I loved it!",
+        "senderId": "current_user",
+        "timestamp": "2025-12-10T18:10:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0e",
+        "text": "That's the spirit! The first few weeks are always tough.",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-10T18:15:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0f",
+        "text": "Don't forget to stretch before and after class.",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-11T08:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0g",
+        "text": "Will do! Any tips for improving my guard?",
+        "senderId": "current_user",
+        "timestamp": "2025-12-11T12:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0h",
+        "text": "Focus on hip movement and keeping your elbows tight.",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-11T12:30:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0i",
+        "text": "We'll drill it more in Wednesday's class.",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-11T12:31:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0j",
+        "text": "Perfect, thanks Coach!",
+        "senderId": "current_user",
+        "timestamp": "2025-12-11T12:35:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0k",
+        "text": "Great class today! Your guard retention is improving.",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-13T19:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_0l",
+        "text": "Thanks! I've been watching videos too.",
+        "senderId": "current_user",
+        "timestamp": "2025-12-13T19:15:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_1",
+        "text": "Hi! I noticed you've been progressing really well in class.",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-18T10:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_2",
+        "text": "Thank you Coach! I've been practicing the techniques at home too.",
+        "senderId": "current_user",
+        "timestamp": "2025-12-18T10:05:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_3",
+        "text": "That's great to hear! Have you considered joining the competition team?",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-18T10:10:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_4",
+        "text": "I've been thinking about it. Maybe after a few more months of training.",
+        "senderId": "current_user",
+        "timestamp": "2025-12-18T10:15:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_1_5",
+        "text": "Great job in class today! Keep up the good work.",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-19T14:30:00Z",
+        "status": "read"
+      }
+    ],
+    "thread_2": [
+      {
+        "id": "msg_2_1",
+        "text": "Welcome everyone to the BJJ Fundamentals group!",
+        "senderId": "user_coach_sarah",
+        "timestamp": "2025-12-15T08:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_1b",
+        "text": "Please introduce yourselves when you get a chance.",
+        "senderId": "user_coach_sarah",
+        "timestamp": "2025-12-15T08:01:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_1c",
+        "text": "Looking forward to training with all of you!",
+        "senderId": "user_coach_sarah",
+        "timestamp": "2025-12-15T08:02:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_2",
+        "text": "Thanks for adding us Coach!",
+        "senderId": "user_john",
+        "timestamp": "2025-12-15T08:30:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_2b",
+        "text": "I'm John, been training for about 6 months",
+        "senderId": "user_john",
+        "timestamp": "2025-12-15T08:31:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_3",
+        "text": "Looking forward to learning from everyone.",
+        "senderId": "user_emily",
+        "timestamp": "2025-12-15T09:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_4",
+        "text": "Same here! When's our next class?",
+        "senderId": "current_user",
+        "timestamp": "2025-12-15T09:15:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_5",
+        "text": "Classes are Monday, Wednesday, and Friday at 6 PM.",
+        "senderId": "user_coach_sarah",
+        "timestamp": "2025-12-15T09:20:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_6",
+        "text": "Don't forget to bring your gi for tomorrow's class!",
+        "senderId": "user_coach_sarah",
+        "timestamp": "2025-12-18T18:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_6b",
+        "text": "Also please arrive 10 minutes early",
+        "senderId": "user_coach_sarah",
+        "timestamp": "2025-12-18T18:01:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_7",
+        "text": "Got it, thanks for the reminder!",
+        "senderId": "user_mike",
+        "timestamp": "2025-12-18T18:30:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_7b",
+        "text": "See everyone tomorrow",
+        "senderId": "user_mike",
+        "timestamp": "2025-12-18T18:31:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_2_8",
+        "text": "Reminder: Tomorrow's class will focus on guard passing techniques.",
+        "senderId": "user_coach_sarah",
+        "timestamp": "2025-12-19T10:15:00Z",
+        "status": "delivered"
+      }
+    ],
+    "thread_3": [
+      {
+        "id": "msg_3_1",
+        "text": "Hello! I have a question about my membership.",
+        "senderId": "current_user",
+        "timestamp": "2025-12-17T14:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_3_2",
+        "text": "Of course! How can I help you today?",
+        "senderId": "user_admin",
+        "timestamp": "2025-12-17T14:15:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_3_3",
+        "text": "Your membership renewal has been processed successfully.",
+        "senderId": "user_admin",
+        "timestamp": "2025-12-18T09:00:00Z",
+        "status": "read"
+      }
+    ],
+    "thread_4": [
+      {
+        "id": "msg_4_10",
+        "text": "Great training session everyone! The team is looking strong.",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-16T20:00:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_4_11",
+        "text": "Thanks Coach! Can't wait for the next session.",
+        "senderId": "user_alex",
+        "timestamp": "2025-12-16T20:30:00Z",
+        "status": "read"
+      },
+      {
+        "id": "msg_4_12",
+        "text": "Registration for the upcoming tournament closes next Friday!",
+        "senderId": "user_coach_marcus",
+        "timestamp": "2025-12-17T16:45:00Z",
+        "status": "read"
+      }
+    ]
+  }
+}

@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "last_updated": "2025-11-21T00:00:00.000Z",
   "navigation": {
-    "tabs": ["index", "leaderboard", "calendar", "membership", "billing", "settings"]
+    "tabs": ["index", "leaderboard", "calendar", "messages", "billing"]
   },
   "membership": {
     "allow_pause": true,

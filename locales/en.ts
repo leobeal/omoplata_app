@@ -8,6 +8,7 @@ export default {
     membership: 'Membership',
     billing: 'Billing',
     settings: 'Settings',
+    messages: 'Messages',
   },
 
   // Common
@@ -821,5 +822,24 @@ export default {
     comingSoon: 'Coming Soon',
     comingSoonMessage:
       'Wallet integration is coming soon! For now, you can save the card to your photos.',
+  },
+
+  // Messages
+  messages: {
+    title: 'Messages',
+    you: 'You',
+    errorTitle: 'Unable to load messages',
+    noMessages: 'No messages yet',
+    noMessagesDescription: 'Messages from your coaches and groups will appear here.',
+    unreadCount: '{{count}} unread',
+    threadNotFound: 'Conversation not found',
+    loading: 'Loading...',
+    placeholder: 'Type a message...',
+    members: '{{count}} members',
+    instructor: 'Instructor',
+    admin: 'Admin',
+    sent: 'Sent',
+    delivered: 'Delivered',
+    read: 'Read',
   },
 };

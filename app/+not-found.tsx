@@ -51,7 +51,13 @@ export default function NotFound() {
 
   // Show brief loading while we open the browser
   return (
-    <View style={{ flex: 1, backgroundColor: '#141414', justifyContent: 'center', alignItems: 'center' }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#141414',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
       <ActivityIndicator color="#ffffff" />
     </View>
   );

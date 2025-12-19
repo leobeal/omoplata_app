@@ -8,6 +8,7 @@ export default {
     membership: 'Assinatura',
     billing: 'Faturamento',
     settings: 'Configurações',
+    messages: 'Mensagens',
   },
 
   // Comum
@@ -820,5 +821,24 @@ export default {
     comingSoon: 'Em breve',
     comingSoonMessage:
       'A integração com Wallet está chegando! Por enquanto, você pode salvar o cartão em suas fotos.',
+  },
+
+  // Mensagens
+  messages: {
+    title: 'Mensagens',
+    you: 'Você',
+    errorTitle: 'Não foi possível carregar as mensagens',
+    noMessages: 'Nenhuma mensagem ainda',
+    noMessagesDescription: 'Mensagens dos seus instrutores e grupos aparecerão aqui.',
+    unreadCount: '{{count}} não lidas',
+    threadNotFound: 'Conversa não encontrada',
+    loading: 'Carregando...',
+    placeholder: 'Digite uma mensagem...',
+    members: '{{count}} membros',
+    instructor: 'Instrutor',
+    admin: 'Admin',
+    sent: 'Enviado',
+    delivered: 'Entregue',
+    read: 'Lido',
   },
 };
