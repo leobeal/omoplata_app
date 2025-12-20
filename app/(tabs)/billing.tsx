@@ -31,6 +31,10 @@ import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 
+interface BillingScreenProps {
+  showBackButton?: boolean;
+}
+
 // Empty state component for when billing is managed by a responsible
 function BillingEmptyState({ responsibleName }: { responsibleName?: string }) {
   const t = useT();
@@ -55,7 +59,7 @@ function BillingEmptyState({ responsibleName }: { responsibleName?: string }) {
   );
 }
 
-export default function BillingScreen() {
+export default function BillingScreen({ showBackButton = false }: BillingScreenProps) {
   const t = useT();
   const colors = useThemeColors();
   const { user, isViewingAsChild, parentUser } = useAuth();
@@ -174,6 +178,7 @@ export default function BillingScreen() {
     return (
       <View className="flex-1 bg-background">
         <Header
+          showBackButton={showBackButton}
           rightComponents={[
             <Avatar
               key="avatar"
@@ -195,6 +200,7 @@ export default function BillingScreen() {
     return (
       <View className="flex-1 bg-background">
         <Header
+          showBackButton={showBackButton}
           rightComponents={[
             <Avatar
               key="avatar"
@@ -223,6 +229,7 @@ export default function BillingScreen() {
     return (
       <View className="flex-1 bg-background">
         <Header
+          showBackButton={showBackButton}
           rightComponents={[
             <Avatar
               key="avatar"
@@ -244,6 +251,7 @@ export default function BillingScreen() {
   return (
     <View className="flex-1 bg-background">
       <Header
+        showBackButton={showBackButton}
         title={showHeaderTitle ? t('billing.title') : undefined}
         rightComponents={[
           <Avatar

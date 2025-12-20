@@ -150,6 +150,7 @@ export default {
     updatePersonalInfo: 'Update your personal information',
     membership: 'Membership',
     manageSubscription: 'Manage your subscription',
+    viewInvoicesAndPayments: 'View invoices and payment history',
     notifications: 'Notifications',
     classRemindersAndUpdates: 'Class reminders & updates',
     helpAndSupport: 'Help & Support',

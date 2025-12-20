@@ -149,6 +149,7 @@ export default {
     updatePersonalInfo: 'Atualize suas informações pessoais',
     membership: 'Assinatura',
     manageSubscription: 'Gerencie sua assinatura',
+    viewInvoicesAndPayments: 'Ver faturas e histórico de pagamentos',
     notifications: 'Notificações',
     classRemindersAndUpdates: 'Lembretes de aulas e atualizações',
     helpAndSupport: 'Ajuda e Suporte',

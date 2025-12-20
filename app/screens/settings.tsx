@@ -19,6 +19,7 @@ import Section from '@/components/Section';
 import ThemeToggle from '@/components/ThemeToggle';
 import ThemedScroller from '@/components/ThemedScroller';
 import ThemedText from '@/components/ThemedText';
+import { useAppConfig } from '@/contexts/AppConfigContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useTranslation } from '@/contexts/LocalizationContext';
@@ -42,6 +43,7 @@ export default function SettingsScreen() {
     isMember,
   } = useAuth();
   const { membership, analytics, resetAndRefreshData } = useAppData();
+  const { config } = useAppConfig();
   const { permissionStatus, requestPermission, registerToken } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
   const [enablingNotifications, setEnablingNotifications] = useState(false);
@@ -50,6 +52,9 @@ export default function SettingsScreen() {
 
   // Check if notifications need to be enabled
   const showEnableNotifications = permissionStatus !== 'granted';
+
+  // Check if billing is available as a tab (if not, show it in settings menu)
+  const showBillingInSettings = !config?.navigation?.tabs?.includes('billing');
 
   // Get current language display info
   const currentLanguage = LANGUAGE_OPTIONS.find((l) => l.code === locale);
@@ -288,6 +293,16 @@ export default function SettingsScreen() {
             icon="CreditCard"
             href="/screens/membership"
           />
+          {showBillingInSettings && (
+            <ListLink
+              className="px-5"
+              hasBorder
+              title={t('billing.title')}
+              description={t('settings.viewInvoicesAndPayments')}
+              icon="Receipt"
+              href="/screens/billing"
+            />
+          )}
           {isMember && (
             <ListLink
               className="px-5"

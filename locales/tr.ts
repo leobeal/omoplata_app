@@ -150,6 +150,7 @@ export default {
     updatePersonalInfo: 'Kişisel bilgilerinizi güncelleyin',
     membership: 'Üyelik',
     manageSubscription: 'Aboneliğinizi yönetin',
+    viewInvoicesAndPayments: 'Faturaları ve ödeme geçmişini görüntüle',
     notifications: 'Bildirimler',
     classRemindersAndUpdates: 'Ders hatırlatıcıları ve güncellemeler',
     helpAndSupport: 'Yardım ve Destek',

@@ -150,6 +150,7 @@ export default {
     updatePersonalInfo: 'Persönliche Informationen aktualisieren',
     membership: 'Mitgliedschaft',
     manageSubscription: 'Abonnement verwalten',
+    viewInvoicesAndPayments: 'Rechnungen und Zahlungsverlauf anzeigen',
     notifications: 'Benachrichtigungen',
     classRemindersAndUpdates: 'Kurserinnerungen & Updates',
     helpAndSupport: 'Hilfe & Support',
