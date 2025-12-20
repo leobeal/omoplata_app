@@ -31,11 +31,18 @@ export function useMessageWebSocket({
   }, [onNewMessage, onMessageRead, onTyping]);
 
   useEffect(() => {
-    if (!threadId) return;
+    if (!threadId) {
+      console.log('[useMessageWebSocket] No threadId, skipping subscription');
+      return;
+    }
+
+    console.log('[useMessageWebSocket] Subscribing to thread:', threadId);
+    console.log('[useMessageWebSocket] Reverb connected:', reverbClient.isConnected());
 
     // Subscribe to thread channel
     reverbClient.subscribeToThread(threadId, {
       onNewMessage: (data) => {
+        console.log('[useMessageWebSocket] onNewMessage callback triggered:', data);
         onNewMessageRef.current?.(data.message);
       },
       onMessageRead: (data) => {
@@ -48,6 +55,7 @@ export function useMessageWebSocket({
 
     // Cleanup - unsubscribe when leaving thread
     return () => {
+      console.log('[useMessageWebSocket] Unsubscribing from thread:', threadId);
       reverbClient.unsubscribeFromThread(threadId);
     };
   }, [threadId]);

@@ -10,7 +10,15 @@ import {
   View,
 } from 'react-native';
 
-import { formatThreadTimestamp, getThreads, PaginatedThreads, Thread } from '@/api/messages';
+import {
+  formatThreadTimestamp,
+  getMessages,
+  getThread,
+  getThreads,
+  Message,
+  PaginatedMessages,
+  Thread,
+} from '@/api/messages';
 import Avatar from '@/components/Avatar';
 import ErrorState from '@/components/ErrorState';
 import Header from '@/components/Header';
@@ -25,10 +33,12 @@ function ThreadItem({
   thread,
   onPress,
   currentUserId,
+  isLoading,
 }: {
   thread: Thread;
   onPress: () => void;
   currentUserId: string;
+  isLoading: boolean;
 }) {
   const colors = useThemeColors();
   const t = useT();
@@ -44,10 +54,18 @@ function ThreadItem({
     : '';
 
   return (
-    <Pressable className="flex-row items-center" onPress={onPress}>
+    <Pressable
+      className="flex-row items-center"
+      onPress={onPress}
+      disabled={isLoading}
+      style={{ opacity: isLoading ? 0.6 : 1 }}>
       {/* Avatar */}
       <View className="mr-3 py-4">
-        {isGroup ? (
+        {isLoading ? (
+          <View className="h-14 w-14 items-center justify-center">
+            <ActivityIndicator size="small" color={colors.highlight} />
+          </View>
+        ) : isGroup ? (
           <View
             className="h-14 w-14 items-center justify-center rounded-full"
             style={{ backgroundColor: colors.highlight + '20' }}>
@@ -97,6 +115,8 @@ function ThreadItem({
   );
 }
 
+const PAGE_SIZE = 50;
+
 export default function MessagesScreen() {
   const t = useT();
   const colors = useThemeColors();
@@ -106,6 +126,7 @@ export default function MessagesScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingThreadId, setLoadingThreadId] = useState<string | null>(null);
 
   // Scroll state for collapsible title
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
@@ -141,8 +162,35 @@ export default function MessagesScreen() {
     loadThreads(true);
   };
 
-  const handleThreadPress = (thread: Thread) => {
-    router.push(`/screens/message-thread?id=${thread.id}`);
+  const handleThreadPress = async (thread: Thread) => {
+    if (loadingThreadId) return; // Prevent double-tap
+
+    setLoadingThreadId(thread.id);
+    try {
+      // Pre-load thread and messages
+      const [threadData, messagesResult] = await Promise.all([
+        getThread(thread.id),
+        getMessages(thread.id, PAGE_SIZE),
+      ]);
+
+      // Navigate with pre-loaded data
+      router.push({
+        pathname: '/screens/message-thread',
+        params: {
+          id: thread.id,
+          preloadedThread: JSON.stringify(threadData),
+          preloadedMessages: JSON.stringify(messagesResult.messages),
+          preloadedHasMore: messagesResult.hasMore ? 'true' : 'false',
+          preloadedCursor: messagesResult.nextCursor || '',
+        },
+      });
+    } catch (err) {
+      console.error('Error loading thread:', err);
+      // Fall back to navigating without preloaded data
+      router.push(`/screens/message-thread?id=${thread.id}`);
+    } finally {
+      setLoadingThreadId(null);
+    }
   };
 
   if (loading) {
@@ -247,6 +295,7 @@ export default function MessagesScreen() {
                 thread={thread}
                 onPress={() => handleThreadPress(thread)}
                 currentUserId={user?.prefixedId || ''}
+                isLoading={loadingThreadId === thread.id}
               />
             ))}
           </View>

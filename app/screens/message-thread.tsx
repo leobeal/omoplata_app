@@ -118,25 +118,42 @@ function DateHeader({ date }: { date: string }) {
   );
 }
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 50;
+
+interface MessageThreadParams {
+  id: string;
+  preloadedThread?: string;
+  preloadedMessages?: string;
+  preloadedHasMore?: string;
+  preloadedCursor?: string;
+}
 
 export default function MessageThreadScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<MessageThreadParams>();
+  const { id, preloadedThread, preloadedMessages, preloadedHasMore, preloadedCursor } = params;
   const t = useT();
   const colors = useThemeColors();
   const { user } = useAuth();
   const flatListRef = useRef<FlatList>(null);
   const currentUserId = user?.prefixedId || '';
 
-  const [thread, setThread] = useState<Thread | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Parse preloaded data if available
+  const initialThread = preloadedThread ? (JSON.parse(preloadedThread) as Thread) : null;
+  const initialMessages = preloadedMessages ? (JSON.parse(preloadedMessages) as Message[]) : [];
+  const initialHasMore = preloadedHasMore === 'true';
+  const initialCursor = preloadedCursor || undefined;
+
+  const [thread, setThread] = useState<Thread | null>(initialThread);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [loading, setLoading] = useState(!initialThread);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
-  const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [cursor, setCursor] = useState<string | undefined>(initialCursor);
   const [inputText, setInputText] = useState('');
   const [sending, setSending] = useState(false);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const [initialScrollDone, setInitialScrollDone] = useState(false);
+  const prevMessageCount = useRef(0);
 
   // Handle new messages from WebSocket
   const handleNewMessage = useCallback(
@@ -148,10 +165,6 @@ export default function MessageThreadScreen() {
         }
         return [...prev, message];
       });
-      // Scroll to bottom
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
       // Mark as read
       if (id) {
         markThreadAsRead(id);
@@ -167,11 +180,31 @@ export default function MessageThreadScreen() {
   });
 
   useEffect(() => {
+    // Skip loading if we have preloaded data
+    if (initialThread) {
+      markThreadAsRead(id || '');
+      return;
+    }
     loadData();
   }, [id]);
 
+  // Scroll to bottom when messages are first loaded
+  useEffect(() => {
+    if (!initialScrollDone && messages.length > 0 && !loading) {
+      // Double requestAnimationFrame to ensure layout is fully complete
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          flatListRef.current?.scrollToEnd({ animated: false });
+          setInitialScrollDone(true);
+          prevMessageCount.current = messages.length;
+        });
+      });
+    }
+  }, [messages.length, loading, initialScrollDone]);
+
   const loadData = async () => {
     if (!id) return;
+
     try {
       const [threadData, messagesResult] = await Promise.all([
         getThread(id),
@@ -181,6 +214,7 @@ export default function MessageThreadScreen() {
       setMessages(messagesResult.messages);
       setHasMore(messagesResult.hasMore);
       setCursor(messagesResult.nextCursor);
+
       if (threadData) {
         markThreadAsRead(id);
       }
@@ -217,11 +251,13 @@ export default function MessageThreadScreen() {
 
     try {
       const newMessage = await sendMessage(id, { text });
-      setMessages((prev) => [...prev, newMessage]);
-      // Scroll to bottom after sending
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
+      // Add message only if it doesn't already exist (prevent duplicates from WebSocket race)
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === newMessage.id)) {
+          return prev;
+        }
+        return [...prev, newMessage];
+      });
     } catch (err) {
       console.error('Error sending message:', err);
       // Restore the input text on error
@@ -231,11 +267,18 @@ export default function MessageThreadScreen() {
     }
   };
 
-  // Group messages by date
+  // Group messages by date (with deduplication)
   const groupMessagesByDate = useCallback((msgs: Message[]): MessageGroup[] => {
     const groups: { [key: string]: Message[] } = {};
+    const seenIds = new Set<string>();
 
     msgs.forEach((msg) => {
+      // Skip duplicates
+      if (seenIds.has(msg.id)) {
+        return;
+      }
+      seenIds.add(msg.id);
+
       const dateKey = formatMessageDateHeader(msg.timestamp);
       if (!groups[dateKey]) {
         groups[dateKey] = [];
@@ -318,20 +361,33 @@ export default function MessageThreadScreen() {
         ref={flatListRef}
         data={messageGroups}
         keyExtractor={(item) => item.date}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16, flexGrow: 1 }}
         onContentSizeChange={() => {
-          if (isInitialLoad && messages.length > 0) {
-            flatListRef.current?.scrollToEnd({ animated: false });
-            setIsInitialLoad(false);
+          // Auto-scroll for new messages if user is near bottom (initial scroll handled by useEffect)
+          if (initialScrollDone) {
+            const currentCount = messages.length;
+            if (currentCount > prevMessageCount.current && shouldAutoScroll) {
+              flatListRef.current?.scrollToEnd({ animated: true });
+            }
+            prevMessageCount.current = currentCount;
           }
         }}
         onScroll={({ nativeEvent }) => {
-          // Load more when scrolled near the top
-          if (nativeEvent.contentOffset.y < 100 && hasMore && !loadingMore) {
+          const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+          const isNearBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 100;
+          setShouldAutoScroll(isNearBottom);
+
+          // Load more when ~25% from top OR within 800px of top (whichever comes first)
+          // This gives enough buffer for smooth scrolling while new messages load
+          const scrollableHeight = contentSize.height - layoutMeasurement.height;
+          const scrollPercentage = scrollableHeight > 0 ? contentOffset.y / scrollableHeight : 1;
+          const isNearTop = scrollPercentage < 0.25 || contentOffset.y < 800;
+
+          if (isNearTop && hasMore && !loadingMore) {
             loadMoreMessages();
           }
         }}
-        scrollEventThrottle={400}
+        scrollEventThrottle={16}
         ListHeaderComponent={
           loadingMore ? (
             <View className="items-center py-4">

@@ -5,7 +5,9 @@ import React, {
   useEffect,
   ReactNode,
   useCallback,
+  useRef,
 } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 
 import { switchToChild as switchToChildApi } from '@/api/account-switch';
 import { authApi } from '@/api/auth';
@@ -237,6 +239,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
     setOnUnauthorized(handleUnauthorized);
     return () => setOnUnauthorized(null);
   }, [handleUnauthorized]);
+
+  // Handle app state changes - disconnect Reverb when backgrounded, reconnect when foregrounded
+  const appStateRef = useRef<AppStateStatus>(AppState.currentState);
+
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      const wasBackground =
+        appStateRef.current === 'background' || appStateRef.current === 'inactive';
+      const isNowActive = nextAppState === 'active';
+      const isGoingBackground = nextAppState === 'background' || nextAppState === 'inactive';
+
+      // App coming to foreground - reconnect if authenticated
+      if (wasBackground && isNowActive && user?.prefixedId) {
+        console.log('[Auth] App foregrounded, reconnecting Reverb');
+        reverbClient.connect(user.prefixedId);
+      }
+
+      // App going to background - disconnect
+      if (isGoingBackground && appStateRef.current === 'active') {
+        console.log('[Auth] App backgrounded, disconnecting Reverb');
+        reverbClient.disconnect();
+      }
+
+      appStateRef.current = nextAppState;
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [user?.prefixedId]);
 
   const logout = async () => {
     try {

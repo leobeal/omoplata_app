@@ -24,17 +24,38 @@ const getApiUrl = (env: typeof ENV, tenant: string): string => {
 };
 
 // Reverb WebSocket hosts per environment
-const getReverbHost = (env: typeof ENV): string => {
+const getReverbHostByEnv = (env: typeof ENV): string => {
   switch (env) {
     case 'development':
-      return 'omoplata.localhost';
+      return 'reverb.omoplata.localhost';
     case 'staging':
       return 'reverb.omoplata.eu';
     case 'production':
       return 'reverb.omoplata.de';
     default:
-      return 'omoplata.localhost';
+      return 'reverb.omoplata.localhost';
   }
+};
+
+/**
+ * Get the Reverb WebSocket host for current environment
+ */
+export const getReverbHost = (): string => {
+  return getReverbHostByEnv(ENV);
+};
+
+/**
+ * Get the base URL without /api suffix (for broadcasting auth, etc.)
+ */
+export const getBaseUrlWithoutApi = (): string => {
+  return getBaseUrl().replace(/\/api$/, '');
+};
+
+/**
+ * Check if current environment is development
+ */
+export const isDevelopment = (): boolean => {
+  return ENV === 'development';
 };
 
 // Runtime tenant - can be updated via setTenant()

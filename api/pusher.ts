@@ -2,7 +2,7 @@
 import Pusher, { Channel } from 'pusher-js';
 
 import { getAuthToken } from './client';
-import { API_CONFIG } from './config';
+import { API_CONFIG, getReverbHost, isDevelopment } from './config';
 import { Message } from './messages';
 
 // Enable Pusher logging in development
@@ -34,6 +34,14 @@ class ReverbClient {
   private userChannel: Channel | null = null;
   private threadChannels: Map<string, Channel> = new Map();
   private userId: string | null = null;
+  private pendingSubscriptions: Map<
+    string,
+    {
+      onNewMessage?: EventCallback<NewMessageEvent>;
+      onMessageRead?: EventCallback<MessageReadEvent>;
+      onTyping?: EventCallback<TypingEvent>;
+    }
+  > = new Map();
 
   /**
    * Initialize and connect to Reverb
@@ -52,10 +60,13 @@ class ReverbClient {
       return;
     }
 
-    console.log('[Reverb] 🔄 Connecting to Reverb...');
+    const reverbHost = getReverbHost();
+    const isDevEnv = isDevelopment();
 
-    this.pusher = new Pusher('generate-secure-key', {
-      wsHost: 'reverb.omoplata.eu',
+    console.log('[Reverb] 🔄 Connecting to Reverb...', { host: reverbHost, isDev: isDevEnv });
+
+    this.pusher = new Pusher('omoplatakey', {
+      wsHost: reverbHost,
       wsPort: 443,
       wssPort: 443,
       forceTLS: true,
@@ -66,7 +77,8 @@ class ReverbClient {
         authorize: async (socketId, callback) => {
           try {
             console.log('[Reverb] 🔐 Authorizing channel:', channel.name);
-            const response = await fetch(`${API_CONFIG.baseUrl}/broadcasting/auth`, {
+            const authUrl = `${API_CONFIG.baseUrl}/broadcasting/auth`;
+            const response = await fetch(authUrl, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -79,7 +91,8 @@ class ReverbClient {
             });
 
             if (!response.ok) {
-              console.error('[Reverb] ❌ Auth failed:', response.status);
+              const errorBody = await response.text();
+              console.error('[Reverb] ❌ Auth failed:', response.status, errorBody);
               callback(new Error(`Auth failed: ${response.status}`), null);
               return;
             }
@@ -99,6 +112,7 @@ class ReverbClient {
     this.pusher.connection.bind('connected', () => {
       console.log('[Reverb] ✅ Connected! Socket ID:', this.pusher?.connection.socket_id);
       this.subscribeToUserChannel();
+      this.processPendingSubscriptions();
     });
 
     this.pusher.connection.bind('error', (error: Error) => {
@@ -135,6 +149,21 @@ class ReverbClient {
   }
 
   /**
+   * Process any pending subscriptions after connection is established
+   */
+  private processPendingSubscriptions(): void {
+    if (this.pendingSubscriptions.size === 0) return;
+
+    console.log('[Reverb] 📋 Processing pending subscriptions:', this.pendingSubscriptions.size);
+
+    this.pendingSubscriptions.forEach((callbacks, threadId) => {
+      this.doSubscribeToThread(threadId, callbacks);
+    });
+
+    this.pendingSubscriptions.clear();
+  }
+
+  /**
    * Subscribe to a thread channel for real-time updates
    */
   subscribeToThread(
@@ -145,13 +174,34 @@ class ReverbClient {
       onTyping?: EventCallback<TypingEvent>;
     }
   ): void {
-    if (!this.pusher) {
-      console.log('[Reverb] ⚠️ Not connected, cannot subscribe to thread');
+    if (this.threadChannels.has(threadId)) {
+      console.log('[Reverb] Already subscribed to thread:', threadId);
       return;
     }
 
-    if (this.threadChannels.has(threadId)) {
-      console.log('[Reverb] Already subscribed to thread:', threadId);
+    // If not connected yet, queue the subscription for later
+    if (!this.isConnected()) {
+      console.log('[Reverb] ⏳ Connection not ready, queuing subscription for thread:', threadId);
+      this.pendingSubscriptions.set(threadId, callbacks);
+      return;
+    }
+
+    this.doSubscribeToThread(threadId, callbacks);
+  }
+
+  /**
+   * Internal method to actually subscribe to a thread channel
+   */
+  private doSubscribeToThread(
+    threadId: string,
+    callbacks: {
+      onNewMessage?: EventCallback<NewMessageEvent>;
+      onMessageRead?: EventCallback<MessageReadEvent>;
+      onTyping?: EventCallback<TypingEvent>;
+    }
+  ): void {
+    if (!this.pusher) {
+      console.log('[Reverb] ⚠️ No pusher instance, cannot subscribe to thread');
       return;
     }
 
@@ -169,23 +219,29 @@ class ReverbClient {
       console.error('[Reverb] ❌ Thread subscription error:', error);
     });
 
+    // Debug: Log ALL events on this channel
+    channel.bind_global((eventName: string, data: unknown) => {
+      console.log('[Reverb] 🔔 Event received:', eventName, JSON.stringify(data));
+    });
+
     // Bind to events
+    // Note: Event names must match Laravel's broadcastAs() - uses snake_case
     if (callbacks.onNewMessage) {
-      channel.bind('NewMessage', (data: NewMessageEvent) => {
-        console.log('[Reverb] 📩 New message in thread:', threadId);
+      channel.bind('new_message', (data: NewMessageEvent) => {
+        console.log('[Reverb] 📩 New message in thread:', threadId, JSON.stringify(data));
         callbacks.onNewMessage!(data);
       });
     }
 
     if (callbacks.onMessageRead) {
-      channel.bind('MessageRead', (data: MessageReadEvent) => {
+      channel.bind('message_read', (data: MessageReadEvent) => {
         console.log('[Reverb] 👁️ Message read in thread:', threadId);
         callbacks.onMessageRead!(data);
       });
     }
 
     if (callbacks.onTyping) {
-      channel.bind('UserTyping', (data: TypingEvent) => {
+      channel.bind('user_typing', (data: TypingEvent) => {
         console.log('[Reverb] ⌨️ User typing in thread:', threadId);
         callbacks.onTyping!(data);
       });
@@ -196,6 +252,9 @@ class ReverbClient {
    * Unsubscribe from a thread channel
    */
   unsubscribeFromThread(threadId: string): void {
+    // Remove from pending if it was queued
+    this.pendingSubscriptions.delete(threadId);
+
     const channel = this.threadChannels.get(threadId);
     if (channel && this.pusher) {
       const channelName = `private-thread.${threadId}`;
@@ -215,6 +274,7 @@ class ReverbClient {
       this.pusher = null;
       this.userChannel = null;
       this.threadChannels.clear();
+      this.pendingSubscriptions.clear();
       this.userId = null;
     }
   }
