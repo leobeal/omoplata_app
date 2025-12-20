@@ -147,6 +147,7 @@ export default function MessageThreadScreen() {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [loading, setLoading] = useState(!initialThread);
   const [loadingMore, setLoadingMore] = useState(false);
+  const loadingMoreRef = useRef(false);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [cursor, setCursor] = useState<string | undefined>(initialCursor);
   const [inputText, setInputText] = useState('');
@@ -226,8 +227,11 @@ export default function MessageThreadScreen() {
   };
 
   const loadMoreMessages = async () => {
-    if (!id || loadingMore || !hasMore || !cursor) return;
+    // Use ref for synchronous check to prevent multiple calls during rapid scroll events
+    if (!id || loadingMoreRef.current || !hasMore || !cursor) return;
 
+    // Set ref immediately (synchronous) to block subsequent calls
+    loadingMoreRef.current = true;
     setLoadingMore(true);
     try {
       const result = await getMessages(id, PAGE_SIZE, cursor);
@@ -238,6 +242,7 @@ export default function MessageThreadScreen() {
     } catch (err) {
       console.error('Error loading more messages:', err);
     } finally {
+      loadingMoreRef.current = false;
       setLoadingMore(false);
     }
   };
@@ -383,7 +388,7 @@ export default function MessageThreadScreen() {
           const scrollPercentage = scrollableHeight > 0 ? contentOffset.y / scrollableHeight : 1;
           const isNearTop = scrollPercentage < 0.25 || contentOffset.y < 800;
 
-          if (isNearTop && hasMore && !loadingMore) {
+          if (isNearTop && hasMore && !loadingMoreRef.current) {
             loadMoreMessages();
           }
         }}

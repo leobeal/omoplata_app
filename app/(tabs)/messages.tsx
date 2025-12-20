@@ -62,12 +62,12 @@ function ThreadItem({
       {/* Avatar */}
       <View className="mr-3 py-4">
         {isLoading ? (
-          <View className="h-14 w-14 items-center justify-center">
+          <View className="h-16 w-16 items-center justify-center">
             <ActivityIndicator size="small" color={colors.highlight} />
           </View>
         ) : isGroup ? (
           <View
-            className="h-14 w-14 items-center justify-center rounded-full"
+            className="h-16 w-16 items-center justify-center rounded-full"
             style={{ backgroundColor: colors.highlight + '20' }}>
             <Icon name="Users" size={24} color={colors.highlight} />
           </View>
