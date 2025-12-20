@@ -118,7 +118,7 @@ function DateHeader({ date }: { date: string }) {
   );
 }
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 30;
 
 export default function MessageThreadScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

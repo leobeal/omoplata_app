@@ -13,13 +13,27 @@ const ENV = (Constants.expoConfig?.extra?.env || 'development') as
 const getApiUrl = (env: typeof ENV, tenant: string): string => {
   switch (env) {
     case 'development':
-      return `https://${tenant}.sportsmanager.test/api`;
+      return `https://${tenant}.omoplata.localhost/api`;
     case 'staging':
       return `https://${tenant}.omoplata.eu/api`;
     case 'production':
       return `https://${tenant}.omoplata.de/api`;
     default:
-      return `https://${tenant}.sportsmanager.test/api`;
+      return `http://${tenant}.omoplata.localhost/api`;
+  }
+};
+
+// Reverb WebSocket hosts per environment
+const getReverbHost = (env: typeof ENV): string => {
+  switch (env) {
+    case 'development':
+      return 'omoplata.localhost';
+    case 'staging':
+      return 'reverb.omoplata.eu';
+    case 'production':
+      return 'reverb.omoplata.de';
+    default:
+      return 'omoplata.localhost';
   }
 };
 
