@@ -18,6 +18,7 @@ jest.mock('../../api/config', () => ({
     baseUrl: 'https://test.omoplata.localhost/api',
   },
   getReverbHost: jest.fn().mockReturnValue('reverb.test.localhost'),
+  getPusherAppKey: jest.fn().mockReturnValue('omoplatakey'),
   isDevelopment: jest.fn().mockReturnValue(false),
 }));
 

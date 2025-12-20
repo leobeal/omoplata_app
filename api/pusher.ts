@@ -2,7 +2,7 @@
 import Pusher, { Channel } from 'pusher-js';
 
 import { getAuthToken } from './client';
-import { API_CONFIG, getReverbHost, isDevelopment } from './config';
+import { API_CONFIG, getPusherAppKey, getReverbHost, isDevelopment } from './config';
 import { Message } from './messages';
 
 // Enable Pusher logging in development
@@ -65,7 +65,7 @@ class ReverbClient {
 
     console.log('[Reverb] 🔄 Connecting to Reverb...', { host: reverbHost, isDev: isDevEnv });
 
-    this.pusher = new Pusher('omoplatakey', {
+    this.pusher = new Pusher(getPusherAppKey(), {
       wsHost: reverbHost,
       wsPort: 443,
       wssPort: 443,

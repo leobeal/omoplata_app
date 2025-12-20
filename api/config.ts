@@ -45,6 +45,13 @@ export const getReverbHost = (): string => {
 };
 
 /**
+ * Get the Pusher/Reverb app key (public value, same for all environments)
+ */
+export const getPusherAppKey = (): string => {
+  return 'omoplatakey';
+};
+
+/**
  * Get the base URL without /api suffix (for broadcasting auth, etc.)
  */
 export const getBaseUrlWithoutApi = (): string => {
