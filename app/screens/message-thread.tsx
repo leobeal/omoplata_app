@@ -379,7 +379,8 @@ export default function MessageThreadScreen() {
         }}
         onScroll={({ nativeEvent }) => {
           const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
-          const isNearBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 100;
+          const isNearBottom =
+            layoutMeasurement.height + contentOffset.y >= contentSize.height - 100;
           setShouldAutoScroll(isNearBottom);
 
           // Load more when ~25% from top OR within 800px of top (whichever comes first)

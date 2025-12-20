@@ -71,7 +71,7 @@ class ReverbClient {
       wssPort: 443,
       forceTLS: true,
       enabledTransports: ['ws', 'wss'],
-      disableStats: true,
+      enableStats: false,
       cluster: '', // Required but not used for Reverb
       authorizer: (channel) => ({
         authorize: async (socketId, callback) => {
