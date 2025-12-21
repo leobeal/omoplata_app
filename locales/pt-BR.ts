@@ -35,16 +35,20 @@ export default {
   // Onboarding Slides
   onboarding: {
     slide1: {
-      title: 'Treine Melhor',
-      description: 'Agende aulas, acompanhe sua presença e mantenha seu treino em dia',
+      title: 'Agende Aulas',
+      description: 'Veja a grade, reserve seu lugar e faça check-in com um toque',
     },
     slide2: {
-      title: 'Fique Conectado',
-      description: 'Receba notificações sobre próximas aulas e não perca nenhuma sessão',
+      title: 'Gerencie Pagamentos',
+      description: 'Visualize faturas, acompanhe pagamentos e mantenha sua assinatura em dia',
     },
     slide3: {
-      title: 'Alcance Seus Objetivos',
-      description: 'Acompanhe seu progresso e atinja suas metas de fitness',
+      title: 'Fique em Contato',
+      description: 'Converse com seus treinadores e colegas, tudo em um só lugar',
+    },
+    slide4: {
+      title: 'Suba no Ranking',
+      description: 'Compita no placar de líderes e celebre suas conquistas de treino',
     },
   },
 

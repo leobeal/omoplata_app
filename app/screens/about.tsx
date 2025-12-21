@@ -1,3 +1,4 @@
+import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 import * as StoreReview from 'expo-store-review';
 import * as WebBrowser from 'expo-web-browser';
@@ -163,15 +164,13 @@ export default function AboutScreen() {
             <View className="flex-row items-center justify-between border-b border-border px-5 py-4">
               <ThemedText className="opacity-70">{t('settings.appVersion')}</ThemedText>
               <ThemedText className="font-semibold">
-                {Constants.expoConfig?.version || '1.0.0'}
+                {Application.nativeApplicationVersion || Constants.expoConfig?.version || '1.0.0'}
               </ThemedText>
             </View>
             <View className="flex-row items-center justify-between px-5 py-4">
               <ThemedText className="opacity-70">{t('settings.buildNumber')}</ThemedText>
               <ThemedText className="font-semibold">
-                {Constants.expoConfig?.ios?.buildNumber ||
-                  Constants.expoConfig?.android?.versionCode ||
-                  '1'}
+                {Application.nativeBuildVersion || '1'}
               </ThemedText>
             </View>
           </View>

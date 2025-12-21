@@ -35,17 +35,22 @@ export default {
   // Onboarding Slides
   onboarding: {
     slide1: {
-      title: 'Trainiere Smarter',
+      title: 'Kurse Buchen',
       description:
-        'Buche Kurse, verfolge deine Teilnahme und behalte deinen Trainingsplan im Blick',
+        'Durchstöbere den Kursplan, sichere dir deinen Platz und checke mit einem Tipp ein',
     },
     slide2: {
-      title: 'Bleib Verbunden',
-      description: 'Erhalte Benachrichtigungen über bevorstehende Kurse und verpasse keine Einheit',
+      title: 'Abrechnung Verwalten',
+      description:
+        'Rechnungen einsehen, Zahlungen verfolgen und deine Mitgliedschaft im Blick behalten',
     },
     slide3: {
-      title: 'Erreiche Deine Ziele',
-      description: 'Verfolge deinen Fortschritt und erreiche deine Fitnessziele',
+      title: 'In Kontakt Bleiben',
+      description: 'Chatte mit deinen Trainern und Teammitgliedern, alles an einem Ort',
+    },
+    slide4: {
+      title: 'Steige im Ranking',
+      description: 'Messe dich auf der Bestenliste und feiere deine Trainings-Meilensteine',
     },
   },
 

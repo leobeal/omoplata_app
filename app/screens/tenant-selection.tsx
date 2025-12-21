@@ -42,21 +42,28 @@ const slides: SlideData[] = [
     titleKey: 'onboarding.slide1.title',
     image: require('@/assets/_global/img/1.jpg'),
     descriptionKey: 'onboarding.slide1.description',
-    icon: 'Dumbbell',
+    icon: 'Calendar',
   },
   {
     id: '2',
     titleKey: 'onboarding.slide2.title',
     image: require('@/assets/_global/img/2.jpg'),
     descriptionKey: 'onboarding.slide2.description',
-    icon: 'Bell',
+    icon: 'CreditCard',
   },
   {
     id: '3',
     titleKey: 'onboarding.slide3.title',
     image: require('@/assets/_global/img/3.jpg'),
     descriptionKey: 'onboarding.slide3.description',
-    icon: 'Target',
+    icon: 'MessageCircle',
+  },
+  {
+    id: '4',
+    titleKey: 'onboarding.slide4.title',
+    image: require('@/assets/_global/img/1.jpg'),
+    descriptionKey: 'onboarding.slide4.description',
+    icon: 'Trophy',
   },
 ];
 

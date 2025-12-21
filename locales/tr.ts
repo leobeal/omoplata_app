@@ -35,17 +35,20 @@ export default {
   // Onboarding Slides
   onboarding: {
     slide1: {
-      title: 'Daha Akıllı Antrenman Yap',
-      description:
-        'Ders rezervasyonu yap, katılımını takip et ve antrenman programını kontrol altında tut',
+      title: 'Ders Rezervasyonu Yap',
+      description: 'Programı incele, yerini ayırt ve tek dokunuşla giriş yap',
     },
     slide2: {
-      title: 'Bağlantıda Kal',
-      description: 'Yaklaşan dersler hakkında bildirim al ve hiçbir antrenmana gelmezlik etme',
+      title: 'Faturaları Yönet',
+      description: 'Faturaları görüntüle, ödemeleri takip et ve üyeliğini güncel tut',
     },
     slide3: {
-      title: 'Hedeflerine Ulaş',
-      description: 'İlerlemeni takip et ve fitness hedeflerini gerçekleştir',
+      title: 'İletişimde Kal',
+      description: 'Antrenörlerinle ve takım arkadaşlarınla tek bir yerde sohbet et',
+    },
+    slide4: {
+      title: 'Sıralamada Yüksel',
+      description: 'Lider tablosunda yarış ve antrenman başarılarını kutla',
     },
   },
 

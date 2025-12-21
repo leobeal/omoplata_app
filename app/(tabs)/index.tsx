@@ -145,7 +145,7 @@ export default function HomeScreen() {
       {/* Fixed Background Image - Dark mode only */}
       {colors.isDark && (
         <ImageBackground
-          source={require('@/assets/_global/img/3.jpg')}
+          source={require('@/assets/_global/img/6.jpg')}
           className="absolute left-0 right-0 top-0 h-[700px]"
           resizeMode="cover">
           <LinearGradient
@@ -497,7 +497,7 @@ const DailyMotivation = memo(() => {
     <View
       className="mb-6 rounded-2xl p-6"
       style={{
-        backgroundColor: colors.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)',
+        backgroundColor: colors.isDark ? 'rgba(30,30,30,0.7)' : 'rgba(255,255,255,0.5)',
       }}>
       <ThemedText className="mb-3 text-sm font-semibold uppercase tracking-wider opacity-60">
         {t('home.dailyMotivation')}

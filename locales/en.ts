@@ -36,16 +36,20 @@ export default {
   // Onboarding Slides
   onboarding: {
     slide1: {
-      title: 'Train Smarter',
-      description: 'Book classes, track attendance, and stay on top of your training schedule',
+      title: 'Book Classes',
+      description: 'Browse the schedule, reserve your spot, and check in with a tap',
     },
     slide2: {
-      title: 'Stay Connected',
-      description: 'Get notified about upcoming classes and never miss a session',
+      title: 'Manage Billing',
+      description: 'View invoices, track payments, and keep your membership up to date',
     },
     slide3: {
-      title: 'Reach Your Goals',
-      description: 'Monitor your progress and achieve your fitness targets',
+      title: 'Stay in Touch',
+      description: 'Chat with your coaches and teammates, all in one place',
+    },
+    slide4: {
+      title: 'Climb the Ranks',
+      description: 'Compete on the leaderboard and celebrate your training milestones',
     },
   },
 
