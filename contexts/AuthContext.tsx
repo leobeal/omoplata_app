@@ -115,8 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
         setUser(storedUser);
         setApiAuthToken(storedToken);
 
-        // Connect Reverb for real-time messages
-        reverbClient.connect(storedUser.prefixedId);
+        // Note: Reverb connection is now lazy - connects when user opens messages
 
         // Check if we're viewing as child (parent session exists)
         if (storedParentSession) {
@@ -192,8 +191,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
       setUser(userToStore);
       setApiAuthToken(authToken);
 
-      // Connect Reverb for real-time messages
-      reverbClient.connect(userToStore.prefixedId);
+      // Note: Reverb connection is now lazy - connects when user opens messages
 
       return { success: true };
     } catch (error) {
@@ -240,23 +238,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
     return () => setOnUnauthorized(null);
   }, [handleUnauthorized]);
 
-  // Handle app state changes - disconnect Reverb when backgrounded, reconnect when foregrounded
+  // Disconnect WebSocket when app goes to background
   const appStateRef = useRef<AppStateStatus>(AppState.currentState);
 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      const wasBackground =
-        appStateRef.current === 'background' || appStateRef.current === 'inactive';
-      const isNowActive = nextAppState === 'active';
       const isGoingBackground = nextAppState === 'background' || nextAppState === 'inactive';
 
-      // App coming to foreground - reconnect if authenticated
-      if (wasBackground && isNowActive && user?.prefixedId) {
-        console.log('[Auth] App foregrounded, reconnecting Reverb');
-        reverbClient.connect(user.prefixedId);
-      }
-
-      // App going to background - disconnect
+      // App going to background - disconnect to save resources
       if (isGoingBackground && appStateRef.current === 'active') {
         console.log('[Auth] App backgrounded, disconnecting Reverb');
         reverbClient.disconnect();
@@ -270,7 +259,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
     return () => {
       subscription.remove();
     };
-  }, [user?.prefixedId]);
+  }, []);
 
   const logout = async () => {
     try {

@@ -186,6 +186,11 @@ export default {
     notificationsDeniedMessage:
       'Por favor, ative as notificações nas configurações do dispositivo.',
     notificationsError: 'Falha ao ativar notificações. Por favor, tente novamente.',
+    retryNotifications: 'Reconfigurar Notificações',
+    retryNotificationsDescription: 'Registrar notificações push novamente no servidor',
+    retryNotificationsSuccess: 'Notificações Registradas',
+    retryNotificationsSuccessMessage: 'Notificações push foram registradas com sucesso.',
+    retryNotificationsError: 'Falha ao registrar notificações. Por favor, tente novamente.',
   },
 
   // Configurações de Privacidade

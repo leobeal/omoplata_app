@@ -250,6 +250,72 @@ describe('ReverbClient', () => {
     it('should handle disconnect when not connected', () => {
       expect(() => reverbClient.disconnect()).not.toThrow();
     });
+
+    it('should clear all state on disconnect', () => {
+      (client.getAuthToken as jest.Mock).mockReturnValue('valid-token');
+      reverbClient.connect('user-123');
+      mockConnection.state = 'connected';
+
+      // Simulate subscription
+      const connectedCallback = mockConnection.bind.mock.calls.find(
+        (call) => call[0] === 'connected'
+      )?.[1];
+      connectedCallback?.();
+      reverbClient.subscribeToThread('thread-1', {});
+
+      reverbClient.disconnect();
+
+      expect(mockPusherInstance.disconnect).toHaveBeenCalled();
+      expect(reverbClient.isConnected()).toBe(false);
+      expect(reverbClient.getSocketId()).toBeUndefined();
+    });
+  });
+
+  describe('lazy connection', () => {
+    it('should connect lazily when subscribeToThread is called with userId', () => {
+      (client.getAuthToken as jest.Mock).mockReturnValue('valid-token');
+
+      // Not connected initially
+      expect(reverbClient.isConnected()).toBe(false);
+
+      // Subscribe with userId triggers lazy connection
+      reverbClient.subscribeToThread('thread-1', {}, 'user-123');
+
+      // Should have created a Pusher instance
+      expect(MockPusher).toHaveBeenCalled();
+    });
+
+    it('should not connect when subscribeToThread is called without userId', () => {
+      (client.getAuthToken as jest.Mock).mockReturnValue('valid-token');
+
+      // Subscribe without userId
+      reverbClient.subscribeToThread('thread-1', {});
+
+      // Should not have created a Pusher instance
+      expect(MockPusher).not.toHaveBeenCalled();
+    });
+
+    it('should queue subscription and process after lazy connection succeeds', () => {
+      (client.getAuthToken as jest.Mock).mockReturnValue('valid-token');
+      mockConnection.state = 'disconnected';
+
+      // Subscribe with userId (triggers lazy connection)
+      const onNewMessage = jest.fn();
+      reverbClient.subscribeToThread('thread-1', { onNewMessage }, 'user-123');
+
+      // Connection created but not yet connected
+      expect(MockPusher).toHaveBeenCalled();
+
+      // Simulate connection success
+      mockConnection.state = 'connected';
+      const connectedCallback = mockConnection.bind.mock.calls.find(
+        (call) => call[0] === 'connected'
+      )?.[1];
+      connectedCallback?.();
+
+      // Now the queued subscription should be processed
+      expect(mockPusherInstance.subscribe).toHaveBeenCalledWith('private-thread.thread-1');
+    });
   });
 
   describe('isConnected', () => {

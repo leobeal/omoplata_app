@@ -1,5 +1,6 @@
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import React from 'react';
+import { AppState } from 'react-native';
 
 import { authApi } from '../../api/auth';
 import * as apiClient from '../../api/client';
@@ -11,6 +12,10 @@ import * as authStorage from '../../utils/auth-storage';
 jest.mock('../../utils/auth-storage');
 jest.mock('../../api/client');
 jest.mock('../../api/auth');
+jest.mock('../../api/pusher');
+
+// Import the mocked module to get access to the mock functions
+import reverbClient from '../../api/pusher';
 
 describe('AuthContext', () => {
   const mockAuthStorage = authStorage as jest.Mocked<typeof authStorage>;
@@ -379,6 +384,111 @@ describe('AuthContext', () => {
       }).toThrow('useAuth must be used within an AuthProvider');
 
       console.error = originalError;
+    });
+  });
+
+  describe('WebSocket disconnect on app background', () => {
+    let appStateCallback: ((state: string) => void) | null = null;
+    const mockRemove = jest.fn();
+
+    beforeEach(() => {
+      // Mock AppState.addEventListener to capture the callback
+      jest.spyOn(AppState, 'addEventListener').mockImplementation((event, callback) => {
+        if (event === 'change') {
+          appStateCallback = callback as (state: string) => void;
+        }
+        return { remove: mockRemove };
+      });
+
+      // Mock AppState.currentState to be 'active' initially
+      Object.defineProperty(AppState, 'currentState', {
+        value: 'active',
+        writable: true,
+      });
+
+      // Reset the reverbClient mock
+      (reverbClient.disconnect as jest.Mock).mockClear();
+    });
+
+    afterEach(() => {
+      appStateCallback = null;
+      jest.restoreAllMocks();
+    });
+
+    it('should disconnect WebSocket when app goes to background', async () => {
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      // Verify AppState listener was registered
+      expect(AppState.addEventListener).toHaveBeenCalledWith('change', expect.any(Function));
+
+      // Simulate app going to background (from active state)
+      if (appStateCallback) {
+        act(() => {
+          appStateCallback!('background');
+        });
+      }
+
+      expect(reverbClient.disconnect).toHaveBeenCalled();
+    });
+
+    it('should disconnect WebSocket when app becomes inactive', async () => {
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      // Simulate app becoming inactive (from active state)
+      if (appStateCallback) {
+        act(() => {
+          appStateCallback!('inactive');
+        });
+      }
+
+      expect(reverbClient.disconnect).toHaveBeenCalled();
+    });
+
+    it('should not disconnect when app comes to foreground', async () => {
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      // First go to background
+      if (appStateCallback) {
+        act(() => {
+          appStateCallback!('background');
+        });
+      }
+
+      (reverbClient.disconnect as jest.Mock).mockClear();
+
+      // Then come back to foreground
+      if (appStateCallback) {
+        act(() => {
+          appStateCallback!('active');
+        });
+      }
+
+      // Should not disconnect when coming to foreground
+      expect(reverbClient.disconnect).not.toHaveBeenCalled();
+    });
+
+    it('should remove AppState listener on unmount', async () => {
+      const { result, unmount } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      unmount();
+
+      expect(mockRemove).toHaveBeenCalled();
     });
   });
 });

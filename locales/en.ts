@@ -186,6 +186,11 @@ export default {
     notificationsDenied: 'Permission Denied',
     notificationsDeniedMessage: 'Please enable notifications in your device settings.',
     notificationsError: 'Failed to enable notifications. Please try again.',
+    retryNotifications: 'Retry Notification Setup',
+    retryNotificationsDescription: 'Re-register push notifications with the server',
+    retryNotificationsSuccess: 'Notifications Registered',
+    retryNotificationsSuccessMessage: 'Push notifications have been registered successfully.',
+    retryNotificationsError: 'Failed to register notifications. Please try again.',
   },
 
   // Privacy Settings

@@ -175,9 +175,10 @@ export default function MessageThreadScreen() {
     [id]
   );
 
-  // Connect to WebSocket for real-time updates
+  // Connect to WebSocket for real-time updates (lazy connection)
   useMessageWebSocket({
     threadId: id || '',
+    userId: currentUserId,
     onNewMessage: handleNewMessage,
   });
 

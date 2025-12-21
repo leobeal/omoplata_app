@@ -185,6 +185,11 @@ export default {
     notificationsDenied: 'İzin Reddedildi',
     notificationsDeniedMessage: 'Lütfen cihaz ayarlarından bildirimleri etkinleştirin.',
     notificationsError: 'Bildirimler etkinleştirilemedi. Lütfen tekrar deneyin.',
+    retryNotifications: 'Bildirimleri Yeniden Ayarla',
+    retryNotificationsDescription: 'Push bildirimlerini sunucuya yeniden kaydet',
+    retryNotificationsSuccess: 'Bildirimler Kaydedildi',
+    retryNotificationsSuccessMessage: 'Push bildirimleri başarıyla kaydedildi.',
+    retryNotificationsError: 'Bildirimler kaydedilemedi. Lütfen tekrar deneyin.',
   },
 
   // Privacy Settings

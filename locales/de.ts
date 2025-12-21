@@ -188,6 +188,12 @@ export default {
     notificationsDeniedMessage: 'Bitte aktiviere Benachrichtigungen in deinen Geräteeinstellungen.',
     notificationsError:
       'Benachrichtigungen konnten nicht aktiviert werden. Bitte versuche es erneut.',
+    retryNotifications: 'Benachrichtigungen erneut einrichten',
+    retryNotificationsDescription: 'Push-Benachrichtigungen erneut beim Server registrieren',
+    retryNotificationsSuccess: 'Benachrichtigungen registriert',
+    retryNotificationsSuccessMessage: 'Push-Benachrichtigungen wurden erfolgreich registriert.',
+    retryNotificationsError:
+      'Benachrichtigungen konnten nicht registriert werden. Bitte versuche es erneut.',
   },
 
   // Datenschutz-Einstellungen
