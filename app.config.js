@@ -71,7 +71,10 @@ module.exports = {
     ios: {
       supportsTablet: false,
       bundleIdentifier: config.bundleIdentifier,
-      associatedDomains: [`applinks:${config.universalLinkDomain}`],
+      associatedDomains: [
+        `applinks:${config.universalLinkDomain}`,
+        `applinks:*.${config.universalLinkDomain}`,
+      ],
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSPhotoLibraryAddUsageDescription:
@@ -94,6 +97,11 @@ module.exports = {
             {
               scheme: 'https',
               host: config.universalLinkDomain,
+              pathPrefix: '/',
+            },
+            {
+              scheme: 'https',
+              host: `*.${config.universalLinkDomain}`,
               pathPrefix: '/',
             },
           ],
