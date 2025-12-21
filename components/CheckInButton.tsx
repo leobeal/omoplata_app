@@ -1,13 +1,20 @@
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Pressable, View } from 'react-native';
 
 import Icon from './Icon';
 
+import { useNavigationLock } from '@/hooks/useNavigationLock';
+
 const CheckInButton = () => {
-  const handlePress = () => {
-    router.push('/screens/checkin');
-  };
+  const { withLock } = useNavigationLock();
+
+  const handlePress = useCallback(
+    withLock(() => {
+      router.push('/screens/checkin');
+    }),
+    [withLock]
+  );
 
   return (
     <View className="relative flex flex-col items-center justify-center">

@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, TouchableOpacity, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -7,6 +7,7 @@ import Icon, { IconName } from './Icon';
 import ThemedText from './ThemedText';
 
 import { useThemeColors } from '@/contexts/ThemeColors';
+import { useNavigationLock } from '@/hooks/useNavigationLock';
 
 type HeaderProps = {
   title?: string;
@@ -39,14 +40,18 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
+  const { withLock } = useNavigationLock();
 
-  const handleBackPress = () => {
-    if (onBackPress) {
-      onBackPress();
-    } else {
-      router.back();
-    }
-  };
+  const handleBackPress = useCallback(
+    withLock(() => {
+      if (onBackPress) {
+        onBackPress();
+      } else {
+        router.back();
+      }
+    }),
+    [onBackPress, withLock]
+  );
 
   return (
     <View
@@ -110,16 +115,29 @@ export const HeaderIcon = ({
   onPress,
   className = '',
   isWhite = false,
-}: HeaderItemProps) => (
-  <TouchableOpacity
-    onPress={onPress || (href ? () => router.push(href) : undefined)}
-    className="overflow-visible">
-    <View
-      className={`relative h-7 w-7 flex-row items-center justify-center overflow-visible ${className}`}>
-      {hasBadge && (
-        <View className="absolute -right-[3px] -top-0 z-30 h-4 w-4 rounded-full border-2 border-background bg-red-500" />
-      )}
-      <Icon name={icon} size={25} color={isWhite ? 'white' : undefined} />
-    </View>
-  </TouchableOpacity>
-);
+}: HeaderItemProps) => {
+  const { withLock } = useNavigationLock();
+
+  const handlePress = useCallback(
+    withLock(() => {
+      if (onPress) {
+        onPress();
+      } else if (href) {
+        router.push(href);
+      }
+    }),
+    [onPress, href, withLock]
+  );
+
+  return (
+    <TouchableOpacity onPress={handlePress} className="overflow-visible">
+      <View
+        className={`relative h-7 w-7 flex-row items-center justify-center overflow-visible ${className}`}>
+        {hasBadge && (
+          <View className="absolute -right-[3px] -top-0 z-30 h-4 w-4 rounded-full border-2 border-background bg-red-500" />
+        )}
+        <Icon name={icon} size={25} color={isWhite ? 'white' : undefined} />
+      </View>
+    </TouchableOpacity>
+  );
+};

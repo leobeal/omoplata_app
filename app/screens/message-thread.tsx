@@ -148,6 +148,7 @@ export default function MessageThreadScreen() {
   const [loading, setLoading] = useState(!initialThread);
   const [loadingMore, setLoadingMore] = useState(false);
   const loadingMoreRef = useRef(false);
+  const lastFetchedCursorRef = useRef<string | undefined>(undefined);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [cursor, setCursor] = useState<string | undefined>(initialCursor);
   const [inputText, setInputText] = useState('');
@@ -230,8 +231,12 @@ export default function MessageThreadScreen() {
     // Use ref for synchronous check to prevent multiple calls during rapid scroll events
     if (!id || loadingMoreRef.current || !hasMore || !cursor) return;
 
-    // Set ref immediately (synchronous) to block subsequent calls
+    // Prevent fetching the same cursor twice (race condition when state hasn't updated yet)
+    if (cursor === lastFetchedCursorRef.current) return;
+
+    // Set refs immediately (synchronous) to block subsequent calls
     loadingMoreRef.current = true;
+    lastFetchedCursorRef.current = cursor;
     setLoadingMore(true);
     try {
       const result = await getMessages(id, PAGE_SIZE, cursor);

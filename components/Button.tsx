@@ -1,11 +1,12 @@
 // components/Button.tsx
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Text, ActivityIndicator, TouchableOpacity, View } from 'react-native';
 
 import Icon, { IconName } from './Icon';
 
 import { useThemeColors } from '@/contexts/ThemeColors';
+import { useNavigationLock } from '@/hooks/useNavigationLock';
 
 type RoundedOption = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
@@ -50,6 +51,25 @@ export const Button: React.FC<ButtonProps> = ({
   // icon is an alias for iconStart
   const startIcon = icon || iconStart;
   const colors = useThemeColors();
+  const { withLock } = useNavigationLock();
+
+  const handleNavigation = useCallback(
+    withLock(() => {
+      if (href) {
+        router.push(href);
+      }
+    }),
+    [href, withLock]
+  );
+
+  const handlePress = useCallback(
+    withLock(() => {
+      if (onPress) {
+        onPress();
+      }
+    }),
+    [onPress, withLock]
+  );
 
   const buttonStyles = {
     primary: 'bg-primary',
@@ -154,9 +174,7 @@ export const Button: React.FC<ButtonProps> = ({
         activeOpacity={0.8}
         className={`relative px-4 ${buttonStyles[variant]} ${buttonSize[size]} ${roundedStyles[rounded]} items-center justify-center ${disabledStyle} ${className}`}
         {...props}
-        onPress={() => {
-          router.push(href);
-        }}>
+        onPress={handleNavigation}>
         {ButtonContent}
       </TouchableOpacity>
     );
@@ -164,7 +182,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={handlePress}
       disabled={loading || disabled}
       activeOpacity={0.8}
       className={`relative px-4 ${buttonStyles[variant]} ${buttonSize[size]} ${roundedStyles[rounded]} items-center justify-center ${disabledStyle} ${className}`}
