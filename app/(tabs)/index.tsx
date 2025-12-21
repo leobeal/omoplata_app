@@ -145,7 +145,7 @@ export default function HomeScreen() {
       {/* Fixed Background Image - Dark mode only */}
       {colors.isDark && (
         <ImageBackground
-          source={require('@/assets/_global/img/2.jpg')}
+          source={require('@/assets/_global/img/3.jpg')}
           className="absolute left-0 right-0 top-0 h-[700px]"
           resizeMode="cover">
           <LinearGradient
