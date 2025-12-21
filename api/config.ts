@@ -9,6 +9,9 @@ const ENV = (Constants.expoConfig?.extra?.env || 'development') as
   | 'staging'
   | 'production';
 
+// Export for debugging
+export const getCurrentEnv = () => ENV;
+
 // Base URLs per environment with tenant slug
 const getApiUrl = (env: typeof ENV, tenant: string): string => {
   switch (env) {

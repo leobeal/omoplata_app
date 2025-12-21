@@ -1,7 +1,7 @@
 // API Client
 // Centralized HTTP client for making API requests
 
-import { API_CONFIG } from './config';
+import { API_CONFIG, getCurrentEnv } from './config';
 
 import { getCurrentLocale } from '@/contexts/LocalizationContext';
 import { generateSignatureHeaders, extractPath } from '@/utils/request-signing';
@@ -133,14 +133,13 @@ export async function apiRequest<T>(
       };
     }
 
+    const errorMessage = error instanceof Error ? error.message : 'Network error';
     if (__DEV__) {
-      console.log(
-        `[API] ${method} ${url} - ${error instanceof Error ? error.message : 'Network error'}`
-      );
+      console.log(`[API] ${method} ${url} - ${errorMessage}`);
     }
     return {
       data: null,
-      error: error instanceof Error ? error.message : 'Network error',
+      error: `${errorMessage} → ${url} [env=${getCurrentEnv()}]`,
       status: 0,
     };
   }

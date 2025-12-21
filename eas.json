@@ -4,33 +4,20 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "channel": "development",
-      "env": {
-        "TENANT": "main"
-      }
-    },
     "ios-simulator": {
       "ios": {
         "simulator": true
       },
       "env": {
         "TENANT": "main"
-      },
-      "channel": "ios-simulator"
-    },
-    "android-simulator": {
-      "env": {
-        "TENANT": "main"
-      },
-      "channel": "android-simulator"
+      }
     },
     "preview": {
-      "distribution": "internal",
+      "developmentClient": false,
+      "distribution": "store",
       "channel": "preview",
       "env": {
+        "APP_ENV": "production",
         "TENANT": "main"
       }
     },
