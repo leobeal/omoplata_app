@@ -191,6 +191,9 @@ export default {
     retryNotificationsSuccess: 'Notificações Registradas',
     retryNotificationsSuccessMessage: 'Notificações push foram registradas com sucesso.',
     retryNotificationsError: 'Falha ao registrar notificações. Por favor, tente novamente.',
+    retryNotificationsNoToken: 'Token Push Indisponível',
+    retryNotificationsNoTokenMessage:
+      'Notificações push não estão disponíveis neste dispositivo. Verifique se as notificações estão ativadas nas configurações do dispositivo.',
   },
 
   // Configurações de Privacidade
@@ -802,6 +805,8 @@ export default {
     aboutDescription: 'Informações do app, política de privacidade e mais',
     privacyPolicy: 'Política de Privacidade',
     privacyPolicyDescription: 'Leia nossa política de privacidade',
+    privacyPolicyError:
+      'Não foi possível abrir a política de privacidade. Tente novamente mais tarde.',
     versionHistory: 'Histórico de Versões',
     versionHistoryDescription: 'Veja as novidades',
     poweredBy: '{{appName}} é desenvolvido pela Omoplata',

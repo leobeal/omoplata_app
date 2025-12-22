@@ -136,11 +136,21 @@ export default function SettingsScreen() {
   const handleRetryNotifications = async () => {
     setRetryingNotifications(true);
     try {
-      await registerToken();
-      Alert.alert(
-        t('settings.retryNotificationsSuccess'),
-        t('settings.retryNotificationsSuccessMessage')
-      );
+      const result = await registerToken();
+
+      if (result.noTokenAvailable) {
+        Alert.alert(
+          t('settings.retryNotificationsNoToken'),
+          t('settings.retryNotificationsNoTokenMessage')
+        );
+      } else if (result.success) {
+        Alert.alert(
+          t('settings.retryNotificationsSuccess'),
+          t('settings.retryNotificationsSuccessMessage')
+        );
+      } else {
+        Alert.alert(t('common.error'), t('settings.retryNotificationsError'));
+      }
     } catch (error) {
       console.error('Failed to retry notifications:', error);
       Alert.alert(t('common.error'), t('settings.retryNotificationsError'));

@@ -38,7 +38,8 @@
       "mcp__mcp-react-native-expo__expo_dev_start",
       "Bash(git stash:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:omoplata.de)"
     ],
     "deny": [],
     "ask": []

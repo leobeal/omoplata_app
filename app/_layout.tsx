@@ -5,7 +5,7 @@ import * as Linking from 'expo-linking';
 import { Stack, Redirect, useSegments, usePathname, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { Image, View } from 'react-native';
+import { Image, View, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import OfflineBanner from '@/components/OfflineBanner';
@@ -337,7 +337,15 @@ export default function RootLayout() {
                     <DashboardReadyProvider>
                       <ScrollToTopProvider>
                         <AuthGate>
-                          <Stack screenOptions={{ headerShown: false }} />
+                          <Stack
+                            screenOptions={{
+                              headerShown: false,
+                              // Use native-feeling animations per platform
+                              animation: Platform.OS === 'android' ? 'slide_from_right' : 'default',
+                              // Smoother animation timing on iOS
+                              animationDuration: Platform.OS === 'ios' ? 300 : undefined,
+                            }}
+                          />
                         </AuthGate>
                       </ScrollToTopProvider>
                     </DashboardReadyProvider>

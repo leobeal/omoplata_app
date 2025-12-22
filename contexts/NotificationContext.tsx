@@ -27,6 +27,11 @@ import {
   clearBadgeCount,
 } from '@/utils/push-notifications';
 
+interface RegisterTokenResult {
+  success: boolean;
+  noTokenAvailable?: boolean;
+}
+
 interface NotificationContextType {
   // State
   expoPushToken: string | null;
@@ -35,7 +40,7 @@ interface NotificationContextType {
 
   // Actions
   requestPermission: () => Promise<boolean>;
-  registerToken: () => Promise<void>;
+  registerToken: () => Promise<RegisterTokenResult>;
   unregisterToken: () => Promise<void>;
 
   // Notification handling
@@ -89,10 +94,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
    * Register push token with server
    * Only registers if authenticated and has a tenant
    */
-  const registerToken = useCallback(async () => {
+  const registerToken = useCallback(async (): Promise<RegisterTokenResult> => {
     if (!isAuthenticated || !tenant) {
       console.log('[Notifications] Skipping token registration - not authenticated or no tenant');
-      return;
+      return { success: false };
     }
 
     setIsRegistering(true);
@@ -103,7 +108,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
       if (!token) {
         console.log('[Notifications] No push token available');
-        return;
+        return { success: false, noTokenAvailable: true };
       }
 
       setExpoPushToken(token);
@@ -114,8 +119,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       if (success) {
         console.log(`[Notifications] Token registered for tenant: ${tenant.slug}`);
       }
+
+      return { success };
     } catch (error) {
       console.error('[Notifications] Error registering token:', error);
+      return { success: false };
     } finally {
       setIsRegistering(false);
     }

@@ -29,6 +29,7 @@ export default function AboutScreen() {
   const [refreshingCache, setRefreshingCache] = useState(false);
   const [ratingApp, setRatingApp] = useState(false);
   const [openingInstagram, setOpeningInstagram] = useState(false);
+  const [openingPrivacy, setOpeningPrivacy] = useState(false);
 
   // Scroll state for collapsible title
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
@@ -77,6 +78,18 @@ export default function AboutScreen() {
       console.error('Error opening Instagram:', error);
     } finally {
       setOpeningInstagram(false);
+    }
+  };
+
+  const handleOpenPrivacyPolicy = async () => {
+    setOpeningPrivacy(true);
+    try {
+      await WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL);
+    } catch (error) {
+      console.error('Error opening privacy policy:', error);
+      Alert.alert(t('common.error'), t('about.privacyPolicyError'));
+    } finally {
+      setOpeningPrivacy(false);
     }
   };
 
@@ -146,7 +159,8 @@ export default function AboutScreen() {
             title={t('about.privacyPolicy')}
             description={t('about.privacyPolicyDescription')}
             icon="FileText"
-            onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
+            onPress={handleOpenPrivacyPolicy}
+            isLoading={openingPrivacy}
           />
           <ListLink
             className="px-5"

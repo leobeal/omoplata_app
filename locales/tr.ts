@@ -190,6 +190,9 @@ export default {
     retryNotificationsSuccess: 'Bildirimler Kaydedildi',
     retryNotificationsSuccessMessage: 'Push bildirimleri başarıyla kaydedildi.',
     retryNotificationsError: 'Bildirimler kaydedilemedi. Lütfen tekrar deneyin.',
+    retryNotificationsNoToken: 'Push Token Mevcut Değil',
+    retryNotificationsNoTokenMessage:
+      'Bu cihazda push bildirimleri kullanılamıyor. Lütfen cihaz ayarlarından bildirimlerin etkin olduğundan emin olun.',
   },
 
   // Privacy Settings
@@ -801,6 +804,7 @@ export default {
     aboutDescription: 'Uygulama bilgisi, gizlilik politikası ve daha fazlası',
     privacyPolicy: 'Gizlilik Politikası',
     privacyPolicyDescription: 'Gizlilik politikamızı okuyun',
+    privacyPolicyError: 'Gizlilik politikası açılamadı. Lütfen daha sonra tekrar deneyin.',
     versionHistory: 'Sürüm Geçmişi',
     versionHistoryDescription: 'Yeniliklere göz atın',
     poweredBy: '{{appName}}, Omoplata tarafından desteklenmektedir',

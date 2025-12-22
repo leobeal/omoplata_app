@@ -194,6 +194,9 @@ export default {
     retryNotificationsSuccessMessage: 'Push-Benachrichtigungen wurden erfolgreich registriert.',
     retryNotificationsError:
       'Benachrichtigungen konnten nicht registriert werden. Bitte versuche es erneut.',
+    retryNotificationsNoToken: 'Push-Token nicht verfügbar',
+    retryNotificationsNoTokenMessage:
+      'Push-Benachrichtigungen sind auf diesem Gerät nicht verfügbar. Bitte stelle sicher, dass Benachrichtigungen in deinen Geräteeinstellungen aktiviert sind.',
   },
 
   // Datenschutz-Einstellungen
@@ -806,6 +809,8 @@ export default {
     aboutDescription: 'App-Info, Datenschutzrichtlinie und mehr',
     privacyPolicy: 'Datenschutzrichtlinie',
     privacyPolicyDescription: 'Unsere Datenschutzrichtlinie lesen',
+    privacyPolicyError:
+      'Datenschutzrichtlinie konnte nicht geöffnet werden. Bitte versuche es später erneut.',
     versionHistory: 'Versionshistorie',
     versionHistoryDescription: 'Neuigkeiten ansehen',
     poweredBy: '{{appName}} wird von Omoplata betrieben',

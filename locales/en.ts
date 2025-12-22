@@ -191,6 +191,9 @@ export default {
     retryNotificationsSuccess: 'Notifications Registered',
     retryNotificationsSuccessMessage: 'Push notifications have been registered successfully.',
     retryNotificationsError: 'Failed to register notifications. Please try again.',
+    retryNotificationsNoToken: 'Push Token Unavailable',
+    retryNotificationsNoTokenMessage:
+      'Push notifications are not available on this device. Please ensure notifications are enabled in your device settings.',
   },
 
   // Privacy Settings
@@ -803,6 +806,7 @@ export default {
     aboutDescription: 'App info, privacy policy, and more',
     privacyPolicy: 'Privacy Policy',
     privacyPolicyDescription: 'Read our privacy policy',
+    privacyPolicyError: 'Could not open privacy policy. Please try again later.',
     versionHistory: 'Version History',
     versionHistoryDescription: "See what's new",
     poweredBy: '{{appName}} is powered by Omoplata',
