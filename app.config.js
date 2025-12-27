@@ -74,6 +74,8 @@ module.exports = {
       associatedDomains: [
         `applinks:${config.universalLinkDomain}`,
         `applinks:*.${config.universalLinkDomain}`,
+        `webcredentials:${config.universalLinkDomain}`,
+        `webcredentials:*.${config.universalLinkDomain}`,
       ],
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
