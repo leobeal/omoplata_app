@@ -52,7 +52,8 @@ describe('useMessageWebSocket', () => {
           onNewMessage: expect.any(Function),
           onMessageRead: expect.any(Function),
           onTyping: expect.any(Function),
-        })
+        }),
+        undefined // userId is optional
       );
     });
   });
@@ -81,12 +82,12 @@ describe('useMessageWebSocket', () => {
         { initialProps: { threadId: 'thread-1' } }
       );
 
-      expect(mockReverbClient.subscribeToThread).toHaveBeenCalledWith('thread-1', expect.anything());
+      expect(mockReverbClient.subscribeToThread).toHaveBeenCalledWith('thread-1', expect.anything(), undefined);
 
       rerender({ threadId: 'thread-2' });
 
       expect(mockReverbClient.unsubscribeFromThread).toHaveBeenCalledWith('thread-1');
-      expect(mockReverbClient.subscribeToThread).toHaveBeenCalledWith('thread-2', expect.anything());
+      expect(mockReverbClient.subscribeToThread).toHaveBeenCalledWith('thread-2', expect.anything(), undefined);
     });
   });
 

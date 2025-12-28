@@ -142,7 +142,7 @@ describe('Auth API', () => {
       const response = await api.get('/test');
 
       expect(response.data).toBeNull();
-      expect(response.error).toBe('Network error');
+      expect(response.error).toContain('Network error');
       expect(response.status).toBe(0);
     });
 

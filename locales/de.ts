@@ -61,11 +61,20 @@ export default {
     label: 'Gym-Kennung',
     placeholder: 'z.B. evolve',
     help: 'Frag dein Gym nach der Kennung',
+    // QR-Scanner
+    scanTitle: 'QR-Code scannen',
+    scanSubtitle: 'Richte deine Kamera auf den QR-Code deines Gyms',
+    noQrCode: 'Keinen QR-Code?',
+    scanInstead: 'QR-Code scannen',
+    permissionRequired: 'Kameraberechtigung erforderlich',
+    permissionMessage: 'Bitte gewähre Kamerazugriff zum Scannen von QR-Codes',
+    grantPermission: 'Berechtigung erteilen',
     errors: {
       required: 'Bitte gib die Gym-Kennung ein',
       invalid: 'Nur Kleinbuchstaben, Zahlen und Bindestriche erlaubt',
       tooShort: 'Die Kennung muss mindestens 2 Zeichen haben',
       failed: 'Verbindung fehlgeschlagen. Bitte erneut versuchen.',
+      invalidQr: 'Ungültiger QR-Code. Bitte scanne einen gültigen Gym-QR-Code.',
     },
   },
 

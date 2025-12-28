@@ -59,11 +59,20 @@ export default {
     label: 'Identificador',
     placeholder: 'ex: evolve',
     help: 'Pergunte à sua academia pelo identificador',
+    // QR Scanner
+    scanTitle: 'Escanear QR Code',
+    scanSubtitle: 'Aponte sua câmera para o QR code da sua academia',
+    noQrCode: 'Não tem um QR code?',
+    scanInstead: 'Escanear QR code',
+    permissionRequired: 'Permissão da Câmera Necessária',
+    permissionMessage: 'Por favor, conceda acesso à câmera para escanear QR codes',
+    grantPermission: 'Conceder Permissão',
     errors: {
       required: 'Por favor, digite o identificador da academia',
       invalid: 'Apenas letras minúsculas, números e hífens são permitidos',
       tooShort: 'O identificador deve ter pelo menos 2 caracteres',
       failed: 'Falha na conexão. Por favor, tente novamente.',
+      invalidQr: 'QR code inválido. Por favor, escaneie um QR code de academia válido.',
     },
   },
 

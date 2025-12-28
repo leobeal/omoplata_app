@@ -60,11 +60,20 @@ export default {
     label: 'Gym Identifier',
     placeholder: 'e.g., evolve',
     help: 'Ask your gym for the identifier',
+    // QR Scanner
+    scanTitle: 'Scan QR Code',
+    scanSubtitle: "Point your camera at your gym's QR code",
+    noQrCode: "Don't have a QR code?",
+    scanInstead: 'Scan QR code instead',
+    permissionRequired: 'Camera Permission Required',
+    permissionMessage: 'Please grant camera access to scan QR codes',
+    grantPermission: 'Grant Permission',
     errors: {
       required: 'Please enter your gym identifier',
       invalid: 'Only lowercase letters, numbers, and hyphens allowed',
       tooShort: 'Identifier must be at least 2 characters',
       failed: 'Failed to connect. Please try again.',
+      invalidQr: 'Invalid QR code. Please scan a valid gym QR code.',
     },
   },
 
