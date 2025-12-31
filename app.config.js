@@ -113,6 +113,7 @@ module.exports = {
     owner: config.owner,
     updates: {
       url: `https://u.expo.dev/${config.easProjectId}`,
+      runtimeVersion: '1.0.0',
     },
   },
 };
