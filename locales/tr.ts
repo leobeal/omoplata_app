@@ -165,8 +165,8 @@ export default {
     version: 'Sürüm',
     appVersion: 'Uygulama Sürümü',
     buildNumber: 'Yapı Numarası',
-    privacy: 'Gizlilik',
-    privacyDescription: 'Bilgilerinizin nasıl paylaşıldığını kontrol edin',
+    privacy: 'Görünürlük',
+    privacyDescription: 'Başkalarının sizin hakkınızda ne göreceğini kontrol edin',
     language: 'Dil',
     languageDescription: 'Uygulama dilini değiştirin',
     rateApp: 'Uygulamayı Değerlendir',
@@ -197,7 +197,7 @@ export default {
 
   // Privacy Settings
   privacy: {
-    title: 'Gizlilik',
+    title: 'Görünürlük',
     attendancePublic: 'Herkese Açık Katılım',
     attendancePublicDescription: 'Diğer üyelerin derslere katılımınızı görmesine izin verin',
     showInLeaderboard: 'Liderlik Tablosunda Göster',
@@ -291,6 +291,7 @@ export default {
     login: 'Giriş Yap',
     noAccount: 'Hesabınız yok mu?',
     signUp: 'Kayıt ol',
+    notAMember: 'Üye değil misiniz?',
 
     // Validation
     emailRequired: 'E-posta gerekli',
@@ -729,6 +730,15 @@ export default {
       timePeriod: 'Zaman Dilimi',
       discipline: 'Disiplin',
       demographic: 'Yaş Grubu',
+    },
+    privacy: {
+      title: 'Yarışmaya Katıl',
+      description:
+        'Şu anda sıralamada gizlisiniz. Diğer üyelerle yarışmak ve ilerlemenizi takip etmek için herkese açık olun!',
+      goPublic: 'Herkese Açık Ol',
+      remindLater: 'Sonra',
+      dontShowAgain: 'Bir daha gösterme',
+      canChangeInSettings: 'Bunu istediğiniz zaman profil ayarlarınızdan değiştirebilirsiniz.',
     },
   },
 

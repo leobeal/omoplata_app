@@ -3,9 +3,21 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Link, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
+import {
+  View,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  ImageBackground,
+  Image,
+  Keyboard,
+  Pressable,
+  Linking,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import api from '@/api/client';
+import { ENDPOINTS } from '@/api/config';
 import AnimatedView from '@/components/AnimatedView';
 import { Button } from '@/components/Button';
 import Icon from '@/components/Icon';
@@ -18,6 +30,15 @@ import { getCachedImage } from '@/utils/image-cache';
 
 // Default background image
 const DEFAULT_BACKGROUND = require('@/assets/_global/img/2.jpg');
+
+// Tenant icons (static requires for build-time tenant builds)
+const TENANT_ICONS: Record<string, ReturnType<typeof require>> = {
+  'evolve-grappling': require('@/assets/evolve-grappling/icon.png'),
+  'sparta-aachen': require('@/assets/sparta-aachen/icon.png'),
+  'supreme-mma': require('@/assets/supreme-mma/icon.png'),
+  main: require('@/assets/_global/icon.png'),
+};
+const DEFAULT_LOGO = require('@/assets/_global/icon.png');
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
@@ -33,11 +54,59 @@ export default function LoginScreen() {
   const [backgroundSource, setBackgroundSource] = useState<
     { uri: string } | ReturnType<typeof require> | null
   >(null);
+  const [logoSource, setLogoSource] = useState<{ uri: string } | ReturnType<typeof require>>(
+    DEFAULT_LOGO
+  );
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [signupLink, setSignupLink] = useState<string | undefined>(tenant?.signup_link);
+
+  // Fetch club config for signup_link (needed for tenant builds where tenant-selection is skipped)
+  useEffect(() => {
+    const fetchClubConfig = async () => {
+      // If we already have signup_link from tenant context, use it
+      if (tenant?.signup_link) {
+        setSignupLink(tenant.signup_link);
+        return;
+      }
+
+      // Otherwise fetch from API (signup_link comes from /check endpoint)
+      try {
+        const response = await api.get(ENDPOINTS.TENANT.CHECK);
+        const link = response.data?.signup_link;
+        if (link) {
+          setSignupLink(link);
+        }
+      } catch (error) {
+        // Silently fail - signup link is optional
+      }
+    };
+
+    fetchClubConfig();
+  }, [tenant?.signup_link]);
 
   // Load cached background image (preloaded by _layout.tsx during splash)
   useEffect(() => {
     loadCachedBackground();
   }, [tenant?.loginBackground]);
+
+  // Load tenant logo
+  useEffect(() => {
+    loadLogo();
+  }, [tenant?.logo]);
+
+  // Listen for keyboard show/hide
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSubscription = Keyboard.addListener(showEvent, () => setIsKeyboardVisible(true));
+    const hideSubscription = Keyboard.addListener(hideEvent, () => setIsKeyboardVisible(false));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const loadCachedBackground = async () => {
     try {
@@ -63,6 +132,41 @@ export default function LoginScreen() {
       console.error('Failed to load cached background:', error);
       // Fallback to default on error
       setBackgroundSource(DEFAULT_BACKGROUND);
+    }
+  };
+
+  const loadLogo = async () => {
+    try {
+      const buildConfig = Constants.expoConfig?.extra;
+      const configuredTenant = buildConfig?.tenant;
+
+      // For tenant builds, use the bundled tenant icon
+      if (configuredTenant && TENANT_ICONS[configuredTenant]) {
+        setLogoSource(TENANT_ICONS[configuredTenant]);
+        return;
+      }
+
+      // For runtime-selected tenants, check for remote logo URL
+      const logoUrl = tenant?.logo || buildConfig?.logo;
+
+      if (!logoUrl) {
+        // No remote logo configured, use default
+        setLogoSource(DEFAULT_LOGO);
+        return;
+      }
+
+      // Check cache for remote logo
+      const cachedUri = await getCachedImage(logoUrl);
+      if (cachedUri) {
+        setLogoSource({ uri: cachedUri });
+      } else {
+        // Fallback to default if cache miss
+        setLogoSource(DEFAULT_LOGO);
+      }
+    } catch (error) {
+      console.error('Failed to load logo:', error);
+      // Fallback to default on error
+      setLogoSource(DEFAULT_LOGO);
     }
   };
 
@@ -133,37 +237,41 @@ export default function LoginScreen() {
   return (
     <ImageBackground source={backgroundSource} style={{ flex: 1 }}>
       <LinearGradient colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.5)']} style={{ flex: 1 }}>
-        <ScrollView
-          contentContainerStyle={{ flex: 1 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          bounces
-          className="flex-1">
-          <StatusBar style="light" />
+        <StatusBar style="light" />
 
-          {/* Header */}
-          <View
-            className="w-full flex-row items-center justify-between px-global"
-            style={{ paddingTop: insets.top + 16 }}>
-            {/* Only show back button for generic builds where tenant selection is required */}
-            {isTenantRequired ? (
-              <Icon name="ArrowLeft" onPress={handleBack} size={24} color="white" />
-            ) : (
-              <View style={{ width: 24 }} />
-            )}
+        {/* Header */}
+        <View
+          className="w-full flex-row items-center justify-between px-global"
+          style={{ paddingTop: isKeyboardVisible ? insets.top : insets.top + 16 }}>
+          {/* Only show back button for generic builds where tenant selection is required */}
+          {isTenantRequired ? (
+            <Icon name="ArrowLeft" onPress={handleBack} size={24} color="white" />
+          ) : (
             <View style={{ width: 24 }} />
-          </View>
+          )}
+          <View style={{ width: 24 }} />
+        </View>
 
-          {/* Spacer */}
-          <View className="flex-1" />
-
-          {/* Login Form */}
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+        {/* Login Form - positioned at bottom */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+          style={{ flex: 1, justifyContent: 'flex-end' }}>
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            bounces>
             <AnimatedView duration={500} delay={200} animation="slideInBottom" className="p-4">
               <View className="rounded-3xl border border-border bg-background p-6">
                 <View className="mb-6 items-center justify-center">
+                  {!isKeyboardVisible && (
+                    <Image
+                      source={logoSource}
+                      className="mb-4 h-20 w-20 rounded-2xl"
+                      resizeMode="contain"
+                    />
+                  )}
                   <ThemedText className="font-outfit-bold text-3xl">{t('login.title')}</ThemedText>
                   <ThemedText className="text-sm opacity-60">{t('login.subtitle')}</ThemedText>
                 </View>
@@ -210,17 +318,26 @@ export default function LoginScreen() {
                 />
 
                 <Link
-                  className="mb-4 text-center text-sm text-text underline"
+                  className="text-center text-sm text-text underline"
                   href="/screens/forgot-password">
                   {t('login.forgotPassword')}
                 </Link>
               </View>
             </AnimatedView>
-          </KeyboardAvoidingView>
 
-          {/* Bottom Spacer for safe area */}
-          <View style={{ height: insets.bottom + 16 }} />
-        </ScrollView>
+            {/* Not a member link - hidden when keyboard is open */}
+            {signupLink && !isKeyboardVisible && (
+              <Pressable onPress={() => Linking.openURL(signupLink)} className="mt-4 py-2">
+                <ThemedText className="text-center text-sm text-white underline">
+                  {t('login.notAMember')}
+                </ThemedText>
+              </Pressable>
+            )}
+
+            {/* Bottom Spacer for safe area */}
+            <View style={{ height: insets.bottom + 16 }} />
+          </ScrollView>
+        </KeyboardAvoidingView>
       </LinearGradient>
     </ImageBackground>
   );

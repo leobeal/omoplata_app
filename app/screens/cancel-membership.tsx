@@ -96,11 +96,9 @@ export default function CancelMembershipScreen() {
             setCancelling(true);
             try {
               await cancelMembership(membership.id, cancellationDate, reason || undefined);
-              // Refresh membership data to get updated endsAt
-              await loadMembership(true);
-              // Also refresh the shared app data so membership page shows updated state
+              // Refresh the shared app data so membership page shows updated state
               await refreshData();
-              // Navigate back to membership page
+              // Navigate back to membership page (it will reload on focus)
               router.back();
             } catch (error) {
               console.error('Error cancelling membership:', error);
@@ -262,11 +260,6 @@ export default function CancelMembershipScreen() {
             <ThemedText className="text-sm opacity-70">
               {t('membership.membershipCancelledOn', { date: formatDate(cancellationDate) })}
             </ThemedText>
-            <View className="mt-3 rounded-lg bg-background p-3">
-              <ThemedText className="text-xs opacity-50">
-                {t('membership.earliestCancellationDate', { date: formatDate(earliestDate) })}
-              </ThemedText>
-            </View>
           </View>
 
           {!!membershipSettings.cancellationNoticeDays && (
@@ -299,18 +292,6 @@ export default function CancelMembershipScreen() {
           />
           <ThemedText className="mt-2 text-xs opacity-50">
             {t('membership.cancellationReasonOptional')}
-          </ThemedText>
-        </View>
-
-        {/* Cancellation Policy */}
-        <Section title={t('membership.cancellationPolicy')} className="mb-4" />
-        <View className="mb-6 rounded-2xl bg-secondary p-5">
-          <ThemedText className="text-sm opacity-70">
-            {membershipSettings.cancellationNoticeDays
-              ? t('membership.daysNoticeRequired', {
-                  count: membershipSettings.cancellationNoticeDays,
-                })
-              : t('membership.defaultCancellationPolicy')}
           </ThemedText>
         </View>
 

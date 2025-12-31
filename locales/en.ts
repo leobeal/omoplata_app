@@ -175,8 +175,8 @@ export default {
     version: 'Version',
     appVersion: 'App Version',
     buildNumber: 'Build Number',
-    privacy: 'Privacy',
-    privacyDescription: 'Control how your information is shared',
+    privacy: 'Visibility',
+    privacyDescription: 'Control what others can see about you',
     language: 'Language',
     languageDescription: 'Change app language',
     rateApp: 'Rate App',
@@ -207,7 +207,7 @@ export default {
 
   // Privacy Settings
   privacy: {
-    title: 'Privacy',
+    title: 'Visibility',
     attendancePublic: 'Public Attendance',
     attendancePublicDescription: 'Allow other members to see when you attend classes',
     showInLeaderboard: 'Show in Leaderboard',
@@ -300,6 +300,7 @@ export default {
     login: 'Login',
     noAccount: "Don't have an account?",
     signUp: 'Sign up',
+    notAMember: 'Not a member?',
 
     // Validation
     emailRequired: 'Email is required',
@@ -740,6 +741,15 @@ export default {
       week: 'Week',
       month: 'Month',
       year: 'Year',
+    },
+    privacy: {
+      title: 'Join the Competition',
+      description:
+        "You're currently hidden from the leaderboard. Go public to compete with other members and track your progress!",
+      goPublic: 'Go Public',
+      remindLater: 'Later',
+      dontShowAgain: "Don't show this again",
+      canChangeInSettings: 'You can change this anytime in your profile settings.',
     },
   },
 

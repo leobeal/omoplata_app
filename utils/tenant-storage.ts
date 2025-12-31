@@ -7,6 +7,10 @@ export interface TenantInfo {
   name: string;
   domain: string;
   loginBackground?: string;
+  dashboardBackground?: string;
+  forgotPasswordBackground?: string;
+  logo?: string;
+  signup_link?: string;
 }
 
 /**

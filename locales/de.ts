@@ -176,8 +176,8 @@ export default {
     version: 'Version',
     appVersion: 'App-Version',
     buildNumber: 'Build-Nummer',
-    privacy: 'Datenschutz',
-    privacyDescription: 'Kontrolliere, wie deine Informationen geteilt werden',
+    privacy: 'Sichtbarkeit',
+    privacyDescription: 'Bestimme, was andere über dich sehen können',
     language: 'Sprache',
     languageDescription: 'App-Sprache ändern',
     rateApp: 'App bewerten',
@@ -210,7 +210,7 @@ export default {
 
   // Datenschutz-Einstellungen
   privacy: {
-    title: 'Datenschutz',
+    title: 'Sichtbarkeit',
     attendancePublic: 'Öffentliche Anwesenheit',
     attendancePublicDescription:
       'Anderen Mitgliedern erlauben zu sehen, wann du an Kursen teilnimmst',
@@ -305,6 +305,7 @@ export default {
     login: 'Anmelden',
     noAccount: 'Noch kein Konto?',
     signUp: 'Registrieren',
+    notAMember: 'Noch kein Mitglied?',
 
     // Validierung
     emailRequired: 'E-Mail ist erforderlich',
@@ -713,6 +714,15 @@ export default {
       week: 'Woche',
       month: 'Monat',
       year: 'Jahr',
+    },
+    privacy: {
+      title: 'Tritt dem Wettbewerb bei',
+      description:
+        'Du bist derzeit in der Rangliste verborgen. Werde sichtbar, um mit anderen Mitgliedern zu konkurrieren und deinen Fortschritt zu verfolgen!',
+      goPublic: 'Sichtbar werden',
+      remindLater: 'Später',
+      dontShowAgain: 'Nicht mehr anzeigen',
+      canChangeInSettings: 'Du kannst dies jederzeit in deinen Profileinstellungen ändern.',
     },
   },
 

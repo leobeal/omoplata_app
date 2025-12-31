@@ -174,8 +174,8 @@ export default {
     version: 'Versão',
     appVersion: 'Versão do App',
     buildNumber: 'Número da Build',
-    privacy: 'Privacidade',
-    privacyDescription: 'Controle como suas informações são compartilhadas',
+    privacy: 'Visibilidade',
+    privacyDescription: 'Controle o que outros podem ver sobre você',
     language: 'Idioma',
     languageDescription: 'Alterar idioma do aplicativo',
     rateApp: 'Avaliar App',
@@ -207,7 +207,7 @@ export default {
 
   // Configurações de Privacidade
   privacy: {
-    title: 'Privacidade',
+    title: 'Visibilidade',
     attendancePublic: 'Presença Pública',
     attendancePublicDescription:
       'Permitir que outros membros vejam quando você participa das aulas',
@@ -301,6 +301,7 @@ export default {
     login: 'Entrar',
     noAccount: 'Não tem uma conta?',
     signUp: 'Cadastre-se',
+    notAMember: 'Ainda não é membro?',
 
     // Validação
     emailRequired: 'E-mail é obrigatório',
@@ -709,6 +710,15 @@ export default {
       week: 'Semana',
       month: 'Mês',
       year: 'Ano',
+    },
+    privacy: {
+      title: 'Entre na Competição',
+      description:
+        'Você está oculto do ranking. Torne-se visível para competir com outros membros e acompanhar seu progresso!',
+      goPublic: 'Tornar Público',
+      remindLater: 'Depois',
+      dontShowAgain: 'Não mostrar novamente',
+      canChangeInSettings: 'Você pode alterar isso a qualquer momento nas configurações do perfil.',
     },
   },
 

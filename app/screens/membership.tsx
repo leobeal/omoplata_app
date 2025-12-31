@@ -1,7 +1,8 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { getDocumentAsync } from 'expo-document-picker';
 import { requestCameraPermissionsAsync, launchCameraAsync } from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   ActivityIndicator,
@@ -68,11 +69,25 @@ export default function MembershipScreen() {
     setShowHeaderTitle(offsetY > LARGE_TITLE_HEIGHT);
   }, []);
 
+  const isFirstMount = useRef(true);
+
   // Reload when user changes (profile switch)
   useEffect(() => {
     setLoading(true);
     loadData();
   }, [user?.id]);
+
+  // Reload when screen comes back into focus (e.g., after cancellation)
+  useFocusEffect(
+    useCallback(() => {
+      // Skip first mount since useEffect already loads
+      if (isFirstMount.current) {
+        isFirstMount.current = false;
+        return;
+      }
+      loadData();
+    }, [])
+  );
 
   const loadData = async () => {
     try {

@@ -184,12 +184,17 @@ export default function TenantSelectionScreen() {
       }
 
       const tenantConfig = getTenantConfig(slug);
+      const apiData = checkResponse.data;
 
       const tenantInfo = {
         slug,
-        name: tenantConfig?.name || slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' '),
+        name:
+          apiData?.tenant?.name ||
+          tenantConfig?.name ||
+          slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' '),
         domain: getDomainForTenant(slug),
         loginBackground: tenantConfig?.loginBackground,
+        signup_link: apiData?.signup_link,
       };
 
       await setTenant(tenantInfo);
