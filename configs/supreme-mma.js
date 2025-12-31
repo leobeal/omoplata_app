@@ -27,9 +27,25 @@ module.exports = {
   // Localization
   language: 'de', // de, en, pt-BR
 
-  // Universal Links (production only)
-  universalLinkDomain: 'supreme-mma.omoplata.de',
+  // Universal Links / App Links (production only)
+  deepLinking: {
+    ios: {
+      associatedDomains: [
+        'applinks:supreme-mma.omoplata.de',
+        'webcredentials:supreme-mma.omoplata.de',
+      ],
+    },
+    android: {
+      intentFilters: [
+        { scheme: 'https', host: 'supreme-mma.omoplata.de', pathPrefix: '/' },
+      ],
+    },
+  },
 
-  loginBackground:
-    'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?q=80&w=2000&auto=format&fit=crop',
+  // Screen backgrounds
+  loginBackground: 'https://supreme-mma.omoplata.de/images/clubs/supreme-mma/login-bg.jpg',
+  forgotPasswordBackground:
+    'https://supreme-mma.omoplata.de/images/clubs/supreme-mma/forgot-password-bg.jpg',
+  dashboardBackground:
+    'https://supreme-mma.omoplata.de/images/clubs/supreme-mma/dashboard-bg.jpg',
 };

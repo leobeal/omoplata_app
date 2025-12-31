@@ -27,10 +27,28 @@ module.exports = {
   // Localization
   language: 'de', // de, en, pt-BR
 
-  // Universal Links (production only)
-  universalLinkDomain: 'evolve-grappling.omoplata.de',
+  // Universal Links / App Links (production only)
+  deepLinking: {
+    ios: {
+      associatedDomains: [
+        'applinks:evolve-grappling.omoplata.de',
+        'applinks:*.evolve-grappling.omoplata.de',
+        'webcredentials:evolve-grappling.omoplata.de',
+        'webcredentials:*.evolve-grappling.omoplata.de',
+      ],
+    },
+    android: {
+      intentFilters: [
+        { scheme: 'https', host: 'evolve-grappling.omoplata.de', pathPrefix: '/' },
+        { scheme: 'https', host: '*.evolve-grappling.omoplata.de', pathPrefix: '/' },
+      ],
+    },
+  },
 
-  // Login screen
-  loginBackground:
-    'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2000&auto=format&fit=crop',
+  // Screen backgrounds
+  loginBackground: 'https://evolve-grappling.omoplata.de/images/clubs/evolve-grappling/login-bg.jpg',
+  forgotPasswordBackground:
+    'https://evolve-grappling.omoplata.de/images/clubs/evolve-grappling/forgot-password-bg.jpg',
+  dashboardBackground:
+    'https://evolve-grappling.omoplata.de/images/clubs/evolve-grappling/dashboard-bg.jpg',
 };

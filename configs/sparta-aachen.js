@@ -27,10 +27,28 @@ module.exports = {
   // Localization
   language: 'de', // de, en, pt-BR
 
-  // Universal Links (production only)
-  universalLinkDomain: 'sparta-aachen.omoplata.de',
+  // Universal Links / App Links (production only)
+  deepLinking: {
+    ios: {
+      associatedDomains: [
+        'applinks:sparta-aachen.omoplata.de',
+        'applinks:*.sparta-aachen.omoplata.de',
+        'webcredentials:sparta-aachen.omoplata.de',
+        'webcredentials:*.sparta-aachen.omoplata.de',
+      ],
+    },
+    android: {
+      intentFilters: [
+        { scheme: 'https', host: 'sparta-aachen.omoplata.de', pathPrefix: '/' },
+        { scheme: 'https', host: '*.sparta-aachen.omoplata.de', pathPrefix: '/' },
+      ],
+    },
+  },
 
-  // Login screen
-  loginBackground:
-    'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?q=80&w=2000&auto=format&fit=crop',
+  // Screen backgrounds
+  loginBackground: 'https://sparta-aachen.omoplata.de/images/clubs/sparta-aachen/login-bg.jpg',
+  forgotPasswordBackground:
+    'https://sparta-aachen.omoplata.de/images/clubs/sparta-aachen/forgot-password-bg.jpg',
+  dashboardBackground:
+    'https://sparta-aachen.omoplata.de/images/clubs/sparta-aachen/dashboard-bg.jpg',
 };

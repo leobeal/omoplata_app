@@ -32,9 +32,31 @@ module.exports = {
   // Localization
   language: 'de', // de, en, pt-BR
 
-  // Universal Links (production only)
-  universalLinkDomain: 'omoplata.de',
+  // Universal Links / App Links (production only)
+  deepLinking: {
+    ios: {
+      associatedDomains: [
+        'applinks:omoplata.de',
+        'applinks:*.omoplata.de',
+        'applinks:test-club.omoplata.de',
+        'webcredentials:omoplata.de',
+        'webcredentials:*.omoplata.de',
+        'webcredentials:test-club.omoplata.de',
+      ],
+    },
+    android: {
+      intentFilters: [
+        { scheme: 'https', host: 'omoplata.de', pathPrefix: '/' },
+        { scheme: 'https', host: '*.omoplata.de', pathPrefix: '/' },
+      ],
+    },
+  },
 
   // Tenant is undefined for generic build - users select at runtime
   tenant: undefined,
+
+  // Screen backgrounds (optional - uses default if not set)
+  // loginBackground: 'https://{slug}.omoplata.de/images/clubs/{slug}/login-bg.jpg',
+  // forgotPasswordBackground: 'https://{slug}.omoplata.de/images/clubs/{slug}/forgot-password-bg.jpg',
+  // dashboardBackground: 'https://{slug}.omoplata.de/images/clubs/{slug}/dashboard-bg.jpg',
 };

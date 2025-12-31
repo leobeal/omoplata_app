@@ -17,15 +17,19 @@ try {
   throw new Error(`Invalid TENANT environment variable: ${tenantEnv}. Config file not found.`);
 }
 
-const version = '1.0.0';
+// Validate required config properties
+if (!config.deepLinking?.ios?.associatedDomains) {
+  throw new Error(`Config for ${tenantEnv} is missing deepLinking.ios.associatedDomains`);
+}
+if (!config.deepLinking?.android?.intentFilters) {
+  throw new Error(`Config for ${tenantEnv} is missing deepLinking.android.intentFilters`);
+}
 
 module.exports = {
   expo: {
     newArchEnabled: true,
     name: config.name,
     slug: config.slug,
-    version,
-    runtimeVersion: version,
     scheme: config.slug,
     experiments: {
       typedRoutes: false,
@@ -71,12 +75,7 @@ module.exports = {
     ios: {
       supportsTablet: false,
       bundleIdentifier: config.bundleIdentifier,
-      associatedDomains: [
-        `applinks:${config.universalLinkDomain}`,
-        `applinks:*.${config.universalLinkDomain}`,
-        `webcredentials:${config.universalLinkDomain}`,
-        `webcredentials:*.${config.universalLinkDomain}`,
-      ],
+      associatedDomains: config.deepLinking.ios.associatedDomains,
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSPhotoLibraryAddUsageDescription:
@@ -95,18 +94,7 @@ module.exports = {
         {
           action: 'VIEW',
           autoVerify: true,
-          data: [
-            {
-              scheme: 'https',
-              host: config.universalLinkDomain,
-              pathPrefix: '/',
-            },
-            {
-              scheme: 'https',
-              host: `*.${config.universalLinkDomain}`,
-              pathPrefix: '/',
-            },
-          ],
+          data: config.deepLinking.android.intentFilters,
           category: ['BROWSABLE', 'DEFAULT'],
         },
       ],

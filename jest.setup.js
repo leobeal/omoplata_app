@@ -40,14 +40,23 @@ jest.mock('react-native-safe-area-context', () => ({
 }));
 
 // Mock @react-navigation/native
-jest.mock('@react-navigation/native', () => ({
-  useIsFocused: jest.fn(() => true),
-  useNavigation: jest.fn(() => ({
-    navigate: jest.fn(),
-    goBack: jest.fn(),
-  })),
-  NavigationContainer: ({ children }) => children,
-}));
+jest.mock('@react-navigation/native', () => {
+  const React = require('react');
+  return {
+    useIsFocused: jest.fn(() => true),
+    useNavigation: jest.fn(() => ({
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    })),
+    useFocusEffect: (callback) => {
+      // Use React.useEffect to properly simulate focus effect behavior
+      React.useEffect(() => {
+        callback();
+      }, [callback]);
+    },
+    NavigationContainer: ({ children }) => children,
+  };
+});
 
 // Mock nativewind
 jest.mock('nativewind', () => ({
