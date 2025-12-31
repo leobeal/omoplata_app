@@ -623,6 +623,13 @@ export default {
       one: 'aula',
       other: 'aulas',
     },
+    filter: {
+      venue: 'Local',
+      facility: 'Sala',
+      all: 'Todos',
+      allVenues: 'Todos os Locais',
+      allFacilities: 'Todas as Salas',
+    },
   },
 
   // Graduação / Progresso de Faixa
@@ -719,6 +726,8 @@ export default {
       remindLater: 'Depois',
       dontShowAgain: 'Não mostrar novamente',
       canChangeInSettings: 'Você pode alterar isso a qualquer momento nas configurações do perfil.',
+      dismissTitle: 'Ocultar esta mensagem?',
+      dismissMessage: 'Deseja ser lembrado depois ou ocultar permanentemente?',
     },
   },
 

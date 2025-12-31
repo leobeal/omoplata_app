@@ -78,6 +78,8 @@ export default function CalendarScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [usingCachedData, setUsingCachedData] = useState(false);
+  const [selectedVenue, setSelectedVenue] = useState<string | null>(null);
+  const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
 
   // Reload when user changes (profile switch)
   useEffect(() => {
@@ -159,10 +161,40 @@ export default function CalendarScreen() {
     loadClasses(true);
   };
 
+  // Extract unique venues and facilities from all classes
+  const { venues, facilities } = useMemo(() => {
+    const venueSet = new Set<string>();
+    const facilitySet = new Set<string>();
+
+    allClasses.forEach((cls) => {
+      if (cls.location) venueSet.add(cls.location);
+      if (cls.facility) facilitySet.add(cls.facility);
+    });
+
+    return {
+      venues: Array.from(venueSet).sort(),
+      facilities: Array.from(facilitySet).sort(),
+    };
+  }, [allClasses]);
+
+  // Check if filters should be shown (more than 1 venue or facility)
+  const showVenueFilter = venues.length > 1;
+  const showFacilityFilter = facilities.length > 1;
+  const showFilters = showVenueFilter || showFacilityFilter;
+
+  // Filter classes based on selected venue and facility
+  const filteredClasses = useMemo(() => {
+    return allClasses.filter((cls) => {
+      if (selectedVenue && cls.location !== selectedVenue) return false;
+      if (selectedFacility && cls.facility !== selectedFacility) return false;
+      return true;
+    });
+  }, [allClasses, selectedVenue, selectedFacility]);
+
   // Group classes by date (extract YYYY-MM-DD)
   const classesByDate = useMemo(() => {
     const grouped: { [key: string]: Class[] } = {};
-    allClasses.forEach((cls) => {
+    filteredClasses.forEach((cls) => {
       // cls.date can be "2025-12-08 10:00:00" or "2025-12-08T10:00:00.000Z"
       // Extract just the date part (YYYY-MM-DD) by splitting on space or T
       const dateKey = cls.date.split(/[T ]/)[0];
@@ -172,7 +204,7 @@ export default function CalendarScreen() {
       grouped[dateKey].push(cls);
     });
     return grouped;
-  }, [allClasses]);
+  }, [filteredClasses]);
 
   // Generate days for horizontal scroll (30 days from now)
   const days = useMemo(() => {
@@ -441,9 +473,7 @@ export default function CalendarScreen() {
             </>
           ) : (
             <View className="flex-1 items-center justify-center py-16">
-              <View
-                className="mb-4 rounded-full p-6"
-                style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+              <View className="mb-4 rounded-full p-6" style={{ backgroundColor: colors.skeleton }}>
                 <Icon name="Calendar" size={48} color={colors.text} className="opacity-30" />
               </View>
               <ThemedText className="text-center text-xl font-bold opacity-80">
@@ -512,6 +542,99 @@ export default function CalendarScreen() {
             <ThemedText className="ml-2 text-xs" style={{ color: colors.warning }}>
               {t('network.usingCachedData')}
             </ThemedText>
+          </View>
+        )}
+
+        {/* Venue/Facility Filters */}
+        {showFilters && !loading && (
+          <View className="border-b border-border bg-secondary px-4 py-2">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 8 }}>
+              {/* Venue Filter */}
+              {showVenueFilter && (
+                <View className="flex-row items-center gap-2">
+                  <ThemedText className="text-xs opacity-60">
+                    {t('calendar.filter.venue')}:
+                  </ThemedText>
+                  <Pressable
+                    onPress={() => setSelectedVenue(null)}
+                    className="rounded-full px-3 py-1.5"
+                    style={{
+                      backgroundColor: selectedVenue === null ? colors.highlight : colors.skeleton,
+                    }}>
+                    <ThemedText
+                      className="text-xs font-medium"
+                      style={{ color: selectedVenue === null ? '#FFFFFF' : colors.text }}>
+                      {t('calendar.filter.all')}
+                    </ThemedText>
+                  </Pressable>
+                  {venues.map((venue) => (
+                    <Pressable
+                      key={venue}
+                      onPress={() => setSelectedVenue(venue)}
+                      className="rounded-full px-3 py-1.5"
+                      style={{
+                        backgroundColor:
+                          selectedVenue === venue ? colors.highlight : colors.skeleton,
+                      }}>
+                      <ThemedText
+                        className="text-xs font-medium"
+                        style={{ color: selectedVenue === venue ? '#FFFFFF' : colors.text }}>
+                        {venue}
+                      </ThemedText>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+
+              {/* Separator */}
+              {showVenueFilter && showFacilityFilter && (
+                <View
+                  className="mx-2 h-6 w-px self-center"
+                  style={{ backgroundColor: colors.border }}
+                />
+              )}
+
+              {/* Facility Filter */}
+              {showFacilityFilter && (
+                <View className="flex-row items-center gap-2">
+                  <ThemedText className="text-xs opacity-60">
+                    {t('calendar.filter.facility')}:
+                  </ThemedText>
+                  <Pressable
+                    onPress={() => setSelectedFacility(null)}
+                    className="rounded-full px-3 py-1.5"
+                    style={{
+                      backgroundColor:
+                        selectedFacility === null ? colors.highlight : colors.skeleton,
+                    }}>
+                    <ThemedText
+                      className="text-xs font-medium"
+                      style={{ color: selectedFacility === null ? '#FFFFFF' : colors.text }}>
+                      {t('calendar.filter.all')}
+                    </ThemedText>
+                  </Pressable>
+                  {facilities.map((facility) => (
+                    <Pressable
+                      key={facility}
+                      onPress={() => setSelectedFacility(facility)}
+                      className="rounded-full px-3 py-1.5"
+                      style={{
+                        backgroundColor:
+                          selectedFacility === facility ? colors.highlight : colors.skeleton,
+                      }}>
+                      <ThemedText
+                        className="text-xs font-medium"
+                        style={{ color: selectedFacility === facility ? '#FFFFFF' : colors.text }}>
+                        {facility}
+                      </ThemedText>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+            </ScrollView>
           </View>
         )}
 

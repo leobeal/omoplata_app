@@ -20,6 +20,7 @@ export interface StoredUser {
   profilePicture?: string;
   membershipId?: string;
   roles?: UserRole[];
+  showInLeaderboard?: boolean;
 }
 
 /**

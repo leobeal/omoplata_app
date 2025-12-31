@@ -627,6 +627,13 @@ export default {
       one: 'Kurs',
       other: 'Kurse',
     },
+    filter: {
+      venue: 'Standort',
+      facility: 'Raum',
+      all: 'Alle',
+      allVenues: 'Alle Standorte',
+      allFacilities: 'Alle Räume',
+    },
   },
 
   // Graduierung / Gürtelfortschritt
@@ -723,6 +730,9 @@ export default {
       remindLater: 'Später',
       dontShowAgain: 'Nicht mehr anzeigen',
       canChangeInSettings: 'Du kannst dies jederzeit in deinen Profileinstellungen ändern.',
+      dismissTitle: 'Diese Nachricht ausblenden?',
+      dismissMessage:
+        'Möchtest du später erinnert werden oder diese Nachricht dauerhaft ausblenden?',
     },
   },
 

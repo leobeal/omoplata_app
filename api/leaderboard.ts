@@ -11,6 +11,8 @@ interface ApiUserRank {
   points: number;
   classes_attended: number;
   streak_weeks: number;
+  is_opted_in?: boolean;
+  show_in_leaderboard?: boolean; // Alternative field name from profile
 }
 
 interface ApiBeltConfig {
@@ -66,6 +68,7 @@ export interface UserRank {
   points: number;
   classesAttended: number;
   streakWeeks: number;
+  isOptedIn: boolean;
 }
 
 export interface LeaderboardEntry {
@@ -123,6 +126,7 @@ const transformUserRank = (api: ApiUserRank): UserRank => ({
   points: api.points,
   classesAttended: api.classes_attended,
   streakWeeks: api.streak_weeks,
+  isOptedIn: api.is_opted_in ?? api.show_in_leaderboard ?? false,
 });
 
 const transformBeltConfig = (api: ApiBeltConfig | null): BeltConfig | null => {
@@ -135,8 +139,8 @@ const transformBeltConfig = (api: ApiBeltConfig | null): BeltConfig | null => {
   };
 };
 
-const transformEntry = (api: ApiLeaderboardEntry): LeaderboardEntry => ({
-  id: api.id,
+const transformEntry = (api: ApiLeaderboardEntry, index: number): LeaderboardEntry => ({
+  id: api.id || `rank-${api.rank}-${index}`,
   rank: api.rank,
   firstName: api.first_name,
   lastName: api.last_name,
@@ -162,7 +166,7 @@ const transformFilters = (api: ApiFilters): LeaderboardFilters => ({
 const transformLeaderboard = (api: ApiLeaderboard): Leaderboard => ({
   userRank: transformUserRank(api.user_rank),
   timePeriod: api.time_period,
-  entries: api.entries.map(transformEntry),
+  entries: api.entries.map((entry, index) => transformEntry(entry, index)),
 });
 
 const transformResponse = (api: ApiLeaderboardResponse): LeaderboardResponse => ({
@@ -254,6 +258,7 @@ export const DEFAULT_LEADERBOARD: LeaderboardResponse = {
       points: 0,
       classesAttended: 0,
       streakWeeks: 0,
+      isOptedIn: true,
     },
     timePeriod: 'month',
     entries: [],

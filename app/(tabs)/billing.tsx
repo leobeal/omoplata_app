@@ -42,9 +42,7 @@ function BillingEmptyState({ responsibleName }: { responsibleName?: string }) {
 
   return (
     <View className="flex-1 items-center justify-center px-6">
-      <View
-        className="mb-4 rounded-full p-6"
-        style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+      <View className="mb-4 rounded-full p-6" style={{ backgroundColor: colors.skeleton }}>
         <Icon name="Receipt" size={48} color={colors.text} style={{ opacity: 0.3 }} />
       </View>
       <ThemedText className="text-center text-xl font-bold opacity-80">

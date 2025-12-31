@@ -27,8 +27,6 @@ module.exports = {
   theme: {
     primary: '#2196F3',
     secondary: '#64B5F6',
-    background: '#ffffff',
-    text: '#333333',
   },
 
   // Localization

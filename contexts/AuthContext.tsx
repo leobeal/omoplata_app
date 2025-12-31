@@ -11,7 +11,7 @@ import { AppState, AppStateStatus } from 'react-native';
 
 import { switchToChild as switchToChildApi } from '@/api/account-switch';
 import { authApi } from '@/api/auth';
-import { setAuthToken as setApiAuthToken, setOnUnauthorized } from '@/api/client';
+import { api, setAuthToken as setApiAuthToken, setOnUnauthorized } from '@/api/client';
 import { Child, getProfile } from '@/api/profile';
 import reverbClient from '@/api/pusher';
 import { useTenant } from '@/contexts/TenantContext';
@@ -43,6 +43,8 @@ interface AuthContextType {
   // Role helpers
   isMember: boolean;
   isResponsibleOnly: boolean;
+  // Privacy settings
+  showInLeaderboard: boolean;
   // Profile switching
   isViewingAsChild: boolean;
   parentUser: StoredUser | null;
@@ -52,6 +54,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
   switchToChild: (childId: string) => Promise<{ success: boolean; error?: string }>;
   switchBackToParent: () => Promise<{ success: boolean; error?: string }>;
   refreshChildren: () => Promise<void>;
@@ -314,7 +317,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
   };
 
   /**
-   * Fetch children and roles from profile API
+   * Fetch children, roles, and privacy settings from profile API
    */
   const refreshChildren = useCallback(async () => {
     if (!token || isViewingAsChild) {
@@ -324,7 +327,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
 
     try {
       setChildrenLoading(true);
-      const profile = await getProfile();
+
+      // Fetch both profile and privacy settings in parallel
+      const [profile, privacyResponse] = await Promise.all([
+        getProfile(),
+        user?.prefixedId
+          ? api.get<{ data: { show_in_leaderboard: boolean } }>(`/users/${user.prefixedId}/profile`)
+          : Promise.resolve(null),
+      ]);
 
       // Handle null profile (API error/timeout)
       if (!profile) {
@@ -334,16 +344,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
 
       setChildren(profile.children || []);
 
-      // Update user roles from profile if they changed
-      if (user && profile.roles) {
+      // Update user data from profile if changed
+      if (user) {
         const currentRoles = user.roles || [];
-        const profileRoles = profile.roles;
+        const profileRoles = profile.roles || [];
         const rolesChanged =
           currentRoles.length !== profileRoles.length ||
           !currentRoles.every((r) => profileRoles.includes(r));
 
-        if (rolesChanged) {
-          const updatedUser: StoredUser = { ...user, roles: profileRoles };
+        // Get showInLeaderboard from privacy endpoint
+        const showInLeaderboard = privacyResponse?.data?.data?.show_in_leaderboard ?? false;
+        const leaderboardChanged = user.showInLeaderboard !== showInLeaderboard;
+
+        if (rolesChanged || leaderboardChanged) {
+          const updatedUser: StoredUser = {
+            ...user,
+            roles: profileRoles,
+            showInLeaderboard,
+          };
           setUser(updatedUser);
           const tenantSlug = tenant?.slug || null;
           await saveUser(updatedUser, tenantSlug);
@@ -356,6 +374,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
       setChildrenLoading(false);
     }
   }, [token, isViewingAsChild, user, tenant?.slug]);
+
+  /**
+   * Refresh user profile (for updating privacy settings, etc.)
+   */
+  const refreshProfile = useCallback(async () => {
+    if (!token || !user?.prefixedId) return;
+
+    try {
+      // Fetch privacy settings from the profile endpoint
+      const response = await api.get<{ data: { show_in_leaderboard: boolean } }>(
+        `/users/${user.prefixedId}/profile`
+      );
+
+      if (response.data?.data) {
+        const updatedUser: StoredUser = {
+          ...user,
+          showInLeaderboard: response.data.data.show_in_leaderboard ?? false,
+        };
+        setUser(updatedUser);
+        const tenantSlug = tenant?.slug || null;
+        await saveUser(updatedUser, tenantSlug);
+      }
+    } catch (error) {
+      console.error('Failed to refresh profile:', error);
+    }
+  }, [token, user, tenant?.slug]);
 
   // Fetch children when authenticated and not viewing as child
   useEffect(() => {
@@ -481,6 +525,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
     // Role helpers
     isMember: storedUserIsMember(user),
     isResponsibleOnly: storedUserIsResponsibleOnly(user),
+    // Privacy settings
+    showInLeaderboard: user?.showInLeaderboard ?? false,
     // Profile switching
     isViewingAsChild,
     parentUser,
@@ -490,6 +536,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
     login,
     logout,
     refreshSession,
+    refreshProfile,
     switchToChild,
     switchBackToParent,
     refreshChildren,

@@ -1,7 +1,8 @@
+import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -18,13 +19,50 @@ import Icon from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
 import Input from '@/components/forms/Input';
 import { useT } from '@/contexts/LocalizationContext';
+import { useTenant } from '@/contexts/TenantContext';
+import { getCachedImage } from '@/utils/image-cache';
+
+// Default background image
+const DEFAULT_BACKGROUND = require('@/assets/_global/img/1.jpg');
 
 export default function ForgotPasswordScreen() {
   const insets = useSafeAreaInsets();
   const t = useT();
+  const { tenant } = useTenant();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [backgroundSource, setBackgroundSource] = useState<
+    { uri: string } | ReturnType<typeof require>
+  >(DEFAULT_BACKGROUND);
+
+  // Load background image
+  useEffect(() => {
+    loadBackground();
+  }, [tenant?.forgotPasswordBackground]);
+
+  const loadBackground = async () => {
+    try {
+      const buildConfig = Constants.expoConfig?.extra;
+      const backgroundUrl =
+        tenant?.forgotPasswordBackground || buildConfig?.forgotPasswordBackground;
+
+      if (!backgroundUrl) {
+        setBackgroundSource(DEFAULT_BACKGROUND);
+        return;
+      }
+
+      const cachedUri = await getCachedImage(backgroundUrl);
+      if (cachedUri) {
+        setBackgroundSource({ uri: cachedUri });
+      } else {
+        setBackgroundSource(DEFAULT_BACKGROUND);
+      }
+    } catch (error) {
+      console.error('Failed to load background:', error);
+      setBackgroundSource(DEFAULT_BACKGROUND);
+    }
+  };
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -68,7 +106,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <ImageBackground source={require('@/assets/_global/img/1.jpg')} style={{ flex: 1 }}>
+    <ImageBackground source={backgroundSource} style={{ flex: 1 }}>
       <LinearGradient colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.5)']} style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}

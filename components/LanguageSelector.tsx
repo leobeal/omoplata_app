@@ -8,7 +8,6 @@ import ThemedText from './ThemedText';
 import { updateUserLocale } from '@/api/profile';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/LocalizationContext';
-import { useTenant } from '@/contexts/TenantContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 import { LANGUAGE_OPTIONS, SupportedLanguages } from '@/locales';
 
@@ -26,7 +25,6 @@ const LanguageSelector = forwardRef<LanguageSelectorRef, LanguageSelectorProps>(
   ({ visible, onClose }, ref) => {
     const { t, locale, setLocale } = useTranslation();
     const { user } = useAuth();
-    const { tenant } = useTenant();
     const colors = useThemeColors();
     const [isUpdating, setIsUpdating] = useState<string | null>(null);
     const actionSheetRef = useRef<ActionSheetRef>(null);
@@ -58,8 +56,8 @@ const LanguageSelector = forwardRef<LanguageSelectorRef, LanguageSelectorProps>(
       setIsUpdating(languageCode);
 
       try {
-        // Update locale in context and local storage
-        await setLocale(languageCode, tenant?.slug);
+        // Update locale in context and local storage (global, not tenant-specific)
+        await setLocale(languageCode);
 
         // Update on backend if user is logged in
         if (user?.id) {

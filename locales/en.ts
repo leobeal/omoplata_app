@@ -624,6 +624,13 @@ export default {
       one: 'class',
       other: 'classes',
     },
+    filter: {
+      venue: 'Venue',
+      facility: 'Facility',
+      all: 'All',
+      allVenues: 'All Venues',
+      allFacilities: 'All Facilities',
+    },
   },
 
   // Frequencies / Durations (ISO 8601)
@@ -748,8 +755,10 @@ export default {
         "You're currently hidden from the leaderboard. Go public to compete with other members and track your progress!",
       goPublic: 'Go Public',
       remindLater: 'Later',
-      dontShowAgain: "Don't show this again",
+      dontShowAgain: "Don't show again",
       canChangeInSettings: 'You can change this anytime in your profile settings.',
+      dismissTitle: 'Hide this message?',
+      dismissMessage: 'Would you like to be reminded later or hide this permanently?',
     },
   },
 

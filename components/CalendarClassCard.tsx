@@ -46,9 +46,11 @@ const CalendarClassCard = memo(function CalendarClassCard({
   const instructor = typeof classData.instructor === 'string' ? classData.instructor : '';
   const hasInstructor = instructor && instructor.trim() !== '';
 
-  // Check for valid location
+  // Check for valid location/facility
   const location = typeof classData.location === 'string' ? classData.location : '';
-  const hasLocation = location && location.trim() !== '';
+  const facility = typeof classData.facility === 'string' ? classData.facility : '';
+  const hasLocation = (location && location.trim() !== '') || (facility && facility.trim() !== '');
+  const locationDisplay = location && facility ? `${facility} · ${location}` : facility || location;
 
   // Check for valid level
   const level = typeof classData.level === 'string' ? classData.level : '';
@@ -134,7 +136,7 @@ const CalendarClassCard = memo(function CalendarClassCard({
             {hasLocation && (
               <View className="flex-row items-center">
                 <Icon name="MapPin" size={14} color={colors.text} className="opacity-50" />
-                <ThemedText className="ml-1.5 text-sm opacity-70">{location}</ThemedText>
+                <ThemedText className="ml-1.5 text-sm opacity-70">{locationDisplay}</ThemedText>
               </View>
             )}
             {!hasLocation && <View />}

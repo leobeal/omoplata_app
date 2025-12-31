@@ -57,6 +57,7 @@ interface ApiUserResponse {
   responsibles: ApiResponsible[];
   primary_responsible: ApiResponsible | null;
   children: ApiChild[];
+  show_in_leaderboard?: boolean;
 }
 
 // Internal Types (camelCase for app use)
@@ -112,6 +113,7 @@ export interface Profile {
   responsibles: Responsible[];
   primaryResponsible: Responsible | null;
   children: Child[];
+  showInLeaderboard?: boolean;
 }
 
 /**
@@ -206,6 +208,7 @@ const transformApiUser = (apiUser: ApiUserResponse): Profile => {
       relationship: c.relationship,
       responsibleHadAccount: c.responsible_had_account,
     })),
+    showInLeaderboard: apiUser.show_in_leaderboard,
   };
 };
 

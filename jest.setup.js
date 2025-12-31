@@ -88,6 +88,13 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   clear: jest.fn(() => Promise.resolve()),
 }));
 
+// Mock image-cache utility
+jest.mock('@/utils/image-cache', () => ({
+  getCachedImage: jest.fn(() => Promise.resolve(null)),
+  cacheImage: jest.fn(() => Promise.resolve()),
+  clearImageCache: jest.fn(() => Promise.resolve()),
+}));
+
 // Silence the warning about act()
 global.console = {
   ...console,

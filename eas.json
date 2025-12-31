@@ -42,6 +42,14 @@
         "TENANT": "sparta-aachen"
       },
       "channel": "sparta-aachen"
+    },
+    "supreme-mma": {
+      "autoIncrement": true,
+      "env": {
+        "TENANT": "supreme-mma",
+        "APP_ENV": "production"
+      },
+      "channel": "supreme-mma"
     }
   },
   "submit": {

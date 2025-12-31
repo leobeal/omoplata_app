@@ -234,7 +234,7 @@ export default function NotificationsScreen() {
             progressBackgroundColor={colors.bg}
           />
         }>
-        <LargeTitle title={t('notifications.title')} className="px-6 pt-2" />
+        <LargeTitle title={t('notifications.title')} className="pt-2" />
 
         {/* Push Notification Permission Banner */}
         {permissionStatus !== 'granted' && !permissionRequested && (

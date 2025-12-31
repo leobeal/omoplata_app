@@ -109,9 +109,7 @@ function DateHeader({ date }: { date: string }) {
 
   return (
     <View className="my-4 items-center">
-      <View
-        className="rounded-full px-3 py-1"
-        style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+      <View className="rounded-full px-3 py-1" style={{ backgroundColor: colors.skeleton }}>
         <ThemedText className="text-sm font-medium opacity-60">{date}</ThemedText>
       </View>
     </View>

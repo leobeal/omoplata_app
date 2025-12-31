@@ -275,9 +275,7 @@ export default function MessagesScreen() {
         {/* Threads List */}
         {threads.length === 0 ? (
           <View className="flex-1 items-center justify-center py-16">
-            <View
-              className="mb-4 rounded-full p-6"
-              style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+            <View className="mb-4 rounded-full p-6" style={{ backgroundColor: colors.skeleton }}>
               <Icon name="MessageSquare" size={48} color={colors.text} style={{ opacity: 0.3 }} />
             </View>
             <ThemedText className="text-center text-lg font-semibold opacity-60">

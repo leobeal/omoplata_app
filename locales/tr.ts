@@ -613,6 +613,13 @@ export default {
       one: 'ders',
       other: 'ders',
     },
+    filter: {
+      venue: 'Mekan',
+      facility: 'Salon',
+      all: 'Tümü',
+      allVenues: 'Tüm Mekanlar',
+      allFacilities: 'Tüm Salonlar',
+    },
   },
 
   // Frequencies / Durations (ISO 8601)
@@ -739,6 +746,9 @@ export default {
       remindLater: 'Sonra',
       dontShowAgain: 'Bir daha gösterme',
       canChangeInSettings: 'Bunu istediğiniz zaman profil ayarlarınızdan değiştirebilirsiniz.',
+      dismissTitle: 'Bu mesajı gizle?',
+      dismissMessage:
+        'Daha sonra hatırlatılmasını mı yoksa kalıcı olarak gizlenmesini mi istersiniz?',
     },
   },
 

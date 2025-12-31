@@ -16,7 +16,7 @@ export const getCurrentEnv = () => ENV;
 const getApiUrl = (env: typeof ENV, tenant: string): string => {
   switch (env) {
     case 'development':
-      return `https://${tenant}.omoplata.localhost/api`;
+      return `https://${tenant}.sportsmanager.test/api`;
     case 'staging':
       return `https://${tenant}.omoplata.eu/api`;
     case 'production':

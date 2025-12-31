@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { memo, useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
@@ -32,12 +33,18 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/contexts/DashboardReadyContext';
 import { useTranslation } from '@/contexts/LocalizationContext';
 import { useScrollToTop } from '@/contexts/ScrollToTopContext';
+import { useTenant } from '@/contexts/TenantContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
+import { getCachedImage } from '@/utils/image-cache';
+
+// Default dashboard background
+const DEFAULT_DASHBOARD_BG = require('@/assets/_global/img/6.jpg');
 
 export default function HomeScreen() {
   const { t, locale } = useTranslation();
   const colors = useThemeColors();
   const { user, isMember } = useAuth();
+  const { tenant } = useTenant();
   const {
     classes,
     childrenWithClasses,
@@ -53,6 +60,36 @@ export default function HomeScreen() {
     setPaymentMethods,
   } = useAppData();
   const [refreshing, setRefreshing] = useState(false);
+  const [dashboardBgSource, setDashboardBgSource] = useState<
+    { uri: string } | ReturnType<typeof require>
+  >(DEFAULT_DASHBOARD_BG);
+
+  // Load dashboard background image
+  useEffect(() => {
+    loadDashboardBackground();
+  }, [tenant?.dashboardBackground]);
+
+  const loadDashboardBackground = async () => {
+    try {
+      const buildConfig = Constants.expoConfig?.extra;
+      const backgroundUrl = tenant?.dashboardBackground || buildConfig?.dashboardBackground;
+
+      if (!backgroundUrl) {
+        setDashboardBgSource(DEFAULT_DASHBOARD_BG);
+        return;
+      }
+
+      const cachedUri = await getCachedImage(backgroundUrl);
+      if (cachedUri) {
+        setDashboardBgSource({ uri: cachedUri });
+      } else {
+        setDashboardBgSource(DEFAULT_DASHBOARD_BG);
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard background:', error);
+      setDashboardBgSource(DEFAULT_DASHBOARD_BG);
+    }
+  };
 
   const userName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';
 
@@ -145,7 +182,7 @@ export default function HomeScreen() {
       {/* Fixed Background Image - Dark mode only */}
       {colors.isDark && (
         <ImageBackground
-          source={require('@/assets/_global/img/6.jpg')}
+          source={dashboardBgSource}
           className="absolute left-0 right-0 top-0 h-[700px]"
           resizeMode="cover">
           <LinearGradient

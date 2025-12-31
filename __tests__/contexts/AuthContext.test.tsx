@@ -59,6 +59,7 @@ describe('AuthContext', () => {
       const mockToken = 'stored-token-123';
       const mockUser = {
         id: 'user-123',
+        prefixedId: 'usr_user-123',
         email: 'test@example.com',
         firstName: 'John',
         lastName: 'Doe',
@@ -248,6 +249,7 @@ describe('AuthContext', () => {
       const mockToken = 'existing-token';
       const mockUser = {
         id: 'user-123',
+        prefixedId: 'usr_user-123',
         email: 'test@example.com',
         firstName: 'John',
         lastName: 'Doe',
@@ -279,6 +281,7 @@ describe('AuthContext', () => {
       const mockToken = 'existing-token';
       const mockUser = {
         id: 'user-123',
+        prefixedId: 'usr_user-123',
         email: 'test@example.com',
         firstName: 'John',
         lastName: 'Doe',

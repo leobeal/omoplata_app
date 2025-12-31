@@ -1,6 +1,9 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,
@@ -8,6 +11,7 @@ import {
   View,
 } from 'react-native';
 
+import { api } from '@/api/client';
 import {
   getLeaderboard,
   Leaderboard,
@@ -15,6 +19,7 @@ import {
   LeaderboardParams,
 } from '@/api/leaderboard';
 import Avatar from '@/components/Avatar';
+import { Button } from '@/components/Button';
 import {
   FilterBottomSheet,
   FilterBottomSheetRef,
@@ -45,8 +50,10 @@ interface CachedLeaderboardData {
 export default function LeaderboardScreen() {
   const { t } = useTranslation();
   const colors = useThemeColors();
-  const { user } = useAuth();
+  const { user, showInLeaderboard, refreshProfile } = useAuth();
+  const isFocused = useIsFocused();
   const filterSheetRef = useRef<FilterBottomSheetRef>(null);
+  const wasFocusedRef = useRef(true);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -65,6 +72,26 @@ export default function LeaderboardScreen() {
   // Scroll state for collapsible title
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
   const LARGE_TITLE_HEIGHT = 44; // Approximate height of large title
+
+  // Privacy opt-in state
+  const [isOptingIn, setIsOptingIn] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [bannerPermanentlyDismissed, setBannerPermanentlyDismissed] = useState(false);
+
+  // Load permanent dismissal state from AsyncStorage
+  useEffect(() => {
+    const loadDismissalState = async () => {
+      try {
+        const dismissed = await AsyncStorage.getItem('@omoplata/leaderboard_banner_dismissed');
+        if (dismissed === 'true') {
+          setBannerPermanentlyDismissed(true);
+        }
+      } catch (error) {
+        console.error('Failed to load banner dismissal state:', error);
+      }
+    };
+    loadDismissalState();
+  }, []);
 
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetY = event.nativeEvent.contentOffset.y;
@@ -138,19 +165,71 @@ export default function LeaderboardScreen() {
     [selectedDiscipline, selectedTimePeriod, selectedDemographic]
   );
 
+  const handleGoPublic = useCallback(async () => {
+    if (!user?.prefixedId) return;
+
+    setIsOptingIn(true);
+    try {
+      const response = await api.patch(`/users/${user.prefixedId}/profile`, {
+        show_in_leaderboard: true,
+      });
+
+      if (!response.error) {
+        // Refresh profile to update showInLeaderboard in context and clear cache
+        await refreshProfile();
+        cacheRef.current.clear();
+        await loadLeaderboard(true);
+      }
+    } catch (error) {
+      console.error('Failed to update privacy setting:', error);
+    } finally {
+      setIsOptingIn(false);
+    }
+  }, [user?.prefixedId, loadLeaderboard, refreshProfile]);
+
+  const handleRemindLater = useCallback(() => {
+    setBannerDismissed(true);
+  }, []);
+
+  const handleDontShowAgain = useCallback(async () => {
+    setBannerPermanentlyDismissed(true);
+    try {
+      await AsyncStorage.setItem('@omoplata/leaderboard_banner_dismissed', 'true');
+    } catch (error) {
+      console.error('Failed to save banner dismissal state:', error);
+    }
+  }, []);
+
   // Track previous user ID to detect profile switches
   const previousUserIdRef = useRef<string | undefined>(user?.id);
 
   // Reload when filters change or user changes (profile switch)
   useEffect(() => {
-    // Clear cache when user changes
+    // Clear cache and reset dismissal state when user changes
     if (previousUserIdRef.current !== user?.id) {
       cacheRef.current.clear();
       previousUserIdRef.current = user?.id;
+      setBannerDismissed(false);
+      // Reload permanent dismissal state for new user
+      AsyncStorage.getItem('@omoplata/leaderboard_banner_dismissed').then((dismissed) => {
+        setBannerPermanentlyDismissed(dismissed === 'true');
+      });
     }
 
     loadLeaderboard();
   }, [loadLeaderboard, user?.id]);
+
+  // Clear in-memory cache and reload when screen comes back into focus
+  // This ensures privacy setting changes from settings screen are reflected
+  useEffect(() => {
+    if (isFocused && !wasFocusedRef.current) {
+      // Screen just came back into focus - refresh profile and leaderboard
+      cacheRef.current.clear();
+      refreshProfile();
+      loadLeaderboard(true);
+    }
+    wasFocusedRef.current = isFocused;
+  }, [isFocused, loadLeaderboard, refreshProfile]);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -249,6 +328,16 @@ export default function LeaderboardScreen() {
           </View>
         )}
 
+        {/* Privacy Banner - show when user is not opted in and hasn't dismissed */}
+        {!showInLeaderboard && !bannerDismissed && !bannerPermanentlyDismissed && (
+          <PrivacyBanner
+            onGoPublic={handleGoPublic}
+            onRemindLater={handleRemindLater}
+            onDontShowAgain={handleDontShowAgain}
+            isLoading={isOptingIn}
+          />
+        )}
+
         {/* Content area - show loader or leaderboard */}
         {loading ? (
           <View className="flex-1 items-center justify-center py-16">
@@ -268,7 +357,7 @@ export default function LeaderboardScreen() {
               <View className="rounded-2xl bg-secondary">
                 {leaderboard?.entries.slice(3).map((entry, index, arr) => (
                   <LeaderboardEntryCard
-                    key={entry.id}
+                    key={entry.id && entry.id !== 'null' ? entry.id : `entry-${index}`}
                     entry={entry}
                     isCurrentUser={entry.id === 'current-user'}
                     isLast={index === arr.length - 1}
@@ -305,9 +394,7 @@ const EmptyState = memo(({ hasFilters }: { hasFilters: boolean }) => {
 
   return (
     <View className="flex-1 items-center justify-center py-16">
-      <View
-        className="mb-4 rounded-full p-6"
-        style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+      <View className="mb-4 rounded-full p-6" style={{ backgroundColor: colors.skeleton }}>
         <Icon name="Trophy" size={48} color={colors.text} className="opacity-30" />
       </View>
       <ThemedText className="text-center text-xl font-bold opacity-80">
@@ -347,3 +434,74 @@ const ErrorState = memo(({ onRetry }: { onRetry: () => void }) => {
     </View>
   );
 });
+
+const PrivacyBanner = memo(
+  ({
+    onGoPublic,
+    onRemindLater,
+    onDontShowAgain,
+    isLoading,
+  }: {
+    onGoPublic: () => void;
+    onRemindLater: () => void;
+    onDontShowAgain: () => void;
+    isLoading: boolean;
+  }) => {
+    const { t } = useTranslation();
+    const colors = useThemeColors();
+
+    const handleClose = useCallback(() => {
+      Alert.alert(t('leaderboard.privacy.dismissTitle'), t('leaderboard.privacy.dismissMessage'), [
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('leaderboard.privacy.remindLater'),
+          onPress: onRemindLater,
+        },
+        {
+          text: t('leaderboard.privacy.dontShowAgain'),
+          onPress: onDontShowAgain,
+          style: 'destructive',
+        },
+      ]);
+    }, [t, onDontShowAgain, onRemindLater]);
+
+    return (
+      <View className="mb-4 rounded-2xl bg-secondary p-5">
+        {/* Close button */}
+        <Pressable
+          onPress={handleClose}
+          className="absolute right-3 top-3 h-8 w-8 items-center justify-center rounded-full"
+          style={{ backgroundColor: colors.text + '10' }}>
+          <Icon name="X" size={18} color={colors.text} style={{ opacity: 0.5 }} />
+        </Pressable>
+
+        <View className="mb-4 items-center">
+          <ThemedText className="mb-1 text-center text-lg font-bold">
+            {t('leaderboard.privacy.title')}
+          </ThemedText>
+          <ThemedText className="text-center text-sm opacity-70">
+            {t('leaderboard.privacy.description')}
+          </ThemedText>
+        </View>
+        <ThemedText className="mb-4 text-center text-xs opacity-50">
+          {t('leaderboard.privacy.canChangeInSettings')}
+        </ThemedText>
+        <View className="gap-2">
+          <Button
+            title={t('leaderboard.privacy.goPublic')}
+            onPress={onGoPublic}
+            loading={isLoading}
+          />
+          <Button
+            title={t('leaderboard.privacy.remindLater')}
+            onPress={onRemindLater}
+            variant="secondary"
+          />
+        </View>
+      </View>
+    );
+  }
+);

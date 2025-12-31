@@ -47,7 +47,6 @@ export default function SettingsScreen() {
   const { permissionStatus, requestPermission, registerToken } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
   const [enablingNotifications, setEnablingNotifications] = useState(false);
-  const [retryingNotifications, setRetryingNotifications] = useState(false);
   const [switchingChildId, setSwitchingChildId] = useState<string | null>(null);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
 
@@ -130,32 +129,6 @@ export default function SettingsScreen() {
       Alert.alert(t('common.error'), t('settings.notificationsError'));
     } finally {
       setEnablingNotifications(false);
-    }
-  };
-
-  const handleRetryNotifications = async () => {
-    setRetryingNotifications(true);
-    try {
-      const result = await registerToken();
-
-      if (result.noTokenAvailable) {
-        Alert.alert(
-          t('settings.retryNotificationsNoToken'),
-          t('settings.retryNotificationsNoTokenMessage')
-        );
-      } else if (result.success) {
-        Alert.alert(
-          t('settings.retryNotificationsSuccess'),
-          t('settings.retryNotificationsSuccessMessage')
-        );
-      } else {
-        Alert.alert(t('common.error'), t('settings.retryNotificationsError'));
-      }
-    } catch (error) {
-      console.error('Failed to retry notifications:', error);
-      Alert.alert(t('common.error'), t('settings.retryNotificationsError'));
-    } finally {
-      setRetryingNotifications(false);
     }
   };
 
@@ -312,14 +285,16 @@ export default function SettingsScreen() {
             icon="User"
             href="/screens/edit-profile"
           /> */}
-          <ListLink
-            className="px-5"
-            hasBorder
-            title={t('settings.membership')}
-            description={t('settings.manageSubscription')}
-            icon="CreditCard"
-            href="/screens/membership"
-          />
+          {isMember && (
+            <ListLink
+              className="px-5"
+              hasBorder
+              title={t('settings.membership')}
+              description={t('settings.manageSubscription')}
+              icon="CreditCard"
+              href="/screens/membership"
+            />
+          )}
           {showBillingInSettings && (
             <ListLink
               className="px-5"
@@ -330,17 +305,7 @@ export default function SettingsScreen() {
               href="/screens/billing"
             />
           )}
-          {isMember && (
-            <ListLink
-              className="px-5"
-              hasBorder
-              title={t('wallet.membershipCard')}
-              description={t('wallet.addToWalletDescription')}
-              icon="Wallet"
-              href="/screens/membership-card"
-            />
-          )}
-          {showEnableNotifications ? (
+          {showEnableNotifications && (
             <ListLink
               className="px-5"
               hasBorder
@@ -349,16 +314,6 @@ export default function SettingsScreen() {
               icon="BellRing"
               onPress={handleEnableNotifications}
               isLoading={enablingNotifications}
-            />
-          ) : (
-            <ListLink
-              className="px-5"
-              hasBorder
-              title={t('settings.retryNotifications')}
-              description={t('settings.retryNotificationsDescription')}
-              icon="RefreshCw"
-              onPress={handleRetryNotifications}
-              isLoading={retryingNotifications}
             />
           )}
           <ListLink

@@ -291,7 +291,7 @@ export default function CalendarScreen() {
             <Pressable
               onPress={() => router.back()}
               className="rounded-full p-2"
-              style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+              style={{ backgroundColor: colors.skeleton }}>
               <Icon name="ChevronLeft" size={20} color={colors.text} />
             </Pressable>
 
@@ -381,9 +381,7 @@ export default function CalendarScreen() {
           />
         ) : (
           <View className="flex-1 items-center justify-center px-6">
-            <View
-              className="mb-4 rounded-full p-6"
-              style={{ backgroundColor: colors.isDark ? '#2A2A2A' : '#E5E5E5' }}>
+            <View className="mb-4 rounded-full p-6" style={{ backgroundColor: colors.skeleton }}>
               <Icon name="Calendar" size={48} color={colors.text} className="opacity-30" />
             </View>
             <ThemedText className="text-center text-xl font-bold opacity-80">

@@ -147,6 +147,23 @@ export async function clearMembershipCache(): Promise<void> {
 }
 
 /**
+ * Clear leaderboard cache (all filter combinations)
+ * Call this when privacy settings change
+ */
+export async function clearLeaderboardCache(): Promise<void> {
+  try {
+    const allKeys = await AsyncStorage.getAllKeys();
+    const leaderboardKeys = allKeys.filter((key) => key.startsWith(CACHE_KEYS.LEADERBOARD));
+    if (leaderboardKeys.length > 0) {
+      await AsyncStorage.multiRemove(leaderboardKeys);
+    }
+    console.log('[Cache] Cleared leaderboard cache');
+  } catch (error) {
+    console.error('[Cache] Error clearing leaderboard cache:', error);
+  }
+}
+
+/**
  * Clear user-specific cache (classes, invoices, membership, etc.)
  * Call this when user logs out or switches profiles
  */

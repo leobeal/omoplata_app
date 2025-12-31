@@ -40,6 +40,19 @@ jest.mock('@/components/SmallStreakCard', () => {
   };
 });
 
+// Mock TenantContext
+jest.mock('@/contexts/TenantContext', () => ({
+  useTenant: jest.fn(() => ({
+    tenant: { slug: 'evolve', name: 'Evolve', domain: 'evolve.omoplata.de' },
+    isLoading: false,
+    isTenantRequired: false,
+    setTenant: jest.fn(),
+    clearTenant: jest.fn(),
+    selectTenantBySlug: jest.fn(),
+  })),
+  TenantProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 // Define mock data first (before jest.mock calls which are hoisted)
 const mockClasses = [
   {

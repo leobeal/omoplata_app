@@ -15,6 +15,7 @@ import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useT } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
+import { clearLeaderboardCache } from '@/utils/local-cache';
 
 interface PrivacySetting {
   id: string;
@@ -104,6 +105,11 @@ export default function PrivacyScreen() {
         // Revert on failure
         setValues((prev) => ({ ...prev, [setting.id]: !newValue }));
         console.error('Failed to update privacy setting:', response.error);
+      } else {
+        // Clear leaderboard cache when visibility setting changes
+        if (setting.id === 'show_in_leaderboard') {
+          await clearLeaderboardCache();
+        }
       }
 
       setUpdatingId(null);
@@ -144,8 +150,8 @@ export default function PrivacyScreen() {
                 value={values[setting.id]}
                 onValueChange={(value) => handleToggle(setting, value)}
                 disabled={updatingId === setting.id}
-                trackColor={{ false: colors.border, true: '#4CAF50' }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: colors.border, true: colors.success }}
+                thumbColor={colors.invert}
               />
             </View>
           ))}

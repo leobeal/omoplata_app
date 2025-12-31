@@ -26,6 +26,11 @@ interface ApiVenue {
   name: string;
 }
 
+interface ApiFacility {
+  id: number;
+  name: string;
+}
+
 interface ApiCapacity {
   max: number | null;
   is_full: boolean;
@@ -66,6 +71,7 @@ interface ApiClassSession {
   ends_at: string;
   trainer: ApiTrainer | null;
   venue: ApiVenue;
+  facility?: ApiFacility | null;
   capacity: ApiCapacity;
   user_status: ApiUserStatus;
   intentions: ApiIntentions;
@@ -114,6 +120,7 @@ export interface Class {
   endTime: string;
   duration: number;
   location: string;
+  facility?: string;
   capacity: ClassCapacity;
   enrolled: number;
   status: AttendanceStatus;
@@ -195,6 +202,7 @@ const transformApiClass = (apiClass: ApiClassSession): Class => {
     endTime: extractTime(apiClass.ends_at),
     duration,
     location: apiClass.venue?.name || '',
+    facility: apiClass.facility?.name,
     capacity,
     enrolled:
       capacity.max && capacity.available_spots !== null

@@ -128,9 +128,11 @@ const ClassCard = memo(function ClassCard({
   const instructor = typeof classData.instructor === 'string' ? classData.instructor : '';
   const hasInstructor = instructor && instructor.trim() !== '';
 
-  // Check if location is available
+  // Check if location/facility is available
   const location = typeof classData.location === 'string' ? classData.location : '';
-  const hasLocation = location && location.trim() !== '';
+  const facility = typeof classData.facility === 'string' ? classData.facility : '';
+  const hasLocation = (location && location.trim() !== '') || (facility && facility.trim() !== '');
+  const locationDisplay = location && facility ? `${facility} · ${location}` : facility || location;
 
   // Check if we should show enrollment info
   const hasEnrollmentInfo = classData.capacity.max !== null || classData.enrolled > 0;
@@ -172,7 +174,7 @@ const ClassCard = memo(function ClassCard({
           {hasLocation && (
             <View className="flex-row items-center">
               <Icon name="MapPin" size={16} className="mr-2 opacity-50" />
-              <ThemedText className="text-sm opacity-70">{location}</ThemedText>
+              <ThemedText className="text-sm opacity-70">{locationDisplay}</ThemedText>
             </View>
           )}
           {hasEnrollmentInfo && (
