@@ -17,19 +17,15 @@ try {
   throw new Error(`Invalid TENANT environment variable: ${tenantEnv}. Config file not found.`);
 }
 
-// Validate required config properties
-if (!config.deepLinking?.ios?.associatedDomains) {
-  throw new Error(`Config for ${tenantEnv} is missing deepLinking.ios.associatedDomains`);
-}
-if (!config.deepLinking?.android?.intentFilters) {
-  throw new Error(`Config for ${tenantEnv} is missing deepLinking.android.intentFilters`);
-}
+const version = '1.0.0';
 
 module.exports = {
   expo: {
     newArchEnabled: true,
     name: config.name,
     slug: config.slug,
+    version,
+    runtimeVersion: version,
     scheme: config.slug,
     experiments: {
       typedRoutes: false,
@@ -113,7 +109,6 @@ module.exports = {
     owner: config.owner,
     updates: {
       url: `https://u.expo.dev/${config.easProjectId}`,
-      runtimeVersion: '1.0.0',
     },
   },
 };
