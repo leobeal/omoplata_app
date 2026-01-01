@@ -5,8 +5,8 @@ module.exports = {
   bundleIdentifier: 'de.omoplata.app',
   owner: 'omoplata',
   easProjectId: '3bff59d5-a63b-4bdd-b2ed-ea12e293de46',
+  googleServicesFile: './service-keys/omoplata-google-services.json',
 
-  // Branding - Geaseneric icons
   icon: './assets/_global/icon.png',
   adaptiveIcon: {
     foregroundImage: './assets/_global/adaptive-icon.png',

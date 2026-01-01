@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "749640133588",
+    "project_id": "omoplata-449d1",
+    "storage_bucket": "omoplata-449d1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749640133588:android:2d29134a6db199c8d4c441",
+        "android_client_info": {
+          "package_name": "de.omoplata.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHDKjaeyNNgoWhTMIQzcOakSgpsyKZ9x4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

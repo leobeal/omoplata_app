@@ -24,7 +24,6 @@ import { Button } from '@/components/Button';
 import Icon, { IconName } from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
 import Input from '@/components/forms/Input';
-import { getTenantConfig } from '@/configs/tenant-registry';
 import { useT } from '@/contexts/LocalizationContext';
 import { useTenant } from '@/contexts/TenantContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -183,17 +182,14 @@ export default function TenantSelectionScreen() {
         return;
       }
 
-      const tenantConfig = getTenantConfig(slug);
       const apiData = checkResponse.data;
 
       const tenantInfo = {
         slug,
         name:
           apiData?.tenant?.name ||
-          tenantConfig?.name ||
           slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' '),
         domain: getDomainForTenant(slug),
-        loginBackground: tenantConfig?.loginBackground,
         signup_link: apiData?.signup_link,
       };
 

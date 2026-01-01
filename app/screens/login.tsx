@@ -270,6 +270,8 @@ export default function LoginScreen() {
                       source={logoSource}
                       className="mb-4 h-20 w-20 rounded-2xl"
                       resizeMode="contain"
+                      fadeDuration={0}
+                      resizeMethod="resize"
                     />
                   )}
                   <ThemedText className="font-outfit-bold text-3xl">{t('login.title')}</ThemedText>

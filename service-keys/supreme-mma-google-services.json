@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "904339643480",
+    "project_id": "supreme-mma",
+    "storage_bucket": "supreme-mma.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:904339643480:android:0d9d7db1cd2c7c8344fe2d",
+        "android_client_info": {
+          "package_name": "de.omoplata.suprememma"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaaU5S4mhTjOjOgItKZp6JVqgI4KwjnLE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

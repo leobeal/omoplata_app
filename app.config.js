@@ -80,6 +80,7 @@ module.exports = {
     },
     android: {
       package: config.bundleIdentifier,
+      googleServicesFile: config.googleServicesFile,
       adaptiveIcon: config.adaptiveIcon,
       softwareKeyboardLayoutMode: 'pan',
       predictiveBackGestureEnabled: false,

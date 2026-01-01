@@ -5,8 +5,8 @@ module.exports = {
   bundleIdentifier: 'de.omoplata.suprememma',
   owner: 'omoplata',
   easProjectId: 'c243f72b-9ede-44e6-ba66-4d3b5a6e4227',
+  googleServicesFile: './service-keys/supreme-mma-google-services.json',
 
-  // Branding - icons
   icon: './assets/supreme-mma/icon.png',
   adaptiveIcon: {
     foregroundImage: './assets/supreme-mma/adaptive-icon.png',
@@ -14,7 +14,8 @@ module.exports = {
   },
   splash: {
     image: './assets/supreme-mma/splash-icon-light.png',
-    imageWidth: 200,
+    imageWidth: 288,
+    resizeMode: 'contain',
     backgroundColor: '#000000',
   },
 

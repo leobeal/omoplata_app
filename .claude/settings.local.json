@@ -41,7 +41,8 @@
       "Bash(git commit:*)",
       "WebFetch(domain:omoplata.de)",
       "Bash(npx tsc:*)",
-      "Bash(TENANT=main npx expo config:*)"
+      "Bash(TENANT=main npx expo config:*)",
+      "Bash(identify:*)"
     ],
     "deny": [],
     "ask": []

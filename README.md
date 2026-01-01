@@ -64,6 +64,16 @@ Before deploying to production:
 - [ ] Test push notifications with production credentials
 - [ ] Update app version numbers
 
+
+## Setup push notifications on Android
+- Create a new firebase project.
+- Click on settings, project settings, service accounts, create new service account https://docs.expo.dev/push-notifications/fcm-credentials/
+
+
+## Submit an app - 
+need to set up google service account
+https://github.com/expo/fyi/blob/main/creating-google-service-account.md
+
 ## Deployment
 
 ### Build Commands
