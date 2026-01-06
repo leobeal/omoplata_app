@@ -42,7 +42,21 @@
       "WebFetch(domain:omoplata.de)",
       "Bash(npx tsc:*)",
       "Bash(TENANT=main npx expo config:*)",
-      "Bash(identify:*)"
+      "Bash(identify:*)",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_navigate",
+      "WebFetch(domain:iron-oak-ostalb.de)",
+      "Bash(RESUME_APP_ID=4972074909466047169 START_STEP=2 TENANT=iron-oak node scripts/create-play-store-app.js:*)",
+      "Bash(RESUME_APP_ID=4972074909466047169 START_STEP=3 TENANT=iron-oak node:*)",
+      "mcp__playwright__browser_press_key",
+      "Bash(RESUME_APP_ID=4972074909466047169 START_STEP=7 TENANT=iron-oak node:*)",
+      "mcp__playwright__browser_close",
+      "Bash(node --check:*)",
+      "Bash(TENANT=iron-oak node scripts/create-play-store-app.js:*)",
+      "mcp__playwright__browser_evaluate"
     ],
     "deny": [],
     "ask": []

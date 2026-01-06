@@ -1,0 +1,102 @@
+{
+  "packageName": "com.omoplata.evolve",
+  "defaultLanguage": "en-US",
+
+  "listing": {
+    "title": "Evolve Grappling",
+    "shortDescription": "Your BJJ gym companion - classes, membership & more",
+    "fullDescription": "Evolve Grappling is your complete Brazilian Jiu-Jitsu gym companion app.\n\nManage your entire gym experience from one place:\n\n📅 CLASS SCHEDULE\n• View daily and weekly class schedules\n• See class details, instructor info, and available spots\n• Confirm or decline your attendance\n• Get reminders before your classes start\n\n🎯 MEMBERSHIP MANAGEMENT\n• View your current membership plan and benefits\n• Track contract details and renewal dates\n• Download your contract documents\n• See available plan upgrades\n\n💳 BILLING & PAYMENTS\n• View invoices and payment history\n• Track upcoming payments\n• See payment method details (SEPA Direct Debit)\n• Download invoice PDFs\n\n👤 PROFILE & SETTINGS\n• Update personal information\n• Manage emergency contacts\n• Switch between dark and light themes\n• Configure notification preferences\n\n🔔 NOTIFICATIONS\n• Get notified about class schedule changes\n• Receive payment reminders\n• Stay updated on gym announcements\n\nDownload now and take your BJJ journey to the next level with Evolve Grappling!",
+    "tags": ["fitness", "gym", "bjj", "martial arts", "grappling", "jiu jitsu"]
+  },
+
+  "localizations": {
+    "de-DE": {
+      "title": "Evolve Grappling",
+      "shortDescription": "Dein BJJ-Studio Begleiter - Kurse, Mitgliedschaft & mehr",
+      "fullDescription": "Evolve Grappling ist deine komplette Brazilian Jiu-Jitsu Studio Begleiter-App.\n\nVerwalte dein gesamtes Studio-Erlebnis an einem Ort:\n\n📅 KURSPLAN\n• Tägliche und wöchentliche Kurspläne anzeigen\n• Kursdetails, Trainer-Infos und verfügbare Plätze sehen\n• Teilnahme bestätigen oder absagen\n• Erinnerungen vor deinen Kursen erhalten\n\n🎯 MITGLIEDSCHAFTSVERWALTUNG\n• Aktuellen Mitgliedschaftsplan und Vorteile anzeigen\n• Vertragsdetails und Verlängerungsdaten verfolgen\n• Vertragsdokumente herunterladen\n• Verfügbare Plan-Upgrades sehen\n\n💳 ABRECHNUNG & ZAHLUNGEN\n• Rechnungen und Zahlungsverlauf anzeigen\n• Anstehende Zahlungen verfolgen\n• Zahlungsmethode-Details sehen (SEPA-Lastschrift)\n• Rechnungs-PDFs herunterladen\n\n👤 PROFIL & EINSTELLUNGEN\n• Persönliche Informationen aktualisieren\n• Notfallkontakte verwalten\n• Zwischen dunklem und hellem Design wechseln\n• Benachrichtigungseinstellungen konfigurieren\n\nLade jetzt herunter und bringe deine BJJ-Reise auf das nächste Level mit Evolve Grappling!"
+    },
+    "pt-BR": {
+      "title": "Evolve Grappling",
+      "shortDescription": "Seu companheiro de academia de BJJ - aulas, assinatura e mais",
+      "fullDescription": "Evolve Grappling é seu aplicativo completo de acompanhamento para academia de Jiu-Jitsu Brasileiro.\n\nGerencie toda sua experiência na academia em um só lugar:\n\n📅 HORÁRIOS DAS AULAS\n• Veja horários diários e semanais\n• Consulte detalhes das aulas, informações do instrutor e vagas disponíveis\n• Confirme ou recuse sua participação\n• Receba lembretes antes das suas aulas\n\n🎯 GESTÃO DE ASSINATURA\n• Visualize seu plano atual e benefícios\n• Acompanhe detalhes do contrato e datas de renovação\n• Baixe seus documentos de contrato\n• Veja upgrades de planos disponíveis\n\n💳 FATURAMENTO E PAGAMENTOS\n• Visualize faturas e histórico de pagamentos\n• Acompanhe pagamentos futuros\n• Veja detalhes do método de pagamento\n• Baixe PDFs das faturas\n\n👤 PERFIL E CONFIGURAÇÕES\n• Atualize informações pessoais\n• Gerencie contatos de emergência\n• Alterne entre temas claro e escuro\n• Configure preferências de notificação\n\nBaixe agora e leve sua jornada no BJJ para o próximo nível com Evolve Grappling!"
+    }
+  },
+
+  "contact": {
+    "email": "support@evolve-grappling.com",
+    "website": "https://evolve-grappling.com",
+    "privacyPolicyUrl": "https://evolve-grappling.com/privacy",
+    "deleteAccountUrl": "https://evolve-grappling.com/delete-account"
+  },
+
+  "appCategory": "Health & fitness",
+
+  "targetAudience": "18 and over",
+
+  "appAccess": {
+    "restricted": true,
+    "instructions": "This app requires login with gym membership credentials.",
+    "testCredentials": {
+      "username": "reviewer@evolve-grappling.com",
+      "password": "TestReviewer2024!"
+    }
+  },
+
+  "dataSafety": {
+    "collectsData": true,
+    "encryptedInTransit": true,
+    "deleteAccountUrl": "https://evolve-grappling.com/delete-account",
+    "dataTypes": {
+      "name": {
+        "collected": true,
+        "shared": false,
+        "required": true,
+        "purposes": ["App functionality", "Account management"]
+      },
+      "email": {
+        "collected": true,
+        "shared": false,
+        "required": true,
+        "purposes": ["App functionality", "Account management"]
+      },
+      "phone": {
+        "collected": true,
+        "shared": false,
+        "required": true,
+        "purposes": ["App functionality", "Account management"]
+      }
+    }
+  },
+
+  "contentRating": {
+    "containsViolence": false,
+    "containsSexualContent": false,
+    "containsProfanity": false,
+    "containsDrugsAlcohol": false,
+    "userGeneratedContent": false,
+    "locationSharing": false,
+    "ageRating": "Everyone"
+  },
+
+  "declarations": {
+    "containsAds": false,
+    "isGovernmentApp": false,
+    "hasFinancialFeatures": false,
+    "hasHealthFeatures": false
+  },
+
+  "assets": {
+    "icon": "assets/evolve/icon.png",
+    "featureGraphic": "assets/evolve/feature.png",
+    "screenshots": {
+      "phone": [
+        "assets/evolve/screenshots/phone-1.png",
+        "assets/evolve/screenshots/phone-2.png",
+        "assets/evolve/screenshots/phone-3.png",
+        "assets/evolve/screenshots/phone-4.png"
+      ],
+      "tablet7": [],
+      "tablet10": []
+    }
+  }
+}

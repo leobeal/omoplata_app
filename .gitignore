@@ -29,6 +29,10 @@ secrets/
 google-services.json
 google-service-account*.json
 
+# Play Store Automation
+scripts/play-store/config/auth.json
+scripts/play-store/logs/
+
 # Logs
 logs/
 npm-debug.log*

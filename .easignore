@@ -5,7 +5,10 @@ ios/
 # Old/reference code (not needed for build)
 __old/
 
+scripts/
 logs/
+
+playwright.config.ts
 
 # Tests (not needed for production build)
 __tests__/

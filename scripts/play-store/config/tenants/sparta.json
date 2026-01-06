@@ -1,0 +1,40 @@
+{
+  "packageName": "com.omoplata.sparta",
+  "defaultLanguage": "de-DE",
+
+  "listing": {
+    "title": "Sparta Aachen",
+    "shortDescription": "Deine Kampfsport-App - Kurse, Training & Mitgliedschaft",
+    "fullDescription": "Sparta Aachen ist deine komplette Kampfsport-Studio Begleiter-App.\n\nVerwalte dein gesamtes Training an einem Ort:\n\n📅 KURSPLAN\n• Tägliche und wöchentliche Kurspläne anzeigen\n• Kursdetails, Trainer-Infos und verfügbare Plätze sehen\n• Teilnahme bestätigen oder absagen\n• Erinnerungen vor deinen Kursen erhalten\n\n🥋 TRAININGSANGEBOTE\n• Brazilian Jiu-Jitsu (Gi & No-Gi)\n• Muay Thai\n• Wrestling\n• MMA\n• Krafttraining\n\n🎯 MITGLIEDSCHAFTSVERWALTUNG\n• Aktuellen Mitgliedschaftsplan und Vorteile anzeigen\n• Vertragsdetails und Verlängerungsdaten verfolgen\n• Vertragsdokumente herunterladen\n• Verfügbare Plan-Upgrades sehen\n\n💳 ABRECHNUNG & ZAHLUNGEN\n• Rechnungen und Zahlungsverlauf anzeigen\n• Anstehende Zahlungen verfolgen\n• Zahlungsmethode-Details sehen (SEPA-Lastschrift)\n• Rechnungs-PDFs herunterladen\n\n👤 PROFIL & EINSTELLUNGEN\n• Persönliche Informationen aktualisieren\n• Notfallkontakte verwalten\n• Zwischen dunklem und hellem Design wechseln\n• Benachrichtigungseinstellungen konfigurieren\n\nLade jetzt herunter und starte deine Kampfsport-Reise mit Sparta Aachen!",
+    "tags": ["fitness", "kampfsport", "mma", "bjj", "muay thai", "wrestling"]
+  },
+
+  "localizations": {
+    "en-US": {
+      "title": "Sparta Aachen",
+      "shortDescription": "Your martial arts app - classes, training & membership",
+      "fullDescription": "Sparta Aachen is your complete martial arts gym companion app.\n\nManage your entire training experience from one place:\n\n📅 CLASS SCHEDULE\n• View daily and weekly class schedules\n• See class details, instructor info, and available spots\n• Confirm or decline your attendance\n• Get reminders before your classes start\n\n🥋 TRAINING PROGRAMS\n• Brazilian Jiu-Jitsu (Gi & No-Gi)\n• Muay Thai\n• Wrestling\n• MMA\n• Strength Training\n\n🎯 MEMBERSHIP MANAGEMENT\n• View your current membership plan and benefits\n• Track contract details and renewal dates\n• Download your contract documents\n• See available plan upgrades\n\n💳 BILLING & PAYMENTS\n• View invoices and payment history\n• Track upcoming payments\n• See payment method details (SEPA Direct Debit)\n• Download invoice PDFs\n\n👤 PROFILE & SETTINGS\n• Update personal information\n• Manage emergency contacts\n• Switch between dark and light themes\n• Configure notification preferences\n\nDownload now and start your martial arts journey with Sparta Aachen!"
+    }
+  },
+
+  "contact": {
+    "email": "info@sparta-aachen.de",
+    "website": "https://sparta-aachen.de",
+    "phone": "+49 241 123456",
+    "privacyPolicyUrl": "https://sparta-aachen.de/datenschutz"
+  },
+
+  "assets": {
+    "icon": "assets/sparta/icon.png",
+    "featureGraphic": "assets/sparta/feature.png",
+    "screenshots": {
+      "phone": [
+        "assets/sparta/screenshots/phone-1.png",
+        "assets/sparta/screenshots/phone-2.png",
+        "assets/sparta/screenshots/phone-3.png"
+      ],
+      "tablet7": [],
+      "tablet10": []
+    }
+  }
+}
