@@ -76,17 +76,6 @@
         "serviceAccountKeyPath": "./secrets/google-service-account.json",
         "track": "alpha"
       }
-    },
-    "release": {
-      "ios": {
-        "appleId": "your-apple-id@example.com",
-        "ascAppId": "1234567890",
-        "appleTeamId": "ABCDE12345"
-      },
-      "android": {
-        "serviceAccountKeyPath": "./secrets/google-service-account.json",
-        "track": "production"
-      }
     }
   }
 }

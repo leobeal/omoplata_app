@@ -56,7 +56,8 @@
       "mcp__playwright__browser_close",
       "Bash(node --check:*)",
       "Bash(TENANT=iron-oak node scripts/create-play-store-app.js:*)",
-      "mcp__playwright__browser_evaluate"
+      "mcp__playwright__browser_evaluate",
+      "Bash(TENANT=main npx expo prebuild:*)"
     ],
     "deny": [],
     "ask": []

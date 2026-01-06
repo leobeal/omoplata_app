@@ -35,19 +35,19 @@ export default {
   // Onboarding Slides
   onboarding: {
     slide1: {
-      title: 'Ders Rezervasyonu Yap',
-      description: 'Programı incele, yerini ayırt ve tek dokunuşla giriş yap',
+      title: 'Program Her Zaman Mevcut',
+      description: 'Ders programını görüntüle, yerini ayır ve tek dokunuşla giriş yap',
     },
     slide2: {
-      title: 'Faturaları Yönet',
-      description: 'Faturaları görüntüle, ödemeleri takip et ve üyeliğini güncel tut',
+      title: 'Üyeliğini Yönet',
+      description: 'Faturaları görüntüle, ödemeleri takip et ve üyeliğini kontrol altında tut',
     },
     slide3: {
-      title: 'İletişimde Kal',
-      description: 'Antrenörlerinle ve takım arkadaşlarınla tek bir yerde sohbet et',
+      title: 'Topluluğun Bir Parçası Ol',
+      description: 'Güncel kulüp haberlerini telefonuna al ve takım arkadaşlarınla iletişimde kal',
     },
     slide4: {
-      title: 'Sıralamada Yüksel',
+      title: 'Yarışmaya Katıl',
       description: 'Lider tablosunda yarış ve antrenman başarılarını kutla',
     },
   },

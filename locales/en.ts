@@ -36,19 +36,20 @@ export default {
   // Onboarding Slides
   onboarding: {
     slide1: {
-      title: 'Book Classes',
-      description: 'Browse the schedule, reserve your spot, and check in with a tap',
+      title: 'Schedule Always Available',
+      description: 'View the class schedule, reserve your spot, and check in with a single tap',
     },
     slide2: {
-      title: 'Manage Billing',
-      description: 'View invoices, track payments, and keep your membership up to date',
+      title: 'Manage Your Membership',
+      description: 'View invoices, track payments, and keep your membership in check',
     },
     slide3: {
-      title: 'Stay in Touch',
-      description: 'Chat with your coaches and teammates, all in one place',
+      title: 'Be Part of the Community',
+      description:
+        'Get the latest club news straight to your phone and stay in touch with your teammates',
     },
     slide4: {
-      title: 'Climb the Ranks',
+      title: 'Join the Competition',
       description: 'Compete on the leaderboard and celebrate your training milestones',
     },
   },

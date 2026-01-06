@@ -14,20 +14,13 @@ import {
   Pressable,
   TextInput,
 } from 'react-native';
+import NfcManagerModule, {
+  NfcTech as NfcTechType,
+  Ndef as NdefType,
+} from 'react-native-nfc-manager';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// NFC is only available in development builds, not Expo Go
-let NfcManager: any = null;
-let NfcTech: any = null;
-let Ndef: any = null;
-try {
-  const nfcModule = require('react-native-nfc-manager');
-  NfcManager = nfcModule.default;
-  NfcTech = nfcModule.NfcTech;
-  Ndef = nfcModule.Ndef;
-} catch {
-  // NFC not available (Expo Go)
-}
+// NFC module - always import, check support at runtime
 
 import api from '@/api/client';
 import { ENDPOINTS, setTenant as setApiTenant } from '@/api/config';
@@ -38,6 +31,10 @@ import ThemedText from '@/components/ThemedText';
 import { useT } from '@/contexts/LocalizationContext';
 import { useTenant } from '@/contexts/TenantContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
+
+const NfcManager = NfcManagerModule;
+const NfcTech = NfcTechType;
+const Ndef = NdefType;
 
 const { width } = Dimensions.get('window');
 
@@ -55,26 +52,26 @@ const slides: SlideData[] = [
     titleKey: 'onboarding.slide1.title',
     image: require('@/assets/_global/img/1.jpg'),
     descriptionKey: 'onboarding.slide1.description',
-    icon: 'Calendar',
+    icon: 'CalendarDays',
   },
   {
     id: '2',
     titleKey: 'onboarding.slide2.title',
     image: require('@/assets/_global/img/2.jpg'),
     descriptionKey: 'onboarding.slide2.description',
-    icon: 'CreditCard',
+    icon: 'Wallet',
   },
   {
     id: '3',
     titleKey: 'onboarding.slide3.title',
     image: require('@/assets/_global/img/3.jpg'),
     descriptionKey: 'onboarding.slide3.description',
-    icon: 'MessageCircle',
+    icon: 'Users',
   },
   {
     id: '4',
     titleKey: 'onboarding.slide4.title',
-    image: require('@/assets/_global/img/1.jpg'),
+    image: require('@/assets/_global/img/6.jpg'),
     descriptionKey: 'onboarding.slide4.description',
     icon: 'Trophy',
   },
@@ -102,28 +99,26 @@ export default function TenantSelectionScreen() {
   // Check NFC support on mount
   useEffect(() => {
     const checkNfc = async () => {
-      // NFC only works on real devices, not simulators
-      if (!NfcManager) {
-        console.log('NFC: Module not available (Expo Go or not installed)');
-        setNfcSupported(false);
-        return;
-      }
       try {
+        // Check if NFC is supported on this device
         const supported = await NfcManager.isSupported();
-        console.log('NFC: Supported =', supported);
+        console.log('NFC: isSupported =', supported);
         setNfcSupported(supported);
+
         if (supported) {
+          // Initialize NFC manager
           await NfcManager.start();
+          console.log('NFC: Manager started successfully');
         }
       } catch (err) {
-        console.log('NFC: Error checking support', err);
+        console.log('NFC: Error during setup:', err);
         setNfcSupported(false);
       }
     };
     checkNfc();
 
     return () => {
-      NfcManager?.cancelTechnologyRequest?.().catch(() => {});
+      NfcManager.cancelTechnologyRequest().catch(() => {});
     };
   }, []);
 
@@ -291,7 +286,7 @@ export default function TenantSelectionScreen() {
   };
 
   const startNfcScan = async () => {
-    if (isProcessingRef.current || !NfcManager) return;
+    if (isProcessingRef.current) return;
 
     try {
       setIsNfcScanning(true);
@@ -353,7 +348,7 @@ export default function TenantSelectionScreen() {
       console.log('NFC Error:', ex);
     } finally {
       setIsNfcScanning(false);
-      NfcManager?.cancelTechnologyRequest?.().catch(() => {});
+      NfcManager.cancelTechnologyRequest().catch(() => {});
     }
   };
 
@@ -918,7 +913,11 @@ export default function TenantSelectionScreen() {
         <View
           className="absolute bottom-0 left-0 right-0"
           style={{ paddingBottom: insets.bottom + 24 }}>
-          <AnimatedView animation="bounceIn" duration={600} delay={200} className="items-center px-6">
+          <AnimatedView
+            animation="bounceIn"
+            duration={600}
+            delay={200}
+            className="items-center px-6">
             {/* QR Code Button */}
             <Pressable onPress={switchToScanner}>
               <AnimatedView animation="pulse" duration={2000} iterationCount="infinite">
@@ -953,26 +952,49 @@ export default function TenantSelectionScreen() {
               {t('tenantSelection.tapToScan')}
             </ThemedText>
 
-            {/* Alternative options */}
-            <View className="mt-4 flex-row items-center justify-center gap-4">
-              {nfcSupported && (
-                <TouchableOpacity onPress={switchToNfc} className="flex-row items-center">
-                  <Icon name="Nfc" size={16} color="white" style={{ marginRight: 4, opacity: 0.7 }} />
-                  <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
-                    {t('tenantSelection.useNfcInstead')}
-                  </Text>
-                </TouchableOpacity>
-              )}
-              {nfcSupported && (
-                <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>•</Text>
-              )}
-              <TouchableOpacity onPress={switchToManual} className="flex-row items-center">
-                <Icon name="Keyboard" size={16} color="white" style={{ marginRight: 4, opacity: 0.7 }} />
-                <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
-                  {t('tenantSelection.enterManually')}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            {/* Alternative options - NFC always shown if supported, manual only in non-production */}
+            {(() => {
+              const isProduction = Constants.expoConfig?.extra?.env === 'production';
+              const showManual = !isProduction;
+              const showNfc = nfcSupported;
+              const showSeparator = showNfc && showManual;
+
+              if (!showNfc && !showManual) return null;
+
+              return (
+                <View className="mt-4 flex-row items-center justify-center gap-4">
+                  {showNfc && (
+                    <TouchableOpacity onPress={switchToNfc} className="flex-row items-center">
+                      <Icon
+                        name="Nfc"
+                        size={16}
+                        color="white"
+                        style={{ marginRight: 4, opacity: 0.7 }}
+                      />
+                      <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
+                        {t('tenantSelection.useNfcInstead')}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  {showSeparator && (
+                    <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>•</Text>
+                  )}
+                  {showManual && (
+                    <TouchableOpacity onPress={switchToManual} className="flex-row items-center">
+                      <Icon
+                        name="Keyboard"
+                        size={16}
+                        color="white"
+                        style={{ marginRight: 4, opacity: 0.7 }}
+                      />
+                      <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
+                        {t('tenantSelection.enterManually')}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              );
+            })()}
           </AnimatedView>
         </View>
       </View>

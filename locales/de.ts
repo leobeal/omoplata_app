@@ -35,21 +35,22 @@ export default {
   // Onboarding Slides
   onboarding: {
     slide1: {
-      title: 'Kurse Buchen',
+      title: 'Trainingsplan jederzeit verfügbar',
       description:
-        'Durchstöbere den Kursplan, sichere dir deinen Platz und checke mit einem Tipp ein',
+        'Schau dir den Kursplan an, sichere dir deinen Platz und checke dich mit einem Klick ein',
     },
     slide2: {
-      title: 'Abrechnung Verwalten',
+      title: 'Mitgliedschaft verwalten',
       description:
         'Rechnungen einsehen, Zahlungen verfolgen und deine Mitgliedschaft im Blick behalten',
     },
     slide3: {
-      title: 'In Kontakt Bleiben',
-      description: 'Chatte mit deinen Trainern und Teammitgliedern, alles an einem Ort',
+      title: 'Sei ein Teil der Community',
+      description:
+        'Erhalte aktuelle Club-Infos direkt auf dein Smartphone und bleib in Kontakt mit deinen Teammitgliedern',
     },
     slide4: {
-      title: 'Steige im Ranking',
+      title: 'Tritt dem Wettbewerb bei',
       description: 'Messe dich auf der Bestenliste und feiere deine Trainings-Meilensteine',
     },
   },

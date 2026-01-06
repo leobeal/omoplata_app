@@ -35,20 +35,21 @@ export default {
   // Onboarding Slides
   onboarding: {
     slide1: {
-      title: 'Agende Aulas',
-      description: 'Veja a grade, reserve seu lugar e faça check-in com um toque',
+      title: 'Grade Sempre Disponível',
+      description: 'Veja a grade de aulas, reserve seu lugar e faça check-in com um toque',
     },
     slide2: {
-      title: 'Gerencie Pagamentos',
-      description: 'Visualize faturas, acompanhe pagamentos e mantenha sua assinatura em dia',
+      title: 'Gerencie sua Assinatura',
+      description: 'Veja faturas, acompanhe pagamentos e mantenha sua assinatura em dia',
     },
     slide3: {
-      title: 'Fique em Contato',
-      description: 'Converse com seus treinadores e colegas, tudo em um só lugar',
+      title: 'Faça Parte da Comunidade',
+      description:
+        'Receba as novidades do clube direto no celular e mantenha contato com seus colegas de treino',
     },
     slide4: {
-      title: 'Suba no Ranking',
-      description: 'Compita no placar de líderes e celebre suas conquistas de treino',
+      title: 'Entre na Competição',
+      description: 'Dispute no ranking e celebre suas conquistas de treino',
     },
   },
 

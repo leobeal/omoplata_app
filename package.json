@@ -21,10 +21,8 @@
     "build:main:all": "eas build --profile main --platform all",
     "submit:android:internal": "eas submit --platform android --latest --profile internal",
     "submit:android:alpha": "eas submit --platform android --latest --profile alpha",
-    "submit:android:production": "eas submit --platform android --latest --profile release",
-    "submit:ios": "eas submit --platform ios --latest",
-    "release:android:internal": "npm run build:main:android && npm run submit:android:internal",
-    "release:android:production": "npm run build:main:android && npm run submit:android:production"
+    "submit:android:production": "eas submit --platform android --latest --profile production",
+    "submit:ios": "eas submit --platform ios --latest"
   },
   "dependencies": {
     "@expo-google-fonts/outfit": "^0.4.3",
