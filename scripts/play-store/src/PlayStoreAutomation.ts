@@ -4,9 +4,10 @@
  * Playwright-based automation for updating Google Play Store listings.
  */
 
-import { chromium, Browser, BrowserContext, Page } from 'playwright';
 import * as fs from 'fs';
 import * as path from 'path';
+import { chromium, Browser, BrowserContext, Page } from 'playwright';
+
 import { Selectors, Timeouts, URLs } from './selectors';
 import {
   TenantConfig,
@@ -481,9 +482,7 @@ export class PlayStoreAutomation {
   private async uploadFile(selector: string, filePath: string): Promise<void> {
     if (!this.page) return;
 
-    const absolutePath = path.isAbsolute(filePath)
-      ? filePath
-      : path.join(this.baseDir, filePath);
+    const absolutePath = path.isAbsolute(filePath) ? filePath : path.join(this.baseDir, filePath);
 
     if (!fs.existsSync(absolutePath)) {
       throw new Error(`File not found: ${absolutePath}`);

@@ -47,7 +47,8 @@ export const QuestionnaireSelectors = {
     navLink: 'a:has-text("Content rating"), [href*="content-rating"]',
 
     /** Start questionnaire button */
-    startButton: 'button:has-text("Start questionnaire"), button:has-text("Start new questionnaire")',
+    startButton:
+      'button:has-text("Start questionnaire"), button:has-text("Start new questionnaire")',
 
     /** Email input for IARC */
     emailInput: 'input[aria-label*="Email"], input[type="email"]',

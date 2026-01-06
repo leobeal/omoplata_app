@@ -1,6 +1,6 @@
 import api from './client';
 
-// Types
+// App Types (camelCase)
 export type ThreadType = 'direct' | 'group';
 export type ParticipantRole = 'instructor' | 'admin' | 'member';
 export type MessageStatus = 'sent' | 'delivered' | 'read';
@@ -48,6 +48,71 @@ export interface SendMessagePayload {
   text: string;
 }
 
+// API Types (snake_case from backend)
+interface ApiParticipant {
+  id: string;
+  name: string;
+  avatar: string | null;
+  role: ParticipantRole;
+}
+
+interface ApiMessage {
+  id: string;
+  text: string;
+  sender_id: string;
+  timestamp: string;
+  status: MessageStatus;
+}
+
+interface ApiThread {
+  id: string;
+  type: ThreadType;
+  name: string;
+  avatar: string | null;
+  participants: ApiParticipant[];
+  member_count?: number;
+  last_message: ApiMessage | null;
+  unread_count: number;
+  updated_at: string;
+}
+
+interface ApiPaginatedThreads {
+  threads: ApiThread[];
+  has_more: boolean;
+  next_cursor?: string;
+}
+
+interface ApiPaginatedMessages {
+  messages: ApiMessage[];
+  has_more: boolean;
+  next_cursor?: string;
+}
+
+// Transform functions
+function transformMessage(apiMessage: ApiMessage): Message {
+  return {
+    id: apiMessage.id,
+    text: apiMessage.text,
+    senderId: apiMessage.sender_id,
+    timestamp: apiMessage.timestamp,
+    status: apiMessage.status,
+  };
+}
+
+function transformThread(apiThread: ApiThread): Thread {
+  return {
+    id: apiThread.id,
+    type: apiThread.type,
+    name: apiThread.name,
+    avatar: apiThread.avatar,
+    participants: apiThread.participants,
+    memberCount: apiThread.member_count,
+    lastMessage: apiThread.last_message ? transformMessage(apiThread.last_message) : null,
+    unreadCount: apiThread.unread_count,
+    updatedAt: apiThread.updated_at,
+  };
+}
+
 // API Endpoints
 
 /**
@@ -63,13 +128,18 @@ export const getThreads = async (
     params.append('cursor', cursor);
   }
 
-  const response = await api.get<PaginatedThreads>(`/messages/threads?${params.toString()}`);
+  const response = await api.get<ApiPaginatedThreads>(`/messages/threads?${params.toString()}`);
 
   if (response.error) {
     throw new Error(response.error);
   }
 
-  return response.data!;
+  const data = response.data!;
+  return {
+    threads: data.threads.map(transformThread),
+    hasMore: data.has_more,
+    nextCursor: data.next_cursor,
+  };
 };
 
 /**
@@ -77,13 +147,13 @@ export const getThreads = async (
  * GET /api/messages/threads/:threadId
  */
 export const getThread = async (threadId: string): Promise<Thread> => {
-  const response = await api.get<{ data: Thread }>(`/messages/threads/${threadId}`);
+  const response = await api.get<{ data: ApiThread }>(`/messages/threads/${threadId}`);
 
   if (response.error) {
     throw new Error(response.error);
   }
 
-  return response.data!.data;
+  return transformThread(response.data!.data);
 };
 
 /**
@@ -101,7 +171,7 @@ export const getMessages = async (
     params.append('cursor', cursor);
   }
 
-  const response = await api.get<PaginatedMessages>(
+  const response = await api.get<ApiPaginatedMessages>(
     `/messages/threads/${threadId}/messages?${params.toString()}`
   );
 
@@ -109,7 +179,12 @@ export const getMessages = async (
     throw new Error(response.error);
   }
 
-  return response.data!;
+  const data = response.data!;
+  return {
+    messages: data.messages.map(transformMessage),
+    hasMore: data.has_more,
+    nextCursor: data.next_cursor,
+  };
 };
 
 /**
@@ -120,13 +195,16 @@ export const sendMessage = async (
   threadId: string,
   payload: SendMessagePayload
 ): Promise<Message> => {
-  const response = await api.post<Message>(`/messages/threads/${threadId}/messages`, payload);
+  const response = await api.post<ApiMessage>(
+    `/messages/threads/${threadId}/messages`,
+    payload as unknown as Record<string, unknown>
+  );
 
   if (response.error) {
     throw new Error(response.error);
   }
 
-  return response.data!;
+  return transformMessage(response.data!);
 };
 
 /**

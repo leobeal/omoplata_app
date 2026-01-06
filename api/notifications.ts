@@ -177,7 +177,11 @@ export async function markAsRead(notificationId: string): Promise<void> {
 /**
  * Mark all notifications as read
  */
-export async function markAllAsRead(type?: NotificationType): Promise<number> {
+export interface MarkAllReadResult {
+  markedCount: number;
+}
+
+export async function markAllAsRead(type?: NotificationType): Promise<MarkAllReadResult> {
   const queryParams = type ? `?type=${type}` : '';
   const url = `${ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ}${queryParams}`;
 
@@ -187,5 +191,7 @@ export async function markAllAsRead(type?: NotificationType): Promise<number> {
     throw new Error(response.error || 'Failed to mark all notifications as read');
   }
 
-  return response.data.marked_count;
+  return {
+    markedCount: response.data.marked_count,
+  };
 }

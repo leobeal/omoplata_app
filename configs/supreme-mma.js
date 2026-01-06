@@ -37,9 +37,7 @@ module.exports = {
       ],
     },
     android: {
-      intentFilters: [
-        { scheme: 'https', host: 'supreme-mma.omoplata.de', pathPrefix: '/' },
-      ],
+      intentFilters: [{ scheme: 'https', host: 'supreme-mma.omoplata.de', pathPrefix: '/' }],
     },
   },
 
@@ -47,6 +45,5 @@ module.exports = {
   loginBackground: 'https://supreme-mma.omoplata.de/images/clubs/supreme-mma/login-bg.jpg',
   forgotPasswordBackground:
     'https://supreme-mma.omoplata.de/images/clubs/supreme-mma/forgot-password-bg.jpg',
-  dashboardBackground:
-    'https://supreme-mma.omoplata.de/images/clubs/supreme-mma/dashboard-bg.jpg',
+  dashboardBackground: 'https://supreme-mma.omoplata.de/images/clubs/supreme-mma/dashboard-bg.jpg',
 };

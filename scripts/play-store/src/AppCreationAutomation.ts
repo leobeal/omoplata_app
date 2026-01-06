@@ -5,9 +5,10 @@
  * including filling out all questionnaires and declarations.
  */
 
-import { Browser, BrowserContext, Page, chromium } from 'playwright';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Browser, BrowserContext, Page, chromium } from 'playwright';
+
 import { URLs, Timeouts } from './selectors';
 import { QuestionnaireSelectors, QuestionnaireTimeouts } from './selectors/questionnaires';
 import {
@@ -78,9 +79,7 @@ export class AppCreationAutomation {
     const hasAuth = fs.existsSync(authPath);
 
     if (!hasAuth) {
-      throw new Error(
-        'No auth session found. Run "login" command first to authenticate.'
-      );
+      throw new Error('No auth session found. Run "login" command first to authenticate.');
     }
 
     this.browser = await chromium.launch({
@@ -196,10 +195,7 @@ export class AppCreationAutomation {
     await this.page.waitForTimeout(Timeouts.medium);
 
     // Fill app name
-    await this.fillSafe(
-      QuestionnaireSelectors.createApp.appName,
-      config.basicInfo.name
-    );
+    await this.fillSafe(QuestionnaireSelectors.createApp.appName, config.basicInfo.name);
 
     // Select default language
     await this.clickSafe(QuestionnaireSelectors.createApp.languageDropdown);
@@ -254,10 +250,7 @@ export class AppCreationAutomation {
     await this.page.waitForLoadState('networkidle');
 
     // Fill title
-    await this.clearAndFill(
-      QuestionnaireSelectors.storeListing.appTitle,
-      listing.title
-    );
+    await this.clearAndFill(QuestionnaireSelectors.storeListing.appTitle, listing.title);
 
     // Fill short description
     await this.clearAndFill(
@@ -298,17 +291,12 @@ export class AppCreationAutomation {
       // Switch language
       await this.clickSafe(QuestionnaireSelectors.storeListing.languageSwitcher);
       await this.page.waitForTimeout(Timeouts.short);
-      await this.clickSafe(
-        QuestionnaireSelectors.storeListing.languageOption(langCode)
-      );
+      await this.clickSafe(QuestionnaireSelectors.storeListing.languageOption(langCode));
       await this.page.waitForLoadState('networkidle');
 
       // Update fields
       if (listing.title) {
-        await this.clearAndFill(
-          QuestionnaireSelectors.storeListing.appTitle,
-          listing.title
-        );
+        await this.clearAndFill(QuestionnaireSelectors.storeListing.appTitle, listing.title);
       }
       if (listing.shortDescription) {
         await this.clearAndFill(
@@ -356,25 +344,16 @@ export class AppCreationAutomation {
 
     // Upload app icon
     this.log('   Uploading app icon...');
-    await this.uploadFile(
-      QuestionnaireSelectors.graphics.iconUpload,
-      assets.icon
-    );
+    await this.uploadFile(QuestionnaireSelectors.graphics.iconUpload, assets.icon);
 
     // Upload feature graphic
     this.log('   Uploading feature graphic...');
-    await this.uploadFile(
-      QuestionnaireSelectors.graphics.featureUpload,
-      assets.featureGraphic
-    );
+    await this.uploadFile(QuestionnaireSelectors.graphics.featureUpload, assets.featureGraphic);
 
     // Upload phone screenshots
     this.log(`   Uploading ${assets.phoneScreenshots.length} phone screenshots...`);
     for (const screenshot of assets.phoneScreenshots) {
-      await this.uploadFile(
-        QuestionnaireSelectors.graphics.phoneScreenshots,
-        screenshot
-      );
+      await this.uploadFile(QuestionnaireSelectors.graphics.phoneScreenshots, screenshot);
       await this.page.waitForTimeout(QuestionnaireTimeouts.betweenQuestions);
     }
 
@@ -382,30 +361,21 @@ export class AppCreationAutomation {
     if (assets.tablet7Screenshots?.length) {
       this.log(`   Uploading ${assets.tablet7Screenshots.length} tablet (7") screenshots...`);
       for (const screenshot of assets.tablet7Screenshots) {
-        await this.uploadFile(
-          QuestionnaireSelectors.graphics.tablet7Screenshots,
-          screenshot
-        );
+        await this.uploadFile(QuestionnaireSelectors.graphics.tablet7Screenshots, screenshot);
       }
     }
 
     if (assets.tablet10Screenshots?.length) {
       this.log(`   Uploading ${assets.tablet10Screenshots.length} tablet (10") screenshots...`);
       for (const screenshot of assets.tablet10Screenshots) {
-        await this.uploadFile(
-          QuestionnaireSelectors.graphics.tablet10Screenshots,
-          screenshot
-        );
+        await this.uploadFile(QuestionnaireSelectors.graphics.tablet10Screenshots, screenshot);
       }
     }
 
     // Add promo video if provided
     if (assets.promoVideo) {
       this.log('   Adding promo video URL...');
-      await this.fillSafe(
-        QuestionnaireSelectors.graphics.promoVideoInput,
-        assets.promoVideo
-      );
+      await this.fillSafe(QuestionnaireSelectors.graphics.promoVideoInput, assets.promoVideo);
     }
 
     // Save
@@ -441,17 +411,11 @@ export class AppCreationAutomation {
 
     // Enter email
     this.log('   Entering email for IARC...');
-    await this.fillSafe(
-      QuestionnaireSelectors.contentRating.emailInput,
-      answers.email
-    );
+    await this.fillSafe(QuestionnaireSelectors.contentRating.emailInput, answers.email);
 
     // Confirm email if field exists
     try {
-      await this.fillSafe(
-        QuestionnaireSelectors.contentRating.confirmEmail,
-        answers.email
-      );
+      await this.fillSafe(QuestionnaireSelectors.contentRating.confirmEmail, answers.email);
     } catch {
       // Confirm email field may not exist
     }
@@ -460,9 +424,7 @@ export class AppCreationAutomation {
     this.log('   Selecting category...');
     await this.clickSafe(QuestionnaireSelectors.contentRating.categoryDropdown);
     await this.page.waitForTimeout(Timeouts.short);
-    await this.clickSafe(
-      QuestionnaireSelectors.contentRating.categoryOption(answers.category)
-    );
+    await this.clickSafe(QuestionnaireSelectors.contentRating.categoryOption(answers.category));
 
     // Next to questions
     await this.clickSafe(QuestionnaireSelectors.contentRating.nextButton);
@@ -755,9 +717,7 @@ export class AppCreationAutomation {
   // STEP 8: CATEGORY AND CONTACT
   // ============================================
 
-  private async completeCategoryAndContact(
-    config: AppCategoryAndContact
-  ): Promise<void> {
+  private async completeCategoryAndContact(config: AppCategoryAndContact): Promise<void> {
     if (!this.page) throw new Error('Browser not initialized');
 
     this.log('\n📂 Step 8: Setting category and contact...');
@@ -776,15 +736,11 @@ export class AppCreationAutomation {
     this.log('   Selecting app category...');
     await this.clickSafe(QuestionnaireSelectors.categoryAndContact.categoryDropdown);
     await this.page.waitForTimeout(Timeouts.short);
-    await this.clickSafe(
-      QuestionnaireSelectors.categoryAndContact.categoryOption(config.category)
-    );
+    await this.clickSafe(QuestionnaireSelectors.categoryAndContact.categoryOption(config.category));
 
     // Secondary category if provided
     if (config.secondaryCategory) {
-      await this.clickSafe(
-        QuestionnaireSelectors.categoryAndContact.secondaryCategoryDropdown
-      );
+      await this.clickSafe(QuestionnaireSelectors.categoryAndContact.secondaryCategoryDropdown);
       await this.page.waitForTimeout(Timeouts.short);
       await this.clickSafe(
         QuestionnaireSelectors.categoryAndContact.categoryOption(config.secondaryCategory)
@@ -842,9 +798,7 @@ export class AppCreationAutomation {
 
     // Check for review button
     try {
-      const reviewButton = await this.page.$(
-        QuestionnaireSelectors.dashboard.sendForReview
-      );
+      const reviewButton = await this.page.$(QuestionnaireSelectors.dashboard.sendForReview);
 
       if (reviewButton) {
         const isDisabled = await reviewButton.isDisabled();
@@ -973,9 +927,7 @@ export class AppCreationAutomation {
   private async uploadFile(selector: string, filePath: string): Promise<void> {
     if (!this.page) return;
 
-    const absolutePath = path.isAbsolute(filePath)
-      ? filePath
-      : path.join(this.baseDir, filePath);
+    const absolutePath = path.isAbsolute(filePath) ? filePath : path.join(this.baseDir, filePath);
 
     if (!fs.existsSync(absolutePath)) {
       throw new Error(`File not found: ${absolutePath}`);

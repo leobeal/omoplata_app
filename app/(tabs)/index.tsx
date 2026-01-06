@@ -364,11 +364,9 @@ const ActivityStats = memo(() => {
 
   // Get streak data
   const currentStreak =
-    trainingStreak && trainingStreak.type === 'training_streak' ? trainingStreak.current_streak : 0;
+    trainingStreak && trainingStreak.type === 'training_streak' ? trainingStreak.currentStreak : 0;
   const longestStreak =
-    trainingStreak && trainingStreak.type === 'training_streak'
-      ? trainingStreak.longest_streak
-      : 12;
+    trainingStreak && trainingStreak.type === 'training_streak' ? trainingStreak.longestStreak : 12;
 
   return (
     <View className="mb-6">

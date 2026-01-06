@@ -88,11 +88,29 @@ export const getAppFAQs = async (): Promise<FAQCategory[]> => {
  * Fetch all FAQs (club + app) from the API
  */
 export const getFAQs = async (): Promise<FAQsResponse> => {
-  const [clubCategories, appCategories] = await Promise.all([getClubFAQs(), getAppFAQs()]);
+  const [clubResponse, appResponse] = await Promise.all([
+    api.get<ApiFAQsResponse>(ENDPOINTS.FAQS.CLUB),
+    api.get<ApiFAQsResponse>(ENDPOINTS.FAQS.APP),
+  ]);
+
+  const clubCategories =
+    clubResponse.data?.categories?.map((cat) => transformCategory(cat, 'club')) || [];
+  const appCategories =
+    appResponse.data?.categories?.map((cat) => transformCategory(cat, 'app')) || [];
+
+  // Use the most recent last_updated from either response, or current date as fallback
+  const clubUpdated = clubResponse.data?.last_updated;
+  const appUpdated = appResponse.data?.last_updated;
+  const lastUpdated =
+    clubUpdated && appUpdated
+      ? new Date(clubUpdated) > new Date(appUpdated)
+        ? clubUpdated
+        : appUpdated
+      : clubUpdated || appUpdated || new Date().toISOString();
 
   return {
     categories: [...clubCategories, ...appCategories],
-    lastUpdated: new Date().toISOString(),
+    lastUpdated,
   };
 };
 

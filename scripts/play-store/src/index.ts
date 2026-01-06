@@ -12,8 +12,9 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { PlayStoreAutomation } from './PlayStoreAutomation';
+
 import { AppCreationAutomation } from './AppCreationAutomation';
+import { PlayStoreAutomation } from './PlayStoreAutomation';
 import { TenantConfig, UpdateOptions, UpdateSection } from './types';
 import { AppCreationConfig } from './types/app-creation';
 
@@ -162,11 +163,15 @@ function validateConfig(config: TenantConfig): string[] {
   }
 
   if (config.listing?.shortDescription && config.listing.shortDescription.length > 80) {
-    errors.push(`Short description exceeds 80 characters: ${config.listing.shortDescription.length}`);
+    errors.push(
+      `Short description exceeds 80 characters: ${config.listing.shortDescription.length}`
+    );
   }
 
   if (config.listing?.fullDescription && config.listing.fullDescription.length > 4000) {
-    errors.push(`Full description exceeds 4000 characters: ${config.listing.fullDescription.length}`);
+    errors.push(
+      `Full description exceeds 4000 characters: ${config.listing.fullDescription.length}`
+    );
   }
 
   if (!config.contact?.email) {

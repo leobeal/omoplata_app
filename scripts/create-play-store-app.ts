@@ -25,10 +25,10 @@
  * TENANT=iron-oak npx ts-node scripts/create-play-store-app.ts
  */
 
-import { chromium, Page } from 'playwright';
 import * as fs from 'fs';
-import * as path from 'path';
 import * as os from 'os';
+import * as path from 'path';
+import { chromium, Page } from 'playwright';
 
 // Configuration
 const DEVELOPER_ID = process.env.DEVELOPER_ID || '5739281656511061086';
@@ -101,7 +101,10 @@ async function main() {
 
       // Type to search for language
       const langCode = config.defaultLanguage.split('-')[0]; // 'de' from 'de-DE'
-      await page.getByRole('option', { name: new RegExp(langCode, 'i') }).first().click();
+      await page
+        .getByRole('option', { name: new RegExp(langCode, 'i') })
+        .first()
+        .click();
     }
 
     // Select App type and Free
@@ -129,7 +132,11 @@ async function main() {
 
     await page.getByRole('button', { name: /Start.*Privacy policy/i }).click();
     await page.waitForTimeout(1000);
-    await page.getByRole('textbox').filter({ hasText: '' }).first().fill(config.contact.privacyPolicyUrl);
+    await page
+      .getByRole('textbox')
+      .filter({ hasText: '' })
+      .first()
+      .fill(config.contact.privacyPolicyUrl);
     await saveAndWait(page);
     console.log('Privacy policy set');
 
@@ -147,13 +154,19 @@ async function main() {
       await page.waitForTimeout(500);
 
       await page.getByRole('textbox', { name: /Name/i }).first().fill('Login required');
-      await page.getByRole('textbox', { name: /Instructions/i }).fill(config.appAccess.instructions);
+      await page
+        .getByRole('textbox', { name: /Instructions/i })
+        .fill(config.appAccess.instructions);
 
       // Add test credentials
       if (config.appAccess.testCredentials) {
         await page.getByRole('checkbox', { name: /login/i }).click();
-        await page.getByRole('textbox', { name: /Username/i }).fill(config.appAccess.testCredentials.username);
-        await page.getByRole('textbox', { name: /Password/i }).fill(config.appAccess.testCredentials.password);
+        await page
+          .getByRole('textbox', { name: /Username/i })
+          .fill(config.appAccess.testCredentials.username);
+        await page
+          .getByRole('textbox', { name: /Password/i })
+          .fill(config.appAccess.testCredentials.password);
       }
 
       await page.getByRole('button', { name: 'Apply' }).click();
@@ -331,7 +344,12 @@ async function main() {
     await page.waitForTimeout(2000);
 
     // Edit category
-    await page.locator('text=App category').locator('..').locator('..').getByRole('button', { name: 'Edit' }).click();
+    await page
+      .locator('text=App category')
+      .locator('..')
+      .locator('..')
+      .getByRole('button', { name: 'Edit' })
+      .click();
     await page.waitForTimeout(500);
     await page.getByRole('button', { name: /Select a category/i }).click();
     await page.getByRole('option', { name: config.appCategory }).click();
@@ -341,10 +359,17 @@ async function main() {
     await page.waitForTimeout(500);
 
     // Edit contact details
-    await page.locator('text=Store Listing contact').locator('..').locator('..').getByRole('button', { name: 'Edit' }).click();
+    await page
+      .locator('text=Store Listing contact')
+      .locator('..')
+      .locator('..')
+      .getByRole('button', { name: 'Edit' })
+      .click();
     await page.waitForTimeout(500);
     await page.getByRole('textbox').first().fill(config.contact.email);
-    await page.getByRole('textbox', { name: /https:\/\//i }).fill(config.contact.website.replace('https://', ''));
+    await page
+      .getByRole('textbox', { name: /https:\/\//i })
+      .fill(config.contact.website.replace('https://', ''));
     await page.getByRole('button', { name: 'Save' }).click();
     await page.waitForSelector('text=Change saved', { timeout: 5000 });
     console.log('App category and contacts set');
@@ -355,8 +380,12 @@ async function main() {
     await page.waitForTimeout(2000);
 
     await page.getByRole('textbox', { name: /Name of the app/i }).fill(config.listing.title);
-    await page.getByRole('textbox', { name: /Short description/i }).fill(config.listing.shortDescription);
-    await page.getByRole('textbox', { name: /Full description/i }).fill(config.listing.fullDescription);
+    await page
+      .getByRole('textbox', { name: /Short description/i })
+      .fill(config.listing.shortDescription);
+    await page
+      .getByRole('textbox', { name: /Full description/i })
+      .fill(config.listing.fullDescription);
 
     await page.getByRole('button', { name: /Save/i }).click();
     await page.waitForTimeout(2000);
@@ -372,7 +401,6 @@ async function main() {
     console.log('  - Upload feature graphic (1024x500 PNG)');
     console.log('  - Upload phone screenshots (2-8 images)');
     console.log('  - Upload AAB and create release\n');
-
   } catch (error) {
     console.error('\nError during setup:', error);
     console.log(`\nCurrent URL: ${page.url()}`);

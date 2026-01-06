@@ -1,6 +1,6 @@
 import { defineConfig } from '@playwright/test';
-import * as path from 'path';
 import * as os from 'os';
+import * as path from 'path';
 
 // Use Chrome with existing user profile (logged into Google)
 const userDataDir = path.join(os.homedir(), 'Library/Application Support/Google/Chrome');
@@ -21,10 +21,7 @@ export default defineConfig({
     trace: 'on-first-retry',
     channel: 'chrome', // Use installed Chrome
     launchOptions: {
-      args: [
-        `--user-data-dir=${userDataDir}`,
-        '--profile-directory=Default',
-      ],
+      args: [`--user-data-dir=${userDataDir}`, '--profile-directory=Default'],
       slowMo: 300,
     },
   },

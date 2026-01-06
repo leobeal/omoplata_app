@@ -2,20 +2,32 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   View,
   FlatList,
   Dimensions,
   ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
   Text,
-  ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Pressable,
+  TextInput,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// NFC is only available in development builds, not Expo Go
+let NfcManager: any = null;
+let NfcTech: any = null;
+let Ndef: any = null;
+try {
+  const nfcModule = require('react-native-nfc-manager');
+  NfcManager = nfcModule.default;
+  NfcTech = nfcModule.NfcTech;
+  Ndef = nfcModule.Ndef;
+} catch {
+  // NFC not available (Expo Go)
+}
 
 import api from '@/api/client';
 import { ENDPOINTS, setTenant as setApiTenant } from '@/api/config';
@@ -23,7 +35,6 @@ import AnimatedView from '@/components/AnimatedView';
 import { Button } from '@/components/Button';
 import Icon, { IconName } from '@/components/Icon';
 import ThemedText from '@/components/ThemedText';
-import Input from '@/components/forms/Input';
 import { useT } from '@/contexts/LocalizationContext';
 import { useTenant } from '@/contexts/TenantContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
@@ -69,7 +80,7 @@ const slides: SlideData[] = [
   },
 ];
 
-type ViewMode = 'scanner' | 'form';
+type ViewMode = 'slider' | 'scanner' | 'nfc' | 'manual';
 
 export default function TenantSelectionScreen() {
   const insets = useSafeAreaInsets();
@@ -77,14 +88,44 @@ export default function TenantSelectionScreen() {
   const t = useT();
   const { setTenant } = useTenant();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [tenantSlug, setTenantSlug] = useState('');
   const [error, setError] = useState('');
-  const [clubNotFound, setClubNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('scanner');
+  const [viewMode, setViewMode] = useState<ViewMode>('slider');
   const [isScanning, setIsScanning] = useState(true);
+  const isProcessingRef = useRef(false);
+  const [nfcSupported, setNfcSupported] = useState<boolean | null>(null);
+  const [isNfcScanning, setIsNfcScanning] = useState(false);
+  const [manualSlug, setManualSlug] = useState('');
 
   const [permission, requestPermission] = useCameraPermissions();
+
+  // Check NFC support on mount
+  useEffect(() => {
+    const checkNfc = async () => {
+      // NFC only works on real devices, not simulators
+      if (!NfcManager) {
+        console.log('NFC: Module not available (Expo Go or not installed)');
+        setNfcSupported(false);
+        return;
+      }
+      try {
+        const supported = await NfcManager.isSupported();
+        console.log('NFC: Supported =', supported);
+        setNfcSupported(supported);
+        if (supported) {
+          await NfcManager.start();
+        }
+      } catch (err) {
+        console.log('NFC: Error checking support', err);
+        setNfcSupported(false);
+      }
+    };
+    checkNfc();
+
+    return () => {
+      NfcManager?.cancelTechnologyRequest?.().catch(() => {});
+    };
+  }, []);
 
   const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -94,19 +135,9 @@ export default function TenantSelectionScreen() {
 
   const validateTenantSlug = (slug: string): boolean => {
     const slugRegex = /^[a-z0-9-]+$/;
-    if (!slug) {
-      setError(t('tenantSelection.errors.required'));
+    if (!slug || !slugRegex.test(slug) || slug.length < 2) {
       return false;
     }
-    if (!slugRegex.test(slug)) {
-      setError(t('tenantSelection.errors.invalid'));
-      return false;
-    }
-    if (slug.length < 2) {
-      setError(t('tenantSelection.errors.tooShort'));
-      return false;
-    }
-    setError('');
     return true;
   };
 
@@ -157,21 +188,25 @@ export default function TenantSelectionScreen() {
 
   const handleTenantConnect = async (slug: string) => {
     if (!validateTenantSlug(slug)) {
+      isProcessingRef.current = false;
       return;
     }
 
     setIsLoading(true);
     setError('');
-    setClubNotFound(false);
 
     try {
       setApiTenant(slug);
       const checkResponse = await api.get(ENDPOINTS.TENANT.CHECK);
 
       if (checkResponse.status === 404) {
-        setClubNotFound(true);
+        setError(t('tenantSelection.errors.invalidQr'));
         setIsLoading(false);
         setIsScanning(true);
+        // Reset after delay to allow retry
+        setTimeout(() => {
+          isProcessingRef.current = false;
+        }, 2000);
         return;
       }
 
@@ -179,6 +214,10 @@ export default function TenantSelectionScreen() {
         setError(t('common.error'));
         setIsLoading(false);
         setIsScanning(true);
+        // Reset after delay to allow retry
+        setTimeout(() => {
+          isProcessingRef.current = false;
+        }, 2000);
         return;
       }
 
@@ -187,8 +226,7 @@ export default function TenantSelectionScreen() {
       const tenantInfo = {
         slug,
         name:
-          apiData?.tenant?.name ||
-          slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' '),
+          apiData?.tenant?.name || slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' '),
         domain: getDomainForTenant(slug),
         signup_link: apiData?.signup_link,
       };
@@ -200,17 +238,18 @@ export default function TenantSelectionScreen() {
       console.error('Failed to set tenant:', err);
       setIsLoading(false);
       setIsScanning(true);
+      // Reset after delay to allow retry
+      setTimeout(() => {
+        isProcessingRef.current = false;
+      }, 2000);
     }
-  };
-
-  const handleContinue = async () => {
-    const slug = tenantSlug.toLowerCase().trim();
-    await handleTenantConnect(slug);
   };
 
   const handleBarCodeScanned = useCallback(
     ({ data }: { data: string }) => {
-      if (!isScanning || isLoading) return;
+      // Use ref for immediate synchronous check to prevent multiple calls
+      if (isProcessingRef.current) return;
+      isProcessingRef.current = true;
 
       setIsScanning(false);
 
@@ -222,26 +261,231 @@ export default function TenantSelectionScreen() {
         setTimeout(() => {
           setError('');
           setIsScanning(true);
+          isProcessingRef.current = false;
         }, 2000);
         return;
       }
 
       handleTenantConnect(slug);
     },
-    [isScanning, isLoading, t]
+    [t]
   );
 
-  const switchToForm = () => {
-    setViewMode('form');
+  const switchToSlider = () => {
+    setViewMode('slider');
     setError('');
-    setClubNotFound(false);
   };
 
   const switchToScanner = () => {
     setViewMode('scanner');
     setError('');
-    setClubNotFound(false);
     setIsScanning(true);
+    isProcessingRef.current = false;
+  };
+
+  const switchToNfc = async () => {
+    setViewMode('nfc');
+    setError('');
+    isProcessingRef.current = false;
+    startNfcScan();
+  };
+
+  const startNfcScan = async () => {
+    if (isProcessingRef.current || !NfcManager) return;
+
+    try {
+      setIsNfcScanning(true);
+      setError('');
+
+      // Request NFC technology
+      await NfcManager.requestTechnology(NfcTech.Ndef);
+
+      // Get the tag
+      const tag = await NfcManager.getTag();
+
+      if (tag?.ndefMessage && tag.ndefMessage.length > 0) {
+        let url: string | null = null;
+
+        // Try to find a URL in the NFC records
+        for (const record of tag.ndefMessage) {
+          const payload = new Uint8Array(record.payload);
+
+          // Check if it's a URI record (TNF=1, type='U')
+          if (record.tnf === 1 && String.fromCharCode(...record.type) === 'U') {
+            url = Ndef.uri.decodePayload(payload);
+            break;
+          }
+
+          // Check if it's a text record that contains a URL
+          if (record.tnf === 1 && String.fromCharCode(...record.type) === 'T') {
+            const text = Ndef.text.decodePayload(payload);
+            if (text?.startsWith('http')) {
+              url = text;
+              break;
+            }
+          }
+        }
+
+        if (url) {
+          // Extract slug from URL (same as QR code)
+          const slug = extractSlugFromUrl(url);
+
+          if (slug) {
+            isProcessingRef.current = true;
+            await handleTenantConnect(slug);
+          } else {
+            setError(t('tenantSelection.errors.invalidQr'));
+            setTimeout(() => {
+              setError('');
+              startNfcScan();
+            }, 2000);
+          }
+        } else {
+          setError(t('tenantSelection.errors.invalidQr'));
+          setTimeout(() => {
+            setError('');
+            startNfcScan();
+          }, 2000);
+        }
+      }
+    } catch (ex) {
+      // User cancelled or error
+      console.log('NFC Error:', ex);
+    } finally {
+      setIsNfcScanning(false);
+      NfcManager?.cancelTechnologyRequest?.().catch(() => {});
+    }
+  };
+
+  const cancelNfcScan = () => {
+    NfcManager?.cancelTechnologyRequest?.().catch(() => {});
+    setIsNfcScanning(false);
+    switchToSlider();
+  };
+
+  const switchToManual = () => {
+    setViewMode('manual');
+    setError('');
+    setManualSlug('');
+  };
+
+  const handleManualSubmit = async () => {
+    const slug = manualSlug.trim().toLowerCase();
+
+    if (!validateTenantSlug(slug)) {
+      setError(t('tenantSelection.errors.invalid'));
+      return;
+    }
+
+    await handleTenantConnect(slug);
+  };
+
+  // Render the Manual Entry view
+  const renderManualEntryView = () => {
+    return (
+      <View className="flex-1 bg-black">
+        <ImageBackground source={slides[0].image} style={{ flex: 1 }}>
+          <LinearGradient colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.9)']} style={{ flex: 1 }}>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingHorizontal: 32,
+              }}>
+              <View
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 24,
+                }}>
+                <Icon name="Keyboard" size={40} strokeWidth={1.5} color="white" />
+              </View>
+
+              <Text
+                style={{
+                  color: '#FFFFFF',
+                  fontSize: 24,
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  marginBottom: 12,
+                }}>
+                {t('tenantSelection.manualTitle')}
+              </Text>
+              <Text
+                style={{
+                  color: 'rgba(255,255,255,0.7)',
+                  fontSize: 16,
+                  textAlign: 'center',
+                  marginBottom: 32,
+                  paddingHorizontal: 20,
+                }}>
+                {t('tenantSelection.manualSubtitle')}
+              </Text>
+
+              {/* Input field */}
+              <View className="mb-4 w-full">
+                <TextInput
+                  value={manualSlug}
+                  onChangeText={setManualSlug}
+                  placeholder={t('tenantSelection.placeholder')}
+                  placeholderTextColor="rgba(255,255,255,0.4)"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    borderWidth: 1,
+                    borderColor: error ? colors.error : 'rgba(255,255,255,0.2)',
+                    borderRadius: 12,
+                    paddingHorizontal: 16,
+                    paddingVertical: 14,
+                    color: 'white',
+                    fontSize: 16,
+                    textAlign: 'center',
+                  }}
+                  onSubmitEditing={handleManualSubmit}
+                />
+              </View>
+
+              {/* Error message */}
+              {error && !isLoading ? (
+                <View
+                  style={{
+                    backgroundColor: colors.error + 'E6',
+                    borderRadius: 12,
+                    paddingHorizontal: 20,
+                    paddingVertical: 12,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginBottom: 16,
+                  }}>
+                  <Icon name="AlertCircle" size={18} color="white" style={{ marginRight: 8 }} />
+                  <Text style={{ color: 'white', fontSize: 14 }}>{error}</Text>
+                </View>
+              ) : null}
+
+              <Button
+                title={isLoading ? '' : t('tenantSelection.connect')}
+                onPress={handleManualSubmit}
+                loading={isLoading}
+                disabled={!manualSlug.trim() || isLoading}
+                className="mb-4 w-full"
+              />
+
+              <TouchableOpacity onPress={switchToSlider} className="py-3">
+                <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
+                  {t('common.back')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </ImageBackground>
+      </View>
+    );
   };
 
   // Render the QR Scanner view
@@ -304,9 +548,9 @@ export default function TenantSelectionScreen() {
                   onPress={requestPermission}
                   className="mb-4 w-full"
                 />
-                <TouchableOpacity onPress={switchToForm} className="py-3">
+                <TouchableOpacity onPress={switchToSlider} className="py-3">
                   <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
-                    {t('tenantSelection.noQrCode')}
+                    {t('common.back')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -453,7 +697,7 @@ export default function TenantSelectionScreen() {
               ) : null}
             </View>
 
-            {/* Bottom overlay with "Don't have a QR code?" link */}
+            {/* Bottom overlay with back button */}
             <LinearGradient
               colors={['transparent', 'rgba(0,0,0,0.9)']}
               style={{
@@ -462,14 +706,14 @@ export default function TenantSelectionScreen() {
                 paddingTop: 40,
                 alignItems: 'center',
               }}>
-              <TouchableOpacity onPress={switchToForm} className="py-4">
+              <TouchableOpacity onPress={switchToSlider} className="py-4">
                 <Text
                   style={{
                     color: 'rgba(255,255,255,0.9)',
                     fontSize: 16,
                     textDecorationLine: 'underline',
                   }}>
-                  {t('tenantSelection.noQrCode')}
+                  {t('common.back')}
                 </Text>
               </TouchableOpacity>
             </LinearGradient>
@@ -479,8 +723,104 @@ export default function TenantSelectionScreen() {
     );
   };
 
-  // Render the manual form view
-  const renderFormView = () => {
+  // Render the NFC Scanner view
+  const renderNfcView = () => {
+    return (
+      <View className="flex-1 bg-black">
+        <ImageBackground source={slides[0].image} style={{ flex: 1 }}>
+          <LinearGradient colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.9)']} style={{ flex: 1 }}>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingHorizontal: 32,
+              }}>
+              {/* NFC Animation */}
+              <AnimatedView animation="pulse" duration={1500} iterationCount="infinite">
+                <View
+                  className="mb-6 items-center justify-center rounded-full p-4"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                  <View
+                    className="items-center justify-center rounded-full"
+                    style={{
+                      width: 120,
+                      height: 120,
+                      backgroundColor: colors.primary,
+                    }}>
+                    <Icon name="Nfc" size={64} strokeWidth={1.5} color="white" />
+                  </View>
+                </View>
+              </AnimatedView>
+
+              <Text
+                style={{
+                  color: '#FFFFFF',
+                  fontSize: 24,
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  marginBottom: 12,
+                }}>
+                {t('tenantSelection.nfcTitle')}
+              </Text>
+              <Text
+                style={{
+                  color: 'rgba(255,255,255,0.7)',
+                  fontSize: 16,
+                  textAlign: 'center',
+                  marginBottom: 32,
+                  paddingHorizontal: 20,
+                }}>
+                {t('tenantSelection.nfcSubtitle')}
+              </Text>
+
+              {/* Loading indicator */}
+              {isLoading && (
+                <View className="mb-4">
+                  <ActivityIndicator size="large" color="white" />
+                </View>
+              )}
+
+              {/* Error message */}
+              {error && !isLoading ? (
+                <View
+                  style={{
+                    backgroundColor: colors.error + 'E6',
+                    borderRadius: 12,
+                    paddingHorizontal: 20,
+                    paddingVertical: 12,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginBottom: 16,
+                  }}>
+                  <Icon name="AlertCircle" size={18} color="white" style={{ marginRight: 8 }} />
+                  <Text style={{ color: 'white', fontSize: 14 }}>{error}</Text>
+                </View>
+              ) : null}
+
+              {/* Retry button if not scanning */}
+              {!isNfcScanning && !isLoading && (
+                <Button
+                  title={t('tenantSelection.nfcRetry')}
+                  onPress={startNfcScan}
+                  className="mb-4 w-full"
+                />
+              )}
+
+              <TouchableOpacity onPress={cancelNfcScan} className="py-3">
+                <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
+                  {t('common.back')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </ImageBackground>
+      </View>
+    );
+  };
+
+  // Render the slider view with QR code button
+  const renderSliderView = () => {
     return (
       <View className="flex-1 bg-black">
         {/* Full-screen Slider */}
@@ -508,7 +848,7 @@ export default function TenantSelectionScreen() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       paddingHorizontal: 32,
-                      paddingBottom: 380,
+                      paddingBottom: 200,
                       paddingTop: 60,
                     }}>
                     <View
@@ -550,23 +890,6 @@ export default function TenantSelectionScreen() {
           keyExtractor={(item) => item.id}
         />
 
-        {/* Back button - Fixed at top left */}
-        <TouchableOpacity
-          onPress={switchToScanner}
-          style={{
-            position: 'absolute',
-            top: insets.top + 16,
-            left: 16,
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Icon name="ArrowLeft" size={24} color="white" />
-        </TouchableOpacity>
-
         {/* Pagination Dots - Fixed at top */}
         <View
           style={{
@@ -591,105 +914,73 @@ export default function TenantSelectionScreen() {
           ))}
         </View>
 
-        {/* Bottom Form - Fixed at bottom with ScrollView for bounce */}
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-          className="absolute bottom-0 left-0 right-0">
-          <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            bounces>
-            <AnimatedView animation="bounceIn" duration={600} delay={200} className="p-4">
-              <View
-                className="rounded-3xl border border-border bg-background p-6"
-                style={{ marginBottom: insets.bottom }}>
-                <ThemedText className="mb-2 text-center text-xl font-bold">
-                  {t('tenantSelection.title')}
-                </ThemedText>
-                <ThemedText className="mb-6 text-center text-sm opacity-60">
-                  {t('tenantSelection.subtitle')}
-                </ThemedText>
-
-                {/* Input */}
-                <Input
-                  label={t('tenantSelection.label')}
-                  value={tenantSlug}
-                  onChangeText={(text) => {
-                    setTenantSlug(text.toLowerCase());
-                    setError('');
-                    setClubNotFound(false);
-                  }}
-                  placeholder={t('tenantSelection.placeholder')}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  editable={!isLoading}
-                  error={error || (clubNotFound ? ' ' : undefined)}
-                  variant="inline"
-                  containerClassName="mb-6"
-                />
-
-                {/* Club Not Found Error */}
-                {clubNotFound ? (
+        {/* Bottom CTA - Fixed at bottom */}
+        <View
+          className="absolute bottom-0 left-0 right-0"
+          style={{ paddingBottom: insets.bottom + 24 }}>
+          <AnimatedView animation="bounceIn" duration={600} delay={200} className="items-center px-6">
+            {/* QR Code Button */}
+            <Pressable onPress={switchToScanner}>
+              <AnimatedView animation="pulse" duration={2000} iterationCount="infinite">
+                <View
+                  className="mb-5 items-center justify-center rounded-3xl border border-white/20 p-4"
+                  style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
                   <View
-                    className="mb-3 rounded-xl p-3"
-                    style={{ backgroundColor: colors.error + '15' }}>
-                    <View className="flex-row items-center justify-center">
-                      <Icon
-                        name="AlertCircle"
-                        size={16}
-                        color={colors.error}
-                        style={{ marginRight: 6 }}
-                      />
-                      <ThemedText className="text-sm font-medium" style={{ color: colors.error }}>
-                        {t('clubNotFound.title')}
-                      </ThemedText>
-                    </View>
-                    <ThemedText className="mt-1 text-center text-xs opacity-70">
-                      {t('clubNotFound.message')}
-                    </ThemedText>
+                    className="items-center justify-center rounded-full"
+                    style={{
+                      backgroundColor: colors.primary,
+                      width: 130,
+                      height: 130,
+                      shadowColor: colors.primary,
+                      shadowOffset: { width: 0, height: 6 },
+                      shadowOpacity: 0.4,
+                      shadowRadius: 16,
+                      elevation: 10,
+                    }}>
+                    <Icon name="QrCode" size={72} strokeWidth={1.5} color="white" />
                   </View>
-                ) : null}
-
-                {/* Continue Button */}
-                <Button
-                  title={t('common.continue')}
-                  onPress={handleContinue}
-                  disabled={isLoading || !tenantSlug.trim()}
-                  loading={isLoading}
-                  className="mb-4"
-                />
-
-                {/* Scan QR Instead Link */}
-                <TouchableOpacity
-                  onPress={switchToScanner}
-                  className="flex-row items-center justify-center py-2">
-                  <Icon name="QrCode" size={16} color={colors.primary} style={{ marginRight: 6 }} />
-                  <ThemedText className="text-center text-sm" style={{ color: colors.primary }}>
-                    {t('tenantSelection.scanInstead')}
-                  </ThemedText>
-                </TouchableOpacity>
-
-                {/* Help Text */}
-                <View className="mt-2 flex-row items-center justify-center">
-                  <Icon
-                    name="HelpCircle"
-                    size={14}
-                    color={colors.textMuted}
-                    style={{ marginRight: 6 }}
-                  />
-                  <ThemedText className="text-center text-xs opacity-50">
-                    {t('tenantSelection.help')}
-                  </ThemedText>
                 </View>
-              </View>
-            </AnimatedView>
-          </ScrollView>
-        </KeyboardAvoidingView>
+              </AnimatedView>
+            </Pressable>
+
+            <ThemedText className="mb-2 text-center text-base leading-6 opacity-70">
+              {t('tenantSelection.scanDescription')}
+            </ThemedText>
+
+            <ThemedText
+              className="text-center text-lg font-semibold"
+              style={{ color: colors.primary }}>
+              {t('tenantSelection.tapToScan')}
+            </ThemedText>
+
+            {/* Alternative options */}
+            <View className="mt-4 flex-row items-center justify-center gap-4">
+              {nfcSupported && (
+                <TouchableOpacity onPress={switchToNfc} className="flex-row items-center">
+                  <Icon name="Nfc" size={16} color="white" style={{ marginRight: 4, opacity: 0.7 }} />
+                  <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
+                    {t('tenantSelection.useNfcInstead')}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {nfcSupported && (
+                <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>•</Text>
+              )}
+              <TouchableOpacity onPress={switchToManual} className="flex-row items-center">
+                <Icon name="Keyboard" size={16} color="white" style={{ marginRight: 4, opacity: 0.7 }} />
+                <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
+                  {t('tenantSelection.enterManually')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </AnimatedView>
+        </View>
       </View>
     );
   };
 
-  return viewMode === 'scanner' ? renderScannerView() : renderFormView();
+  if (viewMode === 'scanner') return renderScannerView();
+  if (viewMode === 'nfc') return renderNfcView();
+  if (viewMode === 'manual') return renderManualEntryView();
+  return renderSliderView();
 }

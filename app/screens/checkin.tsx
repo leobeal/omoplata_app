@@ -22,6 +22,7 @@ export default function CheckInScreen() {
   const [scanned, setScanned] = useState(false);
   const [enableTorch, setEnableTorch] = useState(false);
   const hasHandledDirectCheckin = useRef(false);
+  const isProcessingRef = useRef(false);
 
   // Route params for direct check-in (from deep link)
   const { location, code, direct } = useLocalSearchParams<{
@@ -40,7 +41,9 @@ export default function CheckInScreen() {
   };
 
   const handleBarCodeScanned = async ({ data }: BarcodeScanningResult) => {
-    if (scanned || scanState === 'scanning') return;
+    // Use ref for immediate synchronous check to prevent multiple calls
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
 
     setScanned(true);
     setScanState('scanning');
@@ -132,6 +135,7 @@ export default function CheckInScreen() {
         setScanned(false);
         setScanState('idle');
         setErrorMessage('');
+        isProcessingRef.current = false;
       }, 3000);
     }
   };

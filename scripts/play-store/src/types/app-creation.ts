@@ -274,13 +274,7 @@ export interface TargetAudience {
   };
 }
 
-export type AgeGroup =
-  | 'under_5'
-  | '6_8'
-  | '9_12'
-  | '13_15'
-  | '16_17'
-  | '18_plus';
+export type AgeGroup = 'under_5' | '6_8' | '9_12' | '13_15' | '16_17' | '18_plus';
 
 // ============================================
 // ADS DECLARATION
@@ -443,11 +437,14 @@ export interface StoreListing {
   fullDescription: string;
 
   /** Localized listings */
-  localizations?: Record<string, {
-    title?: string;
-    shortDescription?: string;
-    fullDescription?: string;
-  }>;
+  localizations?: Record<
+    string,
+    {
+      title?: string;
+      shortDescription?: string;
+      fullDescription?: string;
+    }
+  >;
 }
 
 // ============================================

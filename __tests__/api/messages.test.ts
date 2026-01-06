@@ -21,7 +21,58 @@ jest.mock('../../api/client');
 
 const mockApi = api as jest.Mocked<typeof api>;
 
-// Mock data
+// Mock data - API format (snake_case)
+const mockApiThread = {
+  id: 'thread-1',
+  type: 'direct',
+  name: 'John Doe',
+  avatar: 'https://example.com/avatar.jpg',
+  participants: [
+    { id: 'user-1', name: 'John Doe', avatar: null, role: 'instructor' },
+    { id: 'user-2', name: 'Jane Smith', avatar: null, role: 'member' },
+  ],
+  last_message: {
+    id: 'msg-1',
+    text: 'Hello!',
+    sender_id: 'user-1',
+    timestamp: '2025-12-20T10:00:00Z',
+    status: 'read',
+  },
+  unread_count: 0,
+  updated_at: '2025-12-20T10:00:00Z',
+};
+
+const mockApiGroupThread = {
+  id: 'thread-2',
+  type: 'group',
+  name: 'BJJ Fundamentals',
+  avatar: null,
+  participants: [
+    { id: 'user-1', name: 'Coach Mike', avatar: null, role: 'instructor' },
+    { id: 'user-2', name: 'Jane Smith', avatar: null, role: 'member' },
+    { id: 'user-3', name: 'Bob Wilson', avatar: null, role: 'member' },
+  ],
+  member_count: 15,
+  last_message: {
+    id: 'msg-2',
+    text: 'Class at 6pm today',
+    sender_id: 'user-1',
+    timestamp: '2025-12-20T09:00:00Z',
+    status: 'delivered',
+  },
+  unread_count: 3,
+  updated_at: '2025-12-20T09:00:00Z',
+};
+
+const mockApiMessage = {
+  id: 'msg-1',
+  text: 'Hello there!',
+  sender_id: 'user-1',
+  timestamp: '2025-12-20T10:30:00Z',
+  status: 'sent',
+};
+
+// App format (camelCase) - for expected results
 const mockThread: Thread = {
   id: 'thread-1',
   type: 'direct',
@@ -79,14 +130,15 @@ describe('Messages API', () => {
 
   describe('getThreads', () => {
     it('should fetch threads with default pagination', async () => {
-      const mockResponse: PaginatedThreads = {
-        threads: [mockThread, mockGroupThread],
-        hasMore: true,
-        nextCursor: 'cursor-123',
+      // Mock API response in snake_case format
+      const mockApiResponse = {
+        threads: [mockApiThread, mockApiGroupThread],
+        has_more: true,
+        next_cursor: 'cursor-123',
       };
 
       mockApi.get.mockResolvedValue({
-        data: mockResponse,
+        data: mockApiResponse,
         error: null,
         status: 200,
       });
@@ -100,13 +152,13 @@ describe('Messages API', () => {
     });
 
     it('should fetch threads with custom limit', async () => {
-      const mockResponse: PaginatedThreads = {
-        threads: [mockThread],
-        hasMore: false,
+      const mockApiResponse = {
+        threads: [mockApiThread],
+        has_more: false,
       };
 
       mockApi.get.mockResolvedValue({
-        data: mockResponse,
+        data: mockApiResponse,
         error: null,
         status: 200,
       });
@@ -117,13 +169,13 @@ describe('Messages API', () => {
     });
 
     it('should fetch threads with cursor for pagination', async () => {
-      const mockResponse: PaginatedThreads = {
-        threads: [mockGroupThread],
-        hasMore: false,
+      const mockApiResponse = {
+        threads: [mockApiGroupThread],
+        has_more: false,
       };
 
       mockApi.get.mockResolvedValue({
-        data: mockResponse,
+        data: mockApiResponse,
         error: null,
         status: 200,
       });
@@ -147,7 +199,7 @@ describe('Messages API', () => {
   describe('getThread', () => {
     it('should fetch a single thread by ID', async () => {
       mockApi.get.mockResolvedValue({
-        data: { data: mockThread },
+        data: { data: mockApiThread },
         error: null,
         status: 200,
       });
@@ -172,14 +224,15 @@ describe('Messages API', () => {
 
   describe('getMessages', () => {
     it('should fetch messages for a thread with default pagination', async () => {
-      const mockResponse: PaginatedMessages = {
-        messages: [mockMessage],
-        hasMore: true,
-        nextCursor: 'msg-cursor-123',
+      // Mock API response in snake_case format
+      const mockApiResponse = {
+        messages: [mockApiMessage],
+        has_more: true,
+        next_cursor: 'msg-cursor-123',
       };
 
       mockApi.get.mockResolvedValue({
-        data: mockResponse,
+        data: mockApiResponse,
         error: null,
         status: 200,
       });
@@ -192,13 +245,13 @@ describe('Messages API', () => {
     });
 
     it('should fetch messages with custom limit and cursor', async () => {
-      const mockResponse: PaginatedMessages = {
+      const mockApiResponse = {
         messages: [],
-        hasMore: false,
+        has_more: false,
       };
 
       mockApi.get.mockResolvedValue({
-        data: mockResponse,
+        data: mockApiResponse,
         error: null,
         status: 200,
       });
@@ -223,16 +276,17 @@ describe('Messages API', () => {
 
   describe('sendMessage', () => {
     it('should send a message to a thread', async () => {
-      const sentMessage: Message = {
+      // Mock API response in snake_case format
+      const sentApiMessage = {
         id: 'msg-new',
         text: 'Hello world!',
-        senderId: 'user-2',
+        sender_id: 'user-2',
         timestamp: '2025-12-20T11:00:00Z',
         status: 'sent',
       };
 
       mockApi.post.mockResolvedValue({
-        data: sentMessage,
+        data: sentApiMessage,
         error: null,
         status: 201,
       });

@@ -36,8 +36,7 @@ export const Selectors = {
     shortDescription:
       'textarea[aria-label*="Short description"], textarea[name*="shortDescription"]',
     /** Full description textarea */
-    fullDescription:
-      'textarea[aria-label*="Full description"], textarea[name*="fullDescription"]',
+    fullDescription: 'textarea[aria-label*="Full description"], textarea[name*="fullDescription"]',
     /** Language selector dropdown */
     languageSelector: 'button[aria-label*="language"], [data-test-id="language-selector"]',
     /** Language option in dropdown */
