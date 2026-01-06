@@ -62,7 +62,12 @@ module.exports = {
           color: config.theme?.primary || '#2196F3',
         },
       ],
-      'react-native-nfc-manager',
+      [
+        'react-native-nfc-manager',
+        {
+          includeNdefEntitlement: false,
+        },
+      ],
     ],
     orientation: 'portrait',
     icon: config.icon,
