@@ -13,6 +13,8 @@ import {
   ActivityIndicator,
   Pressable,
   TextInput,
+  Platform,
+  Modal,
 } from 'react-native';
 import NfcManagerModule, {
   NfcTech as NfcTechType,
@@ -77,7 +79,7 @@ const slides: SlideData[] = [
   },
 ];
 
-type ViewMode = 'slider' | 'scanner' | 'nfc' | 'manual';
+type ViewMode = 'slider' | 'scanner' | 'manual';
 
 export default function TenantSelectionScreen() {
   const insets = useSafeAreaInsets();
@@ -279,7 +281,6 @@ export default function TenantSelectionScreen() {
   };
 
   const switchToNfc = async () => {
-    setViewMode('nfc');
     setError('');
     isProcessingRef.current = false;
     startNfcScan();
@@ -355,7 +356,6 @@ export default function TenantSelectionScreen() {
   const cancelNfcScan = () => {
     NfcManager?.cancelTechnologyRequest?.().catch(() => {});
     setIsNfcScanning(false);
-    switchToSlider();
   };
 
   const switchToManual = () => {
@@ -718,102 +718,6 @@ export default function TenantSelectionScreen() {
     );
   };
 
-  // Render the NFC Scanner view
-  const renderNfcView = () => {
-    return (
-      <View className="flex-1 bg-black">
-        <ImageBackground source={slides[0].image} style={{ flex: 1 }}>
-          <LinearGradient colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.9)']} style={{ flex: 1 }}>
-            <View
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingHorizontal: 32,
-              }}>
-              {/* NFC Animation */}
-              <AnimatedView animation="pulse" duration={1500} iterationCount="infinite">
-                <View
-                  className="mb-6 items-center justify-center rounded-full p-4"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                  <View
-                    className="items-center justify-center rounded-full"
-                    style={{
-                      width: 120,
-                      height: 120,
-                      backgroundColor: colors.primary,
-                    }}>
-                    <Icon name="Nfc" size={64} strokeWidth={1.5} color="white" />
-                  </View>
-                </View>
-              </AnimatedView>
-
-              <Text
-                style={{
-                  color: '#FFFFFF',
-                  fontSize: 24,
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                  marginBottom: 12,
-                }}>
-                {t('tenantSelection.nfcTitle')}
-              </Text>
-              <Text
-                style={{
-                  color: 'rgba(255,255,255,0.7)',
-                  fontSize: 16,
-                  textAlign: 'center',
-                  marginBottom: 32,
-                  paddingHorizontal: 20,
-                }}>
-                {t('tenantSelection.nfcSubtitle')}
-              </Text>
-
-              {/* Loading indicator */}
-              {isLoading && (
-                <View className="mb-4">
-                  <ActivityIndicator size="large" color="white" />
-                </View>
-              )}
-
-              {/* Error message */}
-              {error && !isLoading ? (
-                <View
-                  style={{
-                    backgroundColor: colors.error + 'E6',
-                    borderRadius: 12,
-                    paddingHorizontal: 20,
-                    paddingVertical: 12,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginBottom: 16,
-                  }}>
-                  <Icon name="AlertCircle" size={18} color="white" style={{ marginRight: 8 }} />
-                  <Text style={{ color: 'white', fontSize: 14 }}>{error}</Text>
-                </View>
-              ) : null}
-
-              {/* Retry button if not scanning */}
-              {!isNfcScanning && !isLoading && (
-                <Button
-                  title={t('tenantSelection.nfcRetry')}
-                  onPress={startNfcScan}
-                  className="mb-4 w-full"
-                />
-              )}
-
-              <TouchableOpacity onPress={cancelNfcScan} className="py-3">
-                <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
-                  {t('common.back')}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </LinearGradient>
-        </ImageBackground>
-      </View>
-    );
-  };
-
   // Render the slider view with QR code button
   const renderSliderView = () => {
     return (
@@ -922,14 +826,14 @@ export default function TenantSelectionScreen() {
             <Pressable onPress={switchToScanner}>
               <AnimatedView animation="pulse" duration={2000} iterationCount="infinite">
                 <View
-                  className="mb-5 items-center justify-center rounded-3xl border border-white/20 p-4"
-                  style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
+                  className="mb-5 items-center justify-center rounded-xl border border-white/20 p-2"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.09)' }}>
                   <View
                     className="items-center justify-center rounded-full"
                     style={{
                       backgroundColor: colors.primary,
-                      width: 130,
-                      height: 130,
+                      width: 80,
+                      height: 80,
                       shadowColor: colors.primary,
                       shadowOffset: { width: 0, height: 6 },
                       shadowOpacity: 0.4,
@@ -952,57 +856,149 @@ export default function TenantSelectionScreen() {
               {t('tenantSelection.tapToScan')}
             </ThemedText>
 
-            {/* Alternative options - NFC always shown if supported, manual only in non-production */}
-            {(() => {
-              const isProduction = Constants.expoConfig?.extra?.env === 'production';
-              const showManual = !isProduction;
-              const showNfc = nfcSupported;
-              const showSeparator = showNfc && showManual;
-
-              if (!showNfc && !showManual) return null;
-
-              return (
-                <View className="mt-4 flex-row items-center justify-center gap-4">
-                  {showNfc && (
-                    <TouchableOpacity onPress={switchToNfc} className="flex-row items-center">
-                      <Icon
-                        name="Nfc"
-                        size={16}
-                        color="white"
-                        style={{ marginRight: 4, opacity: 0.7 }}
-                      />
-                      <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
-                        {t('tenantSelection.useNfcInstead')}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {showSeparator && (
-                    <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>•</Text>
-                  )}
-                  {showManual && (
-                    <TouchableOpacity onPress={switchToManual} className="flex-row items-center">
-                      <Icon
-                        name="Keyboard"
-                        size={16}
-                        color="white"
-                        style={{ marginRight: 4, opacity: 0.7 }}
-                      />
-                      <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
-                        {t('tenantSelection.enterManually')}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              );
-            })()}
+            {/* Alternative options */}
+            {(nfcSupported || Constants.expoConfig?.extra?.env === 'development') && (
+              <View className="mt-5 flex-row items-center justify-center gap-3">
+                {nfcSupported && (
+                  <TouchableOpacity
+                    onPress={switchToNfc}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: 'rgba(255,255,255,0.15)',
+                      paddingVertical: 10,
+                      paddingHorizontal: 16,
+                      borderRadius: 20,
+                    }}>
+                    <Icon name="Smartphone" size={18} color="white" style={{ marginRight: 8 }} />
+                    <Text style={{ color: 'white', fontSize: 15, fontWeight: '500' }}>
+                      {t('tenantSelection.useNfcInstead')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                {Constants.expoConfig?.extra?.env === 'development' && (
+                  <TouchableOpacity
+                    onPress={switchToManual}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: 'rgba(255,255,255,0.15)',
+                      paddingVertical: 10,
+                      paddingHorizontal: 16,
+                      borderRadius: 20,
+                    }}>
+                    <Icon name="Keyboard" size={18} color="white" style={{ marginRight: 8 }} />
+                    <Text style={{ color: 'white', fontSize: 15, fontWeight: '500' }}>
+                      {t('tenantSelection.enterManually')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
           </AnimatedView>
         </View>
+
+        {/* NFC Modal for Android - iOS-style bottom sheet */}
+        {Platform.OS === 'android' && (
+          <Modal
+            visible={isNfcScanning}
+            transparent
+            animationType="slide"
+            onRequestClose={cancelNfcScan}>
+            <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+              {/* Backdrop */}
+              <Pressable
+                onPress={cancelNfcScan}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(0,0,0,0.4)',
+                }}
+              />
+              {/* Bottom sheet */}
+              <View
+                style={{
+                  backgroundColor: '#1c1c1e',
+                  borderTopLeftRadius: 12,
+                  borderTopRightRadius: 12,
+                  paddingTop: 8,
+                  paddingBottom: insets.bottom + 16,
+                }}>
+                {/* Handle bar */}
+                <View
+                  style={{
+                    width: 36,
+                    height: 5,
+                    backgroundColor: 'rgba(255,255,255,0.3)',
+                    borderRadius: 3,
+                    alignSelf: 'center',
+                    marginBottom: 20,
+                  }}
+                />
+
+                {/* Content */}
+                <View style={{ alignItems: 'center', paddingHorizontal: 24 }}>
+                  <AnimatedView animation="pulse" duration={2000} iterationCount="infinite">
+                    <View
+                      style={{
+                        width: 64,
+                        height: 64,
+                        borderRadius: 32,
+                        backgroundColor: colors.primary,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: 16,
+                      }}>
+                      <Icon name="Nfc" size={32} strokeWidth={1.5} color="white" />
+                    </View>
+                  </AnimatedView>
+
+                  <Text
+                    style={{
+                      color: '#FFFFFF',
+                      fontSize: 17,
+                      fontWeight: '600',
+                      textAlign: 'center',
+                      marginBottom: 6,
+                    }}>
+                    {t('tenantSelection.nfcTitle')}
+                  </Text>
+                  <Text
+                    style={{
+                      color: 'rgba(255,255,255,0.6)',
+                      fontSize: 13,
+                      textAlign: 'center',
+                      marginBottom: 24,
+                    }}>
+                    {t('tenantSelection.nfcSubtitle')}
+                  </Text>
+
+                  <TouchableOpacity
+                    onPress={cancelNfcScan}
+                    style={{
+                      width: '100%',
+                      paddingVertical: 14,
+                      borderRadius: 12,
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      alignItems: 'center',
+                    }}>
+                    <Text style={{ color: '#0a84ff', fontSize: 17, fontWeight: '600' }}>
+                      {t('common.cancel')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        )}
       </View>
     );
   };
 
   if (viewMode === 'scanner') return renderScannerView();
-  if (viewMode === 'nfc') return renderNfcView();
   if (viewMode === 'manual') return renderManualEntryView();
   return renderSliderView();
 }
