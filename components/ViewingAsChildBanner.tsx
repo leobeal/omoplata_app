@@ -41,7 +41,7 @@ export default function ViewingAsChildBanner() {
       style={[
         styles.container,
         {
-          paddingTop: insets.top + 4,
+          paddingTop: insets.top,
         },
       ]}>
       <View style={styles.content}>

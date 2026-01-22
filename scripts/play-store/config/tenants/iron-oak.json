@@ -1,6 +1,8 @@
 {
   "packageName": "com.omoplata.ironoak",
+  "bundleId": "com.omoplata.ironoak",
   "defaultLanguage": "de-DE",
+
   "listing": {
     "title": "Iron Oak Ostalb",
     "shortDescription": "Dein Kampfsport-Studio Begleiter - MMA, BJJ, Kickboxen & mehr",
@@ -16,25 +18,36 @@
       "kampfsport"
     ]
   },
+
   "localizations": {
     "en-US": {
       "title": "Iron Oak Ostalb",
       "shortDescription": "Your martial arts gym companion - MMA, BJJ, Kickboxing & more",
-      "fullDescription": "Iron Oak Ostalb is your complete martial arts gym companion app.\n\nManage your entire gym experience from one place:\n\n📅 CLASS SCHEDULE\n• View daily and weekly class schedules\n• MMA, BJJ, Kickboxing and Grappling classes\n• See class details, instructor info, and available spots\n• Confirm or decline your attendance\n• Get reminders before your classes start\n\n🎯 MEMBERSHIP MANAGEMENT\n• View your current membership plan and benefits\n• Track contract details and renewal dates\n• Download your contract documents\n• See available plan upgrades\n\n💳 BILLING & PAYMENTS\n• View invoices and payment history\n• Track upcoming payments\n• See payment method details (SEPA Direct Debit)\n• Download invoice PDFs\n\n👤 PROFILE & SETTINGS\n• Update personal information\n• Manage emergency contacts\n• Switch between dark and light themes\n• Configure notification preferences\n\nDownload now and take your martial arts journey to the next level with Iron Oak Ostalb!"
+      "fullDescription": "Iron Oak Ostalb is your complete martial arts gym companion app.\n\nManage your entire gym experience from one place:\n\n📅 CLASS SCHEDULE\n• View daily and weekly class schedules\n• MMA, BJJ, Kickboxing and Grappling classes\n• See class details, instructor info, and available spots\n• Confirm or decline your attendance\n• Get reminders before your classes start\n\n🎯 MEMBERSHIP MANAGEMENT\n• View your current membership plan and benefits\n• Track contract details and renewal dates\n• Download your contract documents\n• See available plan upgrades\n\n💳 BILLING & PAYMENTS\n• View invoices and payment history\n• Track upcoming payments\n• See payment method details (SEPA Direct Debit)\n• Download invoice PDFs\n\n👤 PROFILE & SETTINGS\n• Update personal information\n• Manage emergency contacts\n• Switch between dark and light themes\n• Configure notification preferences\n\nDownload now and take your martial arts journey to the next level with Iron Oak Ostalb!",
+      "subtitle": "MMA, BJJ & Kickboxing Companion",
+      "keywords": "mma,bjj,kickboxing,martial arts,fitness,gym,grappling,training"
     },
     "pt-BR": {
       "title": "Iron Oak Ostalb",
       "shortDescription": "Seu companheiro de academia de artes marciais - MMA, BJJ, Kickboxing e mais",
-      "fullDescription": "Iron Oak Ostalb é seu aplicativo completo de acompanhamento para academia de artes marciais.\n\nGerencie toda sua experiência na academia em um só lugar:\n\n📅 HORÁRIOS DAS AULAS\n• Veja horários diários e semanais\n• Aulas de MMA, BJJ, Kickboxing e Grappling\n• Consulte detalhes das aulas, informações do instrutor e vagas disponíveis\n• Confirme ou recuse sua participação\n• Receba lembretes antes das suas aulas\n\n🎯 GESTÃO DE ASSINATURA\n• Visualize seu plano atual e benefícios\n• Acompanhe detalhes do contrato e datas de renovação\n• Baixe seus documentos de contrato\n• Veja upgrades de planos disponíveis\n\n💳 FATURAMENTO E PAGAMENTOS\n• Visualize faturas e histórico de pagamentos\n• Acompanhe pagamentos futuros\n• Veja detalhes do método de pagamento\n• Baixe PDFs das faturas\n\n👤 PERFIL E CONFIGURAÇÕES\n• Atualize informações pessoais\n• Gerencie contatos de emergência\n• Alterne entre temas claro e escuro\n• Configure preferências de notificação\n\nBaixe agora e leve sua jornada nas artes marciais para o próximo nível com Iron Oak Ostalb!"
+      "fullDescription": "Iron Oak Ostalb é seu aplicativo completo de acompanhamento para academia de artes marciais.\n\nGerencie toda sua experiência na academia em um só lugar:\n\n📅 HORÁRIOS DAS AULAS\n• Veja horários diários e semanais\n• Aulas de MMA, BJJ, Kickboxing e Grappling\n• Consulte detalhes das aulas, informações do instrutor e vagas disponíveis\n• Confirme ou recuse sua participação\n• Receba lembretes antes das suas aulas\n\n🎯 GESTÃO DE ASSINATURA\n• Visualize seu plano atual e benefícios\n• Acompanhe detalhes do contrato e datas de renovação\n• Baixe seus documentos de contrato\n• Veja upgrades de planos disponíveis\n\n💳 FATURAMENTO E PAGAMENTOS\n• Visualize faturas e histórico de pagamentos\n• Acompanhe pagamentos futuros\n• Veja detalhes do método de pagamento\n• Baixe PDFs das faturas\n\n👤 PERFIL E CONFIGURAÇÕES\n• Atualize informações pessoais\n• Gerencie contatos de emergência\n• Alterne entre temas claro e escuro\n• Configure preferências de notificação\n\nBaixe agora e leve sua jornada nas artes marciais para o próximo nível com Iron Oak Ostalb!",
+      "subtitle": "MMA, BJJ e Kickboxing",
+      "keywords": "mma,bjj,kickboxing,artes marciais,fitness,academia,grappling"
+    },
+    "de-DE": {
+      "subtitle": "MMA, BJJ & Kickboxen Begleiter",
+      "keywords": "mma,bjj,kickboxen,kampfsport,fitness,studio,grappling,training"
     }
   },
+
   "contact": {
     "email": "app@omoplata.de",
     "website": "https://omoplata.de",
-    "privacyPolicyUrl": "https://omoplata.de/datenschutz"
+    "privacyPolicyUrl": "https://omoplata.de/datenschutz",
+    "supportUrl": "https://omoplata.de/support",
+    "marketingUrl": "https://omoplata.de"
   },
-  "appCategory": "Health & fitness",
-  "targetAudience": "13 and over",
+
   "appAccess": {
     "restricted": true,
     "instructions": "This app requires login with gym membership credentials.",
@@ -43,6 +56,7 @@
       "password": "app+test@omomplata.de"
     }
   },
+
   "dataSafety": {
     "collectsData": true,
     "encryptedInTransit": true,
@@ -52,31 +66,23 @@
         "collected": true,
         "shared": false,
         "required": true,
-        "purposes": [
-          "App functionality",
-          "Account management"
-        ]
+        "purposes": ["App functionality", "Account management"]
       },
       "email": {
         "collected": true,
         "shared": false,
         "required": true,
-        "purposes": [
-          "App functionality",
-          "Account management"
-        ]
+        "purposes": ["App functionality", "Account management"]
       },
       "phone": {
         "collected": true,
         "shared": false,
         "required": true,
-        "purposes": [
-          "App functionality",
-          "Account management"
-        ]
+        "purposes": ["App functionality", "Account management"]
       }
     }
   },
+
   "contentRating": {
     "containsViolence": false,
     "containsSexualContent": false,
@@ -86,12 +92,14 @@
     "locationSharing": false,
     "ageRating": "Everyone"
   },
+
   "declarations": {
     "containsAds": false,
     "isGovernmentApp": false,
     "hasFinancialFeatures": false,
     "hasHealthFeatures": false
   },
+
   "assets": {
     "icon": "assets/iron-oak/icon.png",
     "featureGraphic": "assets/iron-oak/feature.png",
@@ -103,12 +111,56 @@
         "assets/iron-oak/screenshots/phone-4.png"
       ],
       "tablet7": [],
-      "tablet10": []
+      "tablet10": [],
+      "iphone67": [],
+      "iphone65": [],
+      "iphone55": [],
+      "ipad129": []
     }
   },
-  "playStoreProgress": {
-    "appId": "4974690036834642334",
-    "lastCompletedStep": 11,
-    "lastUpdated": "2026-01-01T20:07:11.613Z"
+
+  "stores": {
+    "playStore": {
+      "appCategory": "Health & fitness",
+      "targetAudience": "13 and over",
+      "progress": {
+        "appId": "4974690036834642334",
+        "lastCompletedStep": 14,
+        "lastUpdated": "2026-01-16T22:30:00.000Z"
+      }
+    },
+    "appStore": {
+      "primaryCategory": "HEALTH_FITNESS",
+      "secondaryCategory": "LIFESTYLE",
+      "sku": "ironoak",
+      "ageRating": {
+        "kidsAgeBand": null,
+        "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+        "contests": "NONE",
+        "gamblingSimulated": "NONE",
+        "horrorOrFearThemes": "NONE",
+        "matureOrSuggestiveThemes": "NONE",
+        "medicalOrTreatmentInformation": "NONE",
+        "profanityOrCrudeHumor": "NONE",
+        "sexualContentGraphicAndNudity": "NONE",
+        "sexualContentOrNudity": "NONE",
+        "violenceCartoonOrFantasy": "NONE",
+        "violenceRealistic": "NONE",
+        "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+        "gambling": false,
+        "unrestrictedWebAccess": false,
+        "seventeenPlus": false
+      },
+      "appPrivacy": {
+        "privacyPolicyUrl": "https://omoplata.de/datenschutz",
+        "privacyPolicyText": null,
+        "privacyChoicesUrl": null
+      },
+      "progress": {
+        "appId": null,
+        "lastCompletedStep": 0,
+        "lastUpdated": null
+      }
+    }
   }
 }

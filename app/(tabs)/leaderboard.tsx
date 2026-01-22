@@ -36,9 +36,20 @@ import ThemedText from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/LocalizationContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
+import {
+  CACHE_DURATIONS,
+  CACHE_KEYS,
+  clearLeaderboardCache,
+  getFromCache,
+  saveToCache,
+} from '@/utils/local-cache';
 
-// Cache key generator for leaderboard data
-const getCacheKey = (discipline: string, timePeriod: string, demographic: string) =>
+// Cache key generator for leaderboard data (uses CACHE_KEYS.LEADERBOARD prefix for clearLeaderboardCache())
+const getStorageCacheKey = (discipline: string, timePeriod: string, demographic: string) =>
+  `${CACHE_KEYS.LEADERBOARD}_${discipline}|${timePeriod}|${demographic}`;
+
+// In-memory cache key (for instant switching within session)
+const getMemoryCacheKey = (discipline: string, timePeriod: string, demographic: string) =>
   `${discipline}|${timePeriod}|${demographic}`;
 
 // Type for cached leaderboard data
@@ -115,6 +126,14 @@ export default function LeaderboardScreen() {
     return count;
   }, [selectedDiscipline, selectedDemographic]);
 
+  // Check if we should show the filter button (only if multiple options exist)
+  const showFilterButton = useMemo(() => {
+    if (!filters) return false;
+    const hasMultipleDisciplines = filters.disciplines.length > 1;
+    const hasMultipleDemographics = filters.demographics.length > 1;
+    return hasMultipleDisciplines || hasMultipleDemographics;
+  }, [filters]);
+
   const handleApplyFilters = useCallback((values: { discipline: string; demographic: string }) => {
     setSelectedDiscipline(values.discipline);
     setSelectedDemographic(values.demographic);
@@ -122,14 +141,38 @@ export default function LeaderboardScreen() {
 
   const loadLeaderboard = useCallback(
     async (forceRefresh = false) => {
-      const cacheKey = getCacheKey(selectedDiscipline, selectedTimePeriod, selectedDemographic);
+      const memoryCacheKey = getMemoryCacheKey(
+        selectedDiscipline,
+        selectedTimePeriod,
+        selectedDemographic
+      );
+      const storageCacheKey = getStorageCacheKey(
+        selectedDiscipline,
+        selectedTimePeriod,
+        selectedDemographic
+      );
 
-      // Check cache first (unless force refresh)
+      // Check in-memory cache first (fastest, for instant filter switching)
       if (!forceRefresh) {
-        const cached = cacheRef.current.get(cacheKey);
-        if (cached) {
-          setLeaderboard(cached.leaderboard);
-          setFilters(cached.filters);
+        const memoryCached = cacheRef.current.get(memoryCacheKey);
+        if (memoryCached) {
+          setLeaderboard(memoryCached.leaderboard);
+          setFilters(memoryCached.filters);
+          setError(null);
+          setLoading(false);
+          return;
+        }
+
+        // Check AsyncStorage cache (persists across sessions)
+        const storageCached = await getFromCache<CachedLeaderboardData>(
+          storageCacheKey,
+          CACHE_DURATIONS.MEDIUM // 1 hour cache
+        );
+        if (storageCached) {
+          // Populate in-memory cache and use cached data
+          cacheRef.current.set(memoryCacheKey, storageCached);
+          setLeaderboard(storageCached.leaderboard);
+          setFilters(storageCached.filters);
           setError(null);
           setLoading(false);
           return;
@@ -147,11 +190,14 @@ export default function LeaderboardScreen() {
         };
         const { data } = await getLeaderboard(params);
 
-        // Store in cache
-        cacheRef.current.set(cacheKey, {
+        const cachedData: CachedLeaderboardData = {
           leaderboard: data.leaderboard,
           filters: data.filters,
-        });
+        };
+
+        // Store in both in-memory and AsyncStorage cache
+        cacheRef.current.set(memoryCacheKey, cachedData);
+        await saveToCache(storageCacheKey, cachedData);
 
         setLeaderboard(data.leaderboard);
         setFilters(data.filters);
@@ -175,9 +221,10 @@ export default function LeaderboardScreen() {
       });
 
       if (!response.error) {
-        // Refresh profile to update showInLeaderboard in context and clear cache
+        // Refresh profile to update showInLeaderboard in context and clear both caches
         await refreshProfile();
         cacheRef.current.clear();
+        await clearLeaderboardCache();
         await loadLeaderboard(true);
       }
     } catch (error) {
@@ -208,6 +255,7 @@ export default function LeaderboardScreen() {
     // Clear cache and reset dismissal state when user changes
     if (previousUserIdRef.current !== user?.id) {
       cacheRef.current.clear();
+      clearLeaderboardCache(); // Also clear AsyncStorage cache on user switch
       previousUserIdRef.current = user?.id;
       setBannerDismissed(false);
       // Reload permanent dismissal state for new user
@@ -219,17 +267,18 @@ export default function LeaderboardScreen() {
     loadLeaderboard();
   }, [loadLeaderboard, user?.id]);
 
-  // Clear in-memory cache and reload when screen comes back into focus
-  // This ensures privacy setting changes from settings screen are reflected
+  // When screen comes back into focus, clear in-memory cache and reload
+  // This ensures privacy changes are reflected (AsyncStorage cache is cleared by privacy screen)
   useEffect(() => {
     if (isFocused && !wasFocusedRef.current) {
-      // Screen just came back into focus - refresh profile and leaderboard
+      // Clear in-memory cache so we fall back to AsyncStorage cache
+      // If privacy changed, AsyncStorage cache was cleared and we'll fetch fresh data
+      // If privacy didn't change, we'll use the AsyncStorage cached data (no API call)
       cacheRef.current.clear();
-      refreshProfile();
-      loadLeaderboard(true);
+      loadLeaderboard(); // Will use AsyncStorage cache if available
     }
     wasFocusedRef.current = isFocused;
-  }, [isFocused, loadLeaderboard, refreshProfile]);
+  }, [isFocused, loadLeaderboard]);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -314,17 +363,19 @@ export default function LeaderboardScreen() {
         {/* Filters - Compact Layout */}
         {filters && (
           <View className="mb-4 flex-row items-center justify-between">
-            <View style={{ flex: 0.85 }}>
+            <View style={{ flex: showFilterButton ? 0.85 : 1 }}>
               <FilterTabs
                 options={translatedTimePeriods}
                 selectedId={selectedTimePeriod}
                 onSelect={setSelectedTimePeriod}
               />
             </View>
-            <FilterButton
-              onPress={() => filterSheetRef.current?.open()}
-              activeCount={activeFilterCount}
-            />
+            {showFilterButton && (
+              <FilterButton
+                onPress={() => filterSheetRef.current?.open()}
+                activeCount={activeFilterCount}
+              />
+            )}
           </View>
         )}
 
@@ -369,8 +420,8 @@ export default function LeaderboardScreen() {
         )}
       </ThemedScroller>
 
-      {/* Filter Bottom Sheet */}
-      {filters && (
+      {/* Filter Bottom Sheet - only render if there are filters to show */}
+      {filters && showFilterButton && (
         <FilterBottomSheet
           ref={filterSheetRef}
           filters={{

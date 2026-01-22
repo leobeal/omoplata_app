@@ -11,24 +11,68 @@ export interface CheckinRequest {
   longitude?: number;
 }
 
+export interface CheckinFacility {
+  id: number;
+  name: string;
+}
+
+export interface CheckinVenue {
+  id: number;
+  name: string;
+  address: string | null;
+  facility: CheckinFacility | null;
+}
+
+export interface CheckinClass {
+  id: number;
+  name: string;
+  startsAt: string;
+  endsAt: string;
+}
+
 export interface CheckinData {
-  checkinId: string;
+  checkinId?: string;
   userId: string;
-  location: {
-    id: string;
-    name: string;
-    address: string;
-  };
-  checkedInAt: string;
-  checkedOutAt: string | null;
+  venue: CheckinVenue | null;
+  class?: CheckinClass | null;
+  checkedInAt?: string;
+  checkedOutAt?: string | null;
   membership: {
-    status: string;
-    planName: string;
+    status: string | null;
+    planName: string | null;
   };
   greeting: string;
   todayVisitNumber: number;
   weeklyVisits: number;
   monthlyVisits: number;
+  // Fields when success: false
+  alternatives?: NoClassesAlternative[];
+  upcomingHere?: NoClassesUpcoming[];
+  error?: string;
+  message?: string;
+}
+
+// Response when no classes are available at scanned location
+export interface NoClassesAlternative {
+  facilityId: string;
+  venue: string;
+  facility?: string | null;
+  nextClassAt: string;
+  className?: string;
+  sameVenue: boolean; // true if same venue, user can tap to check in
+}
+
+export interface NoClassesUpcoming {
+  className: string;
+  startsAt: string;
+  facility?: string | null;
+  venue?: string | null;
+}
+
+export interface NoClassesAvailableData {
+  venue: CheckinVenue | null;
+  alternatives?: NoClassesAlternative[];
+  upcomingHere?: NoClassesUpcoming[];
 }
 
 export interface CheckinResponse {
@@ -114,24 +158,65 @@ export interface ActiveCheckinResponse {
 }
 
 // API Types (snake_case from backend)
+interface ApiFacility {
+  id: number;
+  name: string;
+}
+
+interface ApiVenue {
+  id: number;
+  name: string;
+  address: string | null;
+  facility: ApiFacility | null;
+}
+
+interface ApiCheckinClass {
+  id: number;
+  name: string;
+  starts_at: string;
+  ends_at: string;
+}
+
 interface ApiCheckinData {
-  checkin_id: string;
+  checkin_id?: string;
   user_id: string;
-  location: {
-    id: string;
-    name: string;
-    address: string;
+  venue?: ApiVenue | null;
+  class?: ApiCheckinClass | null;
+  checked_in_at?: string;
+  checked_out_at?: string | null;
+  membership?: {
+    status: string | null;
+    plan_name: string | null;
   };
-  checked_in_at: string;
-  checked_out_at: string | null;
-  membership: {
-    status: string;
-    plan_name: string;
-  };
-  greeting: string;
-  today_visit_number: number;
-  weekly_visits: number;
-  monthly_visits: number;
+  greeting?: string;
+  today_visit_number?: number;
+  weekly_visits?: number;
+  monthly_visits?: number;
+  // Fields when success: false
+  alternatives?: ApiNoClassesAlternative[];
+  upcoming_here?: ApiNoClassesUpcoming[];
+  error?: string;
+  message?: string;
+}
+
+interface ApiNoClassesAlternative {
+  facility_id: string;
+  venue: string;
+  facility?: string | null;
+  next_class_at: string;
+  class_name?: string;
+  same_venue: boolean;
+}
+
+interface ApiNoClassesUpcoming {
+  class_name: string;
+  starts_at: string;
+}
+
+interface ApiNoClassesAvailableData {
+  venue?: ApiVenue | null;
+  alternatives?: ApiNoClassesAlternative[];
+  upcoming_here?: ApiNoClassesUpcoming[];
 }
 
 interface ApiCheckinResponse {
@@ -217,13 +302,36 @@ interface ApiActiveCheckinResponse {
 }
 
 // Transform functions
+function transformVenue(venue: ApiVenue | null | undefined): CheckinVenue | null {
+  if (!venue) return null;
+  return {
+    id: venue.id,
+    name: venue.name,
+    address: venue.address,
+    facility: venue.facility
+      ? {
+          id: venue.facility.id,
+          name: venue.facility.name,
+        }
+      : null,
+  };
+}
+
 function transformCheckinData(data: ApiCheckinData): CheckinData {
   return {
     checkinId: data.checkin_id,
     userId: data.user_id,
-    location: data.location,
+    venue: transformVenue(data.venue),
+    class: data.class
+      ? {
+          id: data.class.id,
+          name: data.class.name,
+          startsAt: data.class.starts_at,
+          endsAt: data.class.ends_at,
+        }
+      : null,
     checkedInAt: data.checked_in_at,
-    checkedOutAt: data.checked_out_at,
+    checkedOutAt: data.checked_out_at ?? null,
     membership: {
       status: data.membership.status,
       planName: data.membership.plan_name,
@@ -232,6 +340,37 @@ function transformCheckinData(data: ApiCheckinData): CheckinData {
     todayVisitNumber: data.today_visit_number,
     weeklyVisits: data.weekly_visits,
     monthlyVisits: data.monthly_visits,
+    // No classes available fields
+    alternatives: data.alternatives?.map((alt) => ({
+      facilityId: alt.facility_id,
+      venue: alt.venue,
+      facility: alt.facility,
+      nextClassAt: alt.next_class_at,
+      className: alt.class_name,
+      sameVenue: alt.same_venue,
+    })),
+    upcomingHere: data.upcoming_here?.map((item) => ({
+      className: item.class_name,
+      startsAt: item.starts_at,
+    })),
+  };
+}
+
+export function transformNoClassesData(data: ApiNoClassesAvailableData): NoClassesAvailableData {
+  return {
+    venue: transformVenue(data.venue),
+    alternatives: (data.alternatives || []).map((alt) => ({
+      facilityId: alt.facility_id,
+      venue: alt.venue,
+      facility: alt.facility,
+      nextClassAt: alt.next_class_at,
+      className: alt.class_name,
+      sameVenue: alt.same_venue,
+    })),
+    upcomingHere: (data.upcoming_here || []).map((item) => ({
+      className: item.class_name,
+      startsAt: item.starts_at,
+    })),
   };
 }
 
@@ -322,8 +461,44 @@ export const checkinApi = {
       longitude: request.longitude,
     });
 
+    console.log('[Checkin API] Full response:', JSON.stringify(response, null, 2));
+
     if (response.error || !response.data) {
       return { error: response.error || 'Failed to check in' };
+    }
+
+    // When success is false, the data structure is different (no membership, greeting, etc.)
+    // Only transform the venue and pass through alternatives/upcomingHere/error/message
+    if (!response.data.success) {
+      const data = response.data.data;
+      return {
+        data: {
+          success: false,
+          data: {
+            userId: data.user_id,
+            venue: transformVenue(data.venue),
+            membership: { status: null, planName: null },
+            greeting: '',
+            todayVisitNumber: 0,
+            weeklyVisits: 0,
+            monthlyVisits: 0,
+            alternatives: data.alternatives?.map((alt) => ({
+              facilityId: alt.facility_id,
+              venue: alt.venue,
+              facility: alt.facility,
+              nextClassAt: alt.next_class_at,
+              className: alt.class_name,
+              sameVenue: alt.same_venue,
+            })),
+            upcomingHere: data.upcoming_here?.map((item) => ({
+              className: item.class_name,
+              startsAt: item.starts_at,
+            })),
+            error: data.error,
+            message: data.message,
+          },
+        },
+      };
     }
 
     return {

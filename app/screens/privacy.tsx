@@ -49,7 +49,7 @@ interface ProfileResponse {
 export default function PrivacyScreen() {
   const t = useT();
   const colors = useThemeColors();
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [values, setValues] = useState<Record<string, boolean>>({
     attendance_public: false,
@@ -105,16 +105,15 @@ export default function PrivacyScreen() {
         // Revert on failure
         setValues((prev) => ({ ...prev, [setting.id]: !newValue }));
         console.error('Failed to update privacy setting:', response.error);
-      } else {
-        // Clear leaderboard cache when visibility setting changes
-        if (setting.id === 'show_in_leaderboard') {
-          await clearLeaderboardCache();
-        }
+      } else if (setting.id === 'show_in_leaderboard') {
+        // Clear leaderboard cache and refresh profile to update auth context
+        await clearLeaderboardCache();
+        await refreshProfile();
       }
 
       setUpdatingId(null);
     },
-    [user?.prefixedId]
+    [user?.prefixedId, refreshProfile]
   );
 
   if (loading) {

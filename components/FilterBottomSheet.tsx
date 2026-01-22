@@ -131,20 +131,24 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, FilterBottomSh
             )}
           </View>
 
-          {/* Filter Sections */}
-          <FilterOptionRow
-            label={t('leaderboard.filters.discipline')}
-            options={filters.discipline}
-            selectedId={localValues.discipline}
-            onSelect={(id) => setLocalValues((prev) => ({ ...prev, discipline: id }))}
-          />
+          {/* Filter Sections - only show if more than 1 option */}
+          {filters.discipline.length > 1 && (
+            <FilterOptionRow
+              label={t('leaderboard.filters.discipline')}
+              options={filters.discipline}
+              selectedId={localValues.discipline}
+              onSelect={(id) => setLocalValues((prev) => ({ ...prev, discipline: id }))}
+            />
+          )}
 
-          <FilterOptionRow
-            label={t('leaderboard.filters.demographic')}
-            options={filters.demographic}
-            selectedId={localValues.demographic}
-            onSelect={(id) => setLocalValues((prev) => ({ ...prev, demographic: id }))}
-          />
+          {filters.demographic.length > 1 && (
+            <FilterOptionRow
+              label={t('leaderboard.filters.demographic')}
+              options={filters.demographic}
+              selectedId={localValues.demographic}
+              onSelect={(id) => setLocalValues((prev) => ({ ...prev, demographic: id }))}
+            />
+          )}
 
           {/* Apply Button */}
           <Pressable

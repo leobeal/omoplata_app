@@ -1,0 +1,111 @@
+{
+  "packageName": "com.omoplata.rollnflow",
+  "defaultLanguage": "de-DE",
+  "listing": {
+    "title": "Roll'n Flow",
+    "shortDescription": "Deine Kampfsport-App - BJJ, MMA, Thaiboxen & Mitgliedschaft",
+    "fullDescription": "Roll'n Flow - Deine Kampfsportschule in Meitingen und Augsburg Umgebung!\n\nVerwalte dein gesamtes Training an einem Ort:\n\n📅 KURSPLAN\n• Tägliche und wöchentliche Kurspläne anzeigen\n• Kursdetails, Trainer-Infos und verfügbare Plätze sehen\n• Teilnahme bestätigen oder absagen\n• Erinnerungen vor deinen Kursen erhalten\n\n🥋 TRAININGSANGEBOTE\n• Brazilian Jiu-Jitsu (Gi & No-Gi)\n• MMA (Mixed Martial Arts)\n• Kick- und Thaiboxen\n• Functional Training\n• Kurse für alle Altersgruppen\n\n🎯 MITGLIEDSCHAFTSVERWALTUNG\n• Aktuellen Mitgliedschaftsplan und Vorteile anzeigen\n• Vertragsdetails und Verlängerungsdaten verfolgen\n• Vertragsdokumente herunterladen\n• Verfügbare Plan-Upgrades sehen\n\n💳 ABRECHNUNG & ZAHLUNGEN\n• Rechnungen und Zahlungsverlauf anzeigen\n• Anstehende Zahlungen verfolgen\n• Zahlungsmethode-Details sehen (SEPA-Lastschrift)\n• Rechnungs-PDFs herunterladen\n\n👤 PROFIL & EINSTELLUNGEN\n• Persönliche Informationen aktualisieren\n• Notfallkontakte verwalten\n• Zwischen dunklem und hellem Design wechseln\n• Benachrichtigungseinstellungen konfigurieren\n\nTrainiere mit Gleichgesinnten in freundlicher Atmosphäre - Lade jetzt herunter!",
+    "tags": [
+      "fitness",
+      "bjj",
+      "brazilian jiu-jitsu",
+      "mma",
+      "thaiboxen",
+      "kickboxen",
+      "kampfsport",
+      "martial arts"
+    ]
+  },
+  "localizations": {
+    "en-US": {
+      "title": "Roll'n Flow",
+      "shortDescription": "Your martial arts app - BJJ, MMA, Thaiboxing & membership",
+      "fullDescription": "Roll'n Flow - Your Martial Arts School in Meitingen and Augsburg Area!\n\nManage your entire training experience from one place:\n\n📅 CLASS SCHEDULE\n• View daily and weekly class schedules\n• See class details, instructor info, and available spots\n• Confirm or decline your attendance\n• Get reminders before your classes start\n\n🥋 TRAINING PROGRAMS\n• Brazilian Jiu-Jitsu (Gi & No-Gi)\n• MMA (Mixed Martial Arts)\n• Kickboxing & Muay Thai\n• Functional Training\n• Classes for all age groups\n\n🎯 MEMBERSHIP MANAGEMENT\n• View your current membership plan and benefits\n• Track contract details and renewal dates\n• Download your contract documents\n• See available plan upgrades\n\n💳 BILLING & PAYMENTS\n• View invoices and payment history\n• Track upcoming payments\n• See payment method details (SEPA Direct Debit)\n• Download invoice PDFs\n\n👤 PROFILE & SETTINGS\n• Update personal information\n• Manage emergency contacts\n• Switch between dark and light themes\n• Configure notification preferences\n\nTrain with like-minded athletes in a friendly atmosphere - Download now!"
+    }
+  },
+  "contact": {
+    "email": "support@omoplata.de",
+    "website": "https://omoplata.de",
+    "privacyPolicyUrl": "https://omoplata.de/privacy",
+    "deleteAccountUrl": "https://omoplata.de/delete-account",
+    "phone": "+49 163 9086182"
+  },
+  "appCategory": "Health & fitness",
+  "targetAudience": "13 and over",
+  "appAccess": {
+    "restricted": true,
+    "instructions": "Diese App erfordert eine Anmeldung mit Mitgliedschaftsdaten der Kampfsportschule.",
+    "testCredentials": {
+      "username": "test+app@omoplata.de",
+      "password": "test+app@omoplata.de"
+    }
+  },
+  "dataSafety": {
+    "collectsData": true,
+    "encryptedInTransit": true,
+    "deleteAccountUrl": null,
+    "dataTypes": {
+      "name": {
+        "collected": true,
+        "shared": false,
+        "required": true,
+        "purposes": [
+          "App functionality",
+          "Account management"
+        ]
+      },
+      "email": {
+        "collected": true,
+        "shared": false,
+        "required": true,
+        "purposes": [
+          "App functionality",
+          "Account management"
+        ]
+      },
+      "phone": {
+        "collected": true,
+        "shared": false,
+        "required": true,
+        "purposes": [
+          "App functionality",
+          "Account management"
+        ]
+      }
+    }
+  },
+  "contentRating": {
+    "containsViolence": false,
+    "containsSexualContent": false,
+    "containsProfanity": false,
+    "containsDrugsAlcohol": false,
+    "userGeneratedContent": false,
+    "locationSharing": false,
+    "ageRating": "Everyone"
+  },
+  "declarations": {
+    "containsAds": false,
+    "isGovernmentApp": false,
+    "hasFinancialFeatures": false,
+    "hasHealthFeatures": false
+  },
+  "assets": {
+    "icon": "assets/roll-n-flow/icon.png",
+    "featureGraphic": "assets/roll-n-flow/feature.png",
+    "screenshots": {
+      "phone": [
+        "assets/roll-n-flow/screenshots/phone-1.png",
+        "assets/roll-n-flow/screenshots/phone-2.png",
+        "assets/roll-n-flow/screenshots/phone-3.png",
+        "assets/roll-n-flow/screenshots/phone-4.png"
+      ],
+      "tablet7": [],
+      "tablet10": []
+    }
+  },
+  "playStoreProgress": {
+    "appId": "4976235369794751273",
+    "lastCompletedStep": 13,
+    "lastUpdated": "2026-01-16T21:35:00.000Z"
+  }
+}

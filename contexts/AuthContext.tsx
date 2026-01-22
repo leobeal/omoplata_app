@@ -12,6 +12,7 @@ import { AppState, AppStateStatus } from 'react-native';
 import { switchToChild as switchToChildApi } from '@/api/account-switch';
 import { authApi } from '@/api/auth';
 import { api, setAuthToken as setApiAuthToken, setOnUnauthorized } from '@/api/client';
+import { verifyOtp } from '@/api/otp';
 import { Child, getProfile } from '@/api/profile';
 import reverbClient from '@/api/pusher';
 import { useTenant } from '@/contexts/TenantContext';
@@ -52,6 +53,7 @@ interface AuthContextType {
   childrenLoading: boolean;
   // Actions
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithOtp: (email: string, code: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -199,6 +201,55 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'An unexpected error occurred',
+      };
+    }
+  };
+
+  const loginWithOtp = async (
+    email: string,
+    code: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const result = await verifyOtp(email, code);
+
+      if (!result.success) {
+        return {
+          success: false,
+          error: result.error,
+        };
+      }
+
+      const { token: authToken, user: userData } = result;
+
+      // Prepare user data for storage (API returns snake_case, convert to camelCase)
+      const userToStore: StoredUser = {
+        id: userData.id,
+        prefixedId: userData.prefixed_id,
+        email: userData.email,
+        firstName: userData.first_name,
+        lastName: userData.last_name,
+        nickname: userData.nickname,
+        phone: userData.phone,
+        profilePicture: userData.profile_picture,
+        membershipId: userData.membership_id,
+      };
+
+      const tenantSlug = tenant?.slug || null;
+
+      // Save auth token and user data with tenant context
+      await Promise.all([saveAuthToken(authToken, tenantSlug), saveUser(userToStore, tenantSlug)]);
+
+      // Update state
+      setToken(authToken);
+      setUser(userToStore);
+      setApiAuthToken(authToken);
+
+      return { success: true };
+    } catch (error) {
+      console.error('OTP login error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'An unexpected error occurred',
@@ -446,6 +497,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
         firstName: result.user.firstName,
         lastName: result.user.lastName,
         nickname: result.user.nickname,
+        profilePicture: result.user.profilePicture || undefined,
         roles: ['member'] as UserRole[],
       };
 
@@ -534,6 +586,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children: childrenPr
     childrenLoading,
     // Actions
     login,
+    loginWithOtp,
     logout,
     refreshSession,
     refreshProfile,

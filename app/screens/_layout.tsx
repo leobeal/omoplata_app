@@ -42,8 +42,8 @@ export default function ScreensLayout() {
       {/* Messages */}
       <Stack.Screen name="message-thread" />
 
-      {/* Modal-like screens slide from bottom for action focus */}
-      <Stack.Screen name="checkin" options={{ animation: modalAnimation }} />
+      {/* Check-in uses no animation for instant drawer reveal on success */}
+      <Stack.Screen name="checkin" options={{ animation: 'none' }} />
       <Stack.Screen name="membership-card" options={{ animation: modalAnimation }} />
     </Stack>
   );

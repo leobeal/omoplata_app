@@ -57,7 +57,7 @@ export default function CalendarScreen() {
   const { t, locale } = useTranslation();
   const dateLocale = getDateLocale(locale);
   const colors = useThemeColors();
-  const { user } = useAuth();
+  const { user, isViewingAsChild } = useAuth();
   const { registerScrollHandler, unregisterScrollHandler } = useScrollToTop();
   const daysListRef = useRef<FlatList<DayData>>(null);
   const classesListRef = useRef<FlatList<DayData>>(null);
@@ -495,11 +495,15 @@ export default function CalendarScreen() {
   );
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-secondary">
+    <SafeAreaView edges={isViewingAsChild ? [] : ['top']} className="flex-1 bg-secondary">
       <View className="flex-1 bg-background">
         {/* Month/Year Header */}
-        <View className="border-b border-border bg-secondary px-6 pb-3 pt-2">
-          <View className="flex-row items-center justify-between">
+        {/* When viewing as child, match Header component structure (5px padding + h-14 row) */}
+        <View
+          className={`border-b border-border bg-secondary px-6 ${isViewingAsChild ? 'pb-2' : 'pb-3 pt-2'}`}
+          style={isViewingAsChild ? { paddingTop: 5 } : undefined}>
+          <View
+            className={`flex-row items-center justify-between ${isViewingAsChild ? 'h-14' : ''}`}>
             {/* Title */}
             <ThemedText className="text-xl font-bold">{t('nav.classes')}</ThemedText>
 

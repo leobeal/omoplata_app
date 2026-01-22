@@ -11,6 +11,7 @@ interface ApiSwitchResponse {
     full_name: string;
     nickname?: string | null;
     email: string;
+    profile_picture?: string | null;
   };
   token: string;
 }
@@ -24,6 +25,7 @@ export interface SwitchResult {
     fullName: string;
     nickname?: string | null;
     email: string;
+    profilePicture?: string | null;
   };
   token: string;
 }
@@ -56,6 +58,7 @@ export const switchToChild = async (
       fullName: user.full_name,
       nickname: user.nickname,
       email: user.email,
+      profilePicture: user.profile_picture,
     },
     token,
   };

@@ -122,6 +122,11 @@ export const ENDPOINTS = {
     RESET_PASSWORD: '/reset-password',
     VERIFY_EMAIL: '/verify-email',
   },
+  // OTP Authentication
+  OTP: {
+    REQUEST: '/otp/request',
+    VERIFY: '/otp/verify',
+  },
   // Users
   USERS: {
     ME: '/users/me',

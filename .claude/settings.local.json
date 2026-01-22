@@ -57,7 +57,11 @@
       "Bash(node --check:*)",
       "Bash(TENANT=iron-oak node scripts/create-play-store-app.js:*)",
       "mcp__playwright__browser_evaluate",
-      "Bash(TENANT=main npx expo prebuild:*)"
+      "Bash(TENANT=main npx expo prebuild:*)",
+      "WebFetch(domain:www.sparta-aachen.de)",
+      "Bash(TENANT=sparta-aachen node:*)",
+      "Bash(TENANT=main node:*)",
+      "mcp__playwright__browser_select_option"
     ],
     "deny": [],
     "ask": []

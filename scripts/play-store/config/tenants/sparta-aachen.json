@@ -1,0 +1,110 @@
+{
+  "packageName": "com.omoplata.spartaaachen",
+  "defaultLanguage": "de-DE",
+  "listing": {
+    "title": "KKS Sparta Aachen",
+    "shortDescription": "Deine Kampfsport-App - Kurse, Training & Mitgliedschaft",
+    "fullDescription": "KKS Sparta Aachen - Dein Experte für Kampfsport in Aachen!\n\nVerwalte dein gesamtes Training an einem Ort:\n\n📅 KURSPLAN\n• Tägliche und wöchentliche Kurspläne anzeigen\n• Kursdetails, Trainer-Infos und verfügbare Plätze sehen\n• Teilnahme bestätigen oder absagen\n• Erinnerungen vor deinen Kursen erhalten\n\n🥋 TRAININGSANGEBOTE\n• MMA (Mixed Martial Arts)\n• Boxen (Wettkampf & Fitness)\n• K1/Kickboxen\n• Wrestling\n• Kinder-Programme (MMA Youth, Kids Boxing, Kids Kickboxing)\n\n🎯 MITGLIEDSCHAFTSVERWALTUNG\n• Aktuellen Mitgliedschaftsplan und Vorteile anzeigen\n• Vertragsdetails und Verlängerungsdaten verfolgen\n• Vertragsdokumente herunterladen\n• Verfügbare Plan-Upgrades sehen\n\n💳 ABRECHNUNG & ZAHLUNGEN\n• Rechnungen und Zahlungsverlauf anzeigen\n• Anstehende Zahlungen verfolgen\n• Zahlungsmethode-Details sehen (SEPA-Lastschrift)\n• Rechnungs-PDFs herunterladen\n\n👤 PROFIL & EINSTELLUNGEN\n• Persönliche Informationen aktualisieren\n• Notfallkontakte verwalten\n• Zwischen dunklem und hellem Design wechseln\n• Benachrichtigungseinstellungen konfigurieren\n\nProfessionelles Training für Wettkampf und Fitness - Lade jetzt herunter!",
+    "tags": [
+      "fitness",
+      "kampfsport",
+      "mma",
+      "boxen",
+      "kickboxen",
+      "wrestling",
+      "martial arts"
+    ]
+  },
+  "localizations": {
+    "en-US": {
+      "title": "KKS Sparta Aachen",
+      "shortDescription": "Your martial arts app - classes, training & membership",
+      "fullDescription": "KKS Sparta Aachen - Your expert for combat sports in Aachen!\n\nManage your entire training experience from one place:\n\n📅 CLASS SCHEDULE\n• View daily and weekly class schedules\n• See class details, instructor info, and available spots\n• Confirm or decline your attendance\n• Get reminders before your classes start\n\n🥋 TRAINING PROGRAMS\n• MMA (Mixed Martial Arts)\n• Boxing (Olympic & Fitness)\n• K1/Kickboxing\n• Wrestling\n• Kids Programs (MMA Youth, Kids Boxing, Kids Kickboxing)\n\n🎯 MEMBERSHIP MANAGEMENT\n• View your current membership plan and benefits\n• Track contract details and renewal dates\n• Download your contract documents\n• See available plan upgrades\n\n💳 BILLING & PAYMENTS\n• View invoices and payment history\n• Track upcoming payments\n• See payment method details (SEPA Direct Debit)\n• Download invoice PDFs\n\n👤 PROFILE & SETTINGS\n• Update personal information\n• Manage emergency contacts\n• Switch between dark and light themes\n• Configure notification preferences\n\nProfessional training for competition and fitness - Download now!"
+    }
+  },
+  "contact": {
+    "email": "support@omoplata.de",
+    "website": "https://omoplata.de",
+    "privacyPolicyUrl": "https://omoplata.de/privacy",
+    "deleteAccountUrl": "https://omoplata.de/delete-account",
+    "phone": "+49 163 9086182"
+  },
+  "appCategory": "Health & fitness",
+  "targetAudience": "13 and over",
+  "appAccess": {
+    "restricted": true,
+    "instructions": "Diese App erfordert eine Anmeldung mit Mitgliedschaftsdaten des Kampfsportstudios.",
+    "testCredentials": {
+      "username": "test+app@omoplata.de",
+      "password": "test+app@omoplata.de"
+    }
+  },
+  "dataSafety": {
+    "collectsData": true,
+    "encryptedInTransit": true,
+    "deleteAccountUrl": null,
+    "dataTypes": {
+      "name": {
+        "collected": true,
+        "shared": false,
+        "required": true,
+        "purposes": [
+          "App functionality",
+          "Account management"
+        ]
+      },
+      "email": {
+        "collected": true,
+        "shared": false,
+        "required": true,
+        "purposes": [
+          "App functionality",
+          "Account management"
+        ]
+      },
+      "phone": {
+        "collected": true,
+        "shared": false,
+        "required": true,
+        "purposes": [
+          "App functionality",
+          "Account management"
+        ]
+      }
+    }
+  },
+  "contentRating": {
+    "containsViolence": false,
+    "containsSexualContent": false,
+    "containsProfanity": false,
+    "containsDrugsAlcohol": false,
+    "userGeneratedContent": false,
+    "locationSharing": false,
+    "ageRating": "Everyone"
+  },
+  "declarations": {
+    "containsAds": false,
+    "isGovernmentApp": false,
+    "hasFinancialFeatures": false,
+    "hasHealthFeatures": false
+  },
+  "assets": {
+    "icon": "assets/sparta-aachen/icon.png",
+    "featureGraphic": "assets/sparta-aachen/feature.png",
+    "screenshots": {
+      "phone": [
+        "assets/sparta-aachen/screenshots/phone-1.png",
+        "assets/sparta-aachen/screenshots/phone-2.png",
+        "assets/sparta-aachen/screenshots/phone-3.png",
+        "assets/sparta-aachen/screenshots/phone-4.png"
+      ],
+      "tablet7": [],
+      "tablet10": []
+    }
+  },
+  "playStoreProgress": {
+    "appId": "4974936368653515637",
+    "lastCompletedStep": 13,
+    "lastUpdated": "2026-01-16T21:45:00.000Z"
+  }
+}

@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon, { IconName } from './Icon';
 import ThemedText from './ThemedText';
 
+import { useAuth } from '@/contexts/AuthContext';
 import { useThemeColors } from '@/contexts/ThemeColors';
 import { useNavigationLock } from '@/hooks/useNavigationLock';
 
@@ -41,6 +42,11 @@ const Header: React.FC<HeaderProps> = ({
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { withLock } = useNavigationLock();
+  const { isViewingAsChild } = useAuth();
+
+  // When viewing as child, the ViewingAsChildBanner handles safe area
+  // Add small padding (5px) for spacing between banner and header content
+  const topPadding = isViewingAsChild ? 5 : insets.top;
 
   const handleBackPress = useCallback(
     withLock(() => {
@@ -55,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <View
-      style={[{ paddingTop: insets.top }, transparent && { backgroundColor: 'transparent' }, style]}
+      style={[{ paddingTop: topPadding }, transparent && { backgroundColor: 'transparent' }, style]}
       className={`${transparent ? 'absolute left-0 right-0 top-0' : 'relative'} z-50 w-full ${transparent ? '' : 'bg-background'} px-6 pb-2 ${className}`}>
       <View className="h-14 flex-row items-center justify-between">
         {/* Left side - back button or left component */}

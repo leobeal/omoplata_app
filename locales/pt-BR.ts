@@ -30,6 +30,7 @@ export default {
     viewPlans: 'Ver Planos',
     logout: 'Sair',
     skip: 'Pular',
+    done: 'Pronto',
   },
 
   // Onboarding Slides
@@ -298,14 +299,52 @@ export default {
     // Erros
     invalidQRCode: 'Código QR inválido',
     alreadyCheckedIn: 'Você já fez check-in',
-    membershipInactive: 'Sua assinatura está inativa.\nPor favor, entre em contato com a recepção.',
+    membershipInactive: 'Sua assinatura está atualmente inativa.',
     checkInFailed: 'Falha no check-in',
     networkError: 'Erro de rede. Por favor, tente novamente.',
+
+    // Sem aulas disponíveis
+    noClassesTitle: 'Sem Aulas no Momento',
+    noClassesMessage:
+      'Não há aulas programadas neste horário.\nConfira a programação para as próximas sessões!',
+    viewSchedule: 'Ver Programação',
+
+    // Contexto de localização
+    youAreAt: 'Você está em',
+    atVenue: 'em {{venue}}',
+    atFacility: '{{facility}}',
+    atVenueAndFacility: '{{venue}} · {{facility}}',
+
+    // Alternativas e próximas aulas
+    classesElsewhere: 'Aulas acontecendo agora',
+    nextClassHere: 'Próxima aula aqui',
+    startsAt: 'Começa às {{time}}',
+    tapToCheckIn: 'Toque para fazer check-in',
+    checkInHere: 'Fazer check-in aqui?',
+    confirmFacilitySwitch: 'Fazer check-in em {{facility}} em vez disso?',
+    confirm: 'Fazer Check-in',
+    cancel: 'Cancelar',
+
+    // Estatísticas de sucesso
+    today: 'Hoje',
+    thisWeek: 'Esta Semana',
+    thisMonth: 'Este Mês',
+
+    // Ajuda de erro
+    errorHelp: 'Precisa de ajuda? Entre em contato.',
+
+    // NFC
+    scanMethodQr: 'QR Code',
+    scanMethodNfc: 'NFC',
+    nfcTitle: 'Escanear Tag NFC',
+    nfcSubtitle: 'Aproxime seu celular da tag NFC',
+    nfcScanning: 'Pronto para escanear...',
   },
 
   // Tela de Login
   login: {
     title: 'Entrar',
+    titleWithTenant: 'Entrar em {{tenant}}',
     subtitle: 'Entre na sua conta',
     email: 'E-mail',
     password: 'Senha',
@@ -314,6 +353,20 @@ export default {
     noAccount: 'Não tem uma conta?',
     signUp: 'Cadastre-se',
     notAMember: 'Ainda não é membro?',
+
+    // Fluxo OTP
+    otpSubtitle: 'Digite seu e-mail para receber um código de acesso',
+    otpTitle: 'Digite o Código',
+    otpEnterCode: 'Enviamos um código de 6 dígitos para {{email}}',
+    sendCode: 'Enviar Código',
+    verify: 'Verificar',
+    resendCode: 'Reenviar Código',
+    otpRetryIn: 'Tentar novamente em {{seconds}}s',
+    otpRequestFailed: 'Falha ao enviar código. Por favor, tente novamente.',
+    otpVerifyFailed: 'Código inválido. Por favor, tente novamente.',
+    otpIncomplete: 'Por favor, digite o código completo de 6 dígitos',
+    otpRateLimited: 'Muitas tentativas. Por favor, tente novamente em {{minutes}} minutos.',
+    otpRateLimitedSeconds: 'Muitas tentativas. Por favor, tente novamente em {{seconds}} segundos.',
 
     // Validação
     emailRequired: 'E-mail é obrigatório',

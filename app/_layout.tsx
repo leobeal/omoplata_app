@@ -8,10 +8,12 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { Image, View, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import CheckinResultDrawer from '@/components/CheckinResultDrawer';
 import OfflineBanner from '@/components/OfflineBanner';
 import ViewingAsChildBanner from '@/components/ViewingAsChildBanner';
 import { AppConfigProvider, useAppConfig } from '@/contexts/AppConfigContext';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { CheckinSuccessProvider } from '@/contexts/CheckinSuccessContext';
 import { DashboardReadyProvider, useDashboardReady } from '@/contexts/DashboardReadyContext';
 import { LocalizationProvider } from '@/contexts/LocalizationContext';
 import { NetworkProvider } from '@/contexts/NetworkContext';
@@ -320,6 +322,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
       <OfflineBanner />
       <ViewingAsChildBanner />
       {children}
+      <CheckinResultDrawer />
     </View>
   );
 }
@@ -335,19 +338,22 @@ export default function RootLayout() {
                 <NotificationProvider>
                   <AppConfigProvider>
                     <DashboardReadyProvider>
-                      <ScrollToTopProvider>
-                        <AuthGate>
-                          <Stack
-                            screenOptions={{
-                              headerShown: false,
-                              // Use native-feeling animations per platform
-                              animation: Platform.OS === 'android' ? 'slide_from_right' : 'default',
-                              // Smoother animation timing on iOS
-                              animationDuration: Platform.OS === 'ios' ? 300 : undefined,
-                            }}
-                          />
-                        </AuthGate>
-                      </ScrollToTopProvider>
+                      <CheckinSuccessProvider>
+                        <ScrollToTopProvider>
+                          <AuthGate>
+                            <Stack
+                              screenOptions={{
+                                headerShown: false,
+                                // Use native-feeling animations per platform
+                                animation:
+                                  Platform.OS === 'android' ? 'slide_from_right' : 'default',
+                                // Smoother animation timing on iOS
+                                animationDuration: Platform.OS === 'ios' ? 300 : undefined,
+                              }}
+                            />
+                          </AuthGate>
+                        </ScrollToTopProvider>
+                      </CheckinSuccessProvider>
                     </DashboardReadyProvider>
                   </AppConfigProvider>
                 </NotificationProvider>

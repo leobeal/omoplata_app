@@ -28,8 +28,26 @@ const TENANT = process.env.TENANT || 'evolve';
 const configPath = path.join(__dirname, `play-store/config/tenants/${TENANT}.json`);
 const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 
-// Progress tracking - read from config or environment
-const savedProgress = config.playStoreProgress || {};
+// Ensure stores.playStore structure exists (backward compatibility)
+if (!config.stores) {
+  config.stores = {};
+}
+if (!config.stores.playStore) {
+  config.stores.playStore = {
+    appCategory: config.appCategory || 'Health & fitness',
+    targetAudience: config.targetAudience || '18 and over',
+    progress: config.playStoreProgress || { appId: null, lastCompletedStep: 0, lastUpdated: null },
+  };
+}
+
+// Get store-specific config with fallback to root level for backward compatibility
+const playStoreConfig = {
+  appCategory: config.stores.playStore.appCategory || config.appCategory || 'Health & fitness',
+  targetAudience: config.stores.playStore.targetAudience || config.targetAudience || '18 and over',
+};
+
+// Progress tracking - read from new structure or legacy location
+const savedProgress = config.stores.playStore.progress || config.playStoreProgress || {};
 const RESUME_APP_ID = process.env.RESUME_APP_ID || savedProgress.appId || '';
 const START_STEP = parseInt(
   process.env.START_STEP ||
@@ -37,13 +55,15 @@ const START_STEP = parseInt(
   10
 );
 
-// Helper function to save progress to tenant JSON
+// Helper function to save progress to tenant JSON (new structure)
 function saveProgress(step, appId) {
-  config.playStoreProgress = {
+  config.stores.playStore.progress = {
     appId,
     lastCompletedStep: step,
     lastUpdated: new Date().toISOString(),
   };
+  // Remove legacy location if it exists
+  delete config.playStoreProgress;
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
   console.log(`    Progress saved: Step ${step} completed`);
 }
@@ -126,7 +146,6 @@ async function main() {
   // Launch browser with fresh profile and stealth settings
   const context = await chromium.launchPersistentContext(userDataDir, {
     headless: false,
-    channel: 'chrome',
     viewport: { width: 1400, height: 900 },
     slowMo: 300,
     args: [
@@ -457,7 +476,7 @@ async function main() {
 
       // Select age checkboxes based on config
       // Config can be "13 and over", "16 and over", "18 and over", etc.
-      const targetAge = config.targetAudience || '18 and over';
+      const targetAge = playStoreConfig.targetAudience;
       const ageMatch = targetAge.match(/(\d+)/);
       const minAge = ageMatch ? parseInt(ageMatch[1]) : 18;
 
@@ -851,74 +870,101 @@ async function main() {
     if (START_STEP <= 12) {
       logStep(12, 'Set app category and contact details');
 
-      // Navigate via dashboard task button (may be listed as "Store settings")
-      const navigated = await navigateToTask(page, appId, /store settings|app category/i);
-      if (!navigated) {
-        await page.goto(`${BASE_URL}/app/${appId}/store-settings`);
-        await page.waitForLoadState('networkidle');
+      // Navigate directly to store-settings
+      await page.goto(`${BASE_URL}/app/${appId}/store-settings`);
+      try {
+        await page.waitForLoadState('networkidle', { timeout: 15000 });
+      } catch (e) {
+        // Ignore timeout
       }
       await page.waitForTimeout(2000);
 
-      // Edit category - first Edit button on page is for App category
+      // Check if category needs to be set
       const editButtons = page.getByRole('button', { name: 'Edit' });
-      await editButtons.first().click();
-      await page.waitForTimeout(1000);
+      const categoryText = page.locator('group[aria-label="Category"] >> text=Select a category');
+      const needsCategory = (await categoryText.count()) > 0;
 
-      // Select category from dropdown (button may say "Select a category" or current category name)
-      const categoryDropdown = page
-        .getByRole('dialog')
-        .getByRole('button', { name: /category/i })
-        .last();
-      if ((await categoryDropdown.count()) > 0) {
-        await categoryDropdown.click();
-        await page.waitForTimeout(500);
-        const categoryOption = page.getByRole('option', { name: config.appCategory });
-        if ((await categoryOption.count()) > 0) {
-          await categoryOption.click();
+      if (needsCategory && playStoreConfig.appCategory) {
+        console.log('  Setting app category...');
+        await editButtons.first().click();
+        await page.waitForTimeout(1500);
+
+        // Select category from dropdown
+        const categoryDropdown = page
+          .getByRole('dialog')
+          .getByRole('button', { name: /Select a category/i });
+        if ((await categoryDropdown.count()) > 0) {
+          await categoryDropdown.click();
           await page.waitForTimeout(500);
+          const categoryOption = page.getByRole('option', { name: playStoreConfig.appCategory });
+          if ((await categoryOption.count()) > 0) {
+            await categoryOption.click();
+            await page.waitForTimeout(500);
+          }
+        }
+
+        // Save if enabled
+        const saveCategoryBtn = page.getByRole('dialog').getByRole('button', { name: 'Save' });
+        if ((await saveCategoryBtn.count()) > 0 && (await saveCategoryBtn.isEnabled())) {
+          await saveCategoryBtn.click();
+          await page.waitForTimeout(3000); // Wait for save to complete
+        }
+
+        // Close dialog
+        const closeCategoryBtn = page.getByRole('dialog').getByRole('button', { name: 'Close' });
+        if ((await closeCategoryBtn.count()) > 0) {
+          await closeCategoryBtn.click();
+          await page.waitForTimeout(500);
+        }
+        console.log(`  Category set to: ${playStoreConfig.appCategory}`);
+      } else {
+        console.log('  Category already set, skipping...');
+      }
+
+      // Edit contact details - click the Edit button next to "Store Listing contact details"
+      console.log('  Setting contact details...');
+      const contactEditBtn = page
+        .locator('console-header')
+        .filter({ hasText: 'Store Listing contact' })
+        .getByRole('button', { name: 'Edit' });
+      if ((await contactEditBtn.count()) > 0) {
+        await contactEditBtn.click();
+      } else {
+        // Fallback: click second Edit button
+        await editButtons.nth(1).click();
+      }
+      await page.waitForTimeout(1500);
+
+      // Fill email - first textbox in dialog
+      const emailInput = page.getByRole('dialog').getByRole('textbox').first();
+      if ((await emailInput.count()) > 0) {
+        await emailInput.fill(config.contact.email);
+        await page.waitForTimeout(300);
+      }
+
+      // Fill phone number - second textbox in dialog
+      if (config.contact.phone) {
+        const phoneInput = page.getByRole('dialog').getByRole('textbox').nth(1);
+        if ((await phoneInput.count()) > 0) {
+          await phoneInput.fill(config.contact.phone);
+          await page.waitForTimeout(300);
         }
       }
 
-      // Save if enabled
-      const saveCategoryBtn = page.getByRole('dialog').getByRole('button', { name: 'Save' });
-      if ((await saveCategoryBtn.count()) > 0 && (await saveCategoryBtn.isEnabled())) {
-        await saveCategoryBtn.click();
-        await page.waitForSelector('text=Change saved', { timeout: 10000 });
-        await page.waitForTimeout(1000);
-      }
-
-      // Close dialog
-      const closeCategoryBtn = page.getByRole('dialog').getByRole('button', { name: 'Close' });
-      if ((await closeCategoryBtn.count()) > 0) {
-        await closeCategoryBtn.click();
-        await page.waitForTimeout(500);
-      }
-
-      // Edit contact details - second Edit button on page is for Store Listing contact details
-      const editButtonsRefresh = page.getByRole('button', { name: 'Edit' });
-      await editButtonsRefresh.nth(1).click();
-      await page.waitForTimeout(1000);
-
-      // Fill email - first textbox in dialog
-      const emailInput = page.getByRole('dialog').locator('input[type="text"]').first();
-      if ((await emailInput.count()) > 0) {
-        await emailInput.fill(config.contact.email);
-      }
-
-      // Fill website - textbox with https:// prefix
+      // Fill website - textbox with https:// label (third textbox)
       const websiteInput = page.getByRole('dialog').getByRole('textbox', { name: 'https://' });
       if ((await websiteInput.count()) > 0) {
         await websiteInput.fill(
           config.contact.website.replace('https://', '').replace('http://', '')
         );
+        await page.waitForTimeout(300);
       }
 
       // Save contact details
       const saveContactBtn = page.getByRole('dialog').getByRole('button', { name: 'Save' });
       if ((await saveContactBtn.count()) > 0 && (await saveContactBtn.isEnabled())) {
         await saveContactBtn.click();
-        await page.waitForSelector('text=Change saved', { timeout: 10000 });
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(3000); // Wait for save to complete
       }
 
       // Close dialog
@@ -935,27 +981,177 @@ async function main() {
     if (START_STEP <= 13) {
       logStep(13, 'Set up store listing');
 
-      // Navigate via dashboard task button
-      const navigated = await navigateToTask(page, appId, /store listing|main store listing/i);
-      if (!navigated) {
-        await page.goto(`${BASE_URL}/app/${appId}/main-store-listing`);
-        await page.waitForLoadState('networkidle');
+      // Navigate to store-listings page first
+      await page.goto(`${BASE_URL}/app/${appId}/store-listings`);
+      try {
+        await page.waitForLoadState('networkidle', { timeout: 15000 });
+      } catch (e) {
+        // Ignore timeout
       }
       await page.waitForTimeout(2000);
 
-      await page.getByRole('textbox', { name: /Name of the app/i }).fill(config.listing.title);
-      await page
-        .getByRole('textbox', { name: /Short description/i })
-        .fill(config.listing.shortDescription);
-      await page
-        .getByRole('textbox', { name: /Full description/i })
-        .fill(config.listing.fullDescription);
+      // Check if we need to create the default store listing
+      const createListingBtn = page.getByRole('button', { name: 'Create default store listing' });
+      if ((await createListingBtn.count()) > 0) {
+        console.log('  Creating default store listing...');
+        await createListingBtn.click();
+        try {
+          await page.waitForLoadState('networkidle', { timeout: 15000 });
+        } catch (e) {
+          // Ignore timeout
+        }
+        await page.waitForTimeout(2000);
+      } else {
+        // Navigate directly to main-store-listing if already exists
+        await page.goto(`${BASE_URL}/app/${appId}/main-store-listing`);
+        try {
+          await page.waitForLoadState('networkidle', { timeout: 15000 });
+        } catch (e) {
+          // Ignore timeout
+        }
+        await page.waitForTimeout(2000);
+      }
 
-      await page.getByRole('button', { name: /Save/i }).click();
-      await page.waitForLoadState('networkidle');
+      // Fill app name
+      const appNameInput = page.getByRole('textbox', { name: /Name of the app/i });
+      if ((await appNameInput.count()) > 0) {
+        await appNameInput.fill(config.listing.title);
+        await page.waitForTimeout(300);
+      }
+
+      // Fill short description
+      const shortDescInput = page.getByRole('textbox', { name: /Short description/i });
+      if ((await shortDescInput.count()) > 0) {
+        await shortDescInput.fill(config.listing.shortDescription);
+        await page.waitForTimeout(300);
+      }
+
+      // Fill full description
+      const fullDescInput = page.getByRole('textbox', { name: /Full description/i });
+      if ((await fullDescInput.count()) > 0) {
+        await fullDescInput.fill(config.listing.fullDescription);
+        await page.waitForTimeout(300);
+      }
+
+      // Save as draft (doesn't require graphics to be uploaded)
+      const saveAsDraftBtn = page.getByRole('button', { name: 'Save as draft' });
+      const saveBtn = page.getByRole('button', { name: 'Save', exact: true });
+
+      if ((await saveAsDraftBtn.count()) > 0 && (await saveAsDraftBtn.isEnabled())) {
+        await saveAsDraftBtn.click();
+        console.log('  Saved as draft');
+      } else if ((await saveBtn.count()) > 0 && (await saveBtn.isEnabled())) {
+        await saveBtn.click();
+        console.log('  Saved');
+      }
+
       await page.waitForTimeout(2000);
       console.log('Store listing saved');
       saveProgress(13, appId);
+    }
+
+    // Step 14: Upload app icon
+    if (START_STEP <= 14 && config.assets?.icon) {
+      logStep(14, 'Upload app icon');
+
+      // Navigate to main-store-listing page
+      await page.goto(`${BASE_URL}/app/${appId}/main-store-listing`);
+      try {
+        await page.waitForLoadState('networkidle', { timeout: 15000 });
+      } catch (e) {
+        // Ignore timeout
+      }
+      await page.waitForTimeout(2000);
+
+      // Check if App icon field already has an icon
+      const appIconSection = page.locator('group[aria-label="App icon"]');
+      const existingIcon = appIconSection.locator('img[alt="App icon"]');
+
+      if ((await existingIcon.count()) > 0) {
+        console.log('  App icon already uploaded, skipping...');
+      } else {
+        // Click "Add assets" button for App icon
+        console.log('  Opening assets panel for App icon...');
+        const addAssetsBtn = appIconSection.getByRole('button', { name: 'Add assets' });
+        if ((await addAssetsBtn.count()) > 0) {
+          await addAssetsBtn.click();
+          await page.waitForTimeout(2000);
+        }
+
+        // Click "Upload" button in side panel
+        console.log('  Uploading icon file...');
+        const uploadBtn = page.getByRole('button', { name: 'Upload' });
+        if ((await uploadBtn.count()) > 0) {
+          // Set up file chooser handler before clicking upload
+          const fileChooserPromise = page.waitForEvent('filechooser');
+          await uploadBtn.click();
+
+          const fileChooser = await fileChooserPromise;
+          const iconPath = path.join(__dirname, 'play-store/config', config.assets.icon);
+          await fileChooser.setFiles(iconPath);
+          await page.waitForTimeout(3000);
+          console.log(`  Uploaded: ${config.assets.icon}`);
+        }
+
+        // Wait for upload to complete and asset to appear in list
+        await page.waitForTimeout(2000);
+
+        // Check if icon needs cropping (if it's larger than 512x512)
+        // Click on the uploaded asset to select it
+        const assetRow = page.locator('listitem[aria-label="Asset row"]').first();
+        if ((await assetRow.count()) > 0) {
+          await assetRow.click();
+          await page.waitForTimeout(1000);
+
+          // Check if "Crop" button is available (needed if icon is not 512x512)
+          const cropBtn = page.getByRole('button', { name: 'Crop' });
+          if ((await cropBtn.count()) > 0) {
+            console.log('  Cropping icon to 512x512...');
+            await cropBtn.click();
+            await page.waitForTimeout(1500);
+
+            // Click "App icon" preset in crop dialog
+            const appIconPreset = page.getByRole('button', { name: 'App icon' });
+            if ((await appIconPreset.count()) > 0) {
+              await appIconPreset.click();
+              await page.waitForTimeout(500);
+            }
+
+            // Click "Save as copy" to create cropped version
+            const saveAsCopyBtn = page.getByRole('button', { name: 'Save as copy' });
+            if ((await saveAsCopyBtn.count()) > 0) {
+              await saveAsCopyBtn.click();
+              await page.waitForTimeout(2000);
+              console.log('  Created cropped 512x512 version');
+            }
+          }
+
+          // Click "Add" button to apply selected asset to form
+          const addBtn = page.getByRole('button', { name: 'Add', exact: true });
+          if ((await addBtn.count()) > 0) {
+            await addBtn.click();
+            await page.waitForTimeout(1500);
+            console.log('  Applied icon to App icon field');
+          }
+        }
+
+        // Close side panel
+        const closePanelBtn = page.getByRole('button', { name: 'Close side panel' });
+        if ((await closePanelBtn.count()) > 0) {
+          await closePanelBtn.click();
+          await page.waitForTimeout(500);
+        }
+
+        // Save as draft
+        const saveAsDraftBtn = page.getByRole('button', { name: 'Save as draft' });
+        if ((await saveAsDraftBtn.count()) > 0 && (await saveAsDraftBtn.isEnabled())) {
+          await saveAsDraftBtn.click();
+          await page.waitForTimeout(2000);
+        }
+      }
+
+      console.log('App icon uploaded');
+      saveProgress(14, appId);
     }
 
     console.log('\n' + '='.repeat(60));
@@ -964,7 +1160,6 @@ async function main() {
     console.log(`\nApp ID: ${appId}`);
     console.log(`Dashboard: ${BASE_URL}/app/${appId}/app-dashboard`);
     console.log('\nManual tasks remaining:');
-    console.log('  - Upload app icon (512x512 PNG)');
     console.log('  - Upload feature graphic (1024x500 PNG)');
     console.log('  - Upload phone screenshots (2-8 images)');
     console.log('  - Upload AAB and create release\n');
@@ -977,7 +1172,7 @@ async function main() {
     console.log('\n' + '='.repeat(60));
     console.log('TO RETRY FROM LAST SAVED STEP:');
     console.log('='.repeat(60));
-    const lastStep = config.playStoreProgress?.lastCompletedStep || 0;
+    const lastStep = config.stores?.playStore?.progress?.lastCompletedStep || 0;
     console.log(`Progress saved: Step ${lastStep} completed`);
     console.log(`\nRun again with: TENANT=${TENANT} node scripts/create-play-store-app.js`);
     console.log(`(Script will auto-resume from step ${lastStep + 1})`);

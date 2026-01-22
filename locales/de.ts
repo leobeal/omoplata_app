@@ -30,6 +30,7 @@ export default {
     viewPlans: 'Pläne ansehen',
     logout: 'Abmelden',
     skip: 'Überspringen',
+    done: 'Fertig',
   },
 
   // Onboarding Slides
@@ -302,14 +303,52 @@ export default {
     // Fehler
     invalidQRCode: 'Ungültiger QR-Code',
     alreadyCheckedIn: 'Du hast bereits eingecheckt',
-    membershipInactive: 'Deine Mitgliedschaft ist inaktiv.\nBitte wende dich an die Rezeption.',
+    membershipInactive: 'Deine Mitgliedschaft ist derzeit inaktiv.',
     checkInFailed: 'Check-in fehlgeschlagen',
     networkError: 'Netzwerkfehler. Bitte versuche es erneut.',
+
+    // Keine Kurse verfügbar
+    noClassesTitle: 'Gerade keine Kurse',
+    noClassesMessage:
+      'Es sind derzeit keine Kurse geplant.\nSchau im Kursplan nach kommenden Terminen!',
+    viewSchedule: 'Kursplan ansehen',
+
+    // Standortkontext
+    youAreAt: 'Du bist bei',
+    atVenue: 'bei {{venue}}',
+    atFacility: '{{facility}}',
+    atVenueAndFacility: '{{venue}} · {{facility}}',
+
+    // Alternativen und kommende Kurse
+    classesElsewhere: 'Kurse finden gerade statt',
+    nextClassHere: 'Nächster Kurs hier',
+    startsAt: 'Beginnt um {{time}}',
+    tapToCheckIn: 'Tippen zum Einchecken',
+    checkInHere: 'Hier einchecken?',
+    confirmFacilitySwitch: 'Stattdessen bei {{facility}} einchecken?',
+    confirm: 'Einchecken',
+    cancel: 'Abbrechen',
+
+    // Erfolgs-Statistiken
+    today: 'Heute',
+    thisWeek: 'Diese Woche',
+    thisMonth: 'Diesen Monat',
+
+    // Fehlerhilfe
+    errorHelp: 'Brauchst du Hilfe? Kontaktiere uns.',
+
+    // NFC
+    scanMethodQr: 'QR-Code',
+    scanMethodNfc: 'NFC',
+    nfcTitle: 'NFC-Tag scannen',
+    nfcSubtitle: 'Halte dein Handy an das NFC-Tag',
+    nfcScanning: 'Bereit zum Scannen...',
   },
 
   // Anmeldung
   login: {
     title: 'Anmelden',
+    titleWithTenant: 'Bei {{tenant}} anmelden',
     subtitle: 'Melde dich bei deinem Konto an',
     email: 'E-Mail',
     password: 'Passwort',
@@ -318,6 +357,20 @@ export default {
     noAccount: 'Noch kein Konto?',
     signUp: 'Registrieren',
     notAMember: 'Noch kein Mitglied?',
+
+    // OTP-Ablauf
+    otpSubtitle: 'Gib deine E-Mail ein, um einen Anmeldecode zu erhalten',
+    otpTitle: 'Code eingeben',
+    otpEnterCode: 'Wir haben einen 6-stelligen Code an {{email}} gesendet',
+    sendCode: 'Code senden',
+    verify: 'Bestätigen',
+    resendCode: 'Code erneut senden',
+    otpRetryIn: 'Erneut versuchen in {{seconds}}s',
+    otpRequestFailed: 'Code konnte nicht gesendet werden. Bitte versuche es erneut.',
+    otpVerifyFailed: 'Ungültiger Code. Bitte versuche es erneut.',
+    otpIncomplete: 'Bitte gib den vollständigen 6-stelligen Code ein',
+    otpRateLimited: 'Zu viele Versuche. Bitte versuche es in {{minutes}} Minuten erneut.',
+    otpRateLimitedSeconds: 'Zu viele Versuche. Bitte versuche es in {{seconds}} Sekunden erneut.',
 
     // Validierung
     emailRequired: 'E-Mail ist erforderlich',

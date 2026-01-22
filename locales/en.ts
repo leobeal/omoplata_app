@@ -31,6 +31,7 @@ export default {
     viewPlans: 'View Plans',
     logout: 'Logout',
     skip: 'Skip',
+    done: 'Done',
   },
 
   // Onboarding Slides
@@ -297,14 +298,52 @@ export default {
     // Errors
     invalidQRCode: 'Invalid QR code',
     alreadyCheckedIn: "You're already checked in",
-    membershipInactive: 'Your membership is inactive.\nPlease contact the front desk.',
+    membershipInactive: 'Your membership is currently inactive.',
     checkInFailed: 'Check-in failed',
     networkError: 'Network error. Please try again.',
+
+    // No classes available
+    noClassesTitle: 'No Classes Right Now',
+    noClassesMessage:
+      'There are no classes scheduled at this time.\nCheck the schedule for upcoming sessions!',
+    viewSchedule: 'View Schedule',
+
+    // Location context
+    youAreAt: "You're at",
+    atVenue: 'at {{venue}}',
+    atFacility: '{{facility}}',
+    atVenueAndFacility: '{{venue}} · {{facility}}',
+
+    // Alternatives and upcoming
+    classesElsewhere: 'Classes happening now',
+    nextClassHere: 'Next class here',
+    startsAt: 'Starts at {{time}}',
+    tapToCheckIn: 'Tap to check in here',
+    checkInHere: 'Check in here?',
+    confirmFacilitySwitch: 'Check in to {{facility}} instead?',
+    confirm: 'Check In',
+    cancel: 'Cancel',
+
+    // Success stats
+    today: 'Today',
+    thisWeek: 'This Week',
+    thisMonth: 'This Month',
+
+    // Error help
+    errorHelp: 'Need help? Contact us.',
+
+    // NFC
+    scanMethodQr: 'QR Code',
+    scanMethodNfc: 'NFC',
+    nfcTitle: 'Scan NFC Tag',
+    nfcSubtitle: 'Hold your phone near the NFC tag',
+    nfcScanning: 'Ready to scan...',
   },
 
   // Login Screen
   login: {
     title: 'Login',
+    titleWithTenant: 'Login to {{tenant}}',
     subtitle: 'Sign in to your account',
     email: 'Email',
     password: 'Password',
@@ -313,6 +352,20 @@ export default {
     noAccount: "Don't have an account?",
     signUp: 'Sign up',
     notAMember: 'Not a member?',
+
+    // OTP Flow
+    otpSubtitle: 'Enter your email to receive a login code',
+    otpTitle: 'Enter Code',
+    otpEnterCode: 'We sent a 6-digit code to {{email}}',
+    sendCode: 'Send Code',
+    verify: 'Verify',
+    resendCode: 'Resend Code',
+    otpRetryIn: 'Retry in {{seconds}}s',
+    otpRequestFailed: 'Failed to send code. Please try again.',
+    otpVerifyFailed: 'Invalid code. Please try again.',
+    otpIncomplete: 'Please enter the complete 6-digit code',
+    otpRateLimited: 'Too many attempts. Please try again in {{minutes}} minutes.',
+    otpRateLimitedSeconds: 'Too many attempts. Please try again in {{seconds}} seconds.',
 
     // Validation
     emailRequired: 'Email is required',

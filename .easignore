@@ -4,7 +4,7 @@ android/
 ios/
 # Old/reference code (not needed for build)
 __old/
-
+stores/
 scripts/
 logs/
 

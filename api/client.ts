@@ -19,6 +19,7 @@ interface ApiResponse<T> {
   data: T | null;
   error: string | null;
   status: number;
+  headers?: Record<string, string>;
 }
 
 // Token storage (will be replaced with secure storage later)
@@ -108,10 +109,25 @@ export async function apiRequest<T>(
         }, 1000);
       }
 
+      // Extract headers for rate limit responses
+      const responseHeaders: Record<string, string> = {};
+      if (response.status === 429) {
+        const retryAfter = response.headers.get('Retry-After');
+        const xRateLimitReset = response.headers.get('X-RateLimit-Reset');
+        if (retryAfter) responseHeaders['Retry-After'] = retryAfter;
+        if (xRateLimitReset) responseHeaders['X-RateLimit-Reset'] = xRateLimitReset;
+
+        if (__DEV__) {
+          console.log('[API] 429 Rate Limited - data:', JSON.stringify(data));
+          console.log('[API] 429 Rate Limited - headers:', JSON.stringify(responseHeaders));
+        }
+      }
+
       return {
-        data: null,
+        data,
         error: data?.message || `Request failed with status ${response.status}`,
         status: response.status,
+        headers: Object.keys(responseHeaders).length > 0 ? responseHeaders : undefined,
       };
     }
 

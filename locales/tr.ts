@@ -299,11 +299,19 @@ export default {
     membershipInactive: 'Üyeliğiniz aktif değil.\nLütfen resepsiyonla iletişime geçin.',
     checkInFailed: 'Giriş başarısız',
     networkError: 'Ağ hatası. Lütfen tekrar deneyin.',
+
+    // NFC
+    scanMethodQr: 'QR Kodu',
+    scanMethodNfc: 'NFC',
+    nfcTitle: 'NFC Etiketi Tara',
+    nfcSubtitle: 'Telefonunuzu NFC etiketine yaklaştırın',
+    nfcScanning: 'Taramaya hazır...',
   },
 
   // Login Screen
   login: {
     title: 'Giriş',
+    titleWithTenant: "{{tenant}}'a Giriş",
     subtitle: 'Hesabınıza giriş yapın',
     email: 'E-posta',
     password: 'Şifre',
@@ -312,6 +320,20 @@ export default {
     noAccount: 'Hesabınız yok mu?',
     signUp: 'Kayıt ol',
     notAMember: 'Üye değil misiniz?',
+
+    // OTP Akışı
+    otpSubtitle: 'Giriş kodu almak için e-postanızı girin',
+    otpTitle: 'Kodu Girin',
+    otpEnterCode: '{{email}} adresine 6 haneli bir kod gönderdik',
+    sendCode: 'Kod Gönder',
+    verify: 'Doğrula',
+    resendCode: 'Kodu Tekrar Gönder',
+    otpRetryIn: '{{seconds}} saniye sonra tekrar dene',
+    otpRequestFailed: 'Kod gönderilemedi. Lütfen tekrar deneyin.',
+    otpVerifyFailed: 'Geçersiz kod. Lütfen tekrar deneyin.',
+    otpIncomplete: 'Lütfen 6 haneli kodun tamamını girin',
+    otpRateLimited: 'Çok fazla deneme. Lütfen {{minutes}} dakika sonra tekrar deneyin.',
+    otpRateLimitedSeconds: 'Çok fazla deneme. Lütfen {{seconds}} saniye sonra tekrar deneyin.',
 
     // Validation
     emailRequired: 'E-posta gerekli',

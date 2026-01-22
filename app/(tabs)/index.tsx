@@ -12,6 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { confirmAttendance, denyAttendance, ChildWithClasses } from '@/api/classes';
 import { Graduation, ChildWithGraduations } from '@/api/graduations';
@@ -43,7 +44,8 @@ const DEFAULT_DASHBOARD_BG = require('@/assets/_global/img/6.jpg');
 export default function HomeScreen() {
   const { t, locale } = useTranslation();
   const colors = useThemeColors();
-  const { user, isMember } = useAuth();
+  const { user, isMember, isViewingAsChild } = useAuth();
+  const insets = useSafeAreaInsets();
   const { tenant } = useTenant();
   const {
     classes,
@@ -225,8 +227,10 @@ export default function HomeScreen() {
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
           useNativeDriver: true,
         })}
-        contentInset={Platform.OS === 'ios' ? { top: 100 } : undefined}
-        contentOffset={Platform.OS === 'ios' ? { x: 0, y: -100 } : undefined}
+        contentInset={Platform.OS === 'ios' ? { top: isViewingAsChild ? 60 : 100 } : undefined}
+        contentOffset={
+          Platform.OS === 'ios' ? { x: 0, y: isViewingAsChild ? -60 : -100 } : undefined
+        }
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -237,7 +241,8 @@ export default function HomeScreen() {
           />
         }>
         {/* Spacer for fixed header - smaller on iOS due to contentInset */}
-        <View style={{ height: Platform.OS === 'ios' ? 12 : 112 }} />
+        {/* When viewing as child, header uses 5px padding instead of insets.top */}
+        <View style={{ height: Platform.OS === 'ios' ? 12 : isViewingAsChild ? 70 : 112 }} />
 
         {/* Cached Data Banner */}
         {classesFromCache && (
